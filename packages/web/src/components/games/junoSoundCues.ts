@@ -1,4 +1,4 @@
-import { JUNO_TURN_MS, type JunoView } from '@veyvox/shared/src/juno';
+import { JUNO_TURN_MS, JUNO_PIZZA_MS, type JunoView } from '@veyvox/shared/src/juno';
 
 /** Names resolve through AudioManager's existing /sounds/${name}.ogg cache. */
 export const JUNO_SOUNDS = {
@@ -11,6 +11,7 @@ export const JUNO_SOUNDS = {
   wild: { sound: 'juno/coringa', gain: .70, lane: 'move' },
   memory: { sound: 'juno_memory', gain: 1, lane: 'move' },
   intoxicated: { sound: 'juno_intoxicated', gain: 1, lane: 'move' },
+  pizza: { sound: 'juno_pizza', gain: 1, lane: 'move' },
   turn: { sound: 'juno/seu_turno', gain: .65, lane: 'turn' },
   announce: { sound: 'juno/uno', gain: .70, lane: 'announcement' },
   report: { sound: 'juno/denuncia_martelo', gain: .70, lane: 'move' },
@@ -27,11 +28,16 @@ export type JunoSoundLane = typeof JUNO_SOUNDS[JunoSoundCue]['lane'];
 /** Only compare consecutive confirmed views in the same round, never history. */
 export function junoMoveSounds(previous: JunoView, game: JunoView, selfId: string): JunoSoundCue[] {
   const move = game.lastMove;
-  if (previous.id !== game.id || !move?.id || move.id === previous.lastMove?.id) return [];
+  if (previous.id !== game.id || !move?.id) return [];
+  if (move.id === previous.lastMove?.id) {
+    return previous.pizzaResolution?.id === move.id && !game.pizzaResolution && game.phase === 'playing'
+      && game.remainingMs >= JUNO_TURN_MS - 3_000 && game.currentPlayerId === selfId && game.players.some(p => p.userId === selfId) ? ['turn'] : [];
+  }
   if (previous.phase === 'playing' && game.phase === 'finished') {
     return game.winnerId && game.players.some(p => p.userId === selfId)
       ? [game.winnerId === selfId ? 'victory' : 'defeat'] : [];
   }
+  if (move.card?.face === 'pizza' && (!game.pizzaResolution || game.pizzaResolution.remainingMs < JUNO_PIZZA_MS - 3_000)) return [];
   // Announce/report and a playable draw keep the current deadline. An unplayable
   // draw (actor is no longer current) and every memory miss advance/reset it.
   const resetsTurn = move.type === 'play' || move.type === 'start' || move.type === 'timeout' || move.type === 'pass' || move.type === 'leave'
@@ -41,7 +47,7 @@ export function junoMoveSounds(previous: JunoView, game: JunoView, selfId: strin
   if (move.type === 'start') cues.push('shuffle');
   else if (move.type === 'play' && move.card) {
     const face = move.card.face;
-    cues.push(face === 'draw2' || face === 'draw4' || face === 'reverse' || face === 'skip' || face === 'wild' || face === 'memory' || face === 'intoxicated' ? face : 'play');
+    cues.push(face === 'draw2' || face === 'draw4' || face === 'reverse' || face === 'skip' || face === 'wild' || face === 'memory' || face === 'intoxicated' || face === 'pizza' ? face : 'play');
   } else if (move.type === 'report' && (move.amount ?? 0) > 0) cues.push('report');
   else if ((move.type === 'draw' || move.type === 'timeout') && (move.amount ?? 0) > 0) cues.push('draw');
   else if (move.type === 'memory_miss' || move.type === 'intoxicated_miss') {
@@ -50,7 +56,7 @@ export function junoMoveSounds(previous: JunoView, game: JunoView, selfId: strin
   }
   if (move.type === 'announce' || move.type === 'play' && move.announced
       && !previous.players.find(p => p.userId === move.userId)?.announced) cues.push('announce');
-  if (game.currentPlayerId === selfId && game.players.some(p => p.userId === selfId)
+  if (!game.pizzaResolution && game.currentPlayerId === selfId && game.players.some(p => p.userId === selfId)
       && (previous.phase !== 'playing' || previous.currentPlayerId !== selfId)) cues.push('turn');
   return cues;
 }

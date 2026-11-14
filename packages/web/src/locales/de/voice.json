@@ -12,6 +12,12 @@
     "joinedOtherSession": "Sprachverbindung getrennt: Du bist über eine andere Sitzung beigetreten"
   },
   "juno": {
+    "pizza": {
+      "title": "Verrückte Pizza",
+      "rules": "Kann auf jede Farbe oder Zahl gespielt werden, ohne die Farbe zu ändern. Verteilt zufällig 0–5 Karten jeder Hand an andere Spieler, wobei immer mindestens eine Karte bleibt. Der Tausch dauert 5 Sekunden; übertragene Karten behalten ihr Mehl, auch wenn sie ausgespielt werden.",
+      "resolving": "Die verrückte Pizza mischt die Hände…",
+      "floured": "Mit Mehl bestäubt"
+    },
     "intoxicated": {
       "title": "Benommen",
       "instruction": "Für diesen Zug benommen: 50% Risiko einer falschen Karte oder Jokerfarbe.",

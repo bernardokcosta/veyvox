@@ -137,7 +137,8 @@ export const useJunoStore = create<JunoState>((set, get) => ({
     set({ loading: true });
     flight.promise = (async () => {
       try {
-        const snapshot = await api.juno.get(target.channelId, snapshotAtStart ? snapshotAtStart.supportsIntoxicated === true : true);
+        const snapshot = await api.juno.get(target.channelId, snapshotAtStart ? snapshotAtStart.supportsIntoxicated === true : true,
+          snapshotAtStart ? snapshotAtStart.supportsPizza === true : true);
         if (epoch !== currentEpoch || run !== readRun) return;
         if (snapshot.revision >= (get().snapshot?.revision ?? -1)) set({ snapshot, observedAt: Date.now() });
         const coolingDown = Date.now() < retryAt;
@@ -170,7 +171,7 @@ export const useJunoStore = create<JunoState>((set, get) => ({
     const currentEpoch = epoch;
     set({ pending: true, error: null });
     try {
-      const next = await api.juno.command(target.channelId, command, snapshot?.supportsIntoxicated === true);
+      const next = await api.juno.command(target.channelId, command, snapshot?.supportsIntoxicated === true, snapshot?.supportsPizza === true);
       if (epoch !== currentEpoch) return;
       if (next.revision >= (get().snapshot?.revision ?? -1)) set({ snapshot: next, observedAt: Date.now() });
     } catch (error) {

@@ -98,6 +98,5 @@ function GamesDialog({ onClose, onOpenJuno }: { onClose: () => void; onOpenJuno:
         </li>
       ))}
     </ul>
-    <p className="text-[13px] text-txt-secondary leading-relaxed mt-3">{t('voice:juno.description')}</p>
   </div>;
 }

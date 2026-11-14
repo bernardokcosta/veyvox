@@ -13,6 +13,35 @@ beforeEach(() => {
   useJunoStore.setState({ snapshot: { revision: 1, game: junoGame('playing') }, observedAt: Date.now(), command });
 });
 describe('Juno cosmic interactive match', () => {
+  it('plays pizza directly, labels persistent flour and decorates capped opponent backs only by count', async () => {
+    const game = junoGame('playing'); game.hand = [{ id: 'pizza', face: 'pizza', color: null, floured: true }];
+    game.topCard = { id: 'top-marked', face: '2', color: 'coral', floured: true };
+    game.players[1]!.cardCount = 85; game.players[1]!.flouredCardCount = 3;
+    useJunoStore.setState({ snapshot: { revision: 2, game } }); const { container } = render(<JunoMatch />);
+    const button = screen.getByRole('button', { name: /play.*crazy pizza.*flour/i });
+    expect(container.querySelectorAll('.juno-opponent-cards .juno-card-flour')).toHaveLength(3);
+    expect(container.querySelectorAll('.juno-opponent-cards .juno-card-art')).toHaveLength(10);
+    expect(container.querySelector('.juno-discard .juno-card-flour')).toBeInTheDocument();
+    await userEvent.click(button); expect(command).toHaveBeenCalledWith({ type: 'play', cardId: 'pizza', announce: false });
+    expect(screen.queryByRole('button', { name: 'Green' })).not.toBeInTheDocument();
+  });
+  it('freezes reports and disables every game control during pizza without shortening the next timer', () => {
+    vi.useFakeTimers(); vi.setSystemTime(900_000);
+    const game = junoGame('playing'); game.remainingMs = 45_000; game.supportsReports = true;
+    game.pizzaResolution = { id: 'pizza', remainingMs: 5_000 }; game.players[1]!.cardCount = 1;
+    game.reportOpportunities = [{ id: 'miss', targetUserId: 'b', remainingMs: 3_000 }];
+    useJunoStore.setState({ snapshot: { revision: 2, game }, observedAt: Date.now() }); const { container } = render(<JunoMatch />);
+    const report = screen.getByRole('button', { name: /report bo/i });
+    expect(report).toBeDisabled(); expect(screen.getByRole('button', { name: 'Draw pile' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /say juno/i })).toBeDisabled();
+    expect(container.querySelector('.juno-pizza-status')).toHaveTextContent(/mixing the hands/i);
+    act(() => vi.advanceTimersByTime(4_000)); expect(report).toHaveAccessibleDescription('3 seconds left to report');
+    expect(container.querySelector('.juno-timer')).toHaveTextContent('0:45');
+    act(() => vi.advanceTimersByTime(1_000)); expect(report).toBeEnabled();
+    expect(container.querySelector('.juno-timer')).toHaveTextContent('0:45');
+    act(() => vi.advanceTimersByTime(1_000)); expect(report).toHaveAccessibleDescription('2 seconds left to report');
+    expect(container.querySelector('.juno-timer')).toHaveTextContent('0:44');
+  });
   it('plays Entorpecido without a color picker and uses its supplied card art', async () => {
     const game = junoGame('playing'); game.hand = [{ id: 'intoxicated', face: 'intoxicated', color: null }];
     useJunoStore.setState({ snapshot: { revision: 2, game } }); const { container } = render(<JunoMatch />);

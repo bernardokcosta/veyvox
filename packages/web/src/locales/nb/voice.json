@@ -12,6 +12,12 @@
     "joinedOtherSession": "Stemme frakoblet — ble med fra en annen sesjon"
   },
   "juno": {
+    "pizza": {
+      "title": "Sprø pizza",
+      "rules": "Kan spilles på hvilken som helst farge eller hvilket som helst tall uten å endre fargen. Flytter tilfeldig 0–5 kort fra hver hånd til andre spillere og lar alltid minst ett kort være igjen. Byttet varer i 5 sekunder; flyttede kort beholder melet, også når de spilles.",
+      "resolving": "Den sprø pizzaen blander hendene…",
+      "floured": "Drysset med mel"
+    },
     "intoxicated": {
       "title": "Omtåket",
       "instruction": "Omtåket denne turen: 50% fare for feil kort eller jokerfarge.",

@@ -18,11 +18,13 @@ live-update fanout and fallback polling; this does not relax POST, account, auth
 voice or permission gates. Full rules, payloads and lifetime limits: [juno.md](juno.md).
 
 Optional `?memory=1` declares memory support; `intoxicated=1` additionally declares
-Entorpecido support and requires `memory=1`. Root `supportsMemory` and
-`supportsIntoxicated` advertise host support. Only exact `1` is valid;
+Entorpecido support and requires `memory=1`; `pizza=1` requires both preceding
+flags. Root `supportsMemory`, `supportsIntoxicated` and `supportsPizza` advertise
+host support. Only exact `1` is valid;
 unknown/duplicate query keys are refused and GET variants share one read budget.
-The lobby freezes 108 classic cards, 109 with memory, or 110 with both rare cards,
-according to all seated humans' declarations (`memoryEnabled`/`intoxicatedEnabled`).
+The lobby freezes 108 classic cards, 109 with memory, 110 with Entorpecido, or
+111 with Pizza Maluca, according to all seated humans' declarations
+(`memoryEnabled`/`intoxicatedEnabled`/`pizzaEnabled`).
 Unsupported enhanced-round reads/commands return 409
 `juno_update_required` without a snapshot (existing `leave` is still allowed).
 During `memoryCurse: {id,targetUserId}`, only the victim receives `hand: []`,
@@ -37,9 +39,22 @@ plays have a server-rolled 50% miss: retain cards, draw up to two and pass;
 players' or spectators' views. Wild/+4 plays instead have a 50% chance to select
 one of the three other colors (`intoxicatedColor: true`), with no extra draw-two
 penalty and unchanged +4 legality/effects. No new command, endpoint or WS event.
-Clients may retry only the initial GET capability probe as memory-only on exact
-400 `invalid_body`, remembering the result in their existing scoped snapshot;
+Clients may downgrade only the initial GET capability probe from pizza to
+intoxicated, then memory-only (at most two fallbacks), on exact 400 `invalid_body`
+within the same session, remembering support in their existing scoped snapshot;
 mutations are never replayed for compatibility.
+
+Pizza plays use the ordinary `play/cardId` command, retaining active color. Its
+server-owned exchange transfers 0–5 original cards per hand while leaving at
+least one, with independent random recipients and no incoming-card cascade.
+Public `lastMove.pizzaTransfers` exposes only `{fromUserId,toUserId,amount}`.
+Optional `pizzaResolution: {id,remainingMs}` freezes game actions for five seconds
+and preserves the next full turn/report timers; leave remains possible. Card
+instances carry optional `floured` in own-hand/public-discard projections through
+play/recycling; opponents expose only aggregate `flouredCardCount`. No transferred
+private IDs/indices/faces are returned to other viewers. Last-card pizza victory
+remains immediate without redistribution. See [juno.md](juno.md) for report,
+departure, computer and presentation behavior.
 
 Game people include current sanitized user/nickname data. Optional `scoreboard`
 adds immutable final places/counts/XP and `pending|credited|unranked` status; clients

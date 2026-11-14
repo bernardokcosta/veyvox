@@ -12,6 +12,12 @@
     "joinedOtherSession": "Voice ngắt — tham gia từ phiên khác"
   },
   "juno": {
+    "pizza": {
+      "title": "Pizza điên",
+      "rules": "Có thể đánh lên bất kỳ màu hoặc số nào mà không đổi màu. Chuyển ngẫu nhiên 0–5 lá từ tay mỗi người sang người chơi khác, luôn để lại ít nhất một lá. Việc đổi bài kéo dài 5 giây; các lá được chuyển vẫn giữ lớp bột mì, kể cả khi được đánh ra.",
+      "resolving": "Pizza điên đang trộn bài trên tay…",
+      "floured": "Phủ bột mì"
+    },
     "intoxicated": {
       "title": "Choáng váng",
       "instruction": "Choáng váng trong lượt này: 50% khả năng đánh nhầm lá hoặc chọn nhầm màu đổi màu.",

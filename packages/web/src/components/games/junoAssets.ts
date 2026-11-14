@@ -4,7 +4,8 @@ const ROOT = '/games/juno';
 export const JUNO_MUSIC_URL = `${ROOT}/music/charting-the-dark.mp3`;
 /** Only editions with real, supplied media are selectable. UI language is separate. */
 export const JUNO_DUBBINGS = { 'pt-BR': { languageCode: 'pt', memoryCard: `${ROOT}/cards/memory.webp`, memorySound: 'juno_memory',
-  intoxicatedCard: `${ROOT}/cards/intoxicated.webp`, intoxicatedSound: 'juno_intoxicated' } } as const;
+  intoxicatedCard: `${ROOT}/cards/intoxicated.webp`, intoxicatedSound: 'juno_intoxicated',
+  pizzaCard: `${ROOT}/cards/pizza.webp`, pizzaSound: 'juno_pizza' } } as const;
 export type JunoDubbingLanguage = keyof typeof JUNO_DUBBINGS;
 /** Match the game's UI language if a real edition exists; otherwise use supplied pt-BR. */
 export function resolveJunoDubbing(selection: 'auto' | JunoDubbingLanguage, language: string): JunoDubbingLanguage {
@@ -20,6 +21,8 @@ export const JUNO_ASSETS = {
   crown: `${ROOT}/ui/crown.svg`, gold: `${ROOT}/ui/medal-gold.svg`, silver: `${ROOT}/ui/medal-silver.svg`,
   bronze: `${ROOT}/ui/medal-bronze.svg`, rankingRow: `${ROOT}/ui/ranking-row.svg`,
   hammer: `${ROOT}/ui/hammer.gif`, hammerStill: `${ROOT}/ui/hammer-still.webp`,
+  pizza: `${ROOT}/ui/pizza.webp`, flour: `${ROOT}/ui/flour.webp`,
+  flourParticle: `${ROOT}/ui/flour-particle.webp`, flourImpact: `${ROOT}/ui/flour-impact.webp`,
 };
 
 /** Opaque runtime ids are never artwork paths; opponents always use the same back. */
@@ -27,6 +30,7 @@ export function junoCardUrl(card?: JunoCard, back = false, dubbing: JunoDubbingL
   if (back || !card) return `${ROOT}/cards/back.webp`;
   if (card.face === 'memory') return JUNO_DUBBINGS[dubbing].memoryCard;
   if (card.face === 'intoxicated') return JUNO_DUBBINGS[dubbing].intoxicatedCard;
+  if (card.face === 'pizza') return JUNO_DUBBINGS[dubbing].pizzaCard;
   if (card.face === 'wild' || card.face === 'draw4') return `${ROOT}/cards/${card.face}.webp`;
   return `${ROOT}/cards/${card.color}-${card.face}.webp`;
 }

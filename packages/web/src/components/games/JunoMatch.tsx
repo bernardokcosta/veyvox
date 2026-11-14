@@ -10,9 +10,10 @@ import { JunoPlayerBadge } from './JunoPlayerBadge';
 import { JUNO_ASSETS } from './junoAssets';
 import { junoSeats } from './junoSeats';
 import { JunoEffects } from './JunoEffects';
+import { JunoPizzaEffects } from './JunoPizzaEffects';
 
 const COLOR_KEYS = { coral: 'juno.colors.coral', amber: 'juno.colors.amber', mint: 'juno.colors.mint', sky: 'juno.colors.sky' } as const;
-const FACE_KEYS = { skip: 'juno.faces.skip', reverse: 'juno.faces.reverse', draw2: 'juno.faces.draw2', wild: 'juno.faces.wild', draw4: 'juno.faces.draw4', memory: 'juno.faces.memory', intoxicated: 'juno.intoxicated.title' } as const;
+const FACE_KEYS = { skip: 'juno.faces.skip', reverse: 'juno.faces.reverse', draw2: 'juno.faces.draw2', wild: 'juno.faces.wild', draw4: 'juno.faces.draw4', memory: 'juno.faces.memory', intoxicated: 'juno.intoxicated.title', pizza: 'juno.pizza.title' } as const;
 export function JunoMatch() {
   const { t } = useTranslation(['voice', 'common']); const { formatNumber, formatDuration } = useFormatters();
   const { snapshot, target, connected, pending, stale, command, observedAt } = useJunoStore();
@@ -25,7 +26,9 @@ export function JunoMatch() {
   const game = snapshot?.game;
   if (!game || game.phase !== 'playing') return null;
   const revision = snapshot.revision; const selfId = target?.userId;
-  const disabled = !connected || pending || stale; const myTurn = game.currentPlayerId === selfId;
+  const elapsed = Math.max(0, now - observedAt), resolutionMs = game.pizzaResolution?.remainingMs ?? 0;
+  const resolving = resolutionMs > elapsed, turnElapsed = Math.max(0, elapsed - resolutionMs);
+  const disabled = !connected || pending || stale || resolving; const myTurn = game.currentPlayerId === selfId;
   const isPlayer = game.players.some(p => p.userId === selfId);
   const blind = isPlayer && game.memoryCurse?.targetUserId === selfId;
   const intoxicated = isPlayer && game.intoxication?.targetUserId === selfId;
@@ -35,10 +38,10 @@ export function JunoMatch() {
   const self = game.players.find(p => p.userId === selfId);
   const sayJuno = game.supportsAnnounce ? self?.announced === true : announceRevision === revision;
   const next = game.players[(game.players.findIndex(p => p.userId === game.currentPlayerId) + game.direction + game.players.length) % game.players.length];
-  const chosen = colorChoice?.revision === revision && colorChoice.gameId === game.id && myTurn ? colorChoice.card : null;
-  const seconds = Math.ceil(Math.max(0, game.remainingMs - Math.max(0, now - observedAt)) / 1000);
+  const chosen = colorChoice?.revision === revision && colorChoice.gameId === game.id && myTurn && !resolving ? colorChoice.card : null;
+  const seconds = Math.ceil(Math.max(0, game.remainingMs - turnElapsed) / 1000);
   const faceLabel = (card: Card) => /^\d$/.test(card.face) ? formatNumber(Number(card.face)) : t(FACE_KEYS[card.face as keyof typeof FACE_KEYS]);
-  const cardLabel = (card: Card) => t('juno.card', { color: card.color ? t(COLOR_KEYS[card.color]) : '', face: faceLabel(card) });
+  const cardLabel = (card: Card) => `${t('juno.card', { color: card.color ? t(COLOR_KEYS[card.color]) : '', face: faceLabel(card) })}${card.floured ? `, ${t('juno.pizza.floured')}` : ''}`;
   const canPlay = (card: Card) => myTurn && !!game.topCard && !!game.color
     && (!game.drawnCardId || game.drawnCardId === card.id) && canPlayJuno(card, game.hand, game.topCard, game.color);
   const play = (card: Card, color?: JunoColor) => {
@@ -52,10 +55,10 @@ export function JunoMatch() {
     const visibleCards = Math.min(10, person?.cardCount ?? 0);
     const opportunity = game.supportsReports && isPlayer && person?.userId !== selfId && person?.cardCount === 1 && !person.announced
       ? game.reportOpportunities?.find(window => window.targetUserId === person?.userId) : undefined;
-    const reportSeconds = Math.ceil(Math.max(0, (opportunity?.remainingMs ?? 0) - Math.max(0, now - observedAt)) / 1000);
+    const reportSeconds = Math.ceil(Math.max(0, (opportunity?.remainingMs ?? 0) - turnElapsed) / 1000);
     const reportControl = game.supportsReports && person && <div className="juno-report-anchor">{opportunity && <><button type="button" className="juno-report" aria-label={t('juno.reportPlayer', { name: playerName(person) })}
       aria-describedby={`${reportDescriptionId}-${position}`} title={t('juno.reportPlayer', { name: playerName(person) })} disabled={disabled || reportSeconds <= 0}
-      onClick={() => { if (opportunity.remainingMs > Math.max(0, Date.now() - observedAt)) void command({ type: 'report', targetUserId: opportunity.targetUserId, opportunityId: opportunity.id }); }}>
+      onClick={() => { if (!disabled && opportunity.remainingMs > Math.max(0, Date.now() - observedAt - resolutionMs)) void command({ type: 'report', targetUserId: opportunity.targetUserId, opportunityId: opportunity.id }); }}>
       <img src={JUNO_ASSETS.hammerStill} alt="" aria-hidden="true" draggable={false} />
     </button><span id={`${reportDescriptionId}-${position}`} className="sr-only">{t('juno.reportTime', { seconds: formatNumber(reportSeconds) })}</span></>}</div>;
     return <div key={position} data-seat={position} className={`juno-seat juno-seat-${position}${person && game.memoryCurse?.targetUserId === person.userId ? ' juno-seat-memory' : ''}${person && game.intoxication?.targetUserId === person.userId ? ' juno-seat-intoxicated' : ''}`}>
@@ -67,8 +70,8 @@ export function JunoMatch() {
         </div>
         {person.userId !== selfId && <div className={`juno-opponent-cards${side ? ' juno-side-hand' : ''}`} aria-hidden="true">
           {Array.from({ length: visibleCards }, (_, i) => side
-            ? <span key={i} className="juno-side-card" style={{ '--juno-card-tilt': `${(i - 3) * 3}deg` } as CSSProperties}><JunoCard back /></span>
-            : <JunoCard back key={i} />)}
+            ? <span key={i} className="juno-side-card" style={{ '--juno-card-tilt': `${(i - 3) * 3}deg` } as CSSProperties}><JunoCard back floured={i < (person?.flouredCardCount ?? 0)} /></span>
+            : <JunoCard back key={i} floured={i < (person?.flouredCardCount ?? 0)} />)}
         </div>}
         {person.announced && <span className="juno-called">{t('juno.name')}</span>}
       </> : <span className="juno-empty-position" aria-label={t('juno.emptySeat')} />}
@@ -80,6 +83,7 @@ export function JunoMatch() {
   const movePosition = Object.entries(seats).find(([, person]) => person?.userId === effectPlayer?.userId)?.[0] ?? 'top';
   return <div className={`juno-match${game.supportsReports ? ' juno-reports' : ''}${myTurn ? ' juno-my-turn' : ''}${blind ? ' juno-memory-active' : ''}${intoxicated ? ' juno-intoxicated-active' : ''}`}>
     <JunoEffects move={game.lastMove} position={movePosition} name={playerName(effectPlayer)} viewerId={selfId} />
+    <JunoPizzaEffects move={game.lastMove} players={game.players} direction={game.direction} viewerId={selfId} resolution={game.pizzaResolution} active={connected && !stale} />
     <div className="juno-arena">
       <img className="juno-orbit" src={JUNO_ASSETS.orbit} alt="" aria-hidden="true" />
       {seat('top')}{seat('left')}{seat('right')}
@@ -97,8 +101,9 @@ export function JunoMatch() {
         <span className="juno-timer" aria-label={t('juno.turnTime')}>{formatDuration(seconds)}</span>
       </div>{blind && <p id={`${reportDescriptionId}-memory`} className="juno-memory-message" role="status">{t('juno.memory.instruction')}</p>}
       {intoxicated && <p id={`${reportDescriptionId}-intoxicated`} className="juno-intoxicated-message glass" role="status">{t('juno.intoxicated.instruction')}</p>}</div>
+      {resolving && <p className="juno-pizza-status glass" role="status">{t('juno.pizza.resolving')}</p>}
     </div>
-    <div className="sr-only" role="status" aria-live="polite">{myTurn ? t('juno.yourTurn') : t('juno.theirTurn', { name: current?.name ?? '' })}</div>
+    {!resolving && <div className="sr-only" role="status" aria-live="polite">{myTurn ? t('juno.yourTurn') : t('juno.theirTurn', { name: current?.name ?? '' })}</div>}
     {isPlayer ? <>
       <div className="juno-hand" role="group" aria-label={t('juno.yourHand')} aria-describedby={blind ? `${reportDescriptionId}-memory` : intoxicated ? `${reportDescriptionId}-intoxicated` : undefined}>
         {blind ? (game.maskedHand ?? []).map((slot, index) => <button key={slot.id} type="button" className="juno-hand-card juno-hidden-card"
@@ -106,7 +111,7 @@ export function JunoMatch() {
           onClick={() => void command({ type: 'play', cardId: slot.id, announce: sayJuno })}><span className="juno-hidden-face" aria-hidden="true" /></button>)
           : game.hand.map(card => <button key={card.id} type="button" className={`juno-hand-card${canPlay(card) ? ' juno-card-legal' : ''}`}
           disabled={disabled || !canPlay(card)} aria-label={t('juno.playCard', { card: cardLabel(card) })} title={cardLabel(card)}
-          onClick={event => { if (card.color || card.face === 'memory' || card.face === 'intoxicated') play(card); else { colorTrigger.current = event.currentTarget; setColorChoice({ card, revision, gameId: game.id }); } }}><JunoCard card={card} /></button>)}
+          onClick={event => { if (card.color || card.face === 'memory' || card.face === 'intoxicated' || card.face === 'pizza') play(card); else { colorTrigger.current = event.currentTarget; setColorChoice({ card, revision, gameId: game.id }); } }}><JunoCard card={card} /></button>)}
       </div>
       {chosen && !blind && <fieldset className="juno-color-picker glass" onKeyDown={event => { if (event.key === 'Escape') { event.stopPropagation(); event.preventDefault(); cancelColor(); } }}>
         <legend>{t('juno.chooseColor')}</legend>

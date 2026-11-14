@@ -12,6 +12,12 @@
     "joinedOtherSession": "Röst frånkopplad — gick med från en annan session"
   },
   "juno": {
+    "pizza": {
+      "title": "Galna pizzan",
+      "rules": "Kan spelas på vilken färg eller siffra som helst utan att ändra färgen. Flyttar slumpmässigt 0–5 kort från varje hand till andra spelare och lämnar alltid minst ett kort kvar. Bytet tar 5 sekunder; flyttade kort behåller mjölet även när de spelas.",
+      "resolving": "Galna pizzan blandar korten i händerna…",
+      "floured": "Mjölbestänkt"
+    },
     "intoxicated": {
       "title": "Omtöcknad",
       "instruction": "Omtöcknad denna tur: 50% risk för fel kort eller jokerfärg.",

@@ -12,6 +12,12 @@
     "joinedOtherSession": "Voice disconnected — joined from another session"
   },
   "juno": {
+    "pizza": {
+      "title": "Crazy Pizza",
+      "rules": "Play on any color or number without changing the color. Randomly transfers 0–5 cards from each hand to other players, always leaving at least one card. The exchange lasts 5 seconds; transferred cards keep their flour, even when played.",
+      "resolving": "Crazy Pizza is mixing the hands…",
+      "floured": "Flour-covered"
+    },
     "intoxicated": {
       "title": "Intoxicated",
       "instruction": "Intoxicated for this turn: 50% chance of a wrong card or wild color.",

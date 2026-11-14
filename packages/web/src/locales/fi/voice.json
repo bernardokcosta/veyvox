@@ -12,6 +12,12 @@
     "joinedOtherSession": "Ääni katkaistu — liitytty toisesta istunnosta"
   },
   "juno": {
+    "pizza": {
+      "title": "Hullu pizza",
+      "rules": "Voidaan pelata minkä tahansa värin tai numeron päälle väriä muuttamatta. Siirtää satunnaisesti 0–5 korttia jokaisesta kädestä muille pelaajille ja jättää aina vähintään yhden kortin. Vaihto kestää 5 sekuntia; siirrettyihin kortteihin jää jauho myös pelattaessa.",
+      "resolving": "Hullu pizza sekoittaa käsien kortteja…",
+      "floured": "Jauhoinen"
+    },
     "intoxicated": {
       "title": "Tokkurainen",
       "instruction": "Tokkurassa tämän vuoron: 50% mahdollisuus väärään korttiin tai jokerin väriin.",

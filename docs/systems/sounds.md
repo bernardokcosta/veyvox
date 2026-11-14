@@ -60,8 +60,9 @@ limiter, but have an independent panel volume and voice-scoped lifecycle.
 | `message.ogg` | new chat message arrived | self | The message is a `message` alert (see "Which messages alert" below). User can flip `messageSoundAllChannels` to fire on every channel. Alert: withheld on Do Not Disturb (see below). |
 | `juno_memory.ogg` | confirmed rare memory-card play | supported clients following the voice table, including spectators | `JunoSession` owns one `JunoSounds`; a new confirmed memory `lastMove.id` plays the user-supplied 2.79s clip through AudioManager/SFX output only. |
 | `juno_intoxicated.ogg` | confirmed rare Entorpecido play | supported table followers, including spectators | Same session owner/bus/dubbing and confirmed-id guards; complete user-supplied 2.294542s stereo 24kHz clip, Vorbis-encoded without normalization/content edits. |
+| `juno_pizza.ogg` | confirmed Pizza Maluca activation | supported table followers, including spectators | Same owner/bus/pt-BR edition; complete user-supplied 2.205292s stereo 24kHz clip, Vorbis-encoded without trimming, normalization or content edits. |
 
-The two supplied rare-card cues are not message/notification alerts and are never published to
+The three supplied rare-card cues are not message/notification alerts and are never published to
 LiveKit or microphone capture. It obeys existing SFX volume, self deafen and
 space deafen for the host-issued identity (microphone mute does not suppress
 local playback). Seen ids are consumed even while silent. Mount/initial read,
@@ -122,6 +123,13 @@ replay the 2.29s clip. No new audio bus, dependency or voice publication.
 Every lane and pending load obeys local/global SFX zero, self/space deafen,
 account/origin/channel identity, voice disconnection and owner cleanup. Failures
 never reject gameplay. Music and microphone/publication routing are unchanged.
+
+Pizza uses the same gain 1 and actual pt-BR edition. Its cue requires a new
+confirmed active-resolution move no more than three seconds old. It never replays
+on initial mount, polling or reopening, even while the pause is active. The
+next-player cue is deferred until the server clears resolution, without repeating
+the pizza cue on that same move ID. Last-card victory keeps result-only audio.
+All existing lane limits, output/volume/deafen and scope/load cleanup apply.
 
 ### Juno personal audio and focused music
 

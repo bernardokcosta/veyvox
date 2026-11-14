@@ -4,9 +4,11 @@ import type { User } from './types.js';
 export const JUNO_COLORS = ['coral', 'amber', 'mint', 'sky'] as const;
 export type JunoColor = typeof JUNO_COLORS[number];
 export type JunoFace = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
-  | 'skip' | 'reverse' | 'draw2' | 'wild' | 'draw4' | 'memory' | 'intoxicated';
-export const JUNO_MAX_DECK_SIZE = 110;
-export interface JunoCard { id: string; color: JunoColor | null; face: JunoFace }
+  | 'skip' | 'reverse' | 'draw2' | 'wild' | 'draw4' | 'memory' | 'intoxicated' | 'pizza';
+export const JUNO_MAX_DECK_SIZE = 111;
+export const JUNO_PIZZA_MS = 5_000;
+export interface JunoCard { id: string; color: JunoColor | null; face: JunoFace; floured?: boolean }
+export interface JunoPizzaTransfer { fromUserId: string; toUserId: string; amount: number }
 export interface JunoPerson { userId: string; name: string; user?: User; nickname?: string | null; computer?: 1 | 2 | 3 }
 export type JunoPlace = 1 | 2 | 3 | 4;
 export interface JunoStanding extends JunoPerson {
@@ -53,12 +55,14 @@ export interface JunoMove {
   /** Private feedback: serialized only to the player whose attempt failed. */
   misplayedCard?: JunoCard;
   intoxicatedColor?: boolean;
+  /** Public quantities only; transferred card identities stay private. */
+  pizzaTransfers?: JunoPizzaTransfer[];
 }
 export interface JunoView {
   id: string;
   phase: 'lobby' | 'playing' | 'finished';
   hostId: string;
-  players: (JunoPerson & { cardCount: number; announced: boolean })[];
+  players: (JunoPerson & { cardCount: number; announced: boolean; flouredCardCount?: number })[];
   hand: JunoCard[];
   topCard: JunoCard | null;
   color: JunoColor | null;
@@ -79,10 +83,12 @@ export interface JunoView {
   memoryCurse?: { id: string; targetUserId: string };
   intoxicatedEnabled?: boolean;
   intoxication?: { id: string; targetUserId: string };
+  pizzaEnabled?: boolean;
+  pizzaResolution?: { id: string; remainingMs: number };
   /** A cursed viewer receives opaque owned slots, never the concealed faces. */
   maskedHand?: { id: string }[];
 }
-export interface JunoSnapshot { revision: number; game: JunoView | null; supportsMemory?: boolean; supportsIntoxicated?: boolean }
+export interface JunoSnapshot { revision: number; game: JunoView | null; supportsMemory?: boolean; supportsIntoxicated?: boolean; supportsPizza?: boolean }
 export const JUNO_TURN_MS = 45_000;
 export const JUNO_REPORT_MS = 10_000;
 export interface JunoReportOpportunity { id: string; targetUserId: string; remainingMs: number }
@@ -90,5 +96,5 @@ export interface JunoReportOpportunity { id: string; targetUserId: string; remai
 /** Presentation may highlight legal cards; the server rechecks every play. */
 export function canPlayJuno(card: JunoCard, hand: readonly JunoCard[], top: JunoCard, color: JunoColor): boolean {
   if (card.face === 'draw4') return !hand.some(other => other.color === color);
-  return card.face === 'memory' || card.face === 'intoxicated' || card.face === 'wild' || card.color === color || card.face === top.face;
+  return card.face === 'memory' || card.face === 'intoxicated' || card.face === 'pizza' || card.face === 'wild' || card.color === color || card.face === top.face;
 }

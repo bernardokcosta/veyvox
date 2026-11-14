@@ -12,6 +12,12 @@
     "joinedOtherSession": "Hlas odpojen — připojení z jiné relace"
   },
   "juno": {
+    "pizza": {
+      "title": "Bláznivá pizza",
+      "rules": "Lze zahrát na libovolnou barvu nebo číslo beze změny barvy. Náhodně přesune 0–5 karet z každé ruky ostatním hráčům a vždy ponechá alespoň jednu kartu. Výměna trvá 5 sekund; přesunuté karty si zachovají mouku i po zahrání.",
+      "resolving": "Bláznivá pizza míchá karty v rukou…",
+      "floured": "Poprášená moukou"
+    },
     "intoxicated": {
       "title": "Omámený",
       "instruction": "Omámení na tento tah: 50% šance na chybnou kartu nebo barvu žolíka.",
