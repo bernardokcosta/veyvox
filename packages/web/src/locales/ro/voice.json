@@ -220,7 +220,8 @@
       "memory": "Alzheimer"
     },
     "rules": "Cum se joacă",
-    "rulesText": "Fiecare jucător primește 7 cărți. Potrivește culoarea sau simbolul ultimei cărți ori joacă un joker și alege o culoare. Golește-ți mâna pentru a câștiga.\nCartea Sari îl sare pe jucătorul următor; Inversează schimbă direcția (cu doi jucători, îl sare). +2 și +4 trag imediat cărți pentru jucătorul următor și îi sar rândul. Fără suprapunere. +4 este permis doar când nu ai nicio carte de culoarea activă; fără contestări.\nTrage una: joacă doar noua carte dacă se potrivește sau treci. O tragere nejucabilă trece automat.\nAi 45 de secunde pe rând. Epuizarea timpului trage una și trece; după ce ai tras, doar trece. Dacă cineva pleacă, cărțile sale se întorc în pachet; mai puțin de doi jucători încheie runda fără câștigător. O scurtă reconectare vocală îți păstrează locul. Repornirea serverului încheie jocurile."
+    "rulesText": "Fiecare jucător primește 7 cărți. Potrivește culoarea sau simbolul ultimei cărți ori joacă un joker și alege o culoare. Golește-ți mâna pentru a câștiga.\nCartea Sari îl sare pe jucătorul următor; Inversează schimbă direcția (cu doi jucători, îl sare). +2 și +4 trag imediat cărți pentru jucătorul următor și îi sar rândul. Fără suprapunere. +4 este permis doar când nu ai nicio carte de culoarea activă; fără contestări.\nTrage una: joacă doar noua carte dacă se potrivește sau treci. O tragere nejucabilă trece automat.\nAi 45 de secunde pe rând. Epuizarea timpului trage una și trece; după ce ai tras, doar trece. Dacă cineva pleacă, cărțile sale se întorc în pachet; mai puțin de doi jucători încheie runda fără câștigător. O scurtă reconectare vocală îți păstrează locul. Repornirea serverului încheie jocurile.",
+    "comingSoon": "În curând"
   },
   "soundboard": {
     "title": "Soundboard",

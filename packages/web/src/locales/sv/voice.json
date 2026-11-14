@@ -217,7 +217,8 @@
       "memory": "Alzheimer"
     },
     "rules": "Hur man spelar",
-    "rulesText": "Varje spelare får 7 kort. Matcha det senaste kortets färg eller symbol, eller spela en wild och välj en färg. Töm handen för att vinna.\nStopp hoppar över nästa spelare; vänd ändrar riktning (med två spelare hoppar den över). +2 och +4 får nästa spelare att omedelbart dra kort och hoppar över dess tur. Ingen stapling. +4 endast när du inte har kort i den aktiva färgen; inga utmaningar.\nDra ett: spela endast det nya kortet om det passar, eller passa. En ospelbar dragning passar automatiskt.\nDu har 45 sekunder per tur. Tidsutgång drar ett och passar; efter dragning passar den bara. Går någon, går dess kort tillbaka till leken; färre än två spelare avslutar rundan utan vinnare. En kort röståteranslutning behåller platsen. Omstart av servern avslutar spel."
+    "rulesText": "Varje spelare får 7 kort. Matcha det senaste kortets färg eller symbol, eller spela en wild och välj en färg. Töm handen för att vinna.\nStopp hoppar över nästa spelare; vänd ändrar riktning (med två spelare hoppar den över). +2 och +4 får nästa spelare att omedelbart dra kort och hoppar över dess tur. Ingen stapling. +4 endast när du inte har kort i den aktiva färgen; inga utmaningar.\nDra ett: spela endast det nya kortet om det passar, eller passa. En ospelbar dragning passar automatiskt.\nDu har 45 sekunder per tur. Tidsutgång drar ett och passar; efter dragning passar den bara. Går någon, går dess kort tillbaka till leken; färre än två spelare avslutar rundan utan vinnare. En kort röståteranslutning behåller platsen. Omstart av servern avslutar spel.",
+    "comingSoon": "Kommer snart"
   },
   "soundboard": {
     "title": "Ljudtavla",

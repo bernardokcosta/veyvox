@@ -217,7 +217,8 @@
       "memory": "Alzheimer"
     },
     "rules": "Miten pelataan",
-    "rulesText": "Jokainen pelaaja saa 7 korttia. Vastaa viimeisen kortin väriä tai symbolia, tai pelaa villi ja valitse väri. Tyhjennä kätesi voittaaksesi.\nOhita ohittaa seuraavan pelaajan; käännä vaihtaa suuntaa (kahdella pelaajalla se ohittaa). +2 ja +4 pakottavat seuraavan pelaajan heti nostamaan kortteja ja ohittavat sen vuoron. Ei kasaamista. +4 vain kun sinulla ei ole aktiivisen värin korttia; ei haastoja.\nNosta yksi: pelaa vain se uusi kortti jos se sopii, tai passaa. Pelaamaton nosto passaa automaattisesti.\nSinulla on 45 sekuntia per vuoro. Ajan loppu nostaa yhden ja passaa; nostamisen jälkeen se vain passaa. Jos joku poistuu, sen kortit palaavat pakkaan; alle kaksi pelaajaa päättää kierroksen ilman voittajaa. Lyhyt äänen uudelleenyhteys pitää paikan. Palvelimen uudelleenkäynnistys päättää pelit."
+    "rulesText": "Jokainen pelaaja saa 7 korttia. Vastaa viimeisen kortin väriä tai symbolia, tai pelaa villi ja valitse väri. Tyhjennä kätesi voittaaksesi.\nOhita ohittaa seuraavan pelaajan; käännä vaihtaa suuntaa (kahdella pelaajalla se ohittaa). +2 ja +4 pakottavat seuraavan pelaajan heti nostamaan kortteja ja ohittavat sen vuoron. Ei kasaamista. +4 vain kun sinulla ei ole aktiivisen värin korttia; ei haastoja.\nNosta yksi: pelaa vain se uusi kortti jos se sopii, tai passaa. Pelaamaton nosto passaa automaattisesti.\nSinulla on 45 sekuntia per vuoro. Ajan loppu nostaa yhden ja passaa; nostamisen jälkeen se vain passaa. Jos joku poistuu, sen kortit palaavat pakkaan; alle kaksi pelaajaa päättää kierroksen ilman voittajaa. Lyhyt äänen uudelleenyhteys pitää paikan. Palvelimen uudelleenkäynnistys päättää pelit.",
+    "comingSoon": "Tulossa"
   },
   "soundboard": {
     "title": "Äänitaulu",

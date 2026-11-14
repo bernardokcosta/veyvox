@@ -5,14 +5,14 @@ import { JUNO_ASSETS } from './junoAssets';
 import { JunoLocale, useJunoLanguage } from './JunoLocale';
 import './juno.css';
 
-export function JunoTile({ onOpen }: { onOpen?: () => void }) {
-  return <JunoLocale><JunoTileContent onOpen={onOpen} /></JunoLocale>;
+export function JunoTile({ onOpen, compact }: { onOpen?: () => void; compact?: boolean }) {
+  return <JunoLocale><JunoTileContent onOpen={onOpen} compact={compact} /></JunoLocale>;
 }
-function JunoTileContent({ onOpen }: { onOpen?: () => void }) {
+function JunoTileContent({ onOpen, compact }: { onOpen?: () => void; compact?: boolean }) {
   const { t } = useTranslation('voice');
   const game = useJunoStore(s => s.snapshot?.game);
   const { language: gameLanguage, dir: gameDir } = useJunoLanguage();
-  return <button type="button" className="juno-tile" lang={gameLanguage} dir={gameDir} onClick={onOpen ?? (() => useJunoStore.getState().setOpen(true))} aria-label={t('juno.open')}>
+  return <button type="button" className={compact ? 'juno-tile juno-tile-compact' : 'juno-tile'} lang={gameLanguage} dir={gameDir} onClick={onOpen ?? (() => useJunoStore.getState().setOpen(true))} aria-label={t('juno.open')}>
     <div className="juno-tile-cards"><JunoCard back /><JunoCard card={{ id: 'preview', face: '7', color: 'coral' }} /><JunoCard card={{ id: 'preview2', face: 'reverse', color: 'mint' }} /></div>
     <div><img className="juno-tile-logo" src={JUNO_ASSETS.logo} alt={t('juno.name')} /><span>{game?.phase === 'playing' ? t('juno.inProgress') : t('juno.seats', { occupied: game?.players.length ?? 0, max: 4 })}</span></div>
     <span className="juno-tile-open">{t('juno.open')}</span>

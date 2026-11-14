@@ -223,7 +223,8 @@
       "memory": "Alzheimer"
     },
     "rules": "Jak grać",
-    "rulesText": "Każdy gracz dostaje 7 kart. Dopasuj kolor lub symbol ostatniej karty albo zagraj dziką i wybierz kolor. Wyrzuć karty z ręki, aby wygrać.\nPomiń pomija następnego gracza; odwrócenie zmienia kierunek (przy dwóch graczach pomija). +2 i +4 każą następnemu graczowi dobrać karty i pomijają jego turę. Bez kumulacji. +4 dozwolone tylko, gdy nie masz karty aktywnego koloru; bez wyzwań.\nDobierz jedną: zagraj tylko tę nową kartę, jeśli pasuje, albo spasuj. Niegrywalne dobranie pasuje automatycznie.\nMasz 45 sekund na turę. Koniec czasu dobiera jedną i pasuje; po dobraniu tylko pasuje. Jeśli ktoś wyjdzie, jego karty wracają do talii; mniej niż dwóch graczy kończy rundę bez zwycięzcy. Krótkie ponowne połączenie z głosem trzyma miejsce. Restart serwera kończy gry."
+    "rulesText": "Każdy gracz dostaje 7 kart. Dopasuj kolor lub symbol ostatniej karty albo zagraj dziką i wybierz kolor. Wyrzuć karty z ręki, aby wygrać.\nPomiń pomija następnego gracza; odwrócenie zmienia kierunek (przy dwóch graczach pomija). +2 i +4 każą następnemu graczowi dobrać karty i pomijają jego turę. Bez kumulacji. +4 dozwolone tylko, gdy nie masz karty aktywnego koloru; bez wyzwań.\nDobierz jedną: zagraj tylko tę nową kartę, jeśli pasuje, albo spasuj. Niegrywalne dobranie pasuje automatycznie.\nMasz 45 sekund na turę. Koniec czasu dobiera jedną i pasuje; po dobraniu tylko pasuje. Jeśli ktoś wyjdzie, jego karty wracają do talii; mniej niż dwóch graczy kończy rundę bez zwycięzcy. Krótkie ponowne połączenie z głosem trzyma miejsce. Restart serwera kończy gry.",
+    "comingSoon": "Wkrótce"
   },
   "soundboard": {
     "title": "Tablica dźwięków",

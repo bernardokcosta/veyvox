@@ -217,7 +217,8 @@
       "memory": "Alzheimer-Karte"
     },
     "rules": "Spielregeln",
-    "rulesText": "Jeder erhält 7 Karten. Lege die gleiche Farbe oder das gleiche Symbol wie die letzte Karte ab, oder spiele eine Farbwahlkarte. Wer zuerst keine Karten mehr hat, gewinnt.\nAussetzen überspringt den Nächsten; Richtungswechsel ändert die Richtung (zu zweit überspringt er den Gegner). +2 und +4 lassen den Nächsten sofort ziehen und aussetzen. Kein Stapeln. +4 ist nur ohne Karte der aktiven Farbe erlaubt; keine Herausforderungen.\nZiehe eine Karte: Nur diese darf noch gespielt werden, wenn sie passt; sonst passe. Eine unpassende gezogene Karte beendet den Zug automatisch.\n45 Sekunden pro Zug. Nach Ablauf wird eine Karte gezogen und gepasst; nach dem Ziehen wird nur gepasst. Wer geht, gibt seine Karten in den Stapel zurück. Bei weniger als zwei Spielern endet die Runde ohne Gewinner. Kurze Sprach-Wiederverbindungen behalten den Platz. Ein Serverneustart beendet Spiele."
+    "rulesText": "Jeder erhält 7 Karten. Lege die gleiche Farbe oder das gleiche Symbol wie die letzte Karte ab, oder spiele eine Farbwahlkarte. Wer zuerst keine Karten mehr hat, gewinnt.\nAussetzen überspringt den Nächsten; Richtungswechsel ändert die Richtung (zu zweit überspringt er den Gegner). +2 und +4 lassen den Nächsten sofort ziehen und aussetzen. Kein Stapeln. +4 ist nur ohne Karte der aktiven Farbe erlaubt; keine Herausforderungen.\nZiehe eine Karte: Nur diese darf noch gespielt werden, wenn sie passt; sonst passe. Eine unpassende gezogene Karte beendet den Zug automatisch.\n45 Sekunden pro Zug. Nach Ablauf wird eine Karte gezogen und gepasst; nach dem Ziehen wird nur gepasst. Wer geht, gibt seine Karten in den Stapel zurück. Bei weniger als zwei Spielern endet die Runde ohne Gewinner. Kurze Sprach-Wiederverbindungen behalten den Platz. Ein Serverneustart beendet Spiele.",
+    "comingSoon": "Bald verfügbar"
   },
   "soundboard": {
     "title": "Soundboard",

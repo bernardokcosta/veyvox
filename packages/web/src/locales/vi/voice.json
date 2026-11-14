@@ -217,7 +217,8 @@
       "memory": "Alzheimer"
     },
     "rules": "Cách chơi",
-    "rulesText": "Mỗi người chơi nhận 7 bài. Khớp màu hay ký hiệu của bài cuối, hoặc chơi lá đổi màu và chọn màu. Hết tay để thắng.\nBỏ qua bỏ qua người chơi tiếp; đảo đổi hướng (với hai người nó bỏ qua). +2 và +4 buộc người chơi tiếp rút bài ngay và bỏ qua lượt của họ. Không dồn. +4 chỉ khi bạn không có bài màu hiện; không thách.\nRút một: chỉ chơi bài mới đó nếu hợp, hoặc bỏ qua. Rút không chơi được tự bỏ qua.\nBạn có 45 giây mỗi lượt. Hết giờ rút một và bỏ qua; sau rút chỉ bỏ qua. Nếu ai rời, bài của họ về bộ; ít hơn hai người kết thúc vòng không người thắng. Kết nối lại voice ngắn giữ ghế. Khởi động lại máy chủ kết thúc game."
+    "rulesText": "Mỗi người chơi nhận 7 bài. Khớp màu hay ký hiệu của bài cuối, hoặc chơi lá đổi màu và chọn màu. Hết tay để thắng.\nBỏ qua bỏ qua người chơi tiếp; đảo đổi hướng (với hai người nó bỏ qua). +2 và +4 buộc người chơi tiếp rút bài ngay và bỏ qua lượt của họ. Không dồn. +4 chỉ khi bạn không có bài màu hiện; không thách.\nRút một: chỉ chơi bài mới đó nếu hợp, hoặc bỏ qua. Rút không chơi được tự bỏ qua.\nBạn có 45 giây mỗi lượt. Hết giờ rút một và bỏ qua; sau rút chỉ bỏ qua. Nếu ai rời, bài của họ về bộ; ít hơn hai người kết thúc vòng không người thắng. Kết nối lại voice ngắn giữ ghế. Khởi động lại máy chủ kết thúc game.",
+    "comingSoon": "Sắp ra mắt"
   },
   "soundboard": {
     "title": "Bảng âm thanh",

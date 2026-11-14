@@ -217,7 +217,8 @@
       "memory": "Alzheimer"
     },
     "rules": "Cara bermain",
-    "rulesText": "Tiap pemain dapat 7 kartu. Cocokkan warna atau simbol kartu terakhir, atau mainkan wild dan pilih warna. Kosongkan tangan untuk menang.\nLewati melewati pemain berikut; balik mengubah arah (dengan dua pemain, ia melewati). +2 dan +4 membuat pemain berikut langsung mengambil kartu dan melewati gilirannya. Tanpa penumpukan. +4 hanya bila Anda tak punya kartu warna aktif; tanpa tantangan.\nAmbil satu: mainkan hanya kartu baru itu jika cocok, atau lewati. Ambilan tak dapat dimainkan otomatis lewat.\nAnda punya 45 detik per giliran. Waktu habis mengambil satu dan lewat; setelah mengambil hanya lewat. Jika seseorang pergi, kartunya kembali ke dek; kurang dari dua pemain mengakhiri ronde tanpa pemenang. Sambung ulang voice singkat mempertahankan kursi. Memulai ulang server mengakhiri game."
+    "rulesText": "Tiap pemain dapat 7 kartu. Cocokkan warna atau simbol kartu terakhir, atau mainkan wild dan pilih warna. Kosongkan tangan untuk menang.\nLewati melewati pemain berikut; balik mengubah arah (dengan dua pemain, ia melewati). +2 dan +4 membuat pemain berikut langsung mengambil kartu dan melewati gilirannya. Tanpa penumpukan. +4 hanya bila Anda tak punya kartu warna aktif; tanpa tantangan.\nAmbil satu: mainkan hanya kartu baru itu jika cocok, atau lewati. Ambilan tak dapat dimainkan otomatis lewat.\nAnda punya 45 detik per giliran. Waktu habis mengambil satu dan lewat; setelah mengambil hanya lewat. Jika seseorang pergi, kartunya kembali ke dek; kurang dari dua pemain mengakhiri ronde tanpa pemenang. Sambung ulang voice singkat mempertahankan kursi. Memulai ulang server mengakhiri game.",
+    "comingSoon": "Segera hadir"
   },
   "soundboard": {
     "title": "Papan suara",

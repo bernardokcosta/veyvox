@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Modal } from '../ui/Modal';
 import { JunoTile } from './JunoTile';
+import { ComingSoonTile } from './ComingSoonTile';
 import { useUIStore } from '../../stores/uiStore';
 import { useJunoStore } from '../../stores/junoStore';
 import { useVoiceStore } from '../../stores/voiceStore';
@@ -53,7 +54,7 @@ export function GamesPicker() {
     }
   };
 
-  return <Modal isOpen onClose={closeModal} maxWidth="max-w-lg" mobileStyle="sheet">
+  return <Modal isOpen onClose={closeModal} maxWidth="max-w-2xl" mobileStyle="sheet">
     <GamesDialog onClose={closeModal} onOpenJuno={openJuno} />
   </Modal>;
 }
@@ -87,11 +88,16 @@ function GamesDialog({ onClose, onOpenJuno }: { onClose: () => void; onOpenJuno:
         className="w-9 h-9 shrink-0 rounded-full text-txt-tertiary hover:text-txt-primary hover:bg-interactive-hover focus-visible:ring-2 focus-visible:ring-accent-primary">×</button>
     </div>
     <p className="text-sm text-txt-secondary mb-4">{t('voice:juno.chooseGame')}</p>
-    <ul className="card-grid">
-      <li>
-        <div className="h-40"><JunoTile onOpen={onOpenJuno} /></div>
-        <p className="text-[13px] text-txt-secondary leading-relaxed mt-3">{t('voice:juno.description')}</p>
+    <ul className="grid grid-cols-2 desktop:grid-cols-4 gap-3">
+      <li className="aspect-square min-h-0">
+        <JunoTile compact onOpen={onOpenJuno} />
       </li>
+      {['Jolf', 'Juns', 'Jace'].map((name) => (
+        <li key={name} className="aspect-square min-h-0">
+          <ComingSoonTile name={name} />
+        </li>
+      ))}
     </ul>
+    <p className="text-[13px] text-txt-secondary leading-relaxed mt-3">{t('voice:juno.description')}</p>
   </div>;
 }
