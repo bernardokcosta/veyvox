@@ -18,6 +18,7 @@ import {
   KeybindsPanel,
   BotsPanel,
   DeveloperPanel,
+  StickerLibraryPanel,
   SettingsPanelSuspense,
 } from './lazySettingsPanels';
 import { isElectron } from '../../platform/platform';
@@ -36,6 +37,7 @@ const USER_SETTINGS_TABS = [
   { id: 'appearance', group: 'user', label: 'settings:nav.tabs.appearance' },
   { id: 'voice', group: 'user', label: 'settings:nav.tabs.voice' },
   { id: 'privacy', group: 'user', label: 'settings:nav.tabs.privacy' },
+  { id: 'stickers', group: 'user', label: 'settings:nav.tabs.stickers' },
   { id: 'keybinds', group: 'app', label: 'settings:nav.tabs.keybinds' },
   { id: 'desktop', group: 'app', label: 'settings:nav.tabs.desktop' },
   { id: 'developer', group: 'app', label: 'settings:nav.tabs.developer' },
@@ -209,6 +211,7 @@ export function UserSettingsModal() {
     appearance: () => <AppearancePanel />,
     voice: () => <VoicePanel />,
     privacy: () => <PrivacyPanel />,
+    stickers: () => <StickerLibraryPanel />,
     bots: () => <BotsPanel />,
     developer: () => <DeveloperPanel />,
     keybinds: () => <KeybindsPanel />,

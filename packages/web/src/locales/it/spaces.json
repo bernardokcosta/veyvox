@@ -362,6 +362,8 @@
       "manageChannels": "Gestisci canali",
       "manageRoles": "Gestisci ruoli",
       "manageSpace": "Gestisci spazio",
+      "createStickers": "Crea adesivi",
+      "manageStickers": "Gestisci adesivi",
       "createInvite": "Crea inviti",
       "kickMembers": "Espelli membri",
       "banMembers": "Banna membri",
@@ -622,5 +624,12 @@
     "suppressRoles": "Ignora le menzioni dei ruoli",
     "massHeading": "Menzioni di gruppo",
     "massNote": "@here raggiunge gli stessi membri di @everyone. Le menzioni dirette al tuo nome ti notificano sempre."
+  },
+  "stickers": {
+    "title": "Adesivi dello spazio",
+    "description": "Un album condiviso per questo spazio, con fino a 50 adesivi animati o statici.",
+    "empty": "Questo spazio non ha ancora un album di adesivi.",
+    "create": "Crea album dello spazio",
+    "add": "Aggiungi adesivo"
   }
 }

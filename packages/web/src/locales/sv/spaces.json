@@ -361,6 +361,8 @@
       "manageChannels": "Hantera kanaler",
       "manageRoles": "Hantera roller",
       "manageSpace": "Hantera rum",
+      "createStickers": "Skapa klistermärken",
+      "manageStickers": "Hantera klistermärken",
       "createInvite": "Skapa inbjudan",
       "kickMembers": "Sparka ut medlemmar",
       "banMembers": "Bannlys medlemmar",
@@ -611,5 +613,12 @@
     "suppressRoles": "Tysta rollomnämnanden",
     "massHeading": "Gruppomnämnanden",
     "massNote": "@here når samma medlemmar som @everyone. Omnämnanden av dig vid namn meddelar dig alltid."
+  },
+  "stickers": {
+    "title": "Rummets klistermärken",
+    "description": "Ett delat klistermärkesalbum för detta rum, med upp till 50 animerade eller statiska klistermärken.",
+    "empty": "Detta rum har ännu inget klistermärkesalbum.",
+    "create": "Skapa rummets album",
+    "add": "Lägg till klistermärke"
   }
 }

@@ -363,6 +363,8 @@
       "manageChannels": "Zarządzanie kanałami",
       "manageRoles": "Zarządzanie rolami",
       "manageSpace": "Zarządzanie przestrzenią",
+      "createStickers": "Twórz naklejki",
+      "manageStickers": "Zarządzaj naklejkami",
       "createInvite": "Tworzenie zaproszeń",
       "kickMembers": "Wyrzucanie członków",
       "banMembers": "Banowanie członków",
@@ -633,5 +635,12 @@
     "suppressRoles": "Tłum wzmianki o rolach",
     "massHeading": "Wzmianki grupowe",
     "massNote": "@here sięga tych samych członków co @everyone. Wzmianki o Tobie po imieniu zawsze Cię powiadamiają."
+  },
+  "stickers": {
+    "title": "Naklejki przestrzeni",
+    "description": "Jeden współdzielony album naklejek dla tej przestrzeni, do 50 animowanych lub statycznych naklejek.",
+    "empty": "Ta przestrzeń nie ma jeszcze albumu naklejek.",
+    "create": "Utwórz album przestrzeni",
+    "add": "Dodaj naklejkę"
   }
 }

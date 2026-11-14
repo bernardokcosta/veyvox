@@ -131,7 +131,8 @@
       "desktop": "Desktop",
       "instance": "Instance",
       "bots": "Bots",
-      "developer": "Developer"
+      "developer": "Developer",
+      "stickers": "Stickers"
     },
     "logOut": "Log Out",
     "backToMenu": "Back to settings menu"
@@ -548,5 +549,20 @@
       "description": "Show developer tools, such as the Bots tab, in settings. Turning it off only hides them; your bots keep running.",
       "saveFailed": "Could not save the setting. Try again."
     }
+  },
+  "stickers": {
+    "title": "My sticker library",
+    "description": "Private sticker albums only you can see. Each album holds up to 30 animated or static stickers.",
+    "packs": "Private albums",
+    "newPack": "New album name",
+    "createPack": "Create album",
+    "favorites": "Favorites",
+    "favoritesHint": "Your sticker collection. File an entry into the open album with +.",
+    "noFavorites": "No favorite stickers yet.",
+    "itemName": "Sticker name",
+    "deletePack": "Delete album",
+    "deletePackTitle": "Delete \"{{name}}\"?",
+    "deletePackDescription": "The album is removed. Stickers already sent stay available in chat.",
+    "deletePackSuccess": "Album deleted."
   }
 }

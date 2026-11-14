@@ -360,6 +360,8 @@
       "manageChannels": "チャンネル管理",
       "manageRoles": "ロール管理",
       "manageSpace": "スペース管理",
+      "createStickers": "スタンプを作成",
+      "manageStickers": "スタンプを管理",
       "createInvite": "招待作成",
       "kickMembers": "メンバー追放",
       "banMembers": "メンバー禁止",
@@ -600,5 +602,12 @@
     "suppressRoles": "ロール言及を抑制",
     "massHeading": "グループ言及",
     "massNote": "@here は @everyone と同じメンバーに届きます。名指し言及は常に通知します。"
+  },
+  "stickers": {
+    "title": "スペースのスタンプ",
+    "description": "このスペース用の共有スタンプアルバム1つ。アニメーションまたは静止スタンプを最大50個保存できます。",
+    "empty": "このスペースにはまだスタンプアルバムがありません。",
+    "create": "スペースのアルバムを作成",
+    "add": "スタンプを追加"
   }
 }

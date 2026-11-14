@@ -276,10 +276,10 @@
     "draft": "Черновик",
     "newVersion": "Новая версия",
     "deletePack": "Удалить набор",
-    "stickersCount_one": "{{count}} стикер",
+    "stickersCount_one": "{{count}} стикер.",
     "stickersCount_few": "{{count}} стикера",
     "stickersCount_many": "{{count}} стикеров",
-    "stickersCount_other": "{{count}} стикеров",
+    "stickersCount_other": "{{count}} стикеров.",
     "noPacks": "Наборы стикеров не найдены",
     "viewPack": "Посмотреть набор",
     "saveDraft": "Сохранить как черновик",
@@ -298,7 +298,13 @@
     "reviewNotes": "Причина отклонения",
     "creator": "Создатель",
     "viewStickers": "Смотреть стикеры",
-    "pendingReviewHint": "На проверке у администратора. После одобрения появится на вкладке «Обзор»."
+    "pendingReviewHint": "На проверке у администратора. После одобрения появится на вкладке «Обзор».",
+    "invalidName": "Выберите видимое название длиной до 100 символов.",
+    "favoritesTitle": "Избранные стикеры",
+    "favorite": "Добавить стикер в избранное",
+    "favorited": "Стикер добавлен в избранное.",
+    "serverEmpty": "У этого пространства пока нет альбома стикеров.",
+    "serverEmptyHint": "Менеджер пространства может добавить его в настройках пространства."
   },
   "poke": {
     "action": "Толкнуть",

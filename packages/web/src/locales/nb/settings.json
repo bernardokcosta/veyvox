@@ -131,7 +131,8 @@
       "desktop": "Datamaskin",
       "instance": "Instans",
       "bots": "Boter",
-      "developer": "Utvikler"
+      "developer": "Utvikler",
+      "stickers": "Klistremerker"
     },
     "logOut": "Logg ut",
     "backToMenu": "Tilbake til innstillingsmenyen"
@@ -548,5 +549,20 @@
       "description": "Vis utviklerverktøy, som fanen Boter, i innstillinger. Å slå av skjuler dem bare; botene dine fortsetter å kjøre.",
       "saveFailed": "Kunne ikke lagre innstillingen. Prøv igjen."
     }
+  },
+  "stickers": {
+    "title": "Mitt klistremerkebibliotek",
+    "description": "Private album som bare du kan se. Hvert album rommer opptil 30 animerte eller statiske klistremerker.",
+    "packs": "Private album",
+    "newPack": "Navn på nytt album",
+    "createPack": "Opprett album",
+    "favorites": "Favoritter",
+    "favoritesHint": "Klistremerkesamlingen din. Arkiver et element i det åpne albumet med +.",
+    "noFavorites": "Ingen favorittklistremerker ennå.",
+    "itemName": "Klistremerkenavn",
+    "deletePack": "Slett album",
+    "deletePackTitle": "Slette \"{{name}}\"?",
+    "deletePackDescription": "Albumet fjernes. Allerede sendte klistremerker blir værende i chatten.",
+    "deletePackSuccess": "Album slettet."
   }
 }

@@ -131,7 +131,8 @@
       "desktop": "Bureau",
       "instance": "Instance",
       "bots": "Bots",
-      "developer": "Développeur"
+      "developer": "Développeur",
+      "stickers": "Autocollants"
     },
     "logOut": "Se déconnecter",
     "backToMenu": "Retour au menu des paramètres"
@@ -549,5 +550,20 @@
       "description": "Affiche les outils de développement, comme l’onglet Bots, dans les paramètres. Désactiver ce mode masque seulement ces outils ; tes bots continuent de fonctionner.",
       "saveFailed": "Impossible d’enregistrer ce réglage. Réessaie."
     }
+  },
+  "stickers": {
+    "title": "Ma bibliothèque d’autocollants",
+    "description": "Des albums privés que vous seul pouvez voir. Chaque album contient jusqu’à 30 autocollants animés ou statiques.",
+    "packs": "Albums privés",
+    "newPack": "Nom du nouvel album",
+    "createPack": "Créer un album",
+    "favorites": "Favoris",
+    "favoritesHint": "Votre collection d’autocollants. Archivez un élément dans l’album ouvert avec +.",
+    "noFavorites": "Aucun autocollant favori pour le moment.",
+    "itemName": "Nom de l’autocollant",
+    "deletePack": "Supprimer l’album",
+    "deletePackTitle": "Supprimer « {{name}} » ?",
+    "deletePackDescription": "L’album est supprimé. Les autocollants déjà envoyés restent dans le chat.",
+    "deletePackSuccess": "Album supprimé."
   }
 }

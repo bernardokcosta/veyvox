@@ -361,6 +361,8 @@
       "manageChannels": "Hallitse kanavia",
       "manageRoles": "Hallitse rooleja",
       "manageSpace": "Hallitse tilaa",
+      "createStickers": "Luo tarroja",
+      "manageStickers": "Hallitse tarroja",
       "createInvite": "Luo kutsu",
       "kickMembers": "Potki jäseniä ulos",
       "banMembers": "Estä jäseniä",
@@ -611,5 +613,12 @@
     "suppressRoles": "Vaimenna roolimaininnat",
     "massHeading": "Ryhmämaininnat",
     "massNote": "@here tavoittaa samat jäsenet kuin @everyone. Nimeltä maininnat sinusta ilmoittavat sinulle aina."
+  },
+  "stickers": {
+    "title": "Tilan tarrat",
+    "description": "Yksi jaettu tarra-albumi tälle tilalle, enintään 50 animoitua tai staattista tarraa.",
+    "empty": "Tällä tilalla ei ole vielä tarra-albumia.",
+    "create": "Luo tilan albumi",
+    "add": "Lisää tarra"
   }
 }

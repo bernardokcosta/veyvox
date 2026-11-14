@@ -361,6 +361,8 @@
       "manageChannels": "Håndtér kanaler",
       "manageRoles": "Håndtér roller",
       "manageSpace": "Håndtér rum",
+      "createStickers": "Opret stickers",
+      "manageStickers": "Administrer stickers",
       "createInvite": "Opret invitation",
       "kickMembers": "Smid medlemmer ud",
       "banMembers": "Udeluk medlemmer",
@@ -611,5 +613,12 @@
     "suppressRoles": "Undertryk rolleomtaler",
     "massHeading": "Gruppeomtaler",
     "massNote": "@here når de samme medlemmer som @everyone. Omtaler af dig ved navn giver dig altid besked."
+  },
+  "stickers": {
+    "title": "Rummets stickers",
+    "description": "Ét delt stickeralbum til dette rum med op til 50 animerede eller statiske stickers.",
+    "empty": "Dette rum har endnu intet stickeralbum.",
+    "create": "Opret rummets album",
+    "add": "Tilføj sticker"
   }
 }

@@ -361,6 +361,8 @@
       "manageChannels": "Manage Channels",
       "manageRoles": "Manage Roles",
       "manageSpace": "Manage Space",
+      "createStickers": "Create stickers",
+      "manageStickers": "Manage stickers",
       "createInvite": "Create Invite",
       "kickMembers": "Kick Members",
       "banMembers": "Ban Members",
@@ -611,5 +613,12 @@
     "suppressRoles": "Suppress role mentions",
     "massHeading": "Group mentions",
     "massNote": "@here reaches the same members as @everyone. Mentions of you by name always notify you."
+  },
+  "stickers": {
+    "title": "Space stickers",
+    "description": "One shared sticker album for this space, with up to 50 static or animated stickers.",
+    "empty": "This space does not have a sticker album yet.",
+    "create": "Create space album",
+    "add": "Add sticker"
   }
 }

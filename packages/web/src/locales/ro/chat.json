@@ -268,9 +268,9 @@
     "draft": "Ciornă",
     "newVersion": "Versiune nouă",
     "deletePack": "Șterge pachetul",
-    "stickersCount_one": "{{count}} sticker",
+    "stickersCount_one": "{{count}} sticker.",
     "stickersCount_few": "{{count}} stickere",
-    "stickersCount_other": "{{count}} de stickere",
+    "stickersCount_other": "{{count}} stickere.",
     "noPacks": "Niciun pachet de stickere găsit",
     "viewPack": "Vezi pachetul",
     "saveDraft": "Salvează ca ciornă",
@@ -289,7 +289,13 @@
     "reviewNotes": "Motivul respingerii",
     "creator": "Autor",
     "viewStickers": "Vezi stickerele",
-    "pendingReviewHint": "În verificare la administrator; va apărea în Explorează după aprobare"
+    "pendingReviewHint": "În verificare la administrator; va apărea în Explorează după aprobare",
+    "invalidName": "Alege un nume vizibil de până la 100 de caractere.",
+    "favoritesTitle": "Stickere favorite",
+    "favorite": "Sticker favorit",
+    "favorited": "Sticker adăugat la favorite.",
+    "serverEmpty": "Acest spațiu nu are încă un album de stickere.",
+    "serverEmptyHint": "Un gestionar al spațiului poate adăuga unul în Setări spațiu → Stickerele spațiului."
   },
   "poke": {
     "action": "Ciocănește",

@@ -260,8 +260,8 @@
     "draft": "Luonnos",
     "newVersion": "Uusi versio",
     "deletePack": "Poista paketti",
-    "stickersCount_one": "{{count}} tarra",
-    "stickersCount_other": "{{count}} tarraa",
+    "stickersCount_one": "{{count}} tarra.",
+    "stickersCount_other": "{{count}} tarraa.",
     "noPacks": "Tarrapaketteja ei löytynyt",
     "viewPack": "Näytä paketti",
     "saveDraft": "Tallenna luonnoksena",
@@ -280,7 +280,13 @@
     "reviewNotes": "Hylkäyssyy",
     "creator": "Tekijä",
     "viewStickers": "Näytä tarrat",
-    "pendingReviewHint": "Ylläpitäjän tarkistettavana; näkyy Selaa-kohdassa hyväksynnän jälkeen"
+    "pendingReviewHint": "Ylläpitäjän tarkistettavana; näkyy Selaa-kohdassa hyväksynnän jälkeen",
+    "invalidName": "Valitse näkyvä nimi, enintään 100 merkkiä.",
+    "favoritesTitle": "Suosikkitarrat",
+    "favorite": "Suosikkitarra",
+    "favorited": "Tarra lisätty suosikkeihin.",
+    "serverEmpty": "Tällä tilalla ei ole vielä tarra-albumia.",
+    "serverEmptyHint": "Tilan ylläpitäjä voi lisätä sen kohdassa Tilan asetukset → Tilan tarrat."
   },
   "poke": {
     "action": "Tökkää",

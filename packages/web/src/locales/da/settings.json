@@ -131,7 +131,8 @@
       "desktop": "Computer",
       "instance": "Instans",
       "bots": "Bots",
-      "developer": "Udvikler"
+      "developer": "Udvikler",
+      "stickers": "Klistermærker"
     },
     "logOut": "Log ud",
     "backToMenu": "Tilbage til indstillingsmenu"
@@ -548,5 +549,20 @@
       "description": "Vis udviklerværktøjer, f.eks. fanen Bots, i indstillinger. At slå fra skjuler dem kun; dine bots kører videre.",
       "saveFailed": "Kunne ikke gemme indstillingen. Prøv igen."
     }
+  },
+  "stickers": {
+    "title": "Mit stickerbibliotek",
+    "description": "Private albummer, som kun du kan se. Hvert album rummer op til 30 animerede eller statiske stickers.",
+    "packs": "Private albummer",
+    "newPack": "Nyt albumnavn",
+    "createPack": "Opret album",
+    "favorites": "Favoritter",
+    "favoritesHint": "Din stickersamling. Arkivér et element i det åbne album med +.",
+    "noFavorites": "Ingen favoritstickers endnu.",
+    "itemName": "Sticker-navn",
+    "deletePack": "Slet album",
+    "deletePackTitle": "Slet \"{{name}}\"?",
+    "deletePackDescription": "Albummet fjernes. Allerede sendte stickers forbliver i chatten.",
+    "deletePackSuccess": "Album slettet."
   }
 }

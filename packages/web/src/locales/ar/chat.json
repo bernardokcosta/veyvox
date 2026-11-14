@@ -293,11 +293,11 @@
     "newVersion": "نسخة جديدة",
     "deletePack": "حذف الحزمة",
     "stickersCount_zero": "لا ملصقات ({{count}})",
-    "stickersCount_one": "ملصق {{count}}",
+    "stickersCount_one": "ملصق {{count}}.",
     "stickersCount_two": "ملصقان ({{count}})",
     "stickersCount_few": "{{count}} ملصقات",
     "stickersCount_many": "{{count}} ملصقًا",
-    "stickersCount_other": "{{count}} ملصق",
+    "stickersCount_other": "ملصق {{count}}.",
     "noPacks": "لا حزم ملصقات",
     "viewPack": "عرض الحزمة",
     "saveDraft": "حفظ كمسودة",
@@ -316,7 +316,13 @@
     "reviewNotes": "سبب الرفض",
     "creator": "المنشئ",
     "viewStickers": "عرض الملصقات",
-    "pendingReviewHint": "قيد مراجعة المسؤول؛ ستظهر في الاستكشاف بعد الموافقة"
+    "pendingReviewHint": "قيد مراجعة المسؤول؛ ستظهر في الاستكشاف بعد الموافقة",
+    "invalidName": "اختر اسمًا مرئيًا حتى 100 حرف.",
+    "favoritesTitle": "ملصقات مفضلة",
+    "favorite": "ملصق مفضل",
+    "favorited": "أُضيف الملصق إلى المفضلة.",
+    "serverEmpty": "لا يوجد ألبوم ملصقات لهذه المساحة بعد.",
+    "serverEmptyHint": "يمكن لمدير المساحة إضافة واحد من إعدادات المساحة ← ملصقات المساحة."
   },
   "poke": {
     "action": "نخز",

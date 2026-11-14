@@ -131,7 +131,8 @@
       "desktop": "Desktop",
       "instance": "Instanță",
       "bots": "Boți",
-      "developer": "Dezvoltator"
+      "developer": "Dezvoltator",
+      "stickers": "Stickere"
     },
     "logOut": "Deconectează-te",
     "backToMenu": "Înapoi la meniul de setări"
@@ -549,5 +550,20 @@
       "description": "Arată instrumentele pentru dezvoltatori, cum ar fi fila Boți, în setări. Dezactivarea doar le ascunde; boții tăi continuă să ruleze.",
       "saveFailed": "Setarea nu a putut fi salvată. Încearcă din nou."
     }
+  },
+  "stickers": {
+    "title": "Biblioteca mea de stickere",
+    "description": "Albume private pe care numai tu le vezi. Fiecare album ține până la 30 de stickere animate sau statice.",
+    "packs": "Albume private",
+    "newPack": "Numele albumului nou",
+    "createPack": "Creează album",
+    "favorites": "Favorite",
+    "favoritesHint": "Colecția ta de stickere. Arhivează un element în albumul deschis cu +.",
+    "noFavorites": "Încă niciun sticker favorit.",
+    "itemName": "Numele stickerului",
+    "deletePack": "Șterge albumul",
+    "deletePackTitle": "Ștergi \"{{name}}\"?",
+    "deletePackDescription": "Albumul este eliminat. Stickerele deja trimise rămân în chat.",
+    "deletePackSuccess": "Album șters."
   }
 }

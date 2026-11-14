@@ -96,7 +96,7 @@
   { "language": "es", "namespace": "admin", "key": "users.filters.bot", "value": "Bots", "reason": "Bots is the usual Spanish plural for software bot accounts and matches the account filter's meaning." },
   { "language": "es", "namespace": "settings", "key": "bots.title", "value": "Bots", "reason": "Bots is the conventional Spanish name for software bot accounts." },
   { "language": "es", "namespace": "settings", "key": "nav.tabs.bots", "value": "Bots", "reason": "Navigation uses the same conventional Spanish bot-account heading." },
-  { "language": "es", "namespace": "settings", "key": "instance.tabs.general", "value": "General", "reason": "General is a standard Spanish settings heading." },
+  { "language": "nl", "namespace": "settings", "key": "nav.tabs.stickers", "value": "Stickers", "reason": "Stickers is the conventional Dutch software term for sticker collections, spelled identically to English." },  { "language": "es", "namespace": "settings", "key": "instance.tabs.general", "value": "General", "reason": "General is a standard Spanish settings heading." },
   { "language": "es", "namespace": "spaces", "key": "settings.nav.general", "value": "General", "reason": "General is a standard Spanish settings group heading." },
   { "language": "es", "namespace": "spaces", "key": "settings.nav.tabs.roles", "value": "Roles", "reason": "Roles is the Spanish plural of rol, used in the Space settings tab." },
   { "language": "es", "namespace": "spaces", "key": "roles.title", "value": "Roles", "reason": "Roles is the ordinary Spanish heading for member roles." },

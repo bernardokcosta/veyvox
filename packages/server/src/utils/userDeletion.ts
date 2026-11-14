@@ -166,6 +166,15 @@ export function tombstoneUser(uid: string, options?: TombstoneOptions): string[]
     // fires. Their rows go here; any files they owned are deleted after commit.
     filesToDelete.push(...purgeUserBookmarks(tx, uid));
 
+    // Private sticker albums belong to the account, and so does its own
+    // collection. Space albums belong to their space and stay. (Store packs
+    // predate scopes and are curated by admins, not by the deleted account.)
+    tx.delete(schema.personalStickers).where(eq(schema.personalStickers.userId, uid)).run();
+    tx.delete(schema.stickerPacks).where(and(
+      eq(schema.stickerPacks.scopeType, 'user'),
+      eq(schema.stickerPacks.creatorId, uid),
+    )).run();
+
     // A bot's access tokens (hash only) go with the account too.
     tx.delete(schema.botTokens)
       .where(eq(schema.botTokens.botId, uid))

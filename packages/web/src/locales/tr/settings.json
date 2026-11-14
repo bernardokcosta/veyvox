@@ -131,7 +131,8 @@
       "desktop": "Masaüstü",
       "instance": "Örnek",
       "bots": "Botlar",
-      "developer": "Geliştirici"
+      "developer": "Geliştirici",
+      "stickers": "Çıkartmalar"
     },
     "logOut": "Çıkış yap",
     "backToMenu": "Ayar menüsüne dön"
@@ -548,5 +549,20 @@
       "description": "Ayarlarda Botlar sekmesi gibi geliştirici araçlarını göster. Kapatmak yalnızca onları gizler; botların çalışmaya devam eder.",
       "saveFailed": "Ayar kaydedilemedi. Tekrar dene."
     }
+  },
+  "stickers": {
+    "title": "Sticker kitaplığım",
+    "description": "Yalnızca senin görebildiğin özel albümler. Her albüm en fazla 30 animasyonlu veya durağan çıkartma alır.",
+    "packs": "Özel albümler",
+    "newPack": "Yeni albüm adı",
+    "createPack": "Albüm oluştur",
+    "favorites": "Favoriler",
+    "favoritesHint": "Çıkartma koleksiyonun. + ile bir öğeyi açık albüme arşivle.",
+    "noFavorites": "Henüz favori çıkartma yok.",
+    "itemName": "Çıkartma adı",
+    "deletePack": "Albümü sil",
+    "deletePackTitle": "\"{{name}}\" silinsin mi?",
+    "deletePackDescription": "Albüm kaldırılır. Gönderilmiş çıkartmalar sohbette kalır.",
+    "deletePackSuccess": "Albüm silindi."
   }
 }

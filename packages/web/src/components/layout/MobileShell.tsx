@@ -43,6 +43,7 @@ export const mobileScreenMap: Readonly<Record<string, (params?: Record<string, s
   'settings-appearance': () => <MobileSettingsScreen initialPanel="appearance" />,
   'settings-voice': () => <MobileSettingsScreen initialPanel="voice" />,
   'settings-privacy': () => <MobileSettingsScreen initialPanel="privacy" />,
+  'settings-stickers': () => <MobileSettingsScreen initialPanel="stickers" />,
   'settings-keybinds': () => <MobileSettingsScreen initialPanel="keybinds" />,
   'settings-desktop': () => <MobileSettingsScreen initialPanel="desktop" />,
   'settings-developer': () => <MobileSettingsScreen initialPanel="developer" />,

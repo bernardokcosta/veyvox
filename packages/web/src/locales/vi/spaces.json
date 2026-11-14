@@ -361,6 +361,8 @@
       "manageChannels": "Quản lý kênh",
       "manageRoles": "Quản lý vai trò",
       "manageSpace": "Quản lý không gian",
+      "createStickers": "Tạo nhãn dán",
+      "manageStickers": "Quản lý nhãn dán",
       "createInvite": "Tạo thư mời",
       "kickMembers": "Đuổi thành viên",
       "banMembers": "Cấm thành viên",
@@ -611,5 +613,12 @@
     "suppressRoles": "Chặn nhắc vai trò",
     "massHeading": "Nhắc nhóm",
     "massNote": "@here tới cùng thành viên như @everyone. Nhắc bạn đích danh luôn báo bạn."
+  },
+  "stickers": {
+    "title": "Nhãn dán của không gian",
+    "description": "Một album chung cho không gian này, tối đa 50 nhãn dán động hoặc tĩnh.",
+    "empty": "Không gian này chưa có album nhãn dán.",
+    "create": "Tạo album của không gian",
+    "add": "Thêm nhãn dán"
   }
 }

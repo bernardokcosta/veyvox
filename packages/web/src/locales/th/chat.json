@@ -252,7 +252,7 @@
     "draft": "ฉบับร่าง",
     "newVersion": "เวอร์ชันใหม่",
     "deletePack": "ลบแพ็ก",
-    "stickersCount_other": "สติกเกอร์ {{count}}",
+    "stickersCount_other": "สติกเกอร์ {{count}} แบบ",
     "noPacks": "ไม่พบแพ็กสติกเกอร์",
     "viewPack": "ดูแพ็ก",
     "saveDraft": "บันทึกเป็นร่าง",
@@ -271,7 +271,14 @@
     "reviewNotes": "เหตุผลปฏิเสธ",
     "creator": "ผู้สร้าง",
     "viewStickers": "ดูสติกเกอร์",
-    "pendingReviewHint": "ผู้ดูแลกำลังตรวจ; แสดงที่สำรวจหลังอนุมัติ"
+    "pendingReviewHint": "ผู้ดูแลกำลังตรวจ; แสดงที่สำรวจหลังอนุมัติ",
+    "invalidName": "เลือกชื่อที่มองเห็นได้ไม่เกิน 100 ตัวอักษร",
+    "favoritesTitle": "สติกเกอร์โปรด",
+    "favorite": "สติกเกอร์โปรด",
+    "favorited": "เพิ่มสติกเกอร์ในรายการโปรดแล้ว",
+    "stickersCount_one": "สติกเกอร์ {{count}} แบบ",
+    "serverEmpty": "สเปซนี้ยังไม่มีอัลบั้มสติกเกอร์",
+    "serverEmptyHint": "ผู้จัดการสเปซเพิ่มได้ที่ ตั้งค่าสเปซ → สติกเกอร์ของสเปซ"
   },
   "poke": {
     "action": "สะกิด",

@@ -10,7 +10,7 @@ import { api } from '../../api/client';
 import { uploadUrl } from '../../utils/assetUrls';
 import { Avatar } from '../ui/Avatar';
 import { hasPermissionBit, PermissionBits } from '../../utils/permissions';
-import { OverviewPanel, MembersPanel, RolesPanel, BansPanel, SoundboardPanel, AfkPanel, SettingsPanelSuspense } from './lazySettingsPanels';
+import { OverviewPanel, MembersPanel, RolesPanel, BansPanel, SoundboardPanel, AfkPanel, StickerPackPanel, SettingsPanelSuspense } from './lazySettingsPanels';
 import { useVisibilityOptions } from './spaceSettingsPanels/spaceOptions';
 import type { SpaceVisibility, JoinRequest } from '@veyvox/shared';
 
@@ -189,8 +189,8 @@ function JoinRequestsContent({ spaceId, revision }: { spaceId: string; revision:
   );
 }
 
-type SpaceSettingsTab = 'overview' | 'members' | 'roles' | 'bans' | 'soundboard';
-const SPACE_SETTINGS_TABS: readonly SpaceSettingsTab[] = ['overview', 'members', 'roles', 'bans', 'soundboard'];
+type SpaceSettingsTab = 'overview' | 'members' | 'roles' | 'bans' | 'soundboard' | 'stickers';
+const SPACE_SETTINGS_TABS: readonly SpaceSettingsTab[] = ['overview', 'members', 'roles', 'bans', 'soundboard', 'stickers'];
 function isSpaceSettingsTab(value: unknown): value is SpaceSettingsTab {
   return typeof value === 'string' && (SPACE_SETTINGS_TABS as readonly string[]).includes(value);
 }
@@ -212,12 +212,14 @@ export function SpaceSettingsModal() {
   const canManageSpace = hasPermissionBit(mySpacePerms, PermissionBits.MANAGE_SPACE);
   const canManageRoles = hasPermissionBit(mySpacePerms, PermissionBits.MANAGE_ROLES);
   const canBanMembers = hasPermissionBit(mySpacePerms, PermissionBits.BAN_MEMBERS);
+  const canManageStickers = hasPermissionBit(mySpacePerms, PermissionBits.CREATE_STICKERS)
+    || hasPermissionBit(mySpacePerms, PermissionBits.MANAGE_STICKERS);
   const requestedTab = isOpen ? modalData.tab : undefined;
 
   useEffect(() => {
     if (!isOpen) return;
     const allowed: Record<SpaceSettingsTab, boolean> = {
-      overview: true, soundboard: canManageSpace, members: true, roles: canManageRoles, bans: canBanMembers,
+      overview: true, soundboard: canManageSpace, stickers: canManageStickers, members: true, roles: canManageRoles, bans: canBanMembers,
     };
     const deepLinked = isSpaceSettingsTab(requestedTab) && allowed[requestedTab];
     setTab(deepLinked ? requestedTab : 'overview');
@@ -243,6 +245,7 @@ export function SpaceSettingsModal() {
       <div className="text-[10px] font-semibold text-txt-tertiary uppercase tracking-wider px-3 py-1">{t('spaces:settings.nav.general')}</div>
       <button onClick={() => handleTabClick('overview')} className={tabClass('overview')}>{t('spaces:settings.nav.tabs.overview')}</button>
       {canManageSpace && <button onClick={() => handleTabClick('soundboard')} className={tabClass('soundboard')}>{t('spaces:soundboardTab')}</button>}
+      {canManageStickers && <button onClick={() => handleTabClick('stickers')} className={tabClass('stickers')}>{t('spaces:stickers.title')}</button>}
       <div className="border-t border-white/[0.04] my-2 mx-2" />
       <div className="text-[10px] font-semibold text-txt-tertiary uppercase tracking-wider px-3 py-1">{t('spaces:settings.nav.management')}</div>
       <button onClick={() => handleTabClick('members')} className={tabClass('members')}>{t('common:labels.members')}</button>
@@ -273,6 +276,7 @@ export function SpaceSettingsModal() {
                   </OverviewPanel>
                 )}
                 {tab === 'soundboard' && canManageSpace && <SoundboardPanel spaceId={currentSpaceId} />}
+                {tab === 'stickers' && canManageStickers && <StickerPackPanel spaceId={currentSpaceId} />}
                 {tab === 'members' && <MembersPanel spaceId={currentSpaceId} />}
                 {tab === 'roles' && canManageRoles && <RolesPanel spaceId={currentSpaceId} />}
                 {tab === 'bans' && canBanMembers && <BansPanel spaceId={currentSpaceId} />}

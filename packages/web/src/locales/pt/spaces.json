@@ -362,6 +362,8 @@
       "manageChannels": "Gerenciar canais",
       "manageRoles": "Gerenciar cargos",
       "manageSpace": "Gerenciar espaço",
+      "createStickers": "Criar figurinhas do servidor",
+      "manageStickers": "Gerenciar figurinhas do servidor",
       "createInvite": "Criar convite",
       "kickMembers": "Expulsar membros",
       "banMembers": "Banir membros",
@@ -622,5 +624,12 @@
     "suppressRoles": "Suprimir menções a cargos",
     "massHeading": "Menções em grupo",
     "massNote": "@here alcança os mesmos membros que @everyone. Menções diretas a você sempre notificam."
+  },
+  "stickers": {
+    "title": "Figurinhas do espaço",
+    "description": "Um álbum de figurinhas compartilhado para este espaço, com até 50 figurinhas animadas ou estáticas.",
+    "empty": "Este espaço ainda não tem um álbum de figurinhas.",
+    "create": "Criar álbum do espaço",
+    "add": "Adicionar figurinha"
   }
 }

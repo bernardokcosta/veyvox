@@ -363,6 +363,8 @@
       "manageChannels": "Správa kanálů",
       "manageRoles": "Správa rolí",
       "manageSpace": "Správa prostoru",
+      "createStickers": "Vytvářet nálepky",
+      "manageStickers": "Spravovat nálepky",
       "createInvite": "Vytváření pozvánek",
       "kickMembers": "Vyhazování členů",
       "banMembers": "Banování členů",
@@ -633,5 +635,12 @@
     "suppressRoles": "Potlačit zmínky o rolích",
     "massHeading": "Skupinové zmínky",
     "massNote": "@here sahá ke stejným členům jako @everyone. Zmínky o tobě jménem tě upozorní vždy."
+  },
+  "stickers": {
+    "title": "Nálepky prostoru",
+    "description": "Jedno sdílené album nálepek pro tento prostor, až 50 animovaných či statických nálepek.",
+    "empty": "Tento prostor zatím nemá album nálepek.",
+    "create": "Vytvořit album prostoru",
+    "add": "Přidat nálepku"
   }
 }

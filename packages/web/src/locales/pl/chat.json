@@ -276,10 +276,10 @@
     "draft": "Szkic",
     "newVersion": "Nowa wersja",
     "deletePack": "Usuń pakiet",
-    "stickersCount_one": "{{count}} naklejka",
+    "stickersCount_one": "{{count}} naklejka.",
     "stickersCount_few": "{{count}} naklejki",
     "stickersCount_many": "{{count}} naklejek",
-    "stickersCount_other": "{{count}} naklejki",
+    "stickersCount_other": "{{count}} naklejki.",
     "noPacks": "Nie znaleziono pakietów naklejek",
     "viewPack": "Zobacz pakiet",
     "saveDraft": "Zapisz jako szkic",
@@ -298,7 +298,13 @@
     "reviewNotes": "Powód odrzucenia",
     "creator": "Twórca",
     "viewStickers": "Zobacz naklejki",
-    "pendingReviewHint": "W trakcie recenzji administratora, po zatwierdzeniu pojawi się w Odkrywaj"
+    "pendingReviewHint": "W trakcie recenzji administratora, po zatwierdzeniu pojawi się w Odkrywaj",
+    "invalidName": "Wybierz widoczną nazwę do 100 znaków.",
+    "favoritesTitle": "Ulubione naklejki",
+    "favorite": "Ulubiona naklejka",
+    "favorited": "Dodano naklejkę do ulubionych.",
+    "serverEmpty": "Ta przestrzeń nie ma jeszcze albumu naklejek.",
+    "serverEmptyHint": "Menedżer przestrzeni może go dodać w Ustawieniach przestrzeni → Naklejki przestrzeni."
   },
   "poke": {
     "action": "Szturchnij",

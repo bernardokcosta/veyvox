@@ -268,9 +268,9 @@
     "draft": "Brouillon",
     "newVersion": "Nouvelle version",
     "deletePack": "Supprimer le pack",
-    "stickersCount_one": "{{count}} autocollant",
+    "stickersCount_one": "{{count}} autocollant.",
     "stickersCount_many": "{{count}} autocollants",
-    "stickersCount_other": "{{count}} autocollants",
+    "stickersCount_other": "{{count}} autocollants.",
     "noPacks": "Aucun pack d’autocollants trouvé",
     "viewPack": "Voir le pack",
     "saveDraft": "Enregistrer le brouillon",
@@ -289,7 +289,13 @@
     "reviewNotes": "Motif du refus",
     "creator": "Créateur",
     "viewStickers": "Voir les autocollants",
-    "pendingReviewHint": "En cours de validation par l’administrateur. Apparaîtra dans Découvrir après approbation"
+    "pendingReviewHint": "En cours de validation par l’administrateur. Apparaîtra dans Découvrir après approbation",
+    "invalidName": "Choisissez un nom visible de 100 caractères maximum.",
+    "favoritesTitle": "Autocollants favoris",
+    "favorite": "Autocollant favori",
+    "favorited": "Autocollant ajouté aux favoris.",
+    "serverEmpty": "Cet espace n’a pas encore d’album d’autocollants.",
+    "serverEmptyHint": "Un gestionnaire de l’espace peut en ajouter un dans Paramètres de l’espace → Autocollants de l’espace."
   },
   "poke": {
     "action": "Faire un coucou",

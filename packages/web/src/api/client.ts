@@ -1,5 +1,5 @@
 import type { ChatCommandsResponse, CreateInteractionRequest, CreateInteractionResponse } from '@veyvox/shared';
-import type { PersonalSticker, StickerPackSummary, StickerPackDetail, StickerPackItem } from '@veyvox/shared/src/stickers';
+import type { PersonalSticker, StickerPackSummary, StickerPackDetail, StickerPackItem, FavoriteSticker } from '@veyvox/shared/src/stickers';
 import type { SoundboardDocument, SoundboardSettings, SoundboardSound } from '@veyvox/shared/src/soundboard';
 import type { GameIconUpload } from '@veyvox/shared/src/gameIcons';
 import type { JunoCommand, JunoSnapshot, JunoRankingPage } from '@veyvox/shared/src/juno';
@@ -439,6 +439,29 @@ export class VeyvoxApiClient {
     rename: (id: string, name: string) => Promise<PersonalSticker>;
     remove: (id: string) => Promise<{ success: boolean }>;
   };
+  stickerLibrary: {
+    get: () => Promise<{
+      privatePacks: StickerPackDetail[];
+      spaces: Array<{
+        spaceId: string;
+        name: string;
+        icon?: string | null;
+        avatarColor?: string | null;
+        canCreate: boolean;
+        canManage: boolean;
+        pack: StickerPackDetail | null;
+      }>;
+      favorites: FavoriteSticker[];
+    }>;
+    createPrivatePack: (data: { name: string; description?: string }) => Promise<StickerPackDetail>;
+    renamePrivatePack: (packId: string, name: string) => Promise<StickerPackDetail>;
+    deletePrivatePack: (packId: string) => Promise<{ success: boolean }>;
+    createSpacePack: (spaceId: string) => Promise<StickerPackDetail>;
+    addItem: (packId: string, data: { name: string; image: string }) => Promise<StickerPackItem>;
+    renameItem: (packId: string, itemId: string, name: string) => Promise<StickerPackItem>;
+    removeItem: (packId: string, itemId: string) => Promise<{ success: boolean }>;
+    addFavoriteToPack: (packId: string, data: { favoriteId: string; name?: string }) => Promise<StickerPackItem>;
+  };
 
   juno: {
     get: (channelId: string, supportsIntoxicated?: boolean) => Promise<JunoSnapshot>;
@@ -631,6 +654,18 @@ export class VeyvoxApiClient {
       collect: ({ id, token, name }) => request('POST', `/stickers/${encodeURIComponent(id)}/collect`, { token, name }),
       rename: (id, name) => request('PATCH', `/stickers/${encodeURIComponent(id)}`, { name }),
       remove: (id) => request('DELETE', `/stickers/${encodeURIComponent(id)}`),
+    };
+
+    this.stickerLibrary = {
+      get: () => request('GET', '/sticker-library'),
+      createPrivatePack: (data) => request('POST', '/private-sticker-packs', data),
+      renamePrivatePack: (packId, name) => request('PATCH', `/private-sticker-packs/${encodeURIComponent(packId)}`, { name }),
+      deletePrivatePack: (packId) => request('DELETE', `/private-sticker-packs/${encodeURIComponent(packId)}`),
+      createSpacePack: (spaceId) => request('POST', `/spaces/${encodeURIComponent(spaceId)}/sticker-pack`),
+      addItem: (packId, data) => request('POST', `/sticker-library/packs/${encodeURIComponent(packId)}/items`, data),
+      renameItem: (packId, itemId, name) => request('PATCH', `/sticker-library/packs/${encodeURIComponent(packId)}/items/${encodeURIComponent(itemId)}`, { name }),
+      removeItem: (packId, itemId) => request('DELETE', `/sticker-library/packs/${encodeURIComponent(packId)}/items/${encodeURIComponent(itemId)}`),
+      addFavoriteToPack: (packId, data) => request('POST', `/private-sticker-packs/${encodeURIComponent(packId)}/items/from-favorite`, data),
     };
 
     this.stickerStore = {

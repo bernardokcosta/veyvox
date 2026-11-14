@@ -131,7 +131,8 @@
       "desktop": "Počítač",
       "instance": "Instance",
       "bots": "Boti",
-      "developer": "Vývojář"
+      "developer": "Vývojář",
+      "stickers": "Nálepky"
     },
     "logOut": "Odhlásit",
     "backToMenu": "Zpět do nabídky nastavení"
@@ -550,5 +551,20 @@
       "description": "Zobrazovat vývojářské nástroje, třeba záložku Boti, v nastavení. Vypnutí je jen skrývá; tvoji boti běží dál.",
       "saveFailed": "Nastavení se nepodařilo uložit. Zkus to znovu."
     }
+  },
+  "stickers": {
+    "title": "Moje knihovna nálepek",
+    "description": "Soukromá alba nálepek, která vidíš jen ty. Každé album pojme až 30 animovaných či statických nálepek.",
+    "packs": "Soukromá alba",
+    "newPack": "Název nového alba",
+    "createPack": "Vytvořit album",
+    "favorites": "Oblíbené",
+    "favoritesHint": "Tvoje sbírka nálepek. Položku zařaď do otevřeného alba tlačítkem +.",
+    "noFavorites": "Zatím žádné oblíbené nálepky.",
+    "itemName": "Název nálepky",
+    "deletePack": "Smazat album",
+    "deletePackTitle": "Smazat \"{{name}}\"?",
+    "deletePackDescription": "Album se odebere. Odeslané nálepky zůstanou v chatu dostupné.",
+    "deletePackSuccess": "Album smazáno."
   }
 }

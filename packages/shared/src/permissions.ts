@@ -20,6 +20,8 @@ export const PermissionBits = {
   // rejects such a message (see shared/src/mentions.ts). Deliberately not in
   // DEFAULT_EVERYONE_PERMISSIONS: mass pings are granted per role.
   MENTION_EVERYONE:     1n << 15n,
+  CREATE_STICKERS:      1n << 29n,
+  MANAGE_STICKERS:      1n << 30n,
   CONNECT:              1n << 20n,
   SPEAK:                1n << 21n,
   MUTE_MEMBERS:         1n << 22n,

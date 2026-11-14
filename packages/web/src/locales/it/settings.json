@@ -131,7 +131,8 @@
       "desktop": "Desktop",
       "instance": "Istanza",
       "bots": "Bot",
-      "developer": "Sviluppatore"
+      "developer": "Sviluppatore",
+      "stickers": "Adesivi"
     },
     "logOut": "Esci",
     "backToMenu": "Torna al menu delle impostazioni"
@@ -549,5 +550,20 @@
       "description": "Mostra gli strumenti per sviluppatori, come la scheda Bot, nelle impostazioni. Disattivarla li nasconde soltanto; i tuoi bot continuano a funzionare.",
       "saveFailed": "Impossibile salvare l’impostazione. Riprova."
     }
+  },
+  "stickers": {
+    "title": "La mia libreria di adesivi",
+    "description": "Album privati visibili solo a te. Ogni album contiene fino a 30 adesivi animati o statici.",
+    "packs": "Album privati",
+    "newPack": "Nome del nuovo album",
+    "createPack": "Crea album",
+    "favorites": "Preferiti",
+    "favoritesHint": "La tua collezione di adesivi. Archivia un elemento nell’album aperto con +.",
+    "noFavorites": "Ancora nessun adesivo preferito.",
+    "itemName": "Nome dell’adesivo",
+    "deletePack": "Elimina album",
+    "deletePackTitle": "Eliminare \"{{name}}\"?",
+    "deletePackDescription": "L’album viene rimosso. Gli adesivi già inviati restano in chat.",
+    "deletePackSuccess": "Album eliminato."
   }
 }

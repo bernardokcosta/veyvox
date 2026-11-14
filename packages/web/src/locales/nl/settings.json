@@ -131,7 +131,8 @@
       "desktop": "Desktop",
       "instance": "Instantie",
       "bots": "Bots",
-      "developer": "Ontwikkelaar"
+      "developer": "Ontwikkelaar",
+      "stickers": "Stickers"
     },
     "logOut": "Uitloggen",
     "backToMenu": "Terug naar instellingenmenu"
@@ -548,5 +549,20 @@
       "description": "Toon ontwikkelaarshulpmiddelen, zoals het tabblad Bots, in instellingen. Uitzetten verbergt ze alleen; je bots blijven draaien.",
       "saveFailed": "Instelling opslaan mislukt. Probeer opnieuw."
     }
+  },
+  "stickers": {
+    "title": "Mijn stickerbibliotheek",
+    "description": "Privéalbums die alleen jij kunt zien. Elk album bevat maximaal 30 geanimeerde of statische stickers.",
+    "packs": "Privéalbums",
+    "newPack": "Naam van nieuw album",
+    "createPack": "Album maken",
+    "favorites": "Favorieten",
+    "favoritesHint": "Je stickercollectie. Archiveer een item met + in het open album.",
+    "noFavorites": "Nog geen favoriete stickers.",
+    "itemName": "Stickernaam",
+    "deletePack": "Album verwijderen",
+    "deletePackTitle": "\"{{name}}\" verwijderen?",
+    "deletePackDescription": "Het album wordt verwijderd. Al verstuurde stickers blijven in de chat.",
+    "deletePackSuccess": "Album verwijderd."
   }
 }

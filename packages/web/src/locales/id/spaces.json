@@ -361,6 +361,8 @@
       "manageChannels": "Kelola Kanal",
       "manageRoles": "Kelola Peran",
       "manageSpace": "Kelola Ruang",
+      "createStickers": "Buat stiker",
+      "manageStickers": "Kelola stiker",
       "createInvite": "Buat Undangan",
       "kickMembers": "Keluarkan Anggota",
       "banMembers": "Blokir Anggota",
@@ -611,5 +613,12 @@
     "suppressRoles": "Tekan sebutan peran",
     "massHeading": "Sebutan grup",
     "massNote": "@here menjangkau anggota yang sama dengan @everyone. Sebutan Anda berdasar nama selalu memberi tahu Anda."
+  },
+  "stickers": {
+    "title": "Stiker ruang",
+    "description": "Satu album stiker bersama untuk ruang ini, hingga 50 stiker animasi atau statis.",
+    "empty": "Ruang ini belum punya album stiker.",
+    "create": "Buat album ruang",
+    "add": "Tambah stiker"
   }
 }

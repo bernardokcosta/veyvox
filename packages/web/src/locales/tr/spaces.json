@@ -361,6 +361,8 @@
       "manageChannels": "Kanalları yönet",
       "manageRoles": "Rolleri yönet",
       "manageSpace": "Alanı yönet",
+      "createStickers": "Çıkartma oluştur",
+      "manageStickers": "Çıkartmaları yönet",
       "createInvite": "Davet oluştur",
       "kickMembers": "Üyeleri at",
       "banMembers": "Üyeleri yasakla",
@@ -611,5 +613,12 @@
     "suppressRoles": "Rol etiketlemelerini bastır",
     "massHeading": "Grup etiketlemeleri",
     "massNote": "@here, @everyone ile aynı üyelere ulaşır. Adınla etiketlenmen seni her zaman bilgilendirir."
+  },
+  "stickers": {
+    "title": "Alanın çıkartmaları",
+    "description": "Bu alan için tek bir ortak çıkartma albümü; en fazla 50 animasyonlu veya durağan çıkartma.",
+    "empty": "Bu alanın henüz çıkartma albümü yok.",
+    "create": "Alan albümü oluştur",
+    "add": "Çıkartma ekle"
   }
 }

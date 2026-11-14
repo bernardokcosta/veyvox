@@ -361,6 +361,8 @@
       "manageChannels": "Håndter kanaler",
       "manageRoles": "Håndter roller",
       "manageSpace": "Håndter rom",
+      "createStickers": "Opprett klistremerker",
+      "manageStickers": "Administrer klistremerker",
       "createInvite": "Opprett invitasjon",
       "kickMembers": "Spark ut medlemmer",
       "banMembers": "Utesteng medlemmer",
@@ -611,5 +613,12 @@
     "suppressRoles": "Undertrykk rolleomtaler",
     "massHeading": "Gruppeomtaler",
     "massNote": "@here når de samme medlemmene som @everyone. Omtaler av deg ved navn varsler deg alltid."
+  },
+  "stickers": {
+    "title": "Romellets klistremerker",
+    "description": "Ett delt klistremerkealbum for dette rommet, med opptil 50 animerte eller statiske klistremerker.",
+    "empty": "Dette rommet har ennå ikke noe klistremerkealbum.",
+    "create": "Opprett rommets album",
+    "add": "Legg til klistremerke"
   }
 }

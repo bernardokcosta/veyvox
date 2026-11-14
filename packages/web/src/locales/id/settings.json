@@ -131,7 +131,8 @@
       "desktop": "Desktop",
       "instance": "Instans",
       "bots": "Bot",
-      "developer": "Pengembang"
+      "developer": "Pengembang",
+      "stickers": "Stiker"
     },
     "logOut": "Keluar",
     "backToMenu": "Kembali ke menu pengaturan"
@@ -548,5 +549,20 @@
       "description": "Tampilkan alat pengembang, seperti tab Bot, di pengaturan. Mematikan hanya menyembunyikannya; bot Anda tetap berjalan.",
       "saveFailed": "Gagal menyimpan pengaturan. Coba lagi."
     }
+  },
+  "stickers": {
+    "title": "Pustaka stiker saya",
+    "description": "Album stiker pribadi yang hanya kamu lihat. Setiap album menampung hingga 30 stiker animasi atau statis.",
+    "packs": "Album pribadi",
+    "newPack": "Nama album baru",
+    "createPack": "Buat album",
+    "favorites": "Favorit",
+    "favoritesHint": "Koleksi stikermu. Arsipkan item ke album yang terbuka dengan +.",
+    "noFavorites": "Belum ada stiker favorit.",
+    "itemName": "Nama stiker",
+    "deletePack": "Hapus album",
+    "deletePackTitle": "Hapus \"{{name}}\"?",
+    "deletePackDescription": "Album dihapus. Stiker yang sudah terkirim tetap ada di chat.",
+    "deletePackSuccess": "Album dihapus."
   }
 }

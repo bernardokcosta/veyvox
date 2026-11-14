@@ -360,6 +360,8 @@
       "manageChannels": "管理频道",
       "manageRoles": "管理身份组",
       "manageSpace": "管理空间",
+      "createStickers": "创建贴纸",
+      "manageStickers": "管理贴纸",
       "createInvite": "创建邀请",
       "kickMembers": "踢出成员",
       "banMembers": "封禁成员",
@@ -600,5 +602,12 @@
     "suppressRoles": "屏蔽 @身份组 提醒",
     "massHeading": "群组提及",
     "massNote": "@here 与 @everyone 通知的成员相同。直接提及您的消息始终会通知您。"
+  },
+  "stickers": {
+    "title": "空间贴纸",
+    "description": "此空间的共享贴纸专辑一个，最多可容纳 50 个动态或静态贴纸。",
+    "empty": "此空间还没有贴纸专辑。",
+    "create": "创建空间专辑",
+    "add": "添加贴纸"
   }
 }

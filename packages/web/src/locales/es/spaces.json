@@ -362,6 +362,8 @@
       "manageChannels": "Gestionar canales",
       "manageRoles": "Gestionar roles",
       "manageSpace": "Gestionar espacio",
+      "createStickers": "Crear pegatinas",
+      "manageStickers": "Gestionar pegatinas",
       "createInvite": "Crear invitación",
       "kickMembers": "Expulsar miembros",
       "banMembers": "Bloquear miembros",
@@ -622,5 +624,12 @@
     "suppressRoles": "Suprimir menciones de roles",
     "massHeading": "Menciones de grupo",
     "massNote": "@here llega a los mismos miembros que @everyone. Las menciones directas a tu nombre siempre generan notificaciones."
+  },
+  "stickers": {
+    "title": "Pegatinas del espacio",
+    "description": "Un álbum compartido para este espacio, con hasta 50 pegatinas animadas o estáticas.",
+    "empty": "Este espacio aún no tiene álbum de pegatinas.",
+    "create": "Crear álbum del espacio",
+    "add": "Añadir pegatina"
   }
 }

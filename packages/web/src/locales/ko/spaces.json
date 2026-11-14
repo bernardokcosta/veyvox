@@ -360,6 +360,8 @@
       "manageChannels": "채널 관리",
       "manageRoles": "역할 관리",
       "manageSpace": "스페이스 관리",
+      "createStickers": "스티커 만들기",
+      "manageStickers": "스티커 관리",
       "createInvite": "초대 만들기",
       "kickMembers": "멤버 추방",
       "banMembers": "멤버 차단",
@@ -600,5 +602,12 @@
     "suppressRoles": "역할 언급 억제",
     "massHeading": "그룹 언급",
     "massNote": "@here는 @everyone과 같은 멤버에 도달합니다. 이름 언급은 항상 알립니다."
+  },
+  "stickers": {
+    "title": "스페이스 스티커",
+    "description": "이 스페이스를 위한 공유 스티커 앨범 하나로, 애니메이션 또는 정적 스티커를 최대 50개까지 담을 수 있습니다.",
+    "empty": "이 스페이스에는 아직 스티커 앨범이 없습니다.",
+    "create": "스페이스 앨범 만들기",
+    "add": "스티커 추가"
   }
 }

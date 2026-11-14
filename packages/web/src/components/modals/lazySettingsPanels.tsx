@@ -51,6 +51,7 @@ export const DesktopDownloadPanel = lazyPanel(() => import('./settingsPanels/Des
 export const InstancePanel = lazyPanel(() => import('./settingsPanels/InstancePanel'), (m) => m.InstancePanel);
 export const BotsPanel = lazyPanel(() => import('./settingsPanels/BotsPanel'), (m) => m.BotsPanel);
 export const DeveloperPanel = lazyPanel(() => import('./settingsPanels/DeveloperPanel'), (m) => m.DeveloperPanel);
+export const StickerLibraryPanel = lazyPanel(() => import('./settingsPanels/StickerLibraryPanel'), (m) => m.StickerLibraryPanel);
 
 export const GeneralPanel = lazyPanel(() => import('./instanceSettingsPanels/GeneralPanel'), (m) => m.GeneralPanel);
 export const RegistrationPanel = lazyPanel(() => import('./instanceSettingsPanels/RegistrationPanel'), (m) => m.RegistrationPanel);
@@ -64,6 +65,7 @@ export const MembersPanel = lazyPanel(() => import('./spaceSettingsPanels/Member
 export const RolesPanel = lazyPanel(() => import('./spaceSettingsPanels/RolesPanel'), (m) => m.RolesPanel);
 export const BansPanel = lazyPanel(() => import('./spaceSettingsPanels/BansPanel'), (m) => m.BansPanel);
 export const SoundboardPanel = lazyPanel(() => import('./spaceSettingsPanels/SoundboardPanel'), (m) => m.SoundboardPanel);
+export const StickerPackPanel = lazyPanel(() => import('./spaceSettingsPanels/StickerPackPanel'), (m) => m.StickerPackPanel);
 export const AfkPanel = lazyPanel(() => import('./spaceSettingsPanels/AfkPanel'), (m) => m.AfkPanel);
 
 /**

@@ -361,6 +361,8 @@
       "manageChannels": "Kanäle verwalten",
       "manageRoles": "Rollen verwalten",
       "manageSpace": "Space verwalten",
+      "createStickers": "Server-Sticker erstellen",
+      "manageStickers": "Server-Sticker verwalten",
       "createInvite": "Einladungen erstellen",
       "kickMembers": "Mitglieder entfernen",
       "banMembers": "Mitglieder sperren",
@@ -611,5 +613,12 @@
     "suppressRoles": "Rollenerwähnungen unterdrücken",
     "massHeading": "Gruppenerwähnungen",
     "massNote": "@here erreicht dieselben Mitglieder wie @everyone. Erwähnungen von dir mit Namen benachrichtigen dich immer."
+  },
+  "stickers": {
+    "title": "Space-Sticker",
+    "description": "Ein geteiltes Sticker-Album für diesen Space, mit bis zu 50 animierten oder statischen Stickern.",
+    "empty": "Dieser Space hat noch kein Sticker-Album.",
+    "create": "Space-Album erstellen",
+    "add": "Sticker hinzufügen"
   }
 }

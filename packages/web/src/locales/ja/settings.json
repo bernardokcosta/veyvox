@@ -131,7 +131,8 @@
       "desktop": "デスクトップ",
       "instance": "インスタンス",
       "bots": "ボット",
-      "developer": "開発者"
+      "developer": "開発者",
+      "stickers": "スタンプ"
     },
     "logOut": "ログアウト",
     "backToMenu": "設定メニューに戻る"
@@ -547,5 +548,20 @@
       "description": "ボットタブなど開発者ツールを表示。オフは非表示のみ; ボットは継続動作。",
       "saveFailed": "設定を保存できません。再試行。"
     }
+  },
+  "stickers": {
+    "title": "マイスタンプライブラリ",
+    "description": "あなただけが見ることができるプライベートアルバム。各アルバムにはアニメーションまたは静止スタンプを最大30個保存できます。",
+    "packs": "プライベートアルバム",
+    "newPack": "新しいアルバム名",
+    "createPack": "アルバムを作成",
+    "favorites": "お気に入り",
+    "favoritesHint": "あなたのスタンプコレクション。+ で開いているアルバムに登録できます。",
+    "noFavorites": "お気に入りスタンプはまだありません。",
+    "itemName": "スタンプ名",
+    "deletePack": "アルバムを削除",
+    "deletePackTitle": "\"{{name}}\"を削除しますか？",
+    "deletePackDescription": "アルバムは削除されます。送信済みのスタンプはチャットに残ります。",
+    "deletePackSuccess": "アルバムを削除しました。"
   }
 }

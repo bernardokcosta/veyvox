@@ -131,7 +131,8 @@
       "desktop": "Työpöytä",
       "instance": "Instanssi",
       "bots": "Botit",
-      "developer": "Kehittäjä"
+      "developer": "Kehittäjä",
+      "stickers": "Tarrat"
     },
     "logOut": "Kirjaudu ulos",
     "backToMenu": "Takaisin asetusvalikkoon"
@@ -548,5 +549,20 @@
       "description": "Näytä kehitystyökalut, kuten Botit-välilehti, asetuksissa. Pois päältä piilottaa ne vain; bottisi toimivat edelleen.",
       "saveFailed": "Asetuksen tallennus epäonnistui. Yritä uudelleen."
     }
+  },
+  "stickers": {
+    "title": "Oma tarrakirjastoni",
+    "description": "Yksityisiä tarra-albumeja, jotka näet vain sinä. Kuhunkin albumiin mahtuu enintään 30 animoitua tai staattista tarraa.",
+    "packs": "Yksityiset albumit",
+    "newPack": "Uuden albumin nimi",
+    "createPack": "Luo albumi",
+    "favorites": "Suosikit",
+    "favoritesHint": "Tarrakokoelmasi. Arkistoi kohde avoimeen albumiin +-painikkeella.",
+    "noFavorites": "Ei vielä suosikkitarroja.",
+    "itemName": "Tarran nimi",
+    "deletePack": "Poista albumi",
+    "deletePackTitle": "Poistetaanko \"{{name}}\"?",
+    "deletePackDescription": "Albumi poistetaan. Jo lähetetyt tarrat säilyvät chatissa.",
+    "deletePackSuccess": "Albumi poistettu."
   }
 }

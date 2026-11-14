@@ -260,8 +260,8 @@
     "draft": "Draf",
     "newVersion": "Versi Baru",
     "deletePack": "Hapus Paket",
-    "stickersCount_one": "{{count}} stiker",
-    "stickersCount_other": "{{count}} stiker",
+    "stickersCount_one": "{{count}} stiker.",
+    "stickersCount_other": "{{count}} stiker.",
     "noPacks": "Tidak ada paket stiker ditemukan",
     "viewPack": "Lihat Paket",
     "saveDraft": "Simpan sebagai Draf",
@@ -280,7 +280,13 @@
     "reviewNotes": "Alasan penolakan",
     "creator": "Pembuat",
     "viewStickers": "Lihat stiker",
-    "pendingReviewHint": "Dalam tinjauan admin, akan tercantum di Jelajahi setelah disetujui"
+    "pendingReviewHint": "Dalam tinjauan admin, akan tercantum di Jelajahi setelah disetujui",
+    "invalidName": "Pilih nama yang terlihat hingga 100 karakter.",
+    "favoritesTitle": "Stiker favorit",
+    "favorite": "Stiker favorit",
+    "favorited": "Stiker ditambahkan ke favorit.",
+    "serverEmpty": "Ruang ini belum punya album stiker.",
+    "serverEmptyHint": "Pengelola ruang dapat menambahkannya di Pengaturan Ruang → Stiker ruang."
   },
   "poke": {
     "action": "Colek",

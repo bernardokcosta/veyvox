@@ -361,6 +361,8 @@
       "manageChannels": "Kanalen beheren",
       "manageRoles": "Rollen beheren",
       "manageSpace": "Ruimte beheren",
+      "createStickers": "Stickers maken",
+      "manageStickers": "Stickers beheren",
       "createInvite": "Uitnodiging aanmaken",
       "kickMembers": "Leden verwijderen",
       "banMembers": "Leden verbannen",
@@ -611,5 +613,12 @@
     "suppressRoles": "Rol-vermeldingen onderdrukken",
     "massHeading": "Groepsvermeldingen",
     "massNote": "@here bereikt dezelfde leden als @everyone. Vermeldingen van jou bij naam melden je altijd."
+  },
+  "stickers": {
+    "title": "Stickers van de ruimte",
+    "description": "Eén gedeeld stickeralbum voor deze ruimte, met maximaal 50 geanimeerde of statische stickers.",
+    "empty": "Deze ruimte heeft nog geen stickeralbum.",
+    "create": "Ruimtealbum maken",
+    "add": "Sticker toevoegen"
   }
 }

@@ -607,6 +607,9 @@ export const stickerPacks = sqliteTable('sticker_packs', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
   description: text('description'),
+  /** Who the pack belongs to: a member's private album ('user'), or one space's album ('space'). Store packs predate scopes and read 'store'. */
+  scopeType: text('scope_type', { enum: ['user', 'space', 'store'] }).notNull().default('store'),
+  spaceId: text('space_id').references(() => spaces.id, { onDelete: 'cascade' }),
   creatorId: text('creator_id').references(() => users.id, { onDelete: 'set null' }),
   creatorName: text('creator_name'),
   coverAssetId: text('cover_asset_id').references(() => stickerAssets.id, { onDelete: 'set null' }),
@@ -620,6 +623,8 @@ export const stickerPacks = sqliteTable('sticker_packs', {
 }, (table) => ({
   statusIdx: index('idx_sticker_packs_status').on(table.status),
   creatorIdx: index('idx_sticker_packs_creator').on(table.creatorId),
+  scopeIdx: index('idx_sticker_packs_scope').on(table.scopeType, table.spaceId, table.creatorId),
+  spacePackUnique: uniqueIndex('idx_sticker_packs_one_space_pack').on(table.spaceId).where(sql`${table.scopeType} = 'space'`),
 }));
 
 export const stickerPackVersions = sqliteTable('sticker_pack_versions', {

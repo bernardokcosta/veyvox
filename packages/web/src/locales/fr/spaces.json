@@ -362,6 +362,8 @@
       "manageChannels": "Gérer les canaux",
       "manageRoles": "Gérer les rôles",
       "manageSpace": "Gérer l’espace",
+      "createStickers": "Créer des autocollants",
+      "manageStickers": "Gérer les autocollants",
       "createInvite": "Créer une invitation",
       "kickMembers": "Exclure des membres",
       "banMembers": "Bannir des membres",
@@ -622,5 +624,12 @@
     "suppressRoles": "Ignorer les mentions de rôles",
     "massHeading": "Mentions de groupe",
     "massNote": "@here atteint les mêmes membres que @everyone. Les mentions directes de ton nom déclenchent toujours une notification."
+  },
+  "stickers": {
+    "title": "Autocollants de l’espace",
+    "description": "Un album partagé pour cet espace, avec jusqu’à 50 autocollants animés ou statiques.",
+    "empty": "Cet espace n’a pas encore d’album d’autocollants.",
+    "create": "Créer l’album de l’espace",
+    "add": "Ajouter un autocollant"
   }
 }

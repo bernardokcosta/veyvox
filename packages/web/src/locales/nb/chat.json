@@ -260,8 +260,8 @@
     "draft": "Utkast",
     "newVersion": "Ny versjon",
     "deletePack": "Slett pakke",
-    "stickersCount_one": "{{count}} klistremerke",
-    "stickersCount_other": "{{count}} klistremerker",
+    "stickersCount_one": "{{count}} klistremerke.",
+    "stickersCount_other": "{{count}} klistremerker.",
     "noPacks": "Ingen klistremerkepakker funnet",
     "viewPack": "Se pakke",
     "saveDraft": "Lagre som utkast",
@@ -280,7 +280,13 @@
     "reviewNotes": "Avvisningsårsak",
     "creator": "Skaper",
     "viewStickers": "Se klistremerker",
-    "pendingReviewHint": "Hos administrator til gjennomgang; vises i Utforsk etter godkjenning"
+    "pendingReviewHint": "Hos administrator til gjennomgang; vises i Utforsk etter godkjenning",
+    "invalidName": "Velg et synlig navn på opptil 100 tegn.",
+    "favoritesTitle": "Favorittklistremerker",
+    "favorite": "Favorittklistremerke",
+    "favorited": "Klistremerke lagt til i favoritter.",
+    "serverEmpty": "Dette rommet har ennå ikke noe klistremerkealbum.",
+    "serverEmptyHint": "En romadministrator kan legge til et under Rominnstillinger → Rommets klistremerker."
   },
   "poke": {
     "action": "Dult",

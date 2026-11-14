@@ -131,7 +131,8 @@
       "desktop": "Komputer",
       "instance": "Instancja",
       "bots": "Boty",
-      "developer": "Deweloper"
+      "developer": "Deweloper",
+      "stickers": "Naklejki"
     },
     "logOut": "Wyloguj",
     "backToMenu": "Wróć do menu ustawień"
@@ -550,5 +551,20 @@
       "description": "Pokazuj narzędzia deweloperskie, np. zakładkę Boty, w ustawieniach. Wyłączenie tylko je chowa; Twoje boty działają dalej.",
       "saveFailed": "Nie udało się zapisać ustawienia. Spróbuj ponownie."
     }
+  },
+  "stickers": {
+    "title": "Moja biblioteka naklejek",
+    "description": "Prywatne albumy widoczne tylko dla ciebie. Każdy album mieści do 30 animowanych lub statycznych naklejek.",
+    "packs": "Prywatne albumy",
+    "newPack": "Nazwa nowego albumu",
+    "createPack": "Utwórz album",
+    "favorites": "Ulubione",
+    "favoritesHint": "Twoja kolekcja naklejek. Zarchiwizuj wpis do otwartego albumu przyciskiem +.",
+    "noFavorites": "Brak ulubionych naklejek.",
+    "itemName": "Nazwa naklejki",
+    "deletePack": "Usuń album",
+    "deletePackTitle": "Usunąć \"{{name}}\"?",
+    "deletePackDescription": "Album zostanie usunięty. Wysłane naklejki pozostaną na czacie.",
+    "deletePackSuccess": "Usunięto album."
   }
 }
