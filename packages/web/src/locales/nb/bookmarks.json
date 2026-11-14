@@ -1,0 +1,31 @@
+{
+  "message": {
+    "add": "Bokmerke",
+    "remove": "Fjern bokmerke"
+  },
+  "menu": {
+    "add": "Bokmerk melding",
+    "remove": "Fjern bokmerke"
+  },
+  "toast": {
+    "addFailed": "Bokmerket kunne ikke lagres: {{reason}}",
+    "removeFailed": "Bokmerket kunne ikke fjernes: {{reason}}"
+  },
+  "title": "Bokmerker",
+  "list": {
+    "loading": "Laster inn…",
+    "empty": "Ingen bokmerker ennå",
+    "emptyHint": "Bokmerk en melding fra handlingslinjen eller menyen for å finne den her.",
+    "showMore": "Vis mer",
+    "open": "Åpne meldingen fra {{name}}",
+    "remove": "Fjern bokmerke"
+  },
+  "status": {
+    "edited": "Den opprinnelige meldingen ble redigert. Dette er den lagrede kopien.",
+    "deleted": "Den opprinnelige meldingen ble slettet. Dette er den lagrede kopien.",
+    "unavailable": "Den opprinnelige meldingen er ikke lenger tilgjengelig for deg. Dette er den lagrede kopien."
+  },
+  "attachment": {
+    "gone": "fil slettet"
+  }
+}

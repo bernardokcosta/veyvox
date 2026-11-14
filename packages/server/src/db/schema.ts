@@ -673,3 +673,55 @@ export const gameIcons = sqliteTable('game_icons', {
   iconId: text('icon_id').notNull().references(() => gameIconAssets.id),
   createdAt: integer('created_at').notNull(),
 }, (table) => ({ pk: primaryKey({ columns: [table.userId, table.iconId] }) }));
+
+// Personal bookmarks: a frozen copy of a message plus the ids needed to open
+// it. Everything lives on the instance that serves the message.
+export const messageBookmarks = sqliteTable('message_bookmarks', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  kind: text('kind', { enum: ['channel', 'dm'] }).notNull(),
+  messageId: text('message_id').notNull(),
+  channelId: text('channel_id').notNull(),
+  spaceId: text('space_id'),
+  content: text('content'),
+  authorId: text('author_id').notNull(),
+  authorName: text('author_name').notNull(),
+  spaceName: text('space_name'),
+  channelName: text('channel_name'),
+  messageCreatedAt: integer('message_created_at').notNull(),
+  createdAt: integer('created_at').notNull(),
+}, (table) => ({
+  // One bookmark per message per user: a second save of the same message is the same bookmark.
+  uniqueMessage: uniqueIndex('idx_message_bookmarks_user_message').on(table.userId, table.kind, table.messageId),
+  // The list: newest first, keyset-paged on (created_at, id), so a read touches the index only.
+  listIdx: index('idx_message_bookmarks_user_created').on(table.userId, sql`created_at DESC`, sql`id DESC`),
+  // "Which messages of this channel are bookmarked": bounded by the channel, not by the user's total.
+  channelIdx: index('idx_message_bookmarks_user_channel').on(table.userId, table.kind, table.channelId),
+}));
+
+/**
+ * The attachments of a bookmarked message. `source_*` name the original's files,
+ * which belong to the original message and may no longer exist. `filename` and
+ * `thumbnail_filename` are the bookmark's own copy: NULL while `copy_status` is
+ * 'reference' (files are not copied yet), set when a copy exists. Only the own
+ * copy is ever deleted with a bookmark.
+ */
+export const bookmarkAttachments = sqliteTable('bookmark_attachments', {
+  id: text('id').primaryKey(),
+  bookmarkId: text('bookmark_id').notNull().references(() => messageBookmarks.id, { onDelete: 'cascade' }),
+  position: integer('position').notNull(),
+  originalName: text('original_name').notNull(),
+  mimetype: text('mimetype').notNull(),
+  size: integer('size').notNull(),
+  width: integer('width'),
+  height: integer('height'),
+  duration: real('duration'),
+  playable: integer('playable', { mode: 'boolean' }),
+  sourceFilename: text('source_filename').notNull(),
+  sourceThumbnailFilename: text('source_thumbnail_filename'),
+  filename: text('filename'),
+  thumbnailFilename: text('thumbnail_filename'),
+  copyStatus: text('copy_status', { enum: ['reference', 'copied', 'unavailable'] }).notNull().default('reference'),
+}, (table) => ({
+  bookmarkIdx: index('idx_bookmark_attachments_bookmark_id').on(table.bookmarkId),
+}));

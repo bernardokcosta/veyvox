@@ -1,0 +1,31 @@
+{
+  "message": {
+    "add": "Favoritar",
+    "remove": "Remover favorito"
+  },
+  "menu": {
+    "add": "Favoritar mensagem",
+    "remove": "Remover favorito"
+  },
+  "toast": {
+    "addFailed": "Não foi possível salvar o favorito: {{reason}}",
+    "removeFailed": "Não foi possível remover o favorito: {{reason}}"
+  },
+  "title": "Favoritos",
+  "list": {
+    "loading": "Carregando…",
+    "empty": "Nenhum favorito ainda",
+    "emptyHint": "Favorite uma mensagem pela barra de ações ou pelo menu para encontrá-la aqui.",
+    "showMore": "Mostrar mais",
+    "open": "Abrir a mensagem de {{name}}",
+    "remove": "Remover favorito"
+  },
+  "status": {
+    "edited": "A mensagem original foi editada. Esta é a cópia salva.",
+    "deleted": "A mensagem original foi excluída. Esta é a cópia salva.",
+    "unavailable": "A mensagem original não está mais disponível para você. Esta é a cópia salva."
+  },
+  "attachment": {
+    "gone": "arquivo excluído"
+  }
+}

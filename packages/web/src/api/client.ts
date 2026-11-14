@@ -85,6 +85,7 @@ import type {
   CreateBotTokenResponse,
   BotSpacesResponse,
 } from '@veyvox/shared';
+import type { Bookmark, BookmarkKind, BookmarkPage } from '@veyvox/shared/src/bookmarks';
 import { MESSAGE_PAGING_AFTER, MESSAGE_PAGING_HEADER } from '@veyvox/shared';
 import { recordDiagnostic } from '../utils/diagnostics';
 import { diagnosticError } from '@veyvox/shared/src/diagnostics';
@@ -467,6 +468,12 @@ export class VeyvoxApiClient {
   gameIcons: {
     upload: (data: { image: string }) => Promise<GameIconUpload>;
   };
+  bookmarks: {
+    list: (params?: { cursor?: string; limit?: number }) => Promise<BookmarkPage>;
+    keys: (kind: BookmarkKind, channelId: string) => Promise<string[]>;
+    add: (kind: BookmarkKind, messageId: string) => Promise<Bookmark>;
+    remove: (kind: BookmarkKind, messageId: string) => Promise<{ success: boolean }>;
+  };
 
   constructor(baseUrl: string, getToken: () => string | null, onUnauthorized?: () => void) {
     let sessionGeneration = 0;
@@ -647,6 +654,22 @@ export class VeyvoxApiClient {
 
     this.gameIcons = {
       upload: (data) => request('POST', '/game-icons', data),
+    };
+
+    this.bookmarks = {
+      list: (params = {}) => {
+        const query = new URLSearchParams();
+        if (params.cursor) query.set('cursor', params.cursor);
+        if (params.limit !== undefined) query.set('limit', String(params.limit));
+        const suffix = query.size > 0 ? `?${query}` : '';
+        return request<BookmarkPage>('GET', `/bookmarks${suffix}`);
+      },
+      keys: (kind, channelId) =>
+        request<string[]>('GET', `/bookmarks/keys?kind=${kind}&channelId=${encodeURIComponent(channelId)}`),
+      add: (kind, messageId) =>
+        request<Bookmark>('PUT', `/bookmarks/${kind}/${encodeURIComponent(messageId)}`),
+      remove: (kind, messageId) =>
+        request<{ success: boolean }>('DELETE', `/bookmarks/${kind}/${encodeURIComponent(messageId)}`),
     };
 
     this.auth = {

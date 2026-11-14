@@ -22,6 +22,7 @@ import { MobileVoiceFullScreen } from './MobileVoiceFullScreen';
 import { MobileMembersScreen } from './MobileMembersScreen';
 import { MobileGroupDmInfo } from './MobileGroupDmInfo';
 import { FriendsPage } from '../chat/FriendsPage';
+import { MobileBookmarksScreen } from '../bookmarks/MobileBookmarksScreen';
 import { UserProfileModal } from '../modals/UserProfileModal';
 import {
   GeneralPanel,
@@ -36,6 +37,7 @@ import {
 export const mobileScreenMap: Readonly<Record<string, (params?: Record<string, string>) => React.ReactNode>> = {
   'channel-chat': (params) => <MobileChatScreen params={params} />,
   'friends': () => <FriendsPage mobile />,
+  'bookmarks': () => <MobileBookmarksScreen />,
   'settings': () => <MobileSettingsScreen />,
   'settings-account': () => <MobileSettingsScreen initialPanel="account" />,
   'settings-appearance': () => <MobileSettingsScreen initialPanel="appearance" />,

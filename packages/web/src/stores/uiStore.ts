@@ -23,6 +23,7 @@ type ModalType =
   | 'userProfile'
   | 'memberRoles'
   | 'games'
+  | 'bookmarks'
   | null;
 
 /**

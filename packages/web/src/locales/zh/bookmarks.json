@@ -1,0 +1,31 @@
+{
+  "message": {
+    "add": "收藏",
+    "remove": "取消收藏"
+  },
+  "menu": {
+    "add": "收藏消息",
+    "remove": "取消收藏"
+  },
+  "toast": {
+    "addFailed": "无法保存收藏：{{reason}}",
+    "removeFailed": "无法取消收藏：{{reason}}"
+  },
+  "title": "收藏",
+  "list": {
+    "loading": "正在加载…",
+    "empty": "还没有收藏",
+    "emptyHint": "在消息的操作栏或菜单中收藏，就能在这里找到它。",
+    "showMore": "显示更多",
+    "open": "打开 {{name}} 的消息",
+    "remove": "取消收藏"
+  },
+  "status": {
+    "edited": "原消息已被编辑。这是保存的副本。",
+    "deleted": "原消息已被删除。这是保存的副本。",
+    "unavailable": "你已无法查看原消息。这是保存的副本。"
+  },
+  "attachment": {
+    "gone": "文件已删除"
+  }
+}

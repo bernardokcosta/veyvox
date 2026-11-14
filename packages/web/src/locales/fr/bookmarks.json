@@ -1,0 +1,31 @@
+{
+  "message": {
+    "add": "Enregistrer",
+    "remove": "Retirer le signet"
+  },
+  "menu": {
+    "add": "Enregistrer le message",
+    "remove": "Retirer le signet"
+  },
+  "toast": {
+    "addFailed": "Impossible d’enregistrer le signet : {{reason}}",
+    "removeFailed": "Impossible de retirer le signet : {{reason}}"
+  },
+  "title": "Signets",
+  "list": {
+    "loading": "Chargement…",
+    "empty": "Aucun signet pour le moment",
+    "emptyHint": "Enregistrez un message depuis sa barre d’actions ou son menu pour le retrouver ici.",
+    "showMore": "Afficher plus",
+    "open": "Ouvrir le message de {{name}}",
+    "remove": "Retirer le signet"
+  },
+  "status": {
+    "edited": "Le message d’origine a été modifié. Ceci est la copie enregistrée.",
+    "deleted": "Le message d’origine a été supprimé. Ceci est la copie enregistrée.",
+    "unavailable": "Le message d’origine ne vous est plus accessible. Ceci est la copie enregistrée."
+  },
+  "attachment": {
+    "gone": "fichier supprimé"
+  }
+}

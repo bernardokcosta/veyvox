@@ -765,6 +765,12 @@
   }
 }
 
+/* The bookmark mark fills in rather than switching. */
+.bookmark-fill { transition: fill-opacity 120ms ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .bookmark-fill { transition: none; }
+}
+
 /* ── Electron window drag regions ── */
 .titlebar-drag { -webkit-app-region: drag; }
 .titlebar-no-drag { -webkit-app-region: no-drag; }

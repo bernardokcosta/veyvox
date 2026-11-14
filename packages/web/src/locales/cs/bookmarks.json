@@ -1,0 +1,31 @@
+{
+  "message": {
+    "add": "Přidat záložku",
+    "remove": "Odebrat záložku"
+  },
+  "menu": {
+    "add": "Přidat záložku zprávy",
+    "remove": "Odebrat záložku"
+  },
+  "toast": {
+    "addFailed": "Záložku se nepodařilo uložit: {{reason}}",
+    "removeFailed": "Záložku se nepodařilo odebrat: {{reason}}"
+  },
+  "title": "Záložky",
+  "list": {
+    "loading": "Načítání…",
+    "empty": "Zatím žádné záložky",
+    "emptyHint": "Přidej zprávu do záložek pomocí lišty nebo nabídky a najdeš ji tady.",
+    "showMore": "Zobrazit více",
+    "open": "Otevřít zprávu od {{name}}",
+    "remove": "Odebrat záložku"
+  },
+  "status": {
+    "edited": "Původní zpráva byla upravena. Toto je uložená kopie.",
+    "deleted": "Původní zpráva byla smazána. Toto je uložená kopie.",
+    "unavailable": "Původní zpráva už pro tebe není dostupná. Toto je uložená kopie."
+  },
+  "attachment": {
+    "gone": "soubor smazán"
+  }
+}

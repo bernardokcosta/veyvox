@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { eq, or, and, inArray, isNotNull } from 'drizzle-orm';
 import { getDb, schema } from '../db/index.js';
 import { deleteAllManagedBotRoles } from './botRoles.js';
+import { purgeUserBookmarks } from './bookmarks.js';
 
 export interface DeletionBroadcastTargets {
   /** Space IDs the user is a member of (for member_left broadcasts) */
@@ -160,6 +161,10 @@ export function tombstoneUser(uid: string, options?: TombstoneOptions): string[]
       tx.delete(schema.dmReactions).where(eq(schema.dmReactions.userId, uid)).run();
     }
     tx.delete(schema.spaceFolders).where(eq(schema.spaceFolders.userId, uid)).run();
+
+    // Personal bookmarks: a tombstone keeps the users row, so the cascade never
+    // fires. Their rows go here; any files they owned are deleted after commit.
+    filesToDelete.push(...purgeUserBookmarks(tx, uid));
 
     // A bot's access tokens (hash only) go with the account too.
     tx.delete(schema.botTokens)

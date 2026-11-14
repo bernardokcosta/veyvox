@@ -1,0 +1,31 @@
+{
+  "message": {
+    "add": "Simpan",
+    "remove": "Hapus markah"
+  },
+  "menu": {
+    "add": "Simpan pesan",
+    "remove": "Hapus markah"
+  },
+  "toast": {
+    "addFailed": "Markah tidak dapat disimpan: {{reason}}",
+    "removeFailed": "Markah tidak dapat dihapus: {{reason}}"
+  },
+  "title": "Markah",
+  "list": {
+    "loading": "Memuat…",
+    "empty": "Belum ada markah",
+    "emptyHint": "Simpan pesan dari bilah tindakan atau menunya agar mudah ditemukan di sini.",
+    "showMore": "Tampilkan lebih banyak",
+    "open": "Buka pesan dari {{name}}",
+    "remove": "Hapus markah"
+  },
+  "status": {
+    "edited": "Pesan asli telah diedit. Ini salinan yang tersimpan.",
+    "deleted": "Pesan asli telah dihapus. Ini salinan yang tersimpan.",
+    "unavailable": "Pesan asli tidak lagi tersedia untukmu. Ini salinan yang tersimpan."
+  },
+  "attachment": {
+    "gone": "berkas dihapus"
+  }
+}

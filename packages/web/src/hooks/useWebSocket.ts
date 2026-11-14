@@ -23,6 +23,7 @@ import { useActivityStore } from '../stores/activityStore';
 import { useDiscoverStore } from '../stores/discoverStore';
 import { useUIStore } from '../stores/uiStore';
 import { useNotificationSettingsStore } from '../stores/notificationSettingsStore';
+import { useBookmarkStore } from '../stores/bookmarkStore';
 import { notePendingReady } from '../stores/pendingMessageRehydrate';
 import { recordDiagnostic } from '../utils/diagnostics';
 import { broadcastVoiceStatus, broadcastDeafenViaLiveKit, joinVoiceChannel } from '../utils/voice';
@@ -113,6 +114,8 @@ function handleEvent(event: ServerEvent, readyAlreadyDelivered: boolean, current
       if (!readyAlreadyDelivered) {
         useChatStore.setState({ messages: new Map(), hasMore: new Map() });
         if (chat.currentChannelId) void chat.loadMessages(chat.currentChannelId, true);
+        // Bookmarks pushed while no socket was open are gone from the store.
+        useBookmarkStore.getState().resync();
       }
       useUnreadCountStore.getState().hydrate(event.unreadCounts);
       if (event.readStates) chat.setReadStates(event.readStates, useSpaceStore.getState().channelLastMessageIds);
@@ -302,6 +305,8 @@ function handleEvent(event: ServerEvent, readyAlreadyDelivered: boolean, current
     case 'category_deleted': spaces.removeCategory(event.categoryId, event.spaceId); break;
     case 'channel_layout_updated': spaces.applyChannelLayout(event.spaceId, event.channels, event.categories); break;
     case 'notification_settings_updated': useNotificationSettingsStore.getState().apply(event.setting); break;
+    case 'bookmark_added': useBookmarkStore.getState().applyAdded(event.bookmark); break;
+    case 'bookmark_removed': useBookmarkStore.getState().applyRemoved(event.kind, event.channelId, event.messageId); break;
     case 'space_layout_updated':
       if ((event.updatedAt ?? 0) >= spaces._layoutUpdatedAt) useSpaceStore.setState({ spaceLayout: event.layout, folders: event.folders, _layoutUpdatedAt: event.updatedAt ?? 0 }); break;
     case 'join_request_accepted': spaces.addSpaceFromReady(event.space); break;

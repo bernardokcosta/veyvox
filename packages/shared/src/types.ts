@@ -591,6 +591,14 @@ export type ClientEvent =
 
 // Server → Client Events
 export type ServerEvent =
+  // A bookmark of the caller's own list was added from another of their
+  // sessions. Sent to the user's own sockets only, never relayed. `bookmark` is
+  // the same object `PUT /api/bookmarks/:kind/:messageId` returns.
+  | { type: 'bookmark_added'; bookmark: import('./bookmarks.js').Bookmark }
+  // A bookmark of this instance was removed from the user's list. Idempotent
+  // like the DELETE route: `channelId` lets the client clear the state of an
+  // open conversation without reading the message again.
+  | { type: 'bookmark_removed'; kind: import('./bookmarks.js').BookmarkKind; channelId: string; messageId: string }
   | { type: 'soundboard_updated'; spaceId: string }
   | { type: 'soundboard_play'; channelId: string; spaceId: string; sound: import('./soundboard.js').SoundboardSound }
   | { type: 'channel_poke'; message: MessageWithUser }

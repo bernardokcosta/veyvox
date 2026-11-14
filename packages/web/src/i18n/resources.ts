@@ -8,6 +8,7 @@
  * Explicit strict coverage measures completeness separately from validity.
  */
 import admin from '../locales/en/admin.json';
+import bookmarks from '../locales/en/bookmarks.json';
 import auth from '../locales/en/auth.json';
 import chat from '../locales/en/chat.json';
 import common from '../locales/en/common.json';
@@ -28,6 +29,7 @@ export const resources = {
   en: {
     admin,
     auth,
+    bookmarks,
     chat,
     common,
     desktop,

@@ -24,6 +24,7 @@ import { AddDmMemberModal } from '../modals/AddDmMemberModal';
 import { GroupDmSettings } from '../modals/GroupDmSettings';
 import { UserProfileModal } from '../modals/UserProfileModal';
 import { MemberRolesModal } from '../modals/MemberRolesModal';
+import { BookmarksModal } from '../modals/BookmarksModal';
 import { IncomingCallModal } from '../voice/IncomingCallModal';
 import { GamesPicker } from '../games/GamesPicker';
 import { PictureInPicture } from '../voice/PictureInPicture';
@@ -42,6 +43,7 @@ import { useWebSocket } from '../../hooks/useWebSocket';
 import { useAfkVoiceMove } from '../../hooks/useAfkVoiceMove';
 import { useLiveKit } from '../../hooks/useLiveKit';
 import { useKeybinds } from '../../hooks/useKeybinds';
+import { useJumpNavigation } from '../../hooks/useJumpNavigation';
 import { useDeepLinkHandler } from '../../platform/deepLink';
 import { initActivityBridge, teardownActivityBridge } from '../../platform/activityBridge';
 import { useSpaceStore } from '../../stores/spaceStore';
@@ -274,6 +276,9 @@ export function AppLayout() {
   // Keybinds handler
   useKeybinds();
 
+  // Opens the conversation of a pending jump (a bookmark, a chat-linked result).
+  useJumpNavigation();
+
   // Deep link handler for Electron (backspace:// protocol)
   useDeepLinkHandler();
 
@@ -446,6 +451,7 @@ export function AppLayout() {
             Edit Roles, and its two-pane layout has no mobile form. */}
         <IncomingCallModal />
         <GamesPicker />
+        <BookmarksModal />
         <ImagePreview />
         {/* PictureInPicture is desktop-only. Mobile has its own purpose-built
             voice chrome (MobileVoiceMiniBar + MobileVoiceFullScreen) mounted
@@ -504,6 +510,7 @@ export function AppLayout() {
       <MemberRolesModal />
       <IncomingCallModal />
       <GamesPicker />
+      <BookmarksModal />
       <ImagePreview />
       <PictureInPicture />
       <SoundController />

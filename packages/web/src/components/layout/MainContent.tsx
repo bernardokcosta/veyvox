@@ -29,6 +29,8 @@ import { ChannelNotificationButton } from '../notifications/ChannelNotificationB
 import { ChannelHeaderTopic } from './ChannelHeaderTopic';
 import { usePointerReveal, VOICE_CHROME_ATTR } from '../../hooks/usePointerReveal';
 import { BotBadge } from '../ui/BotBadge';
+import { BookmarksButton } from './BookmarksButton';
+import { useActiveJump, useJumpStore } from '../../stores/jumpStore';
 
 /**
  * Voice channel header, in both of its shapes.
@@ -99,8 +101,17 @@ export function MainContent() {
     if (!currentChannelId) return false;
     return hasPermissionBit(s.channelPermissions.get(currentChannelId), PermissionBits.MANAGE_MESSAGES);
   });
-  const [jumpToMessageId, setJumpToMessageId] = useState<string | null>(null);
-  const clearJumpRequest = useCallback(() => setJumpToMessageId(null), []);
+  const [localJumpToMessageId, setLocalJumpToMessageId] = useState<string | null>(null);
+  // A jump asked from outside this component (a search result in a popover, a
+  // bookmark in the list) rides the jump store (stores/jumpStore.ts); the
+  // popovers that already hold the conversation keep passing a local target.
+  const activeJump = useActiveJump(currentChannelId);
+  const jumpToMessageId = activeJump ?? localJumpToMessageId;
+  const clearLocalJump = useCallback(() => setLocalJumpToMessageId(null), []);
+  const clearJumpRequest = useCallback(() => {
+    clearLocalJump();
+    useJumpStore.getState().clearJump();
+  }, [clearLocalJump]);
 
   // Resolve the DM header's "first other" member through the canonical view
   // cache. The hook must be called unconditionally at the component top, so we
@@ -400,6 +411,7 @@ export function MainContent() {
                 <path d="M21.707 20.293l-5.395-5.395A7.457 7.457 0 0018 10.5 7.5 7.5 0 1010.5 18c1.575 0 3.027-.486 4.228-1.31l5.476 5.476a.997.997 0 001.414 0l.089-.089a1 1 0 000-1.414l.001-.37zM10.5 16a5.5 5.5 0 110-11 5.5 5.5 0 010 11z" />
               </svg>
             </button>
+            <BookmarksButton />
             <TransferIndicator />
             <div className="w-[1px] h-5 bg-border-soft mx-1" />
             <MemberListToggleButton />
@@ -415,7 +427,7 @@ export function MainContent() {
           anchorRef={searchButtonRef}
           channelId={currentChannelId}
           isDm={true}
-          onJumpToMessage={(id) => { setJumpToMessageId(id); setSearchOpen(false); }}
+          onJumpToMessage={(id) => { setLocalJumpToMessageId(id); setSearchOpen(false); }}
         />
       </div>
     );
@@ -555,6 +567,7 @@ export function MainContent() {
               <path d="M21.707 20.293l-5.395-5.395A7.457 7.457 0 0018 10.5 7.5 7.5 0 1010.5 18c1.575 0 3.027-.486 4.228-1.31l5.476 5.476a.997.997 0 001.414 0l.089-.089a1 1 0 000-1.414l.001-.37zM10.5 16a5.5 5.5 0 110-11 5.5 5.5 0 010 11z" />
             </svg>
           </button>
+          <BookmarksButton />
           <TransferIndicator />
           <div className="w-[1px] h-5 bg-border-soft mx-1" />
           <MemberListToggleButton />
@@ -568,7 +581,7 @@ export function MainContent() {
         anchorRef={searchButtonRef}
         channelId={currentChannelId}
         isDm={false}
-        onJumpToMessage={(id) => { setJumpToMessageId(id); setSearchOpen(false); }}
+        onJumpToMessage={(id) => { setLocalJumpToMessageId(id); setSearchOpen(false); }}
       />
       <PinnedMessagesPopover
         open={pinsOpen}
@@ -576,7 +589,7 @@ export function MainContent() {
         anchorRef={pinsButtonRef}
         channelId={currentChannelId}
         canManageMessages={canManageChannelMessages}
-        onJumpToMessage={(id) => { setJumpToMessageId(id); setPinsOpen(false); }}
+        onJumpToMessage={(id) => { setLocalJumpToMessageId(id); setPinsOpen(false); }}
       />
     </div>
   );
