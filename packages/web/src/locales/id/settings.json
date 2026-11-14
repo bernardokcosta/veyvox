@@ -69,7 +69,16 @@
         "fallbackName": "Kamera {{number}}",
         "detectedFallback": "kamera terdeteksi",
         "currentlyUsing": "Kini memakai: {{label}}",
-        "none": "Tidak ada kamera terdeteksi."
+        "none": "Tidak ada kamera terdeteksi.",
+        "quality": {
+          "label": "Kualitas kamera",
+          "managed": "Kualitas kamera ditentukan server: {{resolution}}, {{fps}} fps, {{bitrate}}.",
+          "resolution": "Resolusi",
+          "framerate": "Kecepatan bingkai",
+          "bitrate": "Bitrate",
+          "useDefault": "Gunakan bawaan",
+          "fps": "{{value}} fps"
+        }
       },
       "preview": {
         "testAria": "Uji kamera",

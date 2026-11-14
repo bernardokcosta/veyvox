@@ -69,7 +69,16 @@
         "fallbackName": "Kamera {{number}}",
         "detectedFallback": "wykryta kamera",
         "currentlyUsing": "Aktualnie używana: {{label}}",
-        "none": "Nie wykryto kamer."
+        "none": "Nie wykryto kamer.",
+        "quality": {
+          "label": "Jakość kamery",
+          "managed": "Jakość kamery ustawia serwer: {{resolution}}, {{fps}} kl./s, {{bitrate}}.",
+          "resolution": "Rozdzielczość",
+          "framerate": "Liczba klatek",
+          "bitrate": "Bitrate",
+          "useDefault": "Użyj domyślnej",
+          "fps": "{{value}} kl./s"
+        }
       },
       "preview": {
         "testAria": "Przetestuj kamerę",

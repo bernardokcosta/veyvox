@@ -5,8 +5,29 @@ import { authenticate, requireAdmin } from '../utils/auth.js';
 import { config } from '../config.js';
 import { sendError } from '../utils/httpErrors.js';
 import { connectionManager } from '../ws/handler.js';
-import type { InstanceStreamingLimits, InstanceAdminSettings } from '@veyvox/shared';
+import type { InstanceStreamingLimits, InstanceAdminSettings, CameraStreamingLimits } from '@veyvox/shared';
 import { STANDARD_RESOLUTIONS, STANDARD_FRAMERATES, BITRATE_MATRIX_KBPS } from '@veyvox/shared/src/constants.js';
+
+function parseAllowedNumbers(raw: string, allowed: readonly number[]): number[] {
+  return raw
+    .split(',')
+    .map((s) => Number(s.trim()))
+    .filter((n) => Number.isFinite(n) && (allowed as readonly number[]).includes(n));
+}
+
+function toCameraLimits(row: typeof schema.instanceSettings.$inferSelect): CameraStreamingLimits {
+  return {
+    mode: row.cameraMode === 'user-choice' ? 'user-choice' : 'fixed',
+    defaultResolution: row.cameraDefaultResolution,
+    defaultFramerate: row.cameraDefaultFramerate,
+    defaultBitrateKbps: row.cameraDefaultBitrateKbps,
+    allowedResolutions: parseAllowedNumbers(row.cameraAllowedResolutions, STANDARD_RESOLUTIONS),
+    allowedFramerates: parseAllowedNumbers(row.cameraAllowedFramerates, STANDARD_FRAMERATES),
+    minBitrateKbps: row.cameraMinBitrateKbps,
+    maxBitrateKbps: row.cameraMaxBitrateKbps,
+    allowCustomBitrate: row.cameraAllowCustomBitrate === 1,
+  };
+}
 
 function rowToLimits(row: typeof schema.instanceSettings.$inferSelect): InstanceStreamingLimits {
   return {
@@ -34,6 +55,7 @@ function rowToLimits(row: typeof schema.instanceSettings.$inferSelect): Instance
       } catch { return null; }
     })(),
     allowCustomBitrate: row.allowCustomBitrate === 1,
+    camera: toCameraLimits(row),
   };
 }
 
@@ -209,6 +231,85 @@ export async function settingsRoutes(app: FastifyInstance): Promise<void> {
 
     if (body.allowCustomBitrate !== undefined) {
       updateData.allowCustomBitrate = body.allowCustomBitrate ? 1 : 0;
+    }
+
+    if (body.camera !== undefined) {
+      if (typeof body.camera !== 'object' || body.camera === null || Array.isArray(body.camera)) {
+        return sendError(reply, 400, 'validation_failed', { field: 'camera' });
+      }
+      const cameraRow = db.select().from(schema.instanceSettings).where(eq(schema.instanceSettings.id, 1)).get();
+      if (!cameraRow) {
+        return sendError(reply, 500, 'instance_settings_missing');
+      }
+      const patch = body.camera as Partial<CameraStreamingLimits>;
+      const camera: CameraStreamingLimits = { ...toCameraLimits(cameraRow), ...patch };
+
+      if (camera.mode !== 'fixed' && camera.mode !== 'user-choice') {
+        return sendError(reply, 400, 'camera_mode_invalid');
+      }
+      if (!Array.isArray(camera.allowedResolutions) || camera.allowedResolutions.length === 0) {
+        return sendError(reply, 400, 'camera_resolutions_invalid', {
+          invalid: '', allowed: STANDARD_RESOLUTIONS.join(', '),
+        });
+      }
+      const invalidResolutions = camera.allowedResolutions.filter(
+        (r) => !(STANDARD_RESOLUTIONS as readonly number[]).includes(r),
+      );
+      if (invalidResolutions.length > 0) {
+        return sendError(reply, 400, 'camera_resolutions_invalid', {
+          invalid: invalidResolutions.join(', '), allowed: STANDARD_RESOLUTIONS.join(', '),
+        });
+      }
+      if (!Array.isArray(camera.allowedFramerates) || camera.allowedFramerates.length === 0) {
+        return sendError(reply, 400, 'camera_framerates_invalid', {
+          invalid: '', allowed: STANDARD_FRAMERATES.join(', '),
+        });
+      }
+      const invalidFramerates = camera.allowedFramerates.filter(
+        (fps) => !(STANDARD_FRAMERATES as readonly number[]).includes(fps),
+      );
+      if (invalidFramerates.length > 0) {
+        return sendError(reply, 400, 'camera_framerates_invalid', {
+          invalid: invalidFramerates.join(', '), allowed: STANDARD_FRAMERATES.join(', '),
+        });
+      }
+      if (
+        !Number.isInteger(camera.minBitrateKbps)
+        || !Number.isInteger(camera.maxBitrateKbps)
+        || camera.minBitrateKbps < 100
+        || camera.maxBitrateKbps > 1000000
+        || camera.minBitrateKbps >= camera.maxBitrateKbps
+      ) {
+        return sendError(reply, 400, 'camera_bitrate_out_of_range', { min: 100, max: 1000000 });
+      }
+      if (
+        !Number.isInteger(camera.defaultBitrateKbps)
+        || camera.defaultBitrateKbps < camera.minBitrateKbps
+        || camera.defaultBitrateKbps > camera.maxBitrateKbps
+      ) {
+        return sendError(reply, 400, 'camera_bitrate_out_of_range', {
+          min: camera.minBitrateKbps, max: camera.maxBitrateKbps,
+        });
+      }
+      if (!camera.allowedResolutions.includes(camera.defaultResolution)) {
+        return sendError(reply, 400, 'camera_default_not_allowed', { field: 'resolution' });
+      }
+      if (!camera.allowedFramerates.includes(camera.defaultFramerate)) {
+        return sendError(reply, 400, 'camera_default_not_allowed', { field: 'framerate' });
+      }
+      if (typeof camera.allowCustomBitrate !== 'boolean') {
+        return sendError(reply, 400, 'validation_failed', { field: 'camera.allowCustomBitrate' });
+      }
+
+      updateData.cameraMode = camera.mode;
+      updateData.cameraDefaultResolution = camera.defaultResolution;
+      updateData.cameraDefaultFramerate = camera.defaultFramerate;
+      updateData.cameraDefaultBitrateKbps = camera.defaultBitrateKbps;
+      updateData.cameraAllowedResolutions = [...camera.allowedResolutions].sort((a, b) => a - b).join(',');
+      updateData.cameraAllowedFramerates = [...camera.allowedFramerates].sort((a, b) => a - b).join(',');
+      updateData.cameraMinBitrateKbps = camera.minBitrateKbps;
+      updateData.cameraMaxBitrateKbps = camera.maxBitrateKbps;
+      updateData.cameraAllowCustomBitrate = camera.allowCustomBitrate ? 1 : 0;
     }
 
     if (body.bitrateMatrixOverrides !== undefined) {

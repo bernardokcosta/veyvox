@@ -69,7 +69,16 @@
         "fallbackName": "Kamera {{number}}",
         "detectedFallback": "registreret kamera",
         "currentlyUsing": "Bruger nu: {{label}}",
-        "none": "Ingen kameraer registreret."
+        "none": "Ingen kameraer registreret.",
+        "quality": {
+          "label": "Kamerakvalitet",
+          "managed": "Kamerakvaliteten styres af serveren: {{resolution}}, {{fps}} fps, {{bitrate}}.",
+          "resolution": "Opløsning",
+          "framerate": "Billedhastighed",
+          "bitrate": "Bitrate",
+          "useDefault": "Brug standard",
+          "fps": "{{value}} fps"
+        }
       },
       "preview": {
         "testAria": "Test kamera",

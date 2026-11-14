@@ -69,7 +69,16 @@
         "fallbackName": "Kamera {{number}}",
         "detectedFallback": "nalezená kamera",
         "currentlyUsing": "Aktuálně používána: {{label}}",
-        "none": "Nenalezeny žádné kamery."
+        "none": "Nenalezeny žádné kamery.",
+        "quality": {
+          "label": "Kvalita kamery",
+          "managed": "Kvalitu kamery určuje server: {{resolution}}, {{fps}} sn./s, {{bitrate}}.",
+          "resolution": "Rozlišení",
+          "framerate": "Snímková frekvence",
+          "bitrate": "Datový tok",
+          "useDefault": "Použít výchozí",
+          "fps": "{{value}} sn./s"
+        }
       },
       "preview": {
         "testAria": "Vyzkoušet kameru",

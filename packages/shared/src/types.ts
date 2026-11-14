@@ -974,6 +974,21 @@ export interface InstanceStreamingLimits {
   maxFramerate: number;
   bitrateMatrixOverrides: Record<string, number> | null;
   allowCustomBitrate: boolean;
+  camera: CameraStreamingLimits;
+}
+
+/** The instance's camera policy: the admin's defaults and what members may pick. */
+export interface CameraStreamingLimits {
+  /** `fixed` = the admin's default is the whole policy; `user-choice` = members pick within the bounds. */
+  mode: 'fixed' | 'user-choice';
+  defaultResolution: number;
+  defaultFramerate: number;
+  defaultBitrateKbps: number;
+  allowedResolutions: number[];
+  allowedFramerates: number[];
+  minBitrateKbps: number;
+  maxBitrateKbps: number;
+  allowCustomBitrate: boolean;
 }
 
 // ─── Current Instance Info ─────────────────────────────────────────────────

@@ -314,6 +314,32 @@
     "capWarning": {
       "title": "Giá trị ma trận vượt giới hạn toàn cục.",
       "description": "Một số bitrate vượt tối đa {{max}} của bạn. Luồng với tổ hợp đó sẽ hạ xuống giới hạn của bạn."
+    },
+    "camera": {
+      "label": "Camera",
+      "description": "Điều khiển chất lượng người dùng phát camera.",
+      "mode": {
+        "label": "Chính sách chất lượng camera",
+        "fixed": "Cố định (hành vi hiện tại)",
+        "userChoice": "Người dùng chọn",
+        "fixedHint": "Mọi người phát ở chất lượng bên dưới.",
+        "userChoiceHint": "Người dùng chọn trong các giá trị cho phép ở Thoại & Video."
+      },
+      "defaults": {
+        "resolution": "Độ phân giải mặc định",
+        "framerate": "Tốc độ khung hình mặc định",
+        "bitrate": "Bitrate mặc định (kbps)"
+      },
+      "quality": {
+        "resolutions": "Độ phân giải cho phép",
+        "framerates": "Tốc độ khung hình cho phép",
+        "bitrateRange": "Khoảng bitrate (kbps)",
+        "min": "Tối thiểu",
+        "max": "Tối đa",
+        "allowCustom": "Cho phép bitrate tùy chỉnh",
+        "allowCustomHint": "Người dùng được đặt bitrate bất kỳ trong khoảng."
+      },
+      "highEndWarning": "Cài đặt camera cao tốn băng thông và CPU của mọi người tham gia."
     }
   },
   "updates": {

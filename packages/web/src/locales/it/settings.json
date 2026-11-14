@@ -69,7 +69,16 @@
         "fallbackName": "Fotocamera {{number}}",
         "detectedFallback": "fotocamera rilevata",
         "currentlyUsing": "In uso: {{label}}",
-        "none": "Nessuna fotocamera rilevata."
+        "none": "Nessuna fotocamera rilevata.",
+        "quality": {
+          "label": "Qualità videocamera",
+          "managed": "La qualità è fissata dal server: {{resolution}}, {{fps}} fps, {{bitrate}}.",
+          "resolution": "Risoluzione",
+          "framerate": "Frequenza fotogrammi",
+          "bitrate": "Bitrate",
+          "useDefault": "Usa predefinito",
+          "fps": "{{value}} fps"
+        }
       },
       "preview": {
         "testAria": "Prova la fotocamera",

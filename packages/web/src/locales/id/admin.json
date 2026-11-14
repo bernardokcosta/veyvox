@@ -314,6 +314,32 @@
     "capWarning": {
       "title": "Nilai matriks melebihi batas global.",
       "description": "Beberapa bitrate melebihi maks {{max}} Anda. Aliran dengan kombinasi itu diturunkan ke batas Anda."
+    },
+    "camera": {
+      "label": "Kamera web",
+      "description": "Mengatur kualitas pengguna menyiarkan kameranya.",
+      "mode": {
+        "label": "Kebijakan kualitas kamera",
+        "fixed": "Tetap (perilaku saat ini)",
+        "userChoice": "Pengguna memilih",
+        "fixedHint": "Semua menyiarkan pada kualitas di bawah.",
+        "userChoiceHint": "Pengguna memilih dari nilai yang diizinkan di Suara & Video."
+      },
+      "defaults": {
+        "resolution": "Resolusi bawaan",
+        "framerate": "Kecepatan bingkai bawaan",
+        "bitrate": "Bitrate bawaan (kbps)"
+      },
+      "quality": {
+        "resolutions": "Resolusi yang diizinkan",
+        "framerates": "Kecepatan bingkai yang diizinkan",
+        "bitrateRange": "Rentang bitrate (kbps)",
+        "min": "Min.",
+        "max": "Maks.",
+        "allowCustom": "Izinkan bitrate khusus",
+        "allowCustomHint": "Pengguna boleh mengatur bitrate apa pun dalam rentang."
+      },
+      "highEndWarning": "Setelan kamera tinggi menghabiskan bandwidth dan CPU setiap peserta."
     }
   },
   "updates": {

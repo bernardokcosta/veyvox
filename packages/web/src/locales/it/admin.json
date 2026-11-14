@@ -328,6 +328,32 @@
     "capWarning": {
       "title": "I valori della matrice superano il limite globale.",
       "description": "Alcuni valori di bitrate superano il tuo massimo di {{max}}. Gli stream con quelle combinazioni verranno degradati fino al tuo limite."
+    },
+    "camera": {
+      "label": "Webcam",
+      "description": "Controlla la qualità con cui gli utenti trasmettono la videocamera.",
+      "mode": {
+        "label": "Criterio qualità webcam",
+        "fixed": "Fissa (comportamento attuale)",
+        "userChoice": "Scelgono gli utenti",
+        "fixedHint": "Tutti trasmettono alla qualità sotto.",
+        "userChoiceHint": "Gli utenti scelgono tra i valori consentiti in Voce e video."
+      },
+      "defaults": {
+        "resolution": "Risoluzione predefinita",
+        "framerate": "Frequenza predefinita",
+        "bitrate": "Bitrate predefinito (kbps)"
+      },
+      "quality": {
+        "resolutions": "Risoluzioni consentite",
+        "framerates": "Frequenze consentite",
+        "bitrateRange": "Intervallo bitrate (kbps)",
+        "min": "Min.",
+        "max": "Max.",
+        "allowCustom": "Consenti bitrate personalizzato",
+        "allowCustomHint": "Gli utenti possono impostare qualsiasi bitrate nell’intervallo."
+      },
+      "highEndWarning": "Impostazioni alte costano banda e CPU a ogni partecipante."
     }
   },
   "updates": {

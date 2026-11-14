@@ -7,7 +7,8 @@ import { useSpaceStore } from '../stores/spaceStore';
 import { useAuthStore } from '../stores/authStore';
 import { broadcastVoiceStatus, broadcastDeafenViaLiveKit, preArmMicrophone } from './voice';
 import { sendDmCallEnd } from './dmCall';
-import { CAMERA_PRESET, stopScreenShare } from './screenShare';
+import { stopScreenShare } from './screenShare';
+import { buildCameraOptions } from './camera';
 import { openScreenShareSetup } from '../stores/screenShareSetupStore';
 
 /**
@@ -96,19 +97,18 @@ export async function handleCameraAction(): Promise<void> {
     const willEnable = !isCameraOn;
     if (willEnable) {
       const cameraDeviceId = useVoiceStore.getState().cameraDeviceId;
+      // Capture and publish follow the instance's camera policy and the
+      // member's saved choice within it (utils/camera.ts).
+      const options = buildCameraOptions();
       const captureOpts: VideoCaptureOptions = {
-        resolution: CAMERA_PRESET.resolution,
-        frameRate: CAMERA_PRESET.encoding.maxFramerate,
+        resolution: options.capture,
+        frameRate: options.capture.frameRate,
       };
       if (cameraDeviceId) captureOpts.deviceId = cameraDeviceId;
       await room.localParticipant.setCameraEnabled(
         true,
         captureOpts,
-        {
-          videoCodec: CAMERA_PRESET.codec,
-          videoEncoding: CAMERA_PRESET.encoding,
-          simulcast: true,
-        }
+        options.publish,
       );
     } else {
       // Mark this disable as intentional so the track-`ended` handler skips

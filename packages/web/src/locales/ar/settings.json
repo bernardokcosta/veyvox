@@ -69,7 +69,16 @@
         "fallbackName": "كاميرا {{number}}",
         "detectedFallback": "كاميرا مكتشفة",
         "currentlyUsing": "المستخدمة حاليًا: {{label}}",
-        "none": "لم يتم اكتشاف كاميرات."
+        "none": "لم يتم اكتشاف كاميرات.",
+        "quality": {
+          "label": "جودة الكاميرا",
+          "managed": "جودة الكاميرا يحددها الخادم: {{resolution}}، {{fps}} إطارًا، {{bitrate}}.",
+          "resolution": "الدقة",
+          "framerate": "معدل الإطارات",
+          "bitrate": "معدل البت",
+          "useDefault": "استخدام الافتراضي",
+          "fps": "{{value}} إطارًا"
+        }
       },
       "preview": {
         "testAria": "اختبار الكاميرا",

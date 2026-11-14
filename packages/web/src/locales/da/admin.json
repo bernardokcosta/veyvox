@@ -314,6 +314,32 @@
     "capWarning": {
       "title": "Matrixværdier overskrider den globale grænse.",
       "description": "Nogle bitrates overskrider dit maksimum {{max}}. Strømme med disse kombinationer sænkes til din grænse."
+    },
+    "camera": {
+      "label": "Webkamera",
+      "description": "Styrer kvaliteten, som brugerne sender deres kamera i.",
+      "mode": {
+        "label": "Webcam-kvalitetspolitik",
+        "fixed": "Fast (nuværende adfærd)",
+        "userChoice": "Brugerne vælger",
+        "fixedHint": "Alle sender i kvaliteten nedenfor.",
+        "userChoiceHint": "Brugerne vælger blandt de tilladte værdier i Stemme & Video."
+      },
+      "defaults": {
+        "resolution": "Standardopløsning",
+        "framerate": "Standardbilledhastighed",
+        "bitrate": "Standardbitrate (kbps)"
+      },
+      "quality": {
+        "resolutions": "Tilladte opløsninger",
+        "framerates": "Tilladte billedhastigheder",
+        "bitrateRange": "Bitrateområde (kbps)",
+        "min": "Min.",
+        "max": "Maks.",
+        "allowCustom": "Tillad brugerdefineret bitrate",
+        "allowCustomHint": "Brugerne kan sætte enhver bitrate i området."
+      },
+      "highEndWarning": "Høje kameraindstillinger koster uploadbåndbredde og CPU for hver deltager."
     }
   },
   "updates": {

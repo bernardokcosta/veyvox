@@ -328,6 +328,32 @@
     "capWarning": {
       "title": "Los valores de la matriz superan el límite global.",
       "description": "Algunas tasas de bits superan tu máximo de {{max}}. La calidad de las transmisiones con esas combinaciones se reducirá para respetar el límite."
+    },
+    "camera": {
+      "label": "Cámara web",
+      "description": "Controla la calidad con la que los usuarios emiten su cámara.",
+      "mode": {
+        "label": "Política de calidad de cámara",
+        "fixed": "Fija (comportamiento actual)",
+        "userChoice": "Eligen los usuarios",
+        "fixedHint": "Todos emiten en la calidad siguiente.",
+        "userChoiceHint": "Los usuarios eligen entre los valores permitidos en Voz y vídeo."
+      },
+      "defaults": {
+        "resolution": "Resolución predeterminada",
+        "framerate": "Fotogramas predeterminados",
+        "bitrate": "Bitrate predeterminado (kbps)"
+      },
+      "quality": {
+        "resolutions": "Resoluciones permitidas",
+        "framerates": "Fotogramas permitidos",
+        "bitrateRange": "Rango de bitrate (kbps)",
+        "min": "Mín.",
+        "max": "Máx.",
+        "allowCustom": "Permitir bitrate personalizado",
+        "allowCustomHint": "Los usuarios pueden fijar cualquier bitrate del rango."
+      },
+      "highEndWarning": "Los ajustes altos de cámara cuestan ancho de banda y CPU a cada participante."
     }
   },
   "updates": {

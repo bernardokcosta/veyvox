@@ -69,7 +69,16 @@
         "fallbackName": "कैमरा {{number}}",
         "detectedFallback": "मिला कैमरा",
         "currentlyUsing": "वर्तमान में उपयोग: {{label}}",
-        "none": "कोई कैमरे नहीं मिले।"
+        "none": "कोई कैमरे नहीं मिले।",
+        "quality": {
+          "label": "कैमरा गुणवत्ता",
+          "managed": "कैमरा गुणवत्ता सर्वर तय करता है: {{resolution}}, {{fps}} fps, {{bitrate}}।",
+          "resolution": "रिज़ॉल्यूशन",
+          "framerate": "फ़्रेम दर",
+          "bitrate": "बिटरेट",
+          "useDefault": "डिफ़ॉल्ट उपयोग करें",
+          "fps": "{{value}} fps"
+        }
       },
       "preview": {
         "testAria": "कैमरा परखें",

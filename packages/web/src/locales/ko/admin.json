@@ -301,6 +301,32 @@
     "capWarning": {
       "title": "매트릭스 값이 전역 한도 초과.",
       "description": "일부 비트레이트가 최대 {{max}} 초과. 그 조합 스트림은 한도로 낮춰집니다."
+    },
+    "camera": {
+      "label": "웹캠",
+      "description": "사용자가 카메라를 송출하는 화질을 제어합니다.",
+      "mode": {
+        "label": "카메라 화질 정책",
+        "fixed": "고정(현재 동작)",
+        "userChoice": "사용자 선택",
+        "fixedHint": "모두 아래 화질로 송출합니다.",
+        "userChoiceHint": "사용자는 음성 및 비디오 설정의 허용 값 중에서 선택합니다."
+      },
+      "defaults": {
+        "resolution": "기본 해상도",
+        "framerate": "기본 프레임레이트",
+        "bitrate": "기본 비트레이트(kbps)"
+      },
+      "quality": {
+        "resolutions": "허용 해상도",
+        "framerates": "허용 프레임레이트",
+        "bitrateRange": "비트레이트 범위(kbps)",
+        "min": "최소",
+        "max": "최대",
+        "allowCustom": "사용자 지정 비트레이트 허용",
+        "allowCustomHint": "사용자는 범위 내 임의의 비트레이트를 설정할 수 있습니다."
+      },
+      "highEndWarning": "높은 카메라 설정은 모든 참가자의 업로드 대역폭과 CPU를 씁니다."
     }
   },
   "updates": {

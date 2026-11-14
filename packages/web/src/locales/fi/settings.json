@@ -69,7 +69,16 @@
         "fallbackName": "Kamera {{number}}",
         "detectedFallback": "havaittu kamera",
         "currentlyUsing": "Käytössä nyt: {{label}}",
-        "none": "Kameroita ei havaittu."
+        "none": "Kameroita ei havaittu.",
+        "quality": {
+          "label": "Kameran laatu",
+          "managed": "Palvelin määrää kameran laadun: {{resolution}}, {{fps}} fps, {{bitrate}}.",
+          "resolution": "Resoluutio",
+          "framerate": "Kuvataajuus",
+          "bitrate": "Bittinopeus",
+          "useDefault": "Käytä oletusta",
+          "fps": "{{value}} fps"
+        }
       },
       "preview": {
         "testAria": "Testaa kamera",

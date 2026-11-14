@@ -328,6 +328,32 @@
     "capWarning": {
       "title": "Les valeurs de la matrice dépassent le plafond global.",
       "description": "Certains débits dépassent ton maximum de {{max}}. La qualité des diffusions utilisant ces combinaisons sera réduite pour respecter cette limite."
+    },
+    "camera": {
+      "label": "Caméra",
+      "description": "Définit la qualité à laquelle les utilisateurs publient leur caméra.",
+      "mode": {
+        "label": "Politique de qualité webcam",
+        "fixed": "Fixe (comportement actuel)",
+        "userChoice": "Les utilisateurs choisissent",
+        "fixedHint": "Tout le monde publie à la qualité ci-dessous.",
+        "userChoiceHint": "Les utilisateurs choisissent parmi les valeurs autorisées dans Voix et vidéo."
+      },
+      "defaults": {
+        "resolution": "Résolution par défaut",
+        "framerate": "Fréquence par défaut",
+        "bitrate": "Débit par défaut (kbps)"
+      },
+      "quality": {
+        "resolutions": "Résolutions autorisées",
+        "framerates": "Fréquences autorisées",
+        "bitrateRange": "Plage de débit (kbps)",
+        "min": "Min.",
+        "max": "Max.",
+        "allowCustom": "Autoriser un débit personnalisé",
+        "allowCustomHint": "Les utilisateurs peuvent fixer tout débit dans la plage."
+      },
+      "highEndWarning": "Des réglages élevés coûtent bande passante et CPU à chaque participant."
     }
   },
   "updates": {

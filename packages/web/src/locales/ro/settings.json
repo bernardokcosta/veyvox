@@ -69,7 +69,16 @@
         "fallbackName": "Cameră {{number}}",
         "detectedFallback": "cameră detectată",
         "currentlyUsing": "Se folosește: {{label}}",
-        "none": "Nu s-a detectat nicio cameră."
+        "none": "Nu s-a detectat nicio cameră.",
+        "quality": {
+          "label": "Calitatea camerei",
+          "managed": "Calitatea este stabilită de server: {{resolution}}, {{fps}} fps, {{bitrate}}.",
+          "resolution": "Rezoluție",
+          "framerate": "Cadență",
+          "bitrate": "Bitrate",
+          "useDefault": "Folosește implicit",
+          "fps": "{{value}} fps"
+        }
       },
       "preview": {
         "testAria": "Testează camera",

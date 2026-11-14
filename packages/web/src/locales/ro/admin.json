@@ -328,6 +328,32 @@
     "capWarning": {
       "title": "Valorile matricei depășesc limita globală.",
       "description": "Unele valori de bitrate depășesc maximul tău de {{max}}. Fluxurile la acele combinații vor fi degradate calitativ la limita ta."
+    },
+    "camera": {
+      "label": "Camera web",
+      "description": "Controlează calitatea cu care utilizatorii își publică camera.",
+      "mode": {
+        "label": "Politica de calitate a camerei",
+        "fixed": "Fixă (comportamentul actual)",
+        "userChoice": "Aleg utilizatorii",
+        "fixedHint": "Toți publică la calitatea de mai jos.",
+        "userChoiceHint": "Utilizatorii aleg dintre valorile permise din Voce și video."
+      },
+      "defaults": {
+        "resolution": "Rezoluție implicită",
+        "framerate": "Cadență implicită",
+        "bitrate": "Bitrate implicit (kbps)"
+      },
+      "quality": {
+        "resolutions": "Rezoluții permise",
+        "framerates": "Cadențe permise",
+        "bitrateRange": "Interval bitrate (kbps)",
+        "min": "Min.",
+        "max": "Max.",
+        "allowCustom": "Permite bitrate personalizat",
+        "allowCustomHint": "Utilizatorii pot seta orice bitrate din interval."
+      },
+      "highEndWarning": "Setările înalte costă bandă și CPU pentru fiecare participant."
     }
   },
   "updates": {

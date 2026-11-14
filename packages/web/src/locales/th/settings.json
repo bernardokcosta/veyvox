@@ -69,7 +69,16 @@
         "fallbackName": "กล้อง {{number}}",
         "detectedFallback": "กล้องที่พบ",
         "currentlyUsing": "กำลังใช้: {{label}}",
-        "none": "ไม่พบกล้อง"
+        "none": "ไม่พบกล้อง",
+        "quality": {
+          "label": "คุณภาพกล้อง",
+          "managed": "เซิร์ฟเวอร์กำหนดคุณภาพกล้อง: {{resolution}}, {{fps}} fps, {{bitrate}}",
+          "resolution": "ความละเอียด",
+          "framerate": "อัตราเฟรม",
+          "bitrate": "บิตเรต",
+          "useDefault": "ใช้ค่าเริ่มต้น",
+          "fps": "{{value}} fps"
+        }
       },
       "preview": {
         "testAria": "ทดสอบกล้อง",

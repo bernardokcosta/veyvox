@@ -342,6 +342,32 @@
     "capWarning": {
       "title": "Wartości macierzy przekraczają globalny limit.",
       "description": "Niektóre szybkości przekraczają Twoje maksimum {{max}}. Streamy w tych kombinacjach będą miały obniżoną jakość do limitu."
+    },
+    "camera": {
+      "label": "Kamera internetowa",
+      "description": "Określa jakość, w jakiej użytkownicy nadają obraz z kamery.",
+      "mode": {
+        "label": "Zasady jakości kamery",
+        "fixed": "Stałe (bieżące zachowanie)",
+        "userChoice": "Wybierają użytkownicy",
+        "fixedHint": "Wszyscy nadają w jakości poniżej.",
+        "userChoiceHint": "Użytkownicy wybierają spośród dozwolonych wartości w Głos i wideo."
+      },
+      "defaults": {
+        "resolution": "Domyślna rozdzielczość",
+        "framerate": "Domyślna liczba klatek",
+        "bitrate": "Domyślny bitrate (kb/s)"
+      },
+      "quality": {
+        "resolutions": "Dozwolone rozdzielczości",
+        "framerates": "Dozwolone liczby klatek",
+        "bitrateRange": "Zakres bitrate (kb/s)",
+        "min": "Min.",
+        "max": "Maks.",
+        "allowCustom": "Zezwalaj na własny bitrate",
+        "allowCustomHint": "Użytkownicy mogą ustawić dowolny bitrate z zakresu."
+      },
+      "highEndWarning": "Wysokie ustawienia kamery kosztują pasmo i CPU każdego uczestnika."
     }
   },
   "updates": {

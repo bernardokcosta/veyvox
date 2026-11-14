@@ -69,7 +69,16 @@
         "fallbackName": "Camera {{number}}",
         "detectedFallback": "gedetecteerde camera",
         "currentlyUsing": "Nu in gebruik: {{label}}",
-        "none": "Geen camera's gedetecteerd."
+        "none": "Geen camera's gedetecteerd.",
+        "quality": {
+          "label": "Camerakwaliteit",
+          "managed": "De server bepaalt de camerakwaliteit: {{resolution}}, {{fps}} fps, {{bitrate}}.",
+          "resolution": "Resolutie",
+          "framerate": "Beeldsnelheid",
+          "bitrate": "Bitrate",
+          "useDefault": "Standaard gebruiken",
+          "fps": "{{value}} fps"
+        }
       },
       "preview": {
         "testAria": "Camera testen",

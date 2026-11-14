@@ -314,6 +314,32 @@
     "capWarning": {
       "title": "Matrixwaarden overschrijden de globale limiet.",
       "description": "Sommige bitrates overschrijden je maximum {{max}}. Stromen met die combinaties worden naar je limiet verlaagd."
+    },
+    "camera": {
+      "label": "Webcam",
+      "description": "Regelt de kwaliteit waarmee gebruikers hun camera uitzenden.",
+      "mode": {
+        "label": "Webcamkwaliteitsbeleid",
+        "fixed": "Vast (huidig gedrag)",
+        "userChoice": "Gebruikers kiezen",
+        "fixedHint": "Iedereen zendt uit in de onderstaande kwaliteit.",
+        "userChoiceHint": "Gebruikers kiezen uit de toegestane waarden in Spraak & Video."
+      },
+      "defaults": {
+        "resolution": "Standaardresolutie",
+        "framerate": "Standaardbeeldsnelheid",
+        "bitrate": "Standaardbitrate (kbps)"
+      },
+      "quality": {
+        "resolutions": "Toegestane resoluties",
+        "framerates": "Toegestane beeldsnelheden",
+        "bitrateRange": "Bitratebereik (kbps)",
+        "min": "Min.",
+        "max": "Max.",
+        "allowCustom": "Aangepaste bitrate toestaan",
+        "allowCustomHint": "Gebruikers mogen elke bitrate binnen het bereik instellen."
+      },
+      "highEndWarning": "Hoge camera-instellingen kosten uploadbandbreedte en CPU van elke deelnemer."
     }
   },
   "updates": {

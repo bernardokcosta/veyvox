@@ -69,7 +69,16 @@
         "fallbackName": "Kamera {{number}}",
         "detectedFallback": "upptäckt kamera",
         "currentlyUsing": "Använder nu: {{label}}",
-        "none": "Inga kameror upptäckta."
+        "none": "Inga kameror upptäckta.",
+        "quality": {
+          "label": "Kamerakvalitet",
+          "managed": "Servern bestämmer kamerakvaliteten: {{resolution}}, {{fps}} fps, {{bitrate}}.",
+          "resolution": "Upplösning",
+          "framerate": "Bildfrekvens",
+          "bitrate": "Bithastighet",
+          "useDefault": "Använd standard",
+          "fps": "{{value}} fps"
+        }
       },
       "preview": {
         "testAria": "Testa kamera",

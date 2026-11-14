@@ -69,7 +69,16 @@
         "fallbackName": "Máy ảnh {{number}}",
         "detectedFallback": "camera phát hiện",
         "currentlyUsing": "Đang dùng: {{label}}",
-        "none": "Không phát hiện camera nào."
+        "none": "Không phát hiện camera nào.",
+        "quality": {
+          "label": "Chất lượng camera",
+          "managed": "Máy chủ quyết định chất lượng: {{resolution}}, {{fps}} fps, {{bitrate}}.",
+          "resolution": "Độ phân giải",
+          "framerate": "Tốc độ khung hình",
+          "bitrate": "Bitrate",
+          "useDefault": "Dùng mặc định",
+          "fps": "{{value}} fps"
+        }
       },
       "preview": {
         "testAria": "Thử camera",

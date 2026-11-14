@@ -314,6 +314,32 @@
     "capWarning": {
       "title": "Matriisin arvot ylittävät globaalin rajan.",
       "description": "Jotkin bittinopeudet ylittävät maksimisi {{max}}. Näillä yhdistelmillä virrat alennetaan rajaasi."
+    },
+    "camera": {
+      "label": "Web-kamera",
+      "description": "Määrittää laadun, jolla käyttäjät lähettävät kameraansa.",
+      "mode": {
+        "label": "Kameran laatukäytäntö",
+        "fixed": "Kiinteä (nykyinen)",
+        "userChoice": "Käyttäjät valitsevat",
+        "fixedHint": "Kaikki lähettävät alla olevalla laadulla.",
+        "userChoiceHint": "Käyttäjät valitsevat sallituista arvoista kohdassa Ääni ja video."
+      },
+      "defaults": {
+        "resolution": "Oletusresoluutio",
+        "framerate": "Oletuskuvataajuus",
+        "bitrate": "Oletusbittinopeus (kbps)"
+      },
+      "quality": {
+        "resolutions": "Sallitut resoluutiot",
+        "framerates": "Sallitut kuvataajuudet",
+        "bitrateRange": "Bittinopeusalue (kbps)",
+        "min": "Min.",
+        "max": "Maks.",
+        "allowCustom": "Salli mukautettu bittinopeus",
+        "allowCustomHint": "Käyttäjät voivat asettaa minkä tahansa alueen bittinopeuden."
+      },
+      "highEndWarning": "Korkeat kamera-asetukset kuluttavat jokaisen osallistujan kaistaa ja suoritinta."
     }
   },
   "updates": {

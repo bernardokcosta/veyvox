@@ -314,6 +314,32 @@
     "capWarning": {
       "title": "Matris değerleri genel üst sınırı aşıyor.",
       "description": "Bazı bit hızı değerleri {{max}} üst sınırını aşıyor. Bu kombinasyonlardaki akışlar üst sınırına göre kalite düşürülecek."
+    },
+    "camera": {
+      "label": "Web kamerası",
+      "description": "Kullanıcıların kamerasını hangi kalitede yayınlayacağını denetler.",
+      "mode": {
+        "label": "Kamera kalite politikası",
+        "fixed": "Sabit (mevcut davranış)",
+        "userChoice": "Kullanıcılar seçer",
+        "fixedHint": "Herkes aşağıdaki kalitede yayınlar.",
+        "userChoiceHint": "Kullanıcılar Ses ve Video ayarlarındaki izinli değerler arasından seçer."
+      },
+      "defaults": {
+        "resolution": "Varsayılan çözünürlük",
+        "framerate": "Varsayılan kare hızı",
+        "bitrate": "Varsayılan bit hızı (kbps)"
+      },
+      "quality": {
+        "resolutions": "İzinli çözünürlükler",
+        "framerates": "İzinli kare hızları",
+        "bitrateRange": "Bit hızı aralığı (kbps)",
+        "min": "Min.",
+        "max": "Maks.",
+        "allowCustom": "Özel bit hızına izin ver",
+        "allowCustomHint": "Kullanıcılar aralık içinde herhangi bir bit hızı ayarlayabilir."
+      },
+      "highEndWarning": "Yüksek kamera ayarları her katılımcının bant genişliğini ve CPU’sunu harcar."
     }
   },
   "updates": {

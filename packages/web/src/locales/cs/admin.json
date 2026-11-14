@@ -342,6 +342,32 @@
     "capWarning": {
       "title": "Hodnoty matice přesahují globální limit.",
       "description": "Některé bitrate přesahují tvé maximum {{max}}. Toky s těmito kombinacemi budou sníženy na tvou mez."
+    },
+    "camera": {
+      "label": "Webkamera",
+      "description": "Určuje kvalitu, v jaké uživatelé vysílají kameru.",
+      "mode": {
+        "label": "Pravidlo kvality webkamery",
+        "fixed": "Pevné (současné chování)",
+        "userChoice": "Volí uživatelé",
+        "fixedHint": "Všichni vysílají v kvalitě níže.",
+        "userChoiceHint": "Uživatelé vybírají z povolených hodnot v nastavení Hlas a video."
+      },
+      "defaults": {
+        "resolution": "Výchozí rozlišení",
+        "framerate": "Výchozí snímková frekvence",
+        "bitrate": "Výchozí datový tok (kb/s)"
+      },
+      "quality": {
+        "resolutions": "Povolená rozlišení",
+        "framerates": "Povolené snímkové frekvence",
+        "bitrateRange": "Rozsah datového toku (kb/s)",
+        "min": "Min.",
+        "max": "Max.",
+        "allowCustom": "Povolit vlastní datový tok",
+        "allowCustomHint": "Uživatelé mohou nastavit libovolný tok v rozsahu."
+      },
+      "highEndWarning": "Vysoká nastavení kamery stojí šířku pásma i CPU každého účastníka."
     }
   },
   "updates": {

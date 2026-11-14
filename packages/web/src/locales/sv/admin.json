@@ -314,6 +314,32 @@
     "capWarning": {
       "title": "Matrisvärden överskrider den globala gränsen.",
       "description": "Vissa bitrates överskrider ditt maximum {{max}}. Strömmar med dessa kombinationer sänks till din gräns."
+    },
+    "camera": {
+      "label": "Webbkamera",
+      "description": "Styr kvaliteten som användarna sänder sin kamera i.",
+      "mode": {
+        "label": "Kvalitetspolicy för kamera",
+        "fixed": "Fast (nuvarande beteende)",
+        "userChoice": "Användarna väljer",
+        "fixedHint": "Alla sänder i kvaliteten nedan.",
+        "userChoiceHint": "Användarna väljer bland tillåtna värden i Röst & Video."
+      },
+      "defaults": {
+        "resolution": "Standardupplösning",
+        "framerate": "Standardbildfrekvens",
+        "bitrate": "Standardbithastighet (kbps)"
+      },
+      "quality": {
+        "resolutions": "Tillåtna upplösningar",
+        "framerates": "Tillåtna bildfrekvenser",
+        "bitrateRange": "Bithastighetsintervall (kbps)",
+        "min": "Min.",
+        "max": "Max.",
+        "allowCustom": "Tillåt anpassad bithastighet",
+        "allowCustomHint": "Användarna kan ställa in valfri bithastighet i intervallet."
+      },
+      "highEndWarning": "Höga kamerainställningar kostar uppladdningsbandbredd och CPU för varje deltagare."
     }
   },
   "updates": {

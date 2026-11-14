@@ -314,6 +314,32 @@
     "capWarning": {
       "title": "Matriseverdier overskrider den globale grensen.",
       "description": "Noen bitrater overskrider maksimumet ditt {{max}}. Strømmer med disse kombinasjonene senkes til grensen din."
+    },
+    "camera": {
+      "label": "Webkamera",
+      "description": "Styrer kvaliteten brukerne sender kameraet sitt i.",
+      "mode": {
+        "label": "Kvalitetspolicy for kamera",
+        "fixed": "Fast (dagens oppførsel)",
+        "userChoice": "Brukerne velger",
+        "fixedHint": "Alle sender med kvaliteten nedenfor.",
+        "userChoiceHint": "Brukerne velger blant tillatte verdier i Tale & Video."
+      },
+      "defaults": {
+        "resolution": "Standardoppløsning",
+        "framerate": "Standardbildehastighet",
+        "bitrate": "Standardbitrate (kbps)"
+      },
+      "quality": {
+        "resolutions": "Tillatte oppløsninger",
+        "framerates": "Tillatte bildehastigheter",
+        "bitrateRange": "Bitrateområde (kbps)",
+        "min": "Min.",
+        "max": "Maks.",
+        "allowCustom": "Tillat egendefinert bitrate",
+        "allowCustomHint": "Brukerne kan sette en hvilken som helst bitrate i området."
+      },
+      "highEndWarning": "Høye kamerainnstillinger koster opplastingsbåndbredde og CPU for hver deltaker."
     }
   },
   "updates": {

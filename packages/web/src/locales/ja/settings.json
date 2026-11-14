@@ -69,7 +69,16 @@
         "fallbackName": "カメラ {{number}}",
         "detectedFallback": "検出カメラ",
         "currentlyUsing": "使用中: {{label}}",
-        "none": "カメラなし。"
+        "none": "カメラなし。",
+        "quality": {
+          "label": "カメラ画質",
+          "managed": "画質はサーバーが指定: {{resolution}}、{{fps}} fps、{{bitrate}}。",
+          "resolution": "解像度",
+          "framerate": "フレームレート",
+          "bitrate": "ビットレート",
+          "useDefault": "デフォルトを使う",
+          "fps": "{{value}} fps"
+        }
       },
       "preview": {
         "testAria": "カメラをテスト",

@@ -49,6 +49,7 @@ import { StreamResumeMemory, type RememberedStream } from '../utils/streamResume
 import { getMediaStreamTrack } from '../utils/livekitInternals';
 import { deactivate as deactivateHwOverdrive } from '../utils/hwOverdrive';
 import { applyMicBitrate, audioPresetForKbps } from '../utils/voiceQuality';
+import { requestCameraQuality } from '../utils/camera';
 
 let _activeRoom: Room | null = null;
 /**
@@ -313,6 +314,7 @@ export function useLiveKit() {
   const inputVolume = useVoiceStore((s) => s.inputVolume);
   const inputDeviceId = useVoiceStore((s) => s.inputDeviceId);
   const cameraDeviceId = useVoiceStore((s) => s.cameraDeviceId);
+  const cameraConfig = useVoiceStore((s) => s.cameraConfig);
   const micPermissionDenied = useVoiceStore((s) => s.micPermissionDenied);
   const echoCancellation = useVoiceStore((s) => s.echoCancellation);
   const noiseSuppression = useVoiceStore((s) => s.noiseSuppression);
@@ -707,6 +709,14 @@ export function useLiveKit() {
     if (!r || !isConnected) return;
     void applyMicBitrate(r, channelVoiceBitrateKbps);
   }, [channelVoiceBitrateKbps, isConnected]);
+
+  // A quality change (own choice or the instance's camera policy) reaches a
+  // live camera without republishing it.
+  useEffect(() => {
+    const r = roomRef.current;
+    if (!r || !isConnected || !isCameraOn) return;
+    void requestCameraQuality(r);
+  }, [cameraConfig, isConnected, isCameraOn]);
 
   const connect = useCallback(async (channelId: string, isDm?: boolean) => {
     const storedId = isDm ? `dm-${channelId}` : channelId;

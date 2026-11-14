@@ -301,6 +301,32 @@
     "capWarning": {
       "title": "行列値が全体上限超過。",
       "description": "一部ビットレートが最大 {{max}} 超過。その組合せのストリームは上限に下げられます。"
+    },
+    "camera": {
+      "label": "ウェブカメラ",
+      "description": "ユーザーがカメラを配信する画質を制御します。",
+      "mode": {
+        "label": "カメラ画質ポリシー",
+        "fixed": "固定（現在の動作）",
+        "userChoice": "ユーザーが選択",
+        "fixedHint": "全員が下の画質で配信します。",
+        "userChoiceHint": "ユーザーは音声とビデオ設定の許可値から選びます。"
+      },
+      "defaults": {
+        "resolution": "既定の解像度",
+        "framerate": "既定のフレームレート",
+        "bitrate": "既定のビットレート (kbps)"
+      },
+      "quality": {
+        "resolutions": "許可する解像度",
+        "framerates": "許可するフレームレート",
+        "bitrateRange": "ビットレート範囲 (kbps)",
+        "min": "最小",
+        "max": "最大",
+        "allowCustom": "カスタムビットレートを許可",
+        "allowCustomHint": "ユーザーは範囲内の任意のビットレートを設定できます。"
+      },
+      "highEndWarning": "高いカメラ設定は全参加者の帯域とCPUを消費します。"
     }
   },
   "updates": {

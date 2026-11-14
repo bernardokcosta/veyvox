@@ -69,7 +69,16 @@
         "fallbackName": "Kamera {{number}}",
         "detectedFallback": "bulunan kamera",
         "currentlyUsing": "Kullanılan: {{label}}",
-        "none": "Kamera bulunamadı."
+        "none": "Kamera bulunamadı.",
+        "quality": {
+          "label": "Kamera kalitesi",
+          "managed": "Kamera kalitesini sunucu belirler: {{resolution}}, {{fps}} fps, {{bitrate}}.",
+          "resolution": "Çözünürlük",
+          "framerate": "Kare hızı",
+          "bitrate": "Bit hızı",
+          "useDefault": "Varsayılanı kullan",
+          "fps": "{{value}} fps"
+        }
       },
       "preview": {
         "testAria": "Kamerayı test et",
