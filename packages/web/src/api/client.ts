@@ -54,6 +54,8 @@ import type {
   StorageStats,
   OrphanedFile,
   CleanupResult,
+  DiskPressureRun,
+  DiskPressureStatus,
   AdminUserListResponse,
   AdminUser,
   AdminResetPasswordResponse,
@@ -414,6 +416,8 @@ export class VeyvoxApiClient {
     storageCleanup: (dryRun?: boolean) => Promise<CleanupResult>;
     cleanupOldMedia: (maxAgeDays: number, dryRun?: boolean) => Promise<CleanupResult>;
     cleanupTusSessions: (maxAgeHours: number, dryRun?: boolean) => Promise<CleanupResult>;
+    diskStatus: () => Promise<DiskPressureStatus>;
+    diskSweep: () => Promise<{ run: DiskPressureRun | null; status: DiskPressureStatus }>;
     listUsers: (params?: { q?: string; page?: number; pageSize?: number; showDeleted?: boolean; role?: string; joinedAfter?: string; joinedBefore?: string; sort?: string }) => Promise<AdminUserListResponse>;
     setUserRole: (userId: string, isAdmin: boolean) => Promise<AdminUser>;
     resetUserPassword: (userId: string) => Promise<AdminResetPasswordResponse>;
@@ -1001,6 +1005,8 @@ export class VeyvoxApiClient {
         request<CleanupResult>('POST', '/admin/storage/cleanup-media', { maxAgeDays, dryRun }),
       cleanupTusSessions: (maxAgeHours: number, dryRun = false) =>
         request<CleanupResult>('POST', '/admin/storage/cleanup-tus', { maxAgeHours, dryRun }),
+      diskStatus: () => request<DiskPressureStatus>('GET', '/admin/storage/disk'),
+      diskSweep: () => request<{ run: DiskPressureRun | null; status: DiskPressureStatus }>('POST', '/admin/storage/disk/sweep'),
       listUsers: (params) => {
         const qs = new URLSearchParams();
         if (params?.q) qs.set('q', params.q);

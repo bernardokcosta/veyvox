@@ -257,6 +257,34 @@
       "deletedToast_many": "{{count}} fichiers supprimés ({{size}})",
       "deletedToast_other": "{{count}} fichiers supprimés ({{size}})",
       "failed": "Impossible de nettoyer les médias"
+    },
+    "diskCleanup": {
+      "label": "Nettoyage automatique",
+      "enable": "Libérer de l’espace automatiquement quand le disque est presque plein",
+      "enableHint": "Supprime d’abord les fichiers que rien n’utilise, puis les anciennes pièces jointes, des plus vieilles aux plus récentes. Le texte des messages reste.",
+      "warning": "Activé : quand le disque atteint la limite ci-dessous, les pièces jointes de plus de {{days}} jours peuvent être supprimées pour de bon. Les fichiers récents et les photos de profil ne sont jamais touchés.",
+      "usage": "{{percent}} % du disque utilisé ({{used}} sur {{total}})",
+      "usageLabel": "Utilisation du disque",
+      "usageUnknown": "L’utilisation du disque n’a pas pu être lue.",
+      "threshold": "Nettoyer à partir de",
+      "target": "Nettoyer jusqu’à",
+      "minAge": "Ne jamais supprimer les fichiers de moins de",
+      "days": "jours",
+      "problemThreshold": "Le niveau de départ doit être un nombre entier entre {{min}} et {{max}}.",
+      "problemTarget": "Le niveau cible doit être un nombre entier entre {{min}} et {{max}} (au moins 5 points sous le départ).",
+      "problemAge": "L’âge doit être un nombre entier de jours entre {{min}} et {{max}}.",
+      "saved": "Paramètres de nettoyage enregistrés",
+      "checkNow": "Vérifier maintenant",
+      "checking": "Vérification…",
+      "checkedNothing": "Le disque est sous la limite, rien n’a été supprimé.",
+      "neverRan": "Aucun nettoyage n’a encore eu lieu.",
+      "stage": {
+        "safe": "fichiers inutilisés uniquement",
+        "media": "anciennes pièces jointes incluses"
+      },
+      "lastRun_one": "Dernier nettoyage {{when}} ({{stage}}) : {{before}} % → {{after}} %, {{count}} fichier(s) supprimé(s), {{size}} libérés.",
+      "lastRun_other": "Dernier nettoyage {{when}} ({{stage}}) : {{before}} % → {{after}} %, {{count}} fichier(s) supprimé(s), {{size}} libérés.",
+      "lastRun_many": "Dernier nettoyage {{when}} ({{stage}}) : {{before}} % → {{after}} %, {{count}} fichier(s) supprimé(s), {{size}} libérés."
     }
   },
   "streaming": {

@@ -44,6 +44,7 @@ import { diagnosticRoutes } from './routes/diagnostics.js';
 import { DiagnosticLogStore, diagnosticLoggerStream, captureServerConsole, writeDiagnostic, installFatalDiagnostics } from './utils/diagnosticLogs.js';
 import { buildCspHeaderValue, CSP_REPORT_GROUP, CSP_REPORT_PATH } from './utils/csp.js';
 import { startStorageWorker, stopStorageWorker } from './utils/storageWorker.js';
+import { startDiskPressureWorker, stopDiskPressureWorker } from './utils/diskPressure.js';
 import { startBackupWorker, stopBackupWorker } from './utils/backupWorker.js';
 import { resetStalePresenceOnBoot } from './utils/presenceBoot.js';
 
@@ -286,11 +287,14 @@ async function main(): Promise<void> {
 
   startBackupWorker();
 
+  startDiskPressureWorker();
+
   const shutdown = async () => {
     writeDiagnostic(diagnosticLogs, 'server', { event: 'server-stopped', subsystem: 'server', level: 'info', version: config.version });
     console.log('Shutting down...');
     stopStorageWorker();
     stopBackupWorker();
+    stopDiskPressureWorker();
     await app.close();
     closeDatabase(); // checkpoints WAL — leaves a complete on-disk file
     process.exit(0);

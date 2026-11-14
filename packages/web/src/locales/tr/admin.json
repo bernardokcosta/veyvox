@@ -244,6 +244,33 @@
       "deletedToast_one": "{{count}} dosya silindi ({{size}})",
       "deletedToast_other": "{{count}} dosya silindi ({{size}})",
       "failed": "Medya temizliği başarısız"
+    },
+    "diskCleanup": {
+      "label": "Otomatik temizlik",
+      "enable": "Disk neredeyse dolduğunda otomatik olarak yer aç",
+      "enableHint": "Önce hiçbir şeyin kullanmadığı dosyaları, sonra eski sohbet eklerini en eskiden başlayarak siler. Mesaj metni kalır.",
+      "warning": "Açık: disk aşağıdaki sınıra ulaştığında {{days}} günden eski sohbet ekleri kalıcı olarak silinebilir. Daha yeni dosyalar ve profil fotoğrafları asla silinmez.",
+      "usage": "Diskin %{{percent}}’si kullanımda ({{total}} içinden {{used}})",
+      "usageLabel": "Disk kullanımı",
+      "usageUnknown": "Disk kullanımı okunamadı.",
+      "threshold": "Temizliğe başla",
+      "target": "Şuraya kadar temizle",
+      "minAge": "Şundan yeni dosyaları asla silme",
+      "days": "gün",
+      "problemThreshold": "Başlangıç seviyesi {{min}} ile {{max}} arasında bir tam sayı olmalı.",
+      "problemTarget": "Hedef seviye {{min}} ile {{max}} arasında bir tam sayı olmalı (başlangıcın en az 5 puan altında).",
+      "problemAge": "Yaş {{min}} ile {{max}} arasında tam sayı gün olmalı.",
+      "saved": "Temizlik ayarları kaydedildi",
+      "checkNow": "Şimdi denetle",
+      "checking": "Denetleniyor…",
+      "checkedNothing": "Disk sınırın altında, bu yüzden hiçbir şey silinmedi.",
+      "neverRan": "Henüz temizlik çalışmadı.",
+      "stage": {
+        "safe": "yalnızca kullanılmayan dosyalar",
+        "media": "eski ekler dahil"
+      },
+      "lastRun_one": "Son temizlik {{when}} ({{stage}}): %{{before}} → %{{after}}, {{count}} dosya silindi, {{size}} açıldı.",
+      "lastRun_other": "Son temizlik {{when}} ({{stage}}): %{{before}} → %{{after}}, {{count}} dosya silindi, {{size}} açıldı."
     }
   },
   "streaming": {

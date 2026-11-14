@@ -1,4 +1,4 @@
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, FastifyReply } from 'fastify';
 import { eq } from 'drizzle-orm';
 import { getDb, schema } from '../db/index.js';
 import { authenticate, requireAdmin } from '../utils/auth.js';
@@ -38,6 +38,68 @@ function rowToLimits(row: typeof schema.instanceSettings.$inferSelect): Instance
 }
 
 type SettingsRow = typeof schema.instanceSettings.$inferSelect;
+
+/** Bounds the disk-cleanup fields are validated against (see utils/diskPressure.ts). */
+const DISK_THRESHOLD_MIN = 50;
+const DISK_THRESHOLD_MAX = 99;
+const DISK_TARGET_MIN = 10;
+const DISK_TARGET_GAP = 5;
+const DISK_AGE_MIN_DAYS = 1;
+const DISK_AGE_MAX_DAYS = 3650;
+
+/**
+ * Validates and applies the disk-cleanup fields. The target is checked against
+ * the threshold that will be in force after this write (the new one when the
+ * body carries it), so raising the target and lowering the threshold in one
+ * request is judged together. Returns false after sending the error reply.
+ */
+function applyDiskCleanup(
+  body: Record<string, unknown>,
+  updateData: SettingsUpdate,
+  currentRow: SettingsRow,
+  reply: FastifyReply,
+): boolean {
+  if (body.diskCleanupEnabled !== undefined) {
+    if (typeof body.diskCleanupEnabled !== 'boolean') {
+      sendError(reply, 400, 'field_not_boolean', { field: 'diskCleanupEnabled' });
+      return false;
+    }
+    updateData.diskCleanupEnabled = body.diskCleanupEnabled ? 1 : 0;
+  }
+
+  let threshold = currentRow.diskCleanupThresholdPercent;
+  if (body.diskCleanupThresholdPercent !== undefined) {
+    const value = Number(body.diskCleanupThresholdPercent);
+    if (!Number.isInteger(value) || value < DISK_THRESHOLD_MIN || value > DISK_THRESHOLD_MAX) {
+      sendError(reply, 400, 'disk_cleanup_threshold_out_of_range', { min: DISK_THRESHOLD_MIN, max: DISK_THRESHOLD_MAX });
+      return false;
+    }
+    threshold = value;
+    updateData.diskCleanupThresholdPercent = value;
+  }
+
+  const maxTarget = threshold - DISK_TARGET_GAP;
+  const target = body.diskCleanupTargetPercent !== undefined
+    ? Number(body.diskCleanupTargetPercent)
+    : currentRow.diskCleanupTargetPercent;
+  if (body.diskCleanupTargetPercent !== undefined || body.diskCleanupThresholdPercent !== undefined) {
+    if (!Number.isInteger(target) || target < DISK_TARGET_MIN || target > maxTarget) {
+      sendError(reply, 400, 'disk_cleanup_target_out_of_range', { min: DISK_TARGET_MIN, max: maxTarget });
+      return false;
+    }
+    updateData.diskCleanupTargetPercent = target;
+  }
+
+  if (body.diskCleanupMinAgeDays !== undefined) {
+    const value = Number(body.diskCleanupMinAgeDays);
+    if (!Number.isInteger(value) || value < DISK_AGE_MIN_DAYS || value > DISK_AGE_MAX_DAYS) {
+      sendError(reply, 400, 'disk_cleanup_age_out_of_range', { min: DISK_AGE_MIN_DAYS, max: DISK_AGE_MAX_DAYS });
+      return false;
+    }
+    updateData.diskCleanupMinAgeDays = value;
+  }
+  return true;
+}
 type SettingsUpdate = Record<string, number | string | boolean | null>;
 
 function rowToAdminSettings(row: SettingsRow): InstanceAdminSettings {
@@ -52,6 +114,10 @@ function rowToAdminSettings(row: SettingsRow): InstanceAdminSettings {
     gifEnabled: !!gifKey,
     maxUploadSizeMb: Math.round(maxUploadBytes / (1024 * 1024)),
     maxStickerSizeMb: Math.round(maxStickerBytes / (1024 * 1024)),
+    diskCleanupEnabled: row.diskCleanupEnabled === 1,
+    diskCleanupThresholdPercent: row.diskCleanupThresholdPercent,
+    diskCleanupTargetPercent: row.diskCleanupTargetPercent,
+    diskCleanupMinAgeDays: row.diskCleanupMinAgeDays,
   };
 }
 
@@ -262,6 +328,8 @@ export async function settingsRoutes(app: FastifyInstance): Promise<void> {
     if (!currentRow) {
       return sendError(reply, 500, 'instance_settings_missing');
     }
+
+    if (!applyDiskCleanup(body as Record<string, unknown>, updateData, currentRow, reply)) return;
 
     db.update(schema.instanceSettings).set(updateData).where(eq(schema.instanceSettings.id, 1)).run();
 

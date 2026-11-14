@@ -450,6 +450,10 @@ export const instanceSettings = sqliteTable('instance_settings', {
   allowCustomBitrate: integer('allow_custom_bitrate').notNull().default(1),
   maxUploadSizeBytes: integer('max_upload_size_bytes'),
   maxStickerSizeBytes: integer('max_sticker_size_bytes'),
+  diskCleanupEnabled: integer('disk_cleanup_enabled').notNull().default(0),
+  diskCleanupThresholdPercent: integer('disk_cleanup_threshold_percent').notNull().default(90),
+  diskCleanupTargetPercent: integer('disk_cleanup_target_percent').notNull().default(80),
+  diskCleanupMinAgeDays: integer('disk_cleanup_min_age_days').notNull().default(30),
   /** First-boot timestamp (ms); backfilled by ensureDefaults, so non-null after boot. */
   installedAt: integer('installed_at'),
   updatedAt: integer('updated_at').notNull(),

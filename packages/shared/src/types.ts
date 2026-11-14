@@ -954,6 +954,10 @@ export interface InstanceAdminSettings {
   gifEnabled?: boolean;
   maxUploadSizeMb: number;
   maxStickerSizeMb: number;
+  diskCleanupEnabled: boolean;
+  diskCleanupThresholdPercent: number;
+  diskCleanupTargetPercent: number;
+  diskCleanupMinAgeDays: number;
 }
 
 export interface InstanceStreamingLimits {
@@ -1081,6 +1085,35 @@ export interface CleanupResult {
   freedBytes: number;
   deletedAttachmentRecords: number;
   errors: string[];
+}
+
+/** One sweep of the disk-pressure cleanup (`server/src/utils/diskPressure.ts`). */
+export interface DiskPressureRun {
+  /** When the sweep ran (ms since epoch). */
+  at: number;
+  /** Used-space percentage before and after the sweep. */
+  usedPercentBefore: number;
+  usedPercentAfter: number;
+  /** `safe` freed enough with orphans and abandoned uploads; `media` also had to delete old chat attachments. */
+  stage: 'safe' | 'media';
+  deletedFiles: number;
+  freedBytes: number;
+  errors: string[];
+}
+
+/** What `GET /api/admin/storage/disk` reports. */
+export interface DiskPressureStatus {
+  enabled: boolean;
+  /** Null when the filesystem could not be read. */
+  usedPercent: number | null;
+  totalBytes: number | null;
+  usedBytes: number | null;
+  thresholdPercent: number;
+  targetPercent: number;
+  minAgeDays: number;
+  /** How often the worker looks at the disk. */
+  checkIntervalMinutes: number;
+  lastRun: DiskPressureRun | null;
 }
 
 // ─── Admin User Management Types ──────────────────────────────────────────

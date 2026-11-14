@@ -244,6 +244,33 @@
       "deletedToast_one": "Menghapus {{count}} berkas ({{size}})",
       "deletedToast_other": "Menghapus {{count}} berkas ({{size}})",
       "failed": "Pembersihan media gagal"
+    },
+    "diskCleanup": {
+      "label": "Pembersihan otomatis",
+      "enable": "Bebaskan ruang otomatis saat disk hampir penuh",
+      "enableHint": "Pertama menghapus berkas yang tidak dipakai apa pun, lalu lampiran chat lama, dari yang tertua. Teks pesan tetap ada.",
+      "warning": "Aktif: saat disk mencapai batas di bawah, lampiran chat yang lebih tua dari {{days}} hari dapat dihapus permanen. Berkas yang lebih baru dan foto profil tidak pernah disentuh.",
+      "usage": "{{percent}}% disk terpakai ({{used}} dari {{total}})",
+      "usageLabel": "Penggunaan disk",
+      "usageUnknown": "Penggunaan disk tidak dapat dibaca.",
+      "threshold": "Mulai membersihkan pada",
+      "target": "Bersihkan hingga",
+      "minAge": "Jangan pernah hapus berkas yang lebih baru dari",
+      "days": "hari",
+      "problemThreshold": "Level awal harus bilangan bulat antara {{min}} dan {{max}}.",
+      "problemTarget": "Level target harus bilangan bulat antara {{min}} dan {{max}} (minimal 5 poin di bawah level awal).",
+      "problemAge": "Umur harus bilangan bulat hari antara {{min}} dan {{max}}.",
+      "saved": "Pengaturan pembersihan disimpan",
+      "checkNow": "Periksa sekarang",
+      "checking": "Memeriksa…",
+      "checkedNothing": "Disk di bawah batas, jadi tidak ada yang dihapus.",
+      "neverRan": "Belum ada pembersihan yang berjalan.",
+      "stage": {
+        "safe": "hanya berkas tak terpakai",
+        "media": "termasuk lampiran lama"
+      },
+      "lastRun_one": "Pembersihan terakhir {{when}} ({{stage}}): {{before}}% → {{after}}%, {{count}} berkas dihapus, {{size}} dibebaskan.",
+      "lastRun_other": "Pembersihan terakhir {{when}} ({{stage}}): {{before}}% → {{after}}%, {{count}} berkas dihapus, {{size}} dibebaskan."
     }
   },
   "streaming": {

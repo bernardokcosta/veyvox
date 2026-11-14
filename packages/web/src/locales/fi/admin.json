@@ -244,6 +244,33 @@
       "deletedToast_one": "Poistettu {{count}} tiedosto ({{size}})",
       "deletedToast_other": "Poistettu {{count}} tiedostoa ({{size}})",
       "failed": "Median siivous epäonnistui"
+    },
+    "diskCleanup": {
+      "label": "Automaattinen siivous",
+      "enable": "Vapauta tilaa automaattisesti, kun levy on lähes täynnä",
+      "enableHint": "Poistaa ensin tiedostot, joita mikään ei käytä, sitten vanhat chat-liitteet vanhimmasta alkaen. Viestien teksti säilyy.",
+      "warning": "Päällä: kun levy saavuttaa alarajan, yli {{days}} päivää vanhat chat-liitteet voidaan poistaa pysyvästi. Uudempia tiedostoja ja profiilikuvia ei koskaan kosketa.",
+      "usage": "Levystä käytössä {{percent}} % ({{used}} / {{total}})",
+      "usageLabel": "Levyn käyttö",
+      "usageUnknown": "Levyn käyttöä ei voitu lukea.",
+      "threshold": "Aloita siivous tasolla",
+      "target": "Siivoa tasolle",
+      "minAge": "Älä koskaan poista tiedostoja, jotka ovat uudempia kuin",
+      "days": "päivää",
+      "problemThreshold": "Aloitustason on oltava kokonaisluku väliltä {{min}}–{{max}}.",
+      "problemTarget": "Tavoitetason on oltava kokonaisluku väliltä {{min}}–{{max}} (vähintään 5 pistettä aloitustasoa alempi).",
+      "problemAge": "Iän on oltava kokonaisluku päivinä väliltä {{min}}–{{max}}.",
+      "saved": "Siivousasetukset tallennettu",
+      "checkNow": "Tarkista nyt",
+      "checking": "Tarkistetaan…",
+      "checkedNothing": "Levy on rajan alapuolella, joten mitään ei poistettu.",
+      "neverRan": "Siivousta ei ole vielä ajettu.",
+      "stage": {
+        "safe": "vain käyttämättömät tiedostot",
+        "media": "mukaan lukien vanhat liitteet"
+      },
+      "lastRun_one": "Viimeisin siivous {{when}} ({{stage}}): {{before}} % → {{after}} %, poistettu {{count}} tiedostoa, vapautettu {{size}}.",
+      "lastRun_other": "Viimeisin siivous {{when}} ({{stage}}): {{before}} % → {{after}} %, poistettu {{count}} tiedostoa, vapautettu {{size}}."
     }
   },
   "streaming": {

@@ -231,6 +231,33 @@
       "files_other": "{{count}} 个文件 ({{size}})",
       "deletedToast_other": "已删除 {{count}} 个文件 ({{size}})",
       "failed": "媒体清理失败"
+    },
+    "diskCleanup": {
+      "label": "自动清理",
+      "enable": "磁盘将满时自动释放空间",
+      "enableHint": "先删除无人使用的文件，再从最旧的开始删除旧聊天附件。消息文本保留。",
+      "warning": "开启后：当磁盘达到下方阈值时，早于 {{days}} 天的聊天附件可能被永久删除。较新的文件和头像不会被删除。",
+      "usage": "磁盘已用 {{percent}}%（共 {{total}}，已用 {{used}}）",
+      "usageLabel": "磁盘使用情况",
+      "usageUnknown": "无法读取磁盘使用情况。",
+      "threshold": "开始清理阈值",
+      "target": "清理目标阈值",
+      "minAge": "从不删除新于此的文件",
+      "days": "天",
+      "problemThreshold": "起始级别必须是 {{min}} 到 {{max}} 之间的整数。",
+      "problemTarget": "目标级别必须是 {{min}} 到 {{max}} 之间的整数（至少比起始级别低 5 个点）。",
+      "problemAge": "天数必须是 {{min}} 到 {{max}} 之间的整数。",
+      "saved": "清理设置已保存",
+      "checkNow": "立即检查",
+      "checking": "检查中…",
+      "checkedNothing": "磁盘低于阈值，未删除任何内容。",
+      "neverRan": "尚未运行过清理。",
+      "stage": {
+        "safe": "仅未使用的文件",
+        "media": "包括旧附件"
+      },
+      "lastRun_one": "上次清理 {{when}}（{{stage}}）：{{before}}% → {{after}}%，删除 {{count}} 个文件，释放 {{size}}。",
+      "lastRun_other": "上次清理 {{when}}（{{stage}}）：{{before}}% → {{after}}%，删除 {{count}} 个文件，释放 {{size}}。"
     }
   },
   "streaming": {

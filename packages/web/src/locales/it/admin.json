@@ -257,6 +257,34 @@
       "deletedToast_many": "Eliminati {{count}} file ({{size}})",
       "deletedToast_other": "Eliminati {{count}} file ({{size}})",
       "failed": "Pulizia dei contenuti multimediali non riuscita"
+    },
+    "diskCleanup": {
+      "label": "Pulizia automatica",
+      "enable": "Libera spazio automaticamente quando il disco è quasi pieno",
+      "enableHint": "Elimina prima i file che nulla usa, poi gli allegati vecchi, dai più vecchi. Il testo dei messaggi resta.",
+      "warning": "Attiva: quando il disco raggiunge il limite sotto, gli allegati più vecchi di {{days}} giorni possono essere eliminati per sempre. I file più recenti e le foto profilo non vengono mai toccati.",
+      "usage": "{{percent}}% del disco in uso ({{used}} di {{total}})",
+      "usageLabel": "Uso del disco",
+      "usageUnknown": "Impossibile leggere l’uso del disco.",
+      "threshold": "Inizia a pulire al",
+      "target": "Pulisci fino al",
+      "minAge": "Non eliminare mai file più recenti di",
+      "days": "giorni",
+      "problemThreshold": "Il livello di inizio deve essere un numero intero tra {{min}} e {{max}}.",
+      "problemTarget": "Il livello obiettivo deve essere un numero intero tra {{min}} e {{max}} (almeno 5 punti sotto l’inizio).",
+      "problemAge": "L’età deve essere un numero intero di giorni tra {{min}} e {{max}}.",
+      "saved": "Impostazioni di pulizia salvate",
+      "checkNow": "Controlla ora",
+      "checking": "Controllo in corso…",
+      "checkedNothing": "Il disco è sotto il limite, quindi non è stato eliminato nulla.",
+      "neverRan": "Nessuna pulizia ancora eseguita.",
+      "stage": {
+        "safe": "solo file inutilizzati",
+        "media": "allegati vecchi inclusi"
+      },
+      "lastRun_one": "Ultima pulizia {{when}} ({{stage}}): {{before}}% → {{after}}%, {{count}} file eliminati, {{size}} liberati.",
+      "lastRun_other": "Ultima pulizia {{when}} ({{stage}}): {{before}}% → {{after}}%, {{count}} file eliminati, {{size}} liberati.",
+      "lastRun_many": "Ultima pulizia {{when}} ({{stage}}): {{before}}% → {{after}}%, {{count}} file eliminati, {{size}} liberati."
     }
   },
   "streaming": {
