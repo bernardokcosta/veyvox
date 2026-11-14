@@ -45,6 +45,15 @@ export async function stickerStoreRoutes(app: FastifyInstance): Promise<void> {
 
   // ─── 1. Store Public Endpoints ──────────────────────────────────────────────
 
+/**
+ * The store surface only ever sees store packs. Private albums and space
+ * albums live in the library (`routes/stickerLibrary.ts`); without this
+ * every one of them would be listed, installed and edited here.
+ */
+function isStorePack(pack: { scopeType: string | null } | undefined): pack is { scopeType: 'store' } {
+  return !!pack && pack.scopeType === 'store';
+}
+
   /**
    * Browse available native sticker packs.
    */
@@ -55,7 +64,10 @@ export async function stickerStoreRoutes(app: FastifyInstance): Promise<void> {
 
     const allowedStatuses = ['approved', 'active'];
     const query = db.select().from(schema.stickerPacks)
-      .where(inArray(schema.stickerPacks.status, allowedStatuses))
+      .where(and(
+        inArray(schema.stickerPacks.status, allowedStatuses),
+        eq(schema.stickerPacks.scopeType, 'store'),
+      ))
       .orderBy(desc(schema.stickerPacks.updatedAt));
 
     const rows = query.all();
@@ -112,7 +124,7 @@ export async function stickerStoreRoutes(app: FastifyInstance): Promise<void> {
     const userId = await tryResolveUserId(request);
     const pack = db.select().from(schema.stickerPacks).where(eq(schema.stickerPacks.id, request.params.id)).get();
 
-    if (!pack || pack.status === 'deleted') {
+    if (!pack || pack.status === 'deleted' || !isStorePack(pack)) {
       return sendError(reply, 404, 'sticker_pack_not_found');
     }
 
@@ -200,7 +212,7 @@ export async function stickerStoreRoutes(app: FastifyInstance): Promise<void> {
     const db = getDb();
     const pack = db.select().from(schema.stickerPacks).where(eq(schema.stickerPacks.id, request.params.id)).get();
 
-    if (!pack || !['approved', 'active'].includes(pack.status)) {
+    if (!pack || !['approved', 'active'].includes(pack.status) || !isStorePack(pack)) {
       return sendError(reply, 404, 'sticker_pack_not_found');
     }
 
@@ -243,6 +255,7 @@ export async function stickerStoreRoutes(app: FastifyInstance): Promise<void> {
       .where(and(
         inArray(schema.stickerPacks.id, packIds),
         inArray(schema.stickerPacks.status, ['approved', 'active']),
+        eq(schema.stickerPacks.scopeType, 'store'),
       )).all();
 
     const results: StickerPackDetail[] = [];
@@ -361,6 +374,7 @@ export async function stickerStoreRoutes(app: FastifyInstance): Promise<void> {
     const packs = db.select().from(schema.stickerPacks)
       .where(and(
         eq(schema.stickerPacks.creatorId, request.userId),
+        eq(schema.stickerPacks.scopeType, 'store'),
       ))
       .orderBy(desc(schema.stickerPacks.updatedAt))
       .all();
@@ -413,7 +427,7 @@ export async function stickerStoreRoutes(app: FastifyInstance): Promise<void> {
     const db = getDb();
     const pack = db.select().from(schema.stickerPacks).where(eq(schema.stickerPacks.id, request.params.id)).get();
 
-    if (!pack || pack.status === 'deleted') {
+    if (!pack || pack.status === 'deleted' || !isStorePack(pack)) {
       return sendError(reply, 404, 'sticker_pack_not_found');
     }
 
@@ -489,7 +503,7 @@ export async function stickerStoreRoutes(app: FastifyInstance): Promise<void> {
     if (!name) return sendError(reply, 400, 'sticker_name_invalid', { max: MAX_STICKER_PACK_NAME_LENGTH });
     const db = getDb();
     const pack = db.select().from(schema.stickerPacks).where(eq(schema.stickerPacks.id, request.params.id)).get();
-    if (!pack || pack.creatorId !== request.userId) return sendError(reply, 403, 'forbidden');
+    if (!pack || pack.creatorId !== request.userId || !isStorePack(pack)) return sendError(reply, 403, 'forbidden');
     if (!['draft', 'rejected', 'approved'].includes(pack.status)) return sendError(reply, 400, 'sticker_pack_invalid_state');
     const version = db.select().from(schema.stickerPackVersions).where(and(
       eq(schema.stickerPackVersions.packId, pack.id), inArray(schema.stickerPackVersions.status, ['draft', 'rejected']),
@@ -530,7 +544,7 @@ export async function stickerStoreRoutes(app: FastifyInstance): Promise<void> {
     if (!pack || pack.status === 'deleted') {
       return sendError(reply, 404, 'sticker_pack_not_found');
     }
-    if (pack.creatorId !== request.userId) {
+    if (pack.creatorId !== request.userId || !isStorePack(pack)) {
       return sendError(reply, 403, 'forbidden');
     }
 
@@ -594,6 +608,7 @@ export async function stickerStoreRoutes(app: FastifyInstance): Promise<void> {
       const freshPack = db.select().from(schema.stickerPacks).where(eq(schema.stickerPacks.id, pack.id)).get();
       const freshVersion = db.select().from(schema.stickerPackVersions).where(eq(schema.stickerPackVersions.id, draftVersion.id)).get();
       if (!freshPack || freshPack.creatorId !== request.userId
+        || !isStorePack(freshPack)
         || !['draft', 'rejected', 'approved'].includes(freshPack.status)
         || !freshVersion || !['draft', 'rejected'].includes(freshVersion.status)) {
         return { error: 'sticker_pack_invalid_state' as const };
@@ -639,7 +654,7 @@ export async function stickerStoreRoutes(app: FastifyInstance): Promise<void> {
   }, async (request, reply) => {
     const db = getDb();
     const pack = db.select().from(schema.stickerPacks).where(eq(schema.stickerPacks.id, request.params.id)).get();
-    if (!pack || pack.creatorId !== request.userId || pack.status === 'deleted') return sendError(reply, 403, 'forbidden');
+    if (!pack || pack.creatorId !== request.userId || pack.status === 'deleted' || !isStorePack(pack)) return sendError(reply, 403, 'forbidden');
 
     const item = db.select().from(schema.stickerPackItems).where(eq(schema.stickerPackItems.id, request.params.itemId)).get();
     if (!item || item.packId !== pack.id) return sendError(reply, 404, 'sticker_not_found');
@@ -662,7 +677,7 @@ export async function stickerStoreRoutes(app: FastifyInstance): Promise<void> {
   }, async (request, reply) => {
     const db = getDb();
     const pack = db.select().from(schema.stickerPacks).where(eq(schema.stickerPacks.id, request.params.id)).get();
-    if (!pack || pack.creatorId !== request.userId) return sendError(reply, 403, 'forbidden');
+    if (!pack || pack.creatorId !== request.userId || !isStorePack(pack)) return sendError(reply, 403, 'forbidden');
 
     const { itemIds } = request.body;
     if (!Array.isArray(itemIds) || itemIds.some(id => typeof id !== 'string') || new Set(itemIds).size !== itemIds.length) return sendError(reply, 400, 'validation_failed');
@@ -694,7 +709,7 @@ export async function stickerStoreRoutes(app: FastifyInstance): Promise<void> {
     const db = getDb();
     const pack = db.select().from(schema.stickerPacks).where(eq(schema.stickerPacks.id, request.params.id)).get();
 
-    if (!pack || pack.creatorId !== request.userId) {
+    if (!pack || pack.creatorId !== request.userId || !isStorePack(pack)) {
       return sendError(reply, 403, 'forbidden');
     }
 
@@ -745,7 +760,7 @@ export async function stickerStoreRoutes(app: FastifyInstance): Promise<void> {
     const db = getDb();
     const pack = db.select().from(schema.stickerPacks).where(eq(schema.stickerPacks.id, request.params.id)).get();
 
-    if (!pack || pack.creatorId !== request.userId) {
+    if (!pack || pack.creatorId !== request.userId || !isStorePack(pack)) {
       return sendError(reply, 403, 'forbidden');
     }
     if (pack.status !== 'approved') {
@@ -825,7 +840,7 @@ export async function stickerStoreRoutes(app: FastifyInstance): Promise<void> {
     const db = getDb();
     const pack = db.select().from(schema.stickerPacks).where(eq(schema.stickerPacks.id, request.params.id)).get();
 
-    if (!pack || pack.status === 'deleted') {
+    if (!pack || pack.status === 'deleted' || !isStorePack(pack)) {
       return sendError(reply, 404, 'sticker_pack_not_found');
     }
 

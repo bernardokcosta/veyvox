@@ -392,15 +392,27 @@ export function deleteOldestMedia(minAgeDays: number, shouldStop: () => boolean)
 
   for (const att of candidates) {
     if (profileReferenced.has(path.basename(att.filename))) continue;
+    // The row of a file that is already gone is dropped without counting
+    // bytes that were never freed here.
+    const existed = fs.existsSync(path.join(config.uploadDir, path.basename(att.filename)));
     try {
-      deleteUploadFile(att.filename);
+      // Strict: a failure must surface as an error, not as a deleted row
+      // with counted bytes for a file that is still on disk.
+      deleteUploadFile(att.filename, { strict: true });
+    } catch (err: unknown) {
+      errors.push(`Failed to delete old media ${att.id}: ${err instanceof Error ? err.message : String(err)}`);
+      continue;
+    }
+    try {
       db.delete(schema.attachments).where(eq(schema.attachments.id, att.id)).run();
     } catch (err: unknown) {
       errors.push(`Failed to delete old media ${att.id}: ${err instanceof Error ? err.message : String(err)}`);
       continue;
     }
-    deletedFiles++;
-    freedBytes += att.size;
+    if (existed) {
+      deletedFiles++;
+      freedBytes += att.size;
+    }
     deletedAttachmentRecords++;
     if (deletedFiles % PRESSURE_STOP_CHECK_EVERY === 0 && shouldStop()) break;
   }

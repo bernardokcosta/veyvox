@@ -38,6 +38,8 @@ function canManagePack(
   pack: typeof schema.stickerPacks.$inferSelect,
   userId: string,
 ): boolean {
+  // Store packs are curated through the store's own review flow, never here.
+  if (pack.scopeType === 'store') return false;
   if (pack.scopeType === 'user') return pack.creatorId === userId;
   if (pack.scopeType === 'space' && pack.spaceId) {
     return hasPermission(userId, pack.spaceId, PermissionBits.MANAGE_STICKERS);
@@ -49,6 +51,8 @@ function canAddToPack(
   pack: typeof schema.stickerPacks.$inferSelect,
   userId: string,
 ): boolean {
+  // Store packs are curated through the store's own review flow, never here.
+  if (pack.scopeType === 'store') return false;
   if (pack.scopeType === 'space' && pack.spaceId) {
     return hasPermission(userId, pack.spaceId, PermissionBits.CREATE_STICKERS);
   }
@@ -150,16 +154,6 @@ function decodeStickerBody(body: { name: string; image: string }) {
   const bytes = Buffer.from(body.image, 'base64');
   if (bytes.toString('base64') !== body.image) return null;
   return { name, bytes };
-}
-
-async function addImageItem(input: {
-  packId: string;
-  name: string;
-  bytes: Buffer;
-}) {
-  const encoded = await encodeSticker(input.bytes, getMaxStickerSizeBytes());
-  const assetId = await saveStickerAsset(encoded);
-  return addAssetItem(input.packId, assetId, input.name);
 }
 
 function addAssetItem(packId: string, assetId: string, name: string) {
@@ -364,24 +358,39 @@ export async function stickerLibraryRoutes(app: FastifyInstance): Promise<void> 
     if (retryAfter > 0) return sendRateLimit(reply, retryAfter);
     const decoded = decodeStickerBody(request.body);
     if (!decoded) return sendError(reply, 400, 'validation_failed');
+    let encoded: Buffer;
     try {
-      const added = await addImageItem({ packId: pack.id, ...decoded });
-      if ('error' in added && added.error) {
-        return sendError(reply, added.error === 'sticker_pack_limit_exceeded' ? 409 : 404, added.error);
-      }
-      return reply.code(201).send({
-        id: added.id,
-        packId: pack.id,
-        assetId: added.assetId,
-        name: decoded.name,
-        token: tokenFor(added.assetId),
-        createdAt: added.now,
-      });
+      encoded = await encodeSticker(decoded.bytes, getMaxStickerSizeBytes());
     } catch (error) {
       if (error instanceof StickerPixelLimitError) return sendError(reply, 400, 'sticker_pixel_limit_exceeded');
       if (error instanceof StickerImageError) return sendError(reply, 400, 'sticker_invalid_image', { max: Math.round(getMaxStickerSizeBytes() / 1024 / 1024) });
       throw error;
     }
+    // The encode above awaits: a role or membership change in between must
+    // not ride on the earlier check. better-sqlite3 runs the insert
+    // synchronously, so nothing interleaves from here on.
+    const fresh = db.select().from(schema.stickerPacks).where(eq(schema.stickerPacks.id, pack.id)).get();
+    if (!fresh || fresh.status === 'deleted') return sendError(reply, 404, 'sticker_pack_not_found');
+    if (!canAddToPack(fresh, userId)) return sendError(reply, 403, 'forbidden');
+    let assetId: string;
+    try {
+      assetId = await saveStickerAsset(encoded);
+    } catch (error) {
+      if (error instanceof StickerImageError) return sendError(reply, 400, 'sticker_invalid_image', { max: Math.round(getMaxStickerSizeBytes() / 1024 / 1024) });
+      throw error;
+    }
+    const added = addAssetItem(pack.id, assetId, decoded.name);
+    if ('error' in added && added.error) {
+      return sendError(reply, added.error === 'sticker_pack_limit_exceeded' ? 409 : 404, added.error);
+    }
+    return reply.code(201).send({
+      id: added.id,
+      packId: pack.id,
+      assetId: added.assetId,
+      name: decoded.name,
+      token: tokenFor(added.assetId),
+      createdAt: added.now,
+    });
   });
 
   app.delete<{ Params: { id: string; itemId: string } }>('/api/sticker-library/packs/:id/items/:itemId', {

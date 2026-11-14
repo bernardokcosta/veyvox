@@ -143,6 +143,24 @@ function MessageInputContent({ channelId, channelName, placeholder, revision }: 
   const [preparing, setPreparing] = useState<PreparingFile[]>([]);
   const preparingControls = useRef<Map<string, { controller: AbortController; action: 'original' | 'cancel' | null }>>(new Map());
 
+  // Files still being shrunk before their upload starts. handleSubmit awaits
+  // them (see waitForPreparing): a caption typed while a video encodes ships
+  // with the file instead of alone.
+  const preparingWaiters = useRef<Array<() => void>>([]);
+  useEffect(() => {
+    if (preparing.length === 0) {
+      const waiters = preparingWaiters.current;
+      preparingWaiters.current = [];
+      for (const resolve of waiters) resolve();
+    }
+  }, [preparing]);
+
+  /** Resolves once no file is still being shrunk (at once when none is). */
+  const waitForPreparing = useCallback((): Promise<void> => {
+    if (preparingControls.current.size === 0) return Promise.resolve();
+    return new Promise<void>((resolve) => { preparingWaiters.current.push(resolve); });
+  }, []);
+
   const sendMessage = useChatStore((s) => s.sendMessage);
   const returnToPresent = useChatStore((s) => s.returnToPresent);
   // This channel's reply only: reply state is per channel (#390).
@@ -644,6 +662,26 @@ function MessageInputContent({ channelId, channelName, placeholder, revision }: 
     );
     if (hasUnshippable) return;
 
+    // A file still being shrunk is not staged yet: wait for it, so a caption
+    // typed while a video encodes ships with the file instead of alone. A
+    // cancelled prepare drops its file; "send original" stages it as is. The
+    // wait always spans a render, so the transfers below are re-read fresh
+    // from the stores rather than trusted from this render's closure.
+    if (preparingControls.current.size > 0) {
+      await waitForPreparing();
+      if (!current()) return;
+    }
+    const stagedNow = ((): Transfer[] => {
+      const composerNow = useComposerStore.getState().get(channelId);
+      const transfersNow = useTransferStore.getState().transfers;
+      const out: Transfer[] = [];
+      for (const tid of composerNow.stagedTransferIds) {
+        const t = transfersNow.get(tid);
+        if (t) out.push(t);
+      }
+      return out;
+    })();
+
     setMentionState(null);
     setActivePopover(null);
 
@@ -655,7 +693,7 @@ function MessageInputContent({ channelId, channelName, placeholder, revision }: 
 
     // A slash command of a bot in this chat: invoke it instead of posting the text.
     const commandHead = /^\/([a-z0-9_-]+)(?:\s+([\s\S]*))?$/i.exec(trimmed);
-    if (commandHead && stagedTransfers.length === 0) {
+    if (commandHead && stagedNow.length === 0) {
       // An Enter while the previous one is still resolving or invoking this command does nothing.
       if (commandSubmitRef.current) return;
       commandSubmitRef.current = true;
@@ -707,7 +745,7 @@ function MessageInputContent({ channelId, channelName, placeholder, revision }: 
       }
     }
 
-    if (stagedTransfers.length === 0) {
+    if (stagedNow.length === 0) {
       // Consume the draft synchronously; network completion must not erase newer typing.
       clearComposer(channelId);
       try {
@@ -736,7 +774,7 @@ function MessageInputContent({ channelId, channelName, placeholder, revision }: 
     // tusExpiresAt: min across staged transfers, default to 24h from now if absent.
     const now = Date.now();
     const fallbackExpires = now + DEFAULT_TUS_TTL_MS;
-    const expirations = stagedTransfers
+    const expirations = stagedNow
       .map((t) => t.tusExpiresAt)
       .filter((x): x is number => typeof x === 'number' && x > 0);
     const tusExpiresAt = expirations.length > 0 ? Math.min(...expirations) : fallbackExpires;
@@ -749,7 +787,7 @@ function MessageInputContent({ channelId, channelName, placeholder, revision }: 
       channelId,
       content: trimmed,
       replyToId,
-      transferIds: stagedTransfers.map((t) => t.id),
+      transferIds: stagedNow.map((t) => t.id),
       createdAtLocal: now,
       state: 'sending',
       tusExpiresAt,

@@ -29,7 +29,6 @@ import { consumeIntentionalCameraOff, markIntentionalCameraOff } from '../utils/
 import { AudioManager } from '../audio/AudioManager';
 import { SpeakingDetector } from '../audio/SpeakingDetector';
 import {
-  CAMERA_OVERDRIVE,
   buildScreenShareOptions,
   applyOverdrive,
   scheduleScreenShareOverdrive,
@@ -49,7 +48,7 @@ import { StreamResumeMemory, type RememberedStream } from '../utils/streamResume
 import { getMediaStreamTrack } from '../utils/livekitInternals';
 import { deactivate as deactivateHwOverdrive } from '../utils/hwOverdrive';
 import { applyMicBitrate, audioPresetForKbps } from '../utils/voiceQuality';
-import { requestCameraQuality } from '../utils/camera';
+import { buildCameraOptions, requestCameraQuality } from '../utils/camera';
 
 let _activeRoom: Room | null = null;
 /**
@@ -1266,11 +1265,11 @@ export function useLiveKit() {
           await applyOverdrive(room, Track.Source.ScreenShare, opts.overdrive);
         }
       }
-      if (isCameraOn) { await applyOverdrive(room, Track.Source.Camera, CAMERA_OVERDRIVE); }
+      if (isCameraOn) { await applyOverdrive(room, Track.Source.Camera, buildCameraOptions().overdrive); }
     };
     _activeTrackUpdate = _activeTrackUpdate.then(updateActiveTracks).catch(() => {});
     return () => { superseded = true; };
-  }, [room, screenShareConfig, streamingLimits, isScreenSharing, isCameraOn]);
+  }, [room, screenShareConfig, streamingLimits, cameraConfig, isScreenSharing, isCameraOn]);
 
   useEffect(() => {
     return () => {

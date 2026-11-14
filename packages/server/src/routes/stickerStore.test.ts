@@ -401,5 +401,30 @@ describe('Native Sticker Store', () => {
       expect(fetch).not.toHaveBeenCalled(); expect(db.select().from(schema.schema.stickerPacks).all()).toEqual([]);
     } finally { fetch.mockRestore(); }
   });
+
+  it('keeps private albums and space albums out of every store surface', async () => {
+    const now = Date.now();
+    db.insert(schema.schema.spaces).values({ id: 'space-1', name: 'Space', ownerId: 'alice', createdAt: now }).run();
+    db.insert(schema.schema.stickerPacks).values({
+      id: 'private-album', name: 'Mine', scopeType: 'user', creatorId: 'alice', creatorName: 'alice',
+      currentVersion: 1, status: 'active', createdAt: now, updatedAt: now,
+    }).run();
+    db.insert(schema.schema.stickerPacks).values({
+      id: 'space-album', name: 'Space', scopeType: 'space', spaceId: 'space-1', creatorId: 'alice', creatorName: 'alice',
+      currentVersion: 1, status: 'active', createdAt: now, updatedAt: now,
+    }).run();
+
+    for (const id of ['private-album', 'space-album']) {
+      expect((await app.inject({ url: `/api/sticker-store/packs/${id}` })).statusCode).toBe(404);
+      expect((await app.inject({ method: 'POST', url: `/api/sticker-store/packs/${id}/install`, headers: { authorization: 'bob' } })).statusCode).toBe(404);
+      expect((await app.inject({ url: '/api/sticker-store/packs' })).json()).toEqual([]);
+      expect((await app.inject({ url: '/api/sticker-store/my-packs', headers: { authorization: 'alice' } })).json()).toEqual([]);
+      expect((await app.inject({ url: '/api/sticker-packs/created', headers: { authorization: 'alice' } })).json()).toEqual([]);
+      expect((await app.inject({ method: 'GET', url: `/api/sticker-packs/${id}`, headers: { authorization: 'alice' } })).statusCode).toBe(404);
+      expect((await app.inject({ method: 'PATCH', url: `/api/sticker-packs/${id}`, headers: { authorization: 'alice' }, payload: { name: 'Renamed', description: '' } })).statusCode).toBe(403);
+      expect((await app.inject({ method: 'POST', url: `/api/sticker-packs/${id}/items`, headers: { authorization: 'alice' }, payload: { name: 'X', image: await makeTestImage() } })).statusCode).toBe(403);
+      expect((await app.inject({ method: 'DELETE', url: `/api/sticker-packs/${id}`, headers: { authorization: 'alice' } })).statusCode).toBe(404);
+    }
+  });
 });
 

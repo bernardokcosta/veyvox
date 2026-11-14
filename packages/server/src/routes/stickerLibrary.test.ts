@@ -138,4 +138,17 @@ describe('sticker library', () => {
     expect(library.privatePacks).toEqual([]);
     expect(library.spaces[0].pack).toBeNull();
   });
+
+  it('refuses store packs on every library mutation', async () => {
+    db.insert(schema.stickerPacks).values({
+      id: 'store-pack', name: 'Store', scopeType: 'store', creatorId: 'owner', creatorName: 'owner',
+      currentVersion: 1, status: 'approved', createdAt: 1, updatedAt: 1,
+    }).run();
+    const image = await imageB64();
+    expect((await app.inject({ method: 'POST', url: '/api/sticker-library/packs/store-pack/items', ...as('owner'), payload: { name: 'X', image } })).statusCode).toBe(403);
+    expect((await app.inject({ method: 'DELETE', url: '/api/sticker-library/packs/store-pack/items/whatever', ...as('owner') })).statusCode).toBe(403);
+    expect((await app.inject({ method: 'PATCH', url: '/api/sticker-library/packs/store-pack/items/whatever', ...as('owner'), payload: { name: 'Y' } })).statusCode).toBe(403);
+    expect((await app.inject({ method: 'PATCH', url: '/api/private-sticker-packs/store-pack', ...as('owner'), payload: { name: 'Y' } })).statusCode).toBe(404);
+    expect((await app.inject({ method: 'DELETE', url: '/api/private-sticker-packs/store-pack', ...as('owner') })).statusCode).toBe(404);
+  });
 });

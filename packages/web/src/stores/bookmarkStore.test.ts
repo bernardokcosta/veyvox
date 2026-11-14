@@ -118,4 +118,29 @@ describe('bookmark store', () => {
     await reading;
     expect(store().keys.size).toBe(0);
   });
+
+  it('keeps a bookmark added while the list was being read', async () => {
+    let finish!: (page: { items: Bookmark[]; nextCursor: string | null }) => void;
+    list.mockReturnValue(new Promise(resolve => { finish = resolve; }));
+    const reading = store().loadList();
+    store().applyAdded(bookmark());
+    finish({ items: [], nextCursor: null });
+    await reading;
+    expect(store().list.items.map(item => item.id)).toEqual(['b1']);
+    expect(store().list.status).toBe('loaded');
+  });
+
+  it('keeps a bookmark removed while the next page was being read gone', async () => {
+    list.mockResolvedValueOnce({ items: [bookmark()], nextCursor: '20:b1' });
+    await store().loadList();
+    let finish!: (page: { items: Bookmark[]; nextCursor: string | null }) => void;
+    list.mockReturnValue(new Promise(resolve => { finish = resolve; }));
+    const reading = store().loadMore();
+    // The page the server already read still holds the bookmark.
+    store().applyRemoved('channel', 'chat', 'm1');
+    finish({ items: [bookmark(), bookmark({ id: 'b0', messageId: 'm0', createdAt: 1 })], nextCursor: null });
+    await reading;
+    expect(store().list.items.map(item => item.id)).toEqual(['b0']);
+    expect(selectIsBookmarked(store(), 'channel', 'm1')).toBe(false);
+  });
 });

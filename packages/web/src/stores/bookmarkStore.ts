@@ -77,6 +77,14 @@ interface BookmarkState {
 const changedDuringLoad = new Map<string, Map<string, boolean>>();
 /** The latest list read; an answer for an older one is dropped. */
 let listSeq = 0;
+/**
+ * Changes that arrived for the list while a page was being read, keyed by
+ * bookmarked message. The answer may have been read before or after them,
+ * so they are laid over it.
+ */
+const changedDuringListLoad = new Map<string, Bookmark | null>();
+/** List reads in flight; changes are only recorded while one is. */
+let listLoadsInFlight = 0;
 /** Bumped by `reset`, so an answer for the previous session is dropped. */
 let sessionGeneration = 0;
 
@@ -98,6 +106,28 @@ export const useBookmarkStore = create<BookmarkState>((set, get) => {
 
   function putList(update: (list: BookmarkListState) => BookmarkListState): void {
     set((state) => ({ list: update(state.list) }));
+  }
+
+  /**
+   * Lay the changes that arrived during a list read over its answer: added
+   * bookmarks go first when the answer missed them, removed ones come out
+   * even when the answer still holds them. Consumes the journal; a stale
+   * read never runs, so it never consumes.
+   */
+  function withListChanges(items: readonly Bookmark[]): Bookmark[] {
+    if (changedDuringListLoad.size === 0) return [...items];
+    const changes = [...changedDuringListLoad];
+    changedDuringListLoad.clear();
+    const removed = new Set<string>();
+    const added: Bookmark[] = [];
+    for (const [key, bookmark] of changes) {
+      if (bookmark) added.push(bookmark);
+      else removed.add(key);
+    }
+    const kept = items.filter((item) => !removed.has(bookmarkKey(item.kind, item.messageId)));
+    const known = new Set(kept.map((item) => item.id));
+    const removedIds = new Set(added.filter((item) => removed.has(bookmarkKey(item.kind, item.messageId))).map((item) => item.id));
+    return [...added.filter((item) => !known.has(item.id) && !removedIds.has(item.id)), ...kept];
   }
 
   return {
@@ -152,14 +182,20 @@ export const useBookmarkStore = create<BookmarkState>((set, get) => {
       set((state) => ({
         list: { items: state.list.items, nextCursor: state.list.nextCursor, status: 'loading', loadingMore: false },
       }));
+      listLoadsInFlight += 1;
       try {
         const page = await api.bookmarks.list({ limit: BOOKMARKS_PAGE_DEFAULT });
         if (generation !== sessionGeneration || listSeq !== seq) return;
-        putList(() => ({ items: page.items, nextCursor: page.nextCursor, status: 'loaded', loadingMore: false }));
+        putList(() => {
+          const items = withListChanges(page.items);
+          return { items, nextCursor: page.nextCursor, status: 'loaded', loadingMore: false };
+        });
       } catch (err) {
         if (generation !== sessionGeneration || listSeq !== seq) return;
         console.error('[bookmarks] could not read the list:', err);
         putList((list) => ({ ...list, status: 'error', loadingMore: false }));
+      } finally {
+        listLoadsInFlight -= 1;
       }
     },
 
@@ -169,27 +205,27 @@ export const useBookmarkStore = create<BookmarkState>((set, get) => {
       const generation = sessionGeneration;
       const seq = listSeq;
       putList((current) => ({ ...current, loadingMore: true }));
+      listLoadsInFlight += 1;
       try {
         const page = await api.bookmarks.list({ cursor: list.nextCursor, limit: BOOKMARKS_PAGE_DEFAULT });
         if (generation !== sessionGeneration || listSeq !== seq) return;
         putList((current) => {
           const known = new Set(current.items.map((item) => item.id));
-          return {
-            ...current,
-            items: [...current.items, ...page.items.filter((item) => !known.has(item.id))],
-            nextCursor: page.nextCursor,
-            loadingMore: false,
-          };
+          const items = withListChanges([...current.items, ...page.items.filter((item) => !known.has(item.id))]);
+          return { ...current, items, nextCursor: page.nextCursor, loadingMore: false };
         });
       } catch (err) {
         if (generation !== sessionGeneration || listSeq !== seq) return;
         console.error('[bookmarks] could not read the next page of the list:', err);
         putList((current) => ({ ...current, loadingMore: false }));
+      } finally {
+        listLoadsInFlight -= 1;
       }
     },
 
     applyAdded: (bookmark) => {
       noteChange(bookmark.kind, bookmark.channelId, bookmark.messageId, true);
+      if (listLoadsInFlight > 0) changedDuringListLoad.set(bookmarkKey(bookmark.kind, bookmark.messageId), bookmark);
       set((state) => {
         const keys = withKey(state.keys, bookmarkKey(bookmark.kind, bookmark.messageId), true);
         if (state.list.items.some((item) => item.id === bookmark.id)) {
@@ -201,6 +237,7 @@ export const useBookmarkStore = create<BookmarkState>((set, get) => {
 
     applyRemoved: (kind, channelId, messageId) => {
       noteChange(kind, channelId, messageId, false);
+      if (listLoadsInFlight > 0) changedDuringListLoad.set(bookmarkKey(kind, messageId), null);
       set((state) => {
         const keys = withKey(state.keys, bookmarkKey(kind, messageId), false);
         const items = state.list.items.filter((item) => !(item.kind === kind && item.messageId === messageId));
@@ -221,6 +258,7 @@ export const useBookmarkStore = create<BookmarkState>((set, get) => {
       sessionGeneration += 1;
       listSeq += 1;
       changedDuringLoad.clear();
+      changedDuringListLoad.clear();
       set({ keys: new Set(), loadedConversations: new Set(), list: EMPTY_LIST });
     },
   };

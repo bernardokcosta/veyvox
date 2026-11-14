@@ -89,6 +89,11 @@ async function republishCamera(room: Room, options: CameraBuildResult): Promise<
 
   markIntentionalCameraOff();
   await room.localParticipant.setCameraEnabled(false);
+  // The user may have turned the camera off while the new constraints were
+  // being negotiated: re-enabling here would light it back up behind their
+  // back. The quality effect only runs while isCameraOn, so a stale call is
+  // simply dropped.
+  if (!useVoiceStore.getState().isCameraOn) return;
   await room.localParticipant.setCameraEnabled(true, capture, options.publish);
 }
 
