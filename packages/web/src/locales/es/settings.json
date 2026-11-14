@@ -69,7 +69,16 @@
         "fallbackName": "Cámara {{number}}",
         "detectedFallback": "cámara detectada",
         "currentlyUsing": "En uso: {{label}}",
-        "none": "No se han detectado cámaras."
+        "none": "No se han detectado cámaras.",
+        "quality": {
+          "label": "Calidad de cámara",
+          "managed": "La calidad la fija el servidor: {{resolution}}, {{fps}} fps, {{bitrate}}.",
+          "resolution": "Resolución",
+          "framerate": "Fotogramas",
+          "bitrate": "Bitrate",
+          "useDefault": "Usar valor",
+          "fps": "{{value}} fps"
+        }
       },
       "preview": {
         "testAria": "Probar cámara",
@@ -131,7 +140,8 @@
       "desktop": "Escritorio",
       "instance": "Instancia",
       "bots": "Bots",
-      "developer": "Desarrollador"
+      "developer": "Desarrollador",
+      "stickers": "Pegatinas"
     },
     "logOut": "Cerrar sesión",
     "backToMenu": "Volver al menú de ajustes"
@@ -549,5 +559,20 @@
       "description": "Muestra herramientas de desarrollo en los ajustes, como la pestaña Bots. Desactivarlo solo las oculta; tus bots siguen funcionando.",
       "saveFailed": "No se pudo guardar el ajuste. Inténtalo de nuevo."
     }
+  },
+  "stickers": {
+    "title": "Mi biblioteca de pegatinas",
+    "description": "Álbumes privados que solo tú puedes ver. Cada álbum admite hasta 30 pegatinas animadas o estáticas.",
+    "packs": "Álbumes privados",
+    "newPack": "Nombre del nuevo álbum",
+    "createPack": "Crear álbum",
+    "favorites": "Favoritas",
+    "favoritesHint": "Tu colección de pegatinas. Archiva un elemento en el álbum abierto con +.",
+    "noFavorites": "Aún no hay pegatinas favoritas.",
+    "itemName": "Nombre de la pegatina",
+    "deletePack": "Eliminar álbum",
+    "deletePackTitle": "¿Eliminar \"{{name}}\"?",
+    "deletePackDescription": "El álbum se elimina. Las pegatinas ya enviadas siguen en el chat.",
+    "deletePackSuccess": "Álbum eliminado."
   }
 }

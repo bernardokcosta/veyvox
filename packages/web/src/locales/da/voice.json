@@ -217,7 +217,8 @@
       "memory": "Alzheimer"
     },
     "rules": "Sådan spiller man",
-    "rulesText": "Hver spiller får 7 kort. Match det sidste korts farve eller symbol, eller spil en wild og vælg en farve. Tøm hånden for at vinde.\nSpring over springer næste spiller over; vend skifter retning (med to spillere springer den over). +2 og +4 får næste spiller til straks at trække kort og springer vedkommendes tur over. Ingen stabling. +4 kun når du ikke har kort i den aktive farve; ingen udfordringer.\nTræk ét: spil kun det nye kort, hvis det passer, eller pas. Et uspilleligt træk passer automatisk.\nDu har 45 sekunder pr. tur. Tidsudløb trækker ét og passer; efter træk passer den kun. Går nogen, går vedkommendes kort tilbage til bunken; færre end to spillere afslutter runden uden vinder. En kort stemmegenforbindelse holder pladsen. Genstart af serveren afslutter spil."
+    "rulesText": "Hver spiller får 7 kort. Match det sidste korts farve eller symbol, eller spil en wild og vælg en farve. Tøm hånden for at vinde.\nSpring over springer næste spiller over; vend skifter retning (med to spillere springer den over). +2 og +4 får næste spiller til straks at trække kort og springer vedkommendes tur over. Ingen stabling. +4 kun når du ikke har kort i den aktive farve; ingen udfordringer.\nTræk ét: spil kun det nye kort, hvis det passer, eller pas. Et uspilleligt træk passer automatisk.\nDu har 45 sekunder pr. tur. Tidsudløb trækker ét og passer; efter træk passer den kun. Går nogen, går vedkommendes kort tilbage til bunken; færre end to spillere afslutter runden uden vinder. En kort stemmegenforbindelse holder pladsen. Genstart af serveren afslutter spil.",
+    "comingSoon": "Kommer snart"
   },
   "soundboard": {
     "title": "Lydtavle",
@@ -552,5 +553,23 @@
     "stillDenied": "Mikrofonadgang er stadig nægtet. Tillad den for dette websted i browser- eller enhedsindstillinger.",
     "notFound": "Ingen mikrofon registreret.",
     "failed": "Kunne ikke få adgang til mikrofonen."
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}} startede opkaldet",
+    "from": "Fra:",
+    "to": "Til:",
+    "status": {
+      "ringing": "Ringer…",
+      "active": "Opkald i gang",
+      "ended": "Opkald afsluttet",
+      "missed": "Mistet opkald",
+      "rejected": "Opkald afvist",
+      "interrupted": "Opkald afbrudt",
+      "cancelled": "Opkald annulleret"
+    },
+    "duration": "Varighed"
+  },
+  "callOngoing": "Opkald i gang",
+  "rejoinCall": "Tilbage til opkaldet",
+  "callWaiting": "Venter på den anden · slutter om {{remaining}}"
 }

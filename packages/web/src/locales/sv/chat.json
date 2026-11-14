@@ -100,6 +100,12 @@
       "named_one": "{{names}} skriver",
       "named_other": "{{names}} skriver",
       "several": "Flera personer skriver"
+    },
+    "preparing": {
+      "image": "Förbereder foto…",
+      "video": "Förbereder video… {{percent}} %",
+      "sendOriginal": "Skicka originalet",
+      "cancel": "Avbryt"
     }
   },
   "menu": {
@@ -254,8 +260,8 @@
     "draft": "Utkast",
     "newVersion": "Ny version",
     "deletePack": "Ta bort paket",
-    "stickersCount_one": "{{count}} dekal",
-    "stickersCount_other": "{{count}} dekaler",
+    "stickersCount_one": "{{count}} klistermärke.",
+    "stickersCount_other": "{{count}} klistermärken.",
     "noPacks": "Inga dekalpaket hittades",
     "viewPack": "Visa paket",
     "saveDraft": "Spara som utkast",
@@ -274,7 +280,13 @@
     "reviewNotes": "Avvisningsorsak",
     "creator": "Skapare",
     "viewStickers": "Visa dekaler",
-    "pendingReviewHint": "Hos administratör för granskning; visas i Utforska efter godkännande"
+    "pendingReviewHint": "Hos administratör för granskning; visas i Utforska efter godkännande",
+    "invalidName": "Välj ett synligt namn på upp till 100 tecken.",
+    "favoritesTitle": "Favoritklistermärken",
+    "favorite": "Favoritklistermärke",
+    "favorited": "Klistermärke tillagt till favoriter.",
+    "serverEmpty": "Detta rum har ännu inget klistermärkesalbum.",
+    "serverEmptyHint": "En rumsansvarig kan lägga till ett under Ruminställningar → Rummets klistermärken."
   },
   "poke": {
     "action": "Puffa",

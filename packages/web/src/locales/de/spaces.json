@@ -68,7 +68,17 @@
         "note": "Dieser Kanal ist für Mitglieder ohne ausdrücklichen Zugriff verborgen. Wer die Administrator-Berechtigung hat oder den Space besitzt, sieht immer alle Kanäle.",
         "unhideOnSave": "Beim Speichern wird dieser Kanal für alle Mitglieder sichtbar."
       },
-      "deleteButton": "Kanal löschen"
+      "deleteButton": "Kanal löschen",
+      "voiceQuality": {
+        "label": "Sprachqualität",
+        "option": "{{value}} kbps",
+        "description": {
+          "64": "Klare Sprache. Geringster Bandbreitenbedarf.",
+          "128": "Vollere, natürlichere Stimmen.",
+          "256": "Höchste Qualität, ideal für Musik. Höchster Bandbreitenbedarf."
+        },
+        "hint": "Legt die höchste Audiobitrate fest, die jedes Mitglied in diesem Kanal senden kann. Gilt für alle, auch für bereits verbundene Personen."
+      }
     },
     "delete": {
       "title": "#{{name}} löschen?",
@@ -361,6 +371,8 @@
       "manageChannels": "Kanäle verwalten",
       "manageRoles": "Rollen verwalten",
       "manageSpace": "Space verwalten",
+      "createStickers": "Server-Sticker erstellen",
+      "manageStickers": "Server-Sticker verwalten",
       "createInvite": "Einladungen erstellen",
       "kickMembers": "Mitglieder entfernen",
       "banMembers": "Mitglieder sperren",
@@ -611,5 +623,12 @@
     "suppressRoles": "Rollenerwähnungen unterdrücken",
     "massHeading": "Gruppenerwähnungen",
     "massNote": "@here erreicht dieselben Mitglieder wie @everyone. Erwähnungen von dir mit Namen benachrichtigen dich immer."
+  },
+  "stickers": {
+    "title": "Space-Sticker",
+    "description": "Ein geteiltes Sticker-Album für diesen Space, mit bis zu 50 animierten oder statischen Stickern.",
+    "empty": "Dieser Space hat noch kein Sticker-Album.",
+    "create": "Space-Album erstellen",
+    "add": "Sticker hinzufügen"
   }
 }

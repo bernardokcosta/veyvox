@@ -270,6 +270,35 @@
       "deletedToast_many": "Smazáno {{count}} souborů ({{size}})",
       "deletedToast_other": "Smazán {{count}} soubor ({{size}})",
       "failed": "Čištění médií se nezdařilo"
+    },
+    "diskCleanup": {
+      "label": "Automatické čištění",
+      "enable": "Automaticky uvolnit místo, když je disk téměř plný",
+      "enableHint": "Nejprve smaže soubory, které nic nepoužívá, pak staré přílohy chatu, od nejstarších. Text zpráv zůstává.",
+      "warning": "Zapnuto: když disk dosáhne níže uvedené hranice, mohou být trvale smazány přílohy chatu starší než {{days}} dnů. Novější soubory a profilové obrázky se nikdy nemažou.",
+      "usage": "{{percent}} % disku použito ({{used}} z {{total}})",
+      "usageLabel": "Využití disku",
+      "usageUnknown": "Využití disku se nepodařilo zjistit.",
+      "threshold": "Čistit od",
+      "target": "Vyčistit do",
+      "minAge": "Nikdy nemazat soubory novější než",
+      "days": "dní",
+      "problemThreshold": "Počáteční úroveň musí být celé číslo mezi {{min}} a {{max}}.",
+      "problemTarget": "Cílová úroveň musí být celé číslo mezi {{min}} a {{max}} (alespoň o 5 bodů nižší než počáteční).",
+      "problemAge": "Stáří musí být celý počet dní mezi {{min}} a {{max}}.",
+      "saved": "Nastavení čištění uloženo",
+      "checkNow": "Zkontrolovat nyní",
+      "checking": "Kontroluji…",
+      "checkedNothing": "Disk je pod hranicí, takže se nic nesmazalo.",
+      "neverRan": "Zatím se žádné čištění nespustilo.",
+      "stage": {
+        "safe": "pouze nepoužívané soubory",
+        "media": "včetně starých příloh"
+      },
+      "lastRun_one": "Poslední čištění {{when}} ({{stage}}): {{before}} % → {{after}} %, smazán {{count}} soubor, uvolněno {{size}}.",
+      "lastRun_other": "Poslední čištění {{when}} ({{stage}}): {{before}} % → {{after}} %, smazáno {{count}} souborů, uvolněno {{size}}.",
+      "lastRun_few": "Poslední čištění {{when}} ({{stage}}): {{before}} % → {{after}} %, smazány {{count}} soubory, uvolněno {{size}}.",
+      "lastRun_many": "Poslední čištění {{when}} ({{stage}}): {{before}} % → {{after}} %, smazáno {{count}} souborů, uvolněno {{size}}."
     }
   },
   "streaming": {
@@ -313,6 +342,32 @@
     "capWarning": {
       "title": "Hodnoty matice přesahují globální limit.",
       "description": "Některé bitrate přesahují tvé maximum {{max}}. Toky s těmito kombinacemi budou sníženy na tvou mez."
+    },
+    "camera": {
+      "label": "Webkamera",
+      "description": "Určuje kvalitu, v jaké uživatelé vysílají kameru.",
+      "mode": {
+        "label": "Pravidlo kvality webkamery",
+        "fixed": "Pevné (současné chování)",
+        "userChoice": "Volí uživatelé",
+        "fixedHint": "Všichni vysílají v kvalitě níže.",
+        "userChoiceHint": "Uživatelé vybírají z povolených hodnot v nastavení Hlas a video."
+      },
+      "defaults": {
+        "resolution": "Výchozí rozlišení",
+        "framerate": "Výchozí snímková frekvence",
+        "bitrate": "Výchozí datový tok (kb/s)"
+      },
+      "quality": {
+        "resolutions": "Povolená rozlišení",
+        "framerates": "Povolené snímkové frekvence",
+        "bitrateRange": "Rozsah datového toku (kb/s)",
+        "min": "Min.",
+        "max": "Max.",
+        "allowCustom": "Povolit vlastní datový tok",
+        "allowCustomHint": "Uživatelé mohou nastavit libovolný tok v rozsahu."
+      },
+      "highEndWarning": "Vysoká nastavení kamery stojí šířku pásma i CPU každého účastníka."
     }
   },
   "updates": {

@@ -106,6 +106,12 @@
       "named_many": "{{names}} друкують",
       "named_other": "{{names}} друкує",
       "several": "Кілька людей друкують"
+    },
+    "preparing": {
+      "image": "Підготовка фото…",
+      "video": "Підготовка відео… {{percent}} %",
+      "sendOriginal": "Надіслати оригінал",
+      "cancel": "Скасувати"
     }
   },
   "menu": {
@@ -270,10 +276,10 @@
     "draft": "Чернетка",
     "newVersion": "Нова версія",
     "deletePack": "Видалити набір",
-    "stickersCount_one": "{{count}} стікер",
+    "stickersCount_one": "{{count}} стікер.",
     "stickersCount_few": "{{count}} стікери",
     "stickersCount_many": "{{count}} стікерів",
-    "stickersCount_other": "{{count}} стікера",
+    "stickersCount_other": "{{count}} стікери.",
     "noPacks": "Наборів стікерів не знайдено",
     "viewPack": "Переглянути набір",
     "saveDraft": "Зберегти як чернетку",
@@ -292,7 +298,13 @@
     "reviewNotes": "Причина відхилення",
     "creator": "Автор",
     "viewStickers": "Переглянути стікери",
-    "pendingReviewHint": "На розгляді адміністратора; після схвалення з'явиться в огляді"
+    "pendingReviewHint": "На розгляді адміністратора; після схвалення з'явиться в огляді",
+    "invalidName": "Оберіть видиму назву до 100 символів.",
+    "favoritesTitle": "Улюблені стікери",
+    "favorite": "Улюблений стікер",
+    "favorited": "Стікер додано до улюбленого.",
+    "serverEmpty": "У цього простору ще немає альбому стікерів.",
+    "serverEmptyHint": "Менеджер простору може додати його в налаштуваннях простору."
   },
   "poke": {
     "action": "Тицьнути",

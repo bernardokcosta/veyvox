@@ -257,6 +257,34 @@
       "deletedToast_few": "S-au șters {{count}} fișiere ({{size}})",
       "deletedToast_other": "S-au șters {{count}} de fișiere ({{size}})",
       "failed": "Curățarea media a eșuat"
+    },
+    "diskCleanup": {
+      "label": "Curățare automată",
+      "enable": "Eliberează automat spațiu când discul este aproape plin",
+      "enableHint": "Șterge mai întâi fișierele pe care nu le folosește nimic, apoi atașamentele vechi, de la cel mai vechi. Textul mesajelor rămâne.",
+      "warning": "Activată: când discul atinge limita de mai jos, atașamentele mai vechi de {{days}} zile pot fi șterse definitiv. Fișierele mai noi și pozele de profil nu sunt atinse niciodată.",
+      "usage": "{{percent}}% din disc folosit ({{used}} din {{total}})",
+      "usageLabel": "Utilizare disc",
+      "usageUnknown": "Utilizarea discului nu a putut fi citită.",
+      "threshold": "Începe curățarea la",
+      "target": "Curăță până la",
+      "minAge": "Nu șterge niciodată fișiere mai noi de",
+      "days": "zile",
+      "problemThreshold": "Nivelul de pornire trebuie să fie un număr întreg între {{min}} și {{max}}.",
+      "problemTarget": "Nivelul țintă trebuie să fie un număr întreg între {{min}} și {{max}} (cu cel puțin 5 puncte sub pornire).",
+      "problemAge": "Vechimea trebuie să fie un număr întreg de zile între {{min}} și {{max}}.",
+      "saved": "Setările de curățare au fost salvate",
+      "checkNow": "Verifică acum",
+      "checking": "Se verifică…",
+      "checkedNothing": "Discul este sub limită, deci nu s-a șters nimic.",
+      "neverRan": "Nu a rulat încă nicio curățare.",
+      "stage": {
+        "safe": "doar fișiere nefolosite",
+        "media": "inclusiv atașamente vechi"
+      },
+      "lastRun_one": "Ultima curățare {{when}} ({{stage}}): {{before}}% → {{after}}%, {{count}} fișier(e) șterse, {{size}} eliberați.",
+      "lastRun_other": "Ultima curățare {{when}} ({{stage}}): {{before}}% → {{after}}%, {{count}} fișier(e) șterse, {{size}} eliberați.",
+      "lastRun_few": "Ultima curățare {{when}} ({{stage}}): {{before}}% → {{after}}%, {{count}} fișiere șterse, {{size}} eliberați."
     }
   },
   "streaming": {
@@ -300,6 +328,32 @@
     "capWarning": {
       "title": "Valorile matricei depășesc limita globală.",
       "description": "Unele valori de bitrate depășesc maximul tău de {{max}}. Fluxurile la acele combinații vor fi degradate calitativ la limita ta."
+    },
+    "camera": {
+      "label": "Camera web",
+      "description": "Controlează calitatea cu care utilizatorii își publică camera.",
+      "mode": {
+        "label": "Politica de calitate a camerei",
+        "fixed": "Fixă (comportamentul actual)",
+        "userChoice": "Aleg utilizatorii",
+        "fixedHint": "Toți publică la calitatea de mai jos.",
+        "userChoiceHint": "Utilizatorii aleg dintre valorile permise din Voce și video."
+      },
+      "defaults": {
+        "resolution": "Rezoluție implicită",
+        "framerate": "Cadență implicită",
+        "bitrate": "Bitrate implicit (kbps)"
+      },
+      "quality": {
+        "resolutions": "Rezoluții permise",
+        "framerates": "Cadențe permise",
+        "bitrateRange": "Interval bitrate (kbps)",
+        "min": "Min.",
+        "max": "Max.",
+        "allowCustom": "Permite bitrate personalizat",
+        "allowCustomHint": "Utilizatorii pot seta orice bitrate din interval."
+      },
+      "highEndWarning": "Setările înalte costă bandă și CPU pentru fiecare participant."
     }
   },
   "updates": {

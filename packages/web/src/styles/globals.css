@@ -452,6 +452,13 @@
   .rounded-inherit {
     border-radius: inherit;
   }
+
+  /* Compact type scale for dense surfaces (bookmark rows, call cards,
+     settings panels): fixed sizes, independent of the interface scale. */
+  .text-ui-body { font-size: 14px; line-height: 1.5; }
+  .text-ui-label { font-size: 13px; line-height: 1.4; }
+  .text-ui-caption { font-size: 12px; line-height: 1.4; }
+  .text-ui-micro { font-size: 10px; line-height: 1.4; }
   
   .scrollbar-thin::-webkit-scrollbar {
     width: 4px;
@@ -763,6 +770,12 @@
   .animate-activity-fade {
     animation: none;
   }
+}
+
+/* The bookmark mark fills in rather than switching. */
+.bookmark-fill { transition: fill-opacity 120ms ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .bookmark-fill { transition: none; }
 }
 
 /* ── Electron window drag regions ── */

@@ -1,0 +1,31 @@
+{
+  "message": {
+    "add": "Lisää kirjanmerkki",
+    "remove": "Poista kirjanmerkki"
+  },
+  "menu": {
+    "add": "Lisää viesti kirjanmerkkeihin",
+    "remove": "Poista kirjanmerkki"
+  },
+  "toast": {
+    "addFailed": "Kirjanmerkin tallennus epäonnistui: {{reason}}",
+    "removeFailed": "Kirjanmerkin poisto epäonnistui: {{reason}}"
+  },
+  "title": "Kirjanmerkit",
+  "list": {
+    "loading": "Ladataan…",
+    "empty": "Ei vielä kirjanmerkkejä",
+    "emptyHint": "Lisää viesti kirjanmerkkeihin toimintopalkista tai valikosta, niin löydät sen täältä.",
+    "showMore": "Näytä lisää",
+    "open": "Avaa käyttäjän {{name}} viesti",
+    "remove": "Poista kirjanmerkki"
+  },
+  "status": {
+    "edited": "Alkuperäistä viestiä muokattiin. Tämä on tallennettu kopio.",
+    "deleted": "Alkuperäinen viesti poistettiin. Tämä on tallennettu kopio.",
+    "unavailable": "Alkuperäinen viesti ei ole enää saatavilla sinulle. Tämä on tallennettu kopio."
+  },
+  "attachment": {
+    "gone": "tiedosto poistettu"
+  }
+}

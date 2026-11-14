@@ -27,6 +27,8 @@ export function usePermissionNames(): Record<PermissionKey, string> {
     MANAGE_CHANNELS: t('spaces:permissions.names.manageChannels'),
     MANAGE_ROLES: t('spaces:permissions.names.manageRoles'),
     MANAGE_SPACE: t('spaces:permissions.names.manageSpace'),
+    CREATE_STICKERS: t('spaces:permissions.names.createStickers'),
+    MANAGE_STICKERS: t('spaces:permissions.names.manageStickers'),
     CREATE_INVITE: t('spaces:permissions.names.createInvite'),
     KICK_MEMBERS: t('spaces:permissions.names.kickMembers'),
     BAN_MEMBERS: t('spaces:permissions.names.banMembers'),

@@ -18,7 +18,7 @@ interface ActionRow {
 
 export function MobileYouScreen() {
   useEmojiShortcodeNames();
-  const { t } = useTranslation(['mobile', 'settings', 'common', 'admin']);
+  const { t } = useTranslation(['mobile', 'settings', 'common', 'admin', 'bookmarks']);
   const pushMobileScreen = useUIStore((s) => s.pushMobileScreen);
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
@@ -48,6 +48,15 @@ export function MobileYouScreen() {
         </svg>
       ),
       action: () => pushMobileScreen('friends'),
+    },
+    {
+      label: t('bookmarks:title'),
+      icon: (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c.1.128.157.29.157.457V21.75l-5.75-4.5-5.75 4.5V3.78c0-.167.057-.329.157-.457C6.32 2.44 8.103 2.25 12 2.25s5.68.19 5.593 1.072z" />
+        </svg>
+      ),
+      action: () => pushMobileScreen('bookmarks'),
     },
     {
       label: t('settings:nav.tabs.voice'),

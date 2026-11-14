@@ -68,7 +68,17 @@
         "note": "Kanal ini tersembunyi dari anggota tanpa akses eksplisit. Pengguna dengan izin administrator atau pemilik ruang selalu melihat semua kanal.",
         "unhideOnSave": "Menyimpan membuat kanal ini terlihat oleh tiap anggota."
       },
-      "deleteButton": "Hapus Kanal"
+      "deleteButton": "Hapus Kanal",
+      "voiceQuality": {
+        "label": "Kualitas suara",
+        "option": "{{value}} kbps",
+        "description": {
+          "64": "Suara jernih. Paling hemat bandwidth.",
+          "128": "Suara lebih penuh dan alami.",
+          "256": "Kualitas tertinggi, terbaik untuk musik. Paling boros bandwidth."
+        },
+        "hint": "Menetapkan bitrate audio tertinggi yang boleh dikirim tiap anggota di channel ini. Berlaku untuk semua, termasuk yang sudah terhubung."
+      }
     },
     "delete": {
       "title": "Hapus #{{name}}?",
@@ -361,6 +371,8 @@
       "manageChannels": "Kelola Kanal",
       "manageRoles": "Kelola Peran",
       "manageSpace": "Kelola Ruang",
+      "createStickers": "Buat stiker",
+      "manageStickers": "Kelola stiker",
       "createInvite": "Buat Undangan",
       "kickMembers": "Keluarkan Anggota",
       "banMembers": "Blokir Anggota",
@@ -611,5 +623,12 @@
     "suppressRoles": "Tekan sebutan peran",
     "massHeading": "Sebutan grup",
     "massNote": "@here menjangkau anggota yang sama dengan @everyone. Sebutan Anda berdasar nama selalu memberi tahu Anda."
+  },
+  "stickers": {
+    "title": "Stiker ruang",
+    "description": "Satu album stiker bersama untuk ruang ini, hingga 50 stiker animasi atau statis.",
+    "empty": "Ruang ini belum punya album stiker.",
+    "create": "Buat album ruang",
+    "add": "Tambah stiker"
   }
 }

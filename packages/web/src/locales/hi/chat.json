@@ -100,6 +100,12 @@
       "named_one": "{{names}} लिख रहा",
       "named_other": "{{names}} लिख रहे",
       "several": "कई लोग लिख रहे"
+    },
+    "preparing": {
+      "image": "फ़ोटो तैयार हो रही है…",
+      "video": "वीडियो तैयार हो रहा है… {{percent}}%",
+      "sendOriginal": "मूल भेजें",
+      "cancel": "रद्द करें"
     }
   },
   "menu": {
@@ -254,8 +260,8 @@
     "draft": "प्रारूप",
     "newVersion": "नया संस्करण",
     "deletePack": "पैक हटाएं",
-    "stickersCount_one": "{{count}} स्टिकर",
-    "stickersCount_other": "{{count}} स्टिकर",
+    "stickersCount_one": "{{count}} स्टिकर।",
+    "stickersCount_other": "{{count}} स्टिकर।",
     "noPacks": "कोई स्टिकर पैक नहीं मिला",
     "viewPack": "पैक देखें",
     "saveDraft": "प्रारूप सहेजें",
@@ -274,7 +280,13 @@
     "reviewNotes": "अस्वीकृति कारण",
     "creator": "निर्माता",
     "viewStickers": "स्टिकर देखें",
-    "pendingReviewHint": "व्यवस्थापक समीक्षाधीन, अनुमोदन पर एक्सप्लोर में दिखेगा"
+    "pendingReviewHint": "व्यवस्थापक समीक्षाधीन, अनुमोदन पर एक्सप्लोर में दिखेगा",
+    "invalidName": "100 अक्षरों तक का दृश्य नाम चुनें।",
+    "favoritesTitle": "पसंदीदा स्टिकर",
+    "favorite": "पसंदीदा स्टिकर",
+    "favorited": "स्टिकर पसंदीदा में जोड़ा गया।",
+    "serverEmpty": "इस स्पेस में अभी कोई स्टिकर एल्बम नहीं है।",
+    "serverEmptyHint": "स्पेस प्रबंधक इसे स्पेस सेटिंग → स्पेस के स्टिकर में जोड़ सकता है।"
   },
   "poke": {
     "action": "पोक करें",

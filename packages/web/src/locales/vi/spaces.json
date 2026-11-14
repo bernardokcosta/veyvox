@@ -68,7 +68,17 @@
         "note": "Kênh này ẩn với thành viên không có quyền rõ ràng. Người có quyền quản trị hay chủ không gian luôn thấy mọi kênh.",
         "unhideOnSave": "Lưu làm kênh này hiện với mọi thành viên."
       },
-      "deleteButton": "Xóa kênh"
+      "deleteButton": "Xóa kênh",
+      "voiceQuality": {
+        "label": "Chất lượng giọng",
+        "option": "{{value}} kbps",
+        "description": {
+          "64": "Giọng rõ ràng. Ít tốn băng thông nhất.",
+          "128": "Giọng đầy và tự nhiên hơn.",
+          "256": "Chất lượng cao nhất, tốt nhất cho nhạc. Tốn băng thông nhất."
+        },
+        "hint": "Đặt bitrate âm thanh tối đa mỗi thành viên được gửi trong kênh này. Áp dụng cho mọi người, kể cả người đang kết nối."
+      }
     },
     "delete": {
       "title": "Xóa #{{name}}?",
@@ -361,6 +371,8 @@
       "manageChannels": "Quản lý kênh",
       "manageRoles": "Quản lý vai trò",
       "manageSpace": "Quản lý không gian",
+      "createStickers": "Tạo nhãn dán",
+      "manageStickers": "Quản lý nhãn dán",
       "createInvite": "Tạo thư mời",
       "kickMembers": "Đuổi thành viên",
       "banMembers": "Cấm thành viên",
@@ -611,5 +623,12 @@
     "suppressRoles": "Chặn nhắc vai trò",
     "massHeading": "Nhắc nhóm",
     "massNote": "@here tới cùng thành viên như @everyone. Nhắc bạn đích danh luôn báo bạn."
+  },
+  "stickers": {
+    "title": "Nhãn dán của không gian",
+    "description": "Một album chung cho không gian này, tối đa 50 nhãn dán động hoặc tĩnh.",
+    "empty": "Không gian này chưa có album nhãn dán.",
+    "create": "Tạo album của không gian",
+    "add": "Thêm nhãn dán"
   }
 }

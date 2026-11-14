@@ -244,6 +244,33 @@
       "deletedToast_one": "Slettede {{count}} fil ({{size}})",
       "deletedToast_other": "Slettede {{count}} filer ({{size}})",
       "failed": "Medieoprydning mislykkedes"
+    },
+    "diskCleanup": {
+      "label": "Automatisk oprydning",
+      "enable": "Frigør plads automatisk, når disken næsten er fuld",
+      "enableHint": "Sletter først filer, som intet bruger, derefter gamle vedhæftninger, ældste først. Beskedteksten bliver.",
+      "warning": "Slået til: når disken når grænsen nedenfor, kan vedhæftninger ældre end {{days}} dage blive slettet for altid. Nyere filer og profilbilleder røres aldrig.",
+      "usage": "{{percent}} % af disken brugt ({{used}} af {{total}})",
+      "usageLabel": "Diskforbrug",
+      "usageUnknown": "Diskforbruget kunne ikke aflæses.",
+      "threshold": "Start oprydning ved",
+      "target": "Ryd op ned til",
+      "minAge": "Slet aldrig filer nyere end",
+      "days": "dage",
+      "problemThreshold": "Startniveauet skal være et helt tal mellem {{min}} og {{max}}.",
+      "problemTarget": "Målet skal være et helt tal mellem {{min}} og {{max}} (mindst 5 point under startniveauet).",
+      "problemAge": "Alderen skal være et helt antal dage mellem {{min}} og {{max}}.",
+      "saved": "Oprydningsindstillinger gemt",
+      "checkNow": "Tjek nu",
+      "checking": "Tjekker…",
+      "checkedNothing": "Disken er under grænsen, så intet blev slettet.",
+      "neverRan": "Ingen oprydning har kørt endnu.",
+      "stage": {
+        "safe": "kun ubrugte filer",
+        "media": "inklusive gamle vedhæftninger"
+      },
+      "lastRun_one": "Sidste oprydning {{when}} ({{stage}}): {{before}} % → {{after}} %, {{count}} fil(er) slettet, {{size}} frigivet.",
+      "lastRun_other": "Sidste oprydning {{when}} ({{stage}}): {{before}} % → {{after}} %, {{count}} fil(er) slettet, {{size}} frigivet."
     }
   },
   "streaming": {
@@ -287,6 +314,32 @@
     "capWarning": {
       "title": "Matrixværdier overskrider den globale grænse.",
       "description": "Nogle bitrates overskrider dit maksimum {{max}}. Strømme med disse kombinationer sænkes til din grænse."
+    },
+    "camera": {
+      "label": "Webkamera",
+      "description": "Styrer kvaliteten, som brugerne sender deres kamera i.",
+      "mode": {
+        "label": "Webcam-kvalitetspolitik",
+        "fixed": "Fast (nuværende adfærd)",
+        "userChoice": "Brugerne vælger",
+        "fixedHint": "Alle sender i kvaliteten nedenfor.",
+        "userChoiceHint": "Brugerne vælger blandt de tilladte værdier i Stemme & Video."
+      },
+      "defaults": {
+        "resolution": "Standardopløsning",
+        "framerate": "Standardbilledhastighed",
+        "bitrate": "Standardbitrate (kbps)"
+      },
+      "quality": {
+        "resolutions": "Tilladte opløsninger",
+        "framerates": "Tilladte billedhastigheder",
+        "bitrateRange": "Bitrateområde (kbps)",
+        "min": "Min.",
+        "max": "Maks.",
+        "allowCustom": "Tillad brugerdefineret bitrate",
+        "allowCustomHint": "Brugerne kan sætte enhver bitrate i området."
+      },
+      "highEndWarning": "Høje kameraindstillinger koster uploadbåndbredde og CPU for hver deltager."
     }
   },
   "updates": {

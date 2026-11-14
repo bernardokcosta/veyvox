@@ -68,7 +68,17 @@
         "note": "Tämä kanava on piilotettu jäseniltä ilman nimenomaista pääsyä. Käyttäjät ylläpitäjän luvalla tai tilojen omistajat näkevät aina kaikki kanavat.",
         "unhideOnSave": "Tallennus tekee tämän kanavan näkyväksi jokaiselle jäsenelle."
       },
-      "deleteButton": "Poista kanava"
+      "deleteButton": "Poista kanava",
+      "voiceQuality": {
+        "label": "Äänenlaatu",
+        "option": "{{value}} kbps",
+        "description": {
+          "64": "Selkeä puhe. Pienin kaistan tarve.",
+          "128": "Täyteläisemmät, luonnollisemmat äänet.",
+          "256": "Korkein laatu, paras musiikille. Suurin kaistan tarve."
+        },
+        "hint": "Asettaa suurimman äänen bittinopeuden, jonka kukin jäsen voi lähettää tällä kanavalla. Koskee kaikkia, myös jo yhdistäneitä."
+      }
     },
     "delete": {
       "title": "Poistetaanko #{{name}}?",
@@ -361,6 +371,8 @@
       "manageChannels": "Hallitse kanavia",
       "manageRoles": "Hallitse rooleja",
       "manageSpace": "Hallitse tilaa",
+      "createStickers": "Luo tarroja",
+      "manageStickers": "Hallitse tarroja",
       "createInvite": "Luo kutsu",
       "kickMembers": "Potki jäseniä ulos",
       "banMembers": "Estä jäseniä",
@@ -611,5 +623,12 @@
     "suppressRoles": "Vaimenna roolimaininnat",
     "massHeading": "Ryhmämaininnat",
     "massNote": "@here tavoittaa samat jäsenet kuin @everyone. Nimeltä maininnat sinusta ilmoittavat sinulle aina."
+  },
+  "stickers": {
+    "title": "Tilan tarrat",
+    "description": "Yksi jaettu tarra-albumi tälle tilalle, enintään 50 animoitua tai staattista tarraa.",
+    "empty": "Tällä tilalla ei ole vielä tarra-albumia.",
+    "create": "Luo tilan albumi",
+    "add": "Lisää tarra"
   }
 }

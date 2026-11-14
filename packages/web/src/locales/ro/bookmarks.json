@@ -1,0 +1,31 @@
+{
+  "message": {
+    "add": "Salvează",
+    "remove": "Elimină marcajul"
+  },
+  "menu": {
+    "add": "Salvează mesajul",
+    "remove": "Elimină marcajul"
+  },
+  "toast": {
+    "addFailed": "Marcajul nu a putut fi salvat: {{reason}}",
+    "removeFailed": "Marcajul nu a putut fi eliminat: {{reason}}"
+  },
+  "title": "Marcaje",
+  "list": {
+    "loading": "Se încarcă…",
+    "empty": "Încă niciun marcaj",
+    "emptyHint": "Salvează un mesaj din bara de acțiuni sau din meniu ca să îl găsești aici.",
+    "showMore": "Arată mai multe",
+    "open": "Deschide mesajul de la {{name}}",
+    "remove": "Elimină marcajul"
+  },
+  "status": {
+    "edited": "Mesajul original a fost editat. Aceasta este copia salvată.",
+    "deleted": "Mesajul original a fost șters. Aceasta este copia salvată.",
+    "unavailable": "Mesajul original nu îți mai este disponibil. Aceasta este copia salvată."
+  },
+  "attachment": {
+    "gone": "fișier șters"
+  }
+}

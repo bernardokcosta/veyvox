@@ -4,6 +4,8 @@ import { drizzle } from 'drizzle-orm/better-sqlite3';
 import type { WebSocket } from 'ws';
 import * as schema from '../db/schema.js';
 import { buildNativeDatabase, seedNativeUser } from '../testing/standaloneUpgrade.js';
+import { setWorkerId } from '../utils/snowflake.js';
+setWorkerId(12);
 import { connectionManager, buildReadyPayload, VOICE_RECONNECT_GRACE_MS } from './handler.js';
 
 let sqlite: Database.Database;

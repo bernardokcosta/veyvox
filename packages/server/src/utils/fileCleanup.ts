@@ -57,12 +57,21 @@ export function getProfileReferencedFilenames(): Set<string> {
   return new Set(rows.filter(row => row.file).map(row => path.basename(row.file!)));
 }
 
-/** Native profiles, soundboard content, attachments and their thumbnails. */
+/** Native profiles, soundboard content, attachments, bookmark copies and their thumbnails. */
 export function getReferencedFilenames(): Set<string> {
   const db = getDb(), referenced = getProfileReferencedFilenames();
   for (const row of db.select({ filename: schema.soundboardSounds.filename }).from(schema.soundboardSounds).all()) referenced.add(path.basename(row.filename));
   for (const row of db.select({ filename: schema.attachments.filename, thumbnail: schema.attachments.thumbnailFilename }).from(schema.attachments).all()) {
     referenced.add(path.basename(row.filename));
+    if (row.thumbnail) referenced.add(path.basename(row.thumbnail));
+  }
+  // Files a bookmark owns (its own copies, never the originals' files). Without
+  // a copy there are none, but a scan must not free one that exists.
+  for (const row of db.select({
+    filename: schema.bookmarkAttachments.filename,
+    thumbnail: schema.bookmarkAttachments.thumbnailFilename,
+  }).from(schema.bookmarkAttachments).all()) {
+    if (row.filename) referenced.add(path.basename(row.filename));
     if (row.thumbnail) referenced.add(path.basename(row.thumbnail));
   }
   return referenced;

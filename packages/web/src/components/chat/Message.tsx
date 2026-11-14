@@ -37,6 +37,8 @@ import { useTransferStore } from '../../stores/transferStore';
 import { useMessageJump } from './messageJumpContext';
 import { ReactionPill } from './ReactionPill';
 import { BotBadge } from '../ui/BotBadge';
+import { useMessageBookmark } from '../../hooks/useBookmarks';
+import { BookmarkIcon } from '../ui/BookmarkIcon';
 import { memberNameColor } from '../../utils/memberGroups';
 
 interface MessageProps {
@@ -133,7 +135,7 @@ function getImageEmbedSourceUrl(content: string | null, embeds: Embed[]): string
 }
 
 export function Message({ message, isFirstInGroup, previousMessageId }: MessageProps) {
-  const { t } = useTranslation(['chat', 'common']);
+  const { t } = useTranslation(['chat', 'common', 'bookmarks']);
   const fmt = useFormatters();
   const [editContent, setEditContent] = useState(message.content ?? '');
   const [isHovered, setIsHovered] = useState(false);
@@ -232,6 +234,10 @@ export function Message({ message, isFirstInGroup, previousMessageId }: MessageP
   const canSendMessages = isDmMessage || hasPermissionBit(myChPerms, PermissionBits.SEND_MESSAGES);
   const canDelete = isAuthor || canManageMessages;
   const canAddReactions = (isDmMessage || hasPermissionBit(myChPerms, PermissionBits.ADD_REACTIONS)) && !isDeadDmThread;
+  // Bookmark: any saved message the reader can see. A system message and a row
+  // that has not been sent yet cannot be saved, which is what the server refuses too.
+  const canBookmark = !pending && message.type !== 'system' && !!channelKey;
+  const bookmark = useMessageBookmark({ channelId: channelKey, messageId: message.id });
 
   const addReaction = useChatStore((s) => s.addReaction);
   const removeReaction = useChatStore((s) => s.removeReaction);
@@ -383,6 +389,9 @@ export function Message({ message, isFirstInGroup, previousMessageId }: MessageP
         setReactionPicker('row');
       },
       onMarkUnread: (msgId: string) => markUnread(channelKey, msgId),
+      canBookmark,
+      isBookmarked: bookmark.bookmarked,
+      onToggleBookmark: () => { void bookmark.toggle(); },
     });
 
     if (items.length === 0) return;
@@ -804,6 +813,19 @@ export function Message({ message, isFirstInGroup, previousMessageId }: MessageP
               <path d="M10 9V5L3 12L10 19V14.9C15 14.9 18.5 16.5 21 20C20 15 17 10 10 9Z" />
             </svg>
           </button>
+          {canBookmark && (
+            <button
+              onClick={() => { void bookmark.toggle(); }}
+              disabled={bookmark.busy}
+              className={`px-2 h-full transition-all flex items-center justify-center disabled:opacity-50 ${
+                bookmark.bookmarked ? 'text-accent-primary' : 'text-txt-tertiary hover:text-txt-primary hover:bg-interactive-hover'
+              }`}
+              title={bookmark.bookmarked ? t('bookmarks:message.remove') : t('bookmarks:message.add')}
+              aria-pressed={bookmark.bookmarked}
+            >
+              <BookmarkIcon filled={bookmark.bookmarked} />
+            </button>
+          )}
           {canEdit && (
             <button
               onClick={startEditing}

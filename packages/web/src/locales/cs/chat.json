@@ -106,6 +106,12 @@
       "named_many": "{{names}} píše",
       "named_other": "{{names}} píše",
       "several": "Píše několik lidí"
+    },
+    "preparing": {
+      "image": "Připravuji fotografii…",
+      "video": "Připravuji video… {{percent}} %",
+      "sendOriginal": "Odeslat originál",
+      "cancel": "Zrušit"
     }
   },
   "menu": {
@@ -270,10 +276,10 @@
     "draft": "Koncept",
     "newVersion": "Nová verze",
     "deletePack": "Smazat balíček",
-    "stickersCount_one": "{{count}} nálepka",
+    "stickersCount_one": "{{count}} nálepka.",
     "stickersCount_few": "{{count}} nálepky",
     "stickersCount_many": "{{count}} nálepek",
-    "stickersCount_other": "{{count}} nálepky",
+    "stickersCount_other": "{{count}} nálepky.",
     "noPacks": "Žádné balíčky nálepek",
     "viewPack": "Zobrazit balíček",
     "saveDraft": "Uložit jako koncept",
@@ -292,7 +298,13 @@
     "reviewNotes": "Důvod odmítnutí",
     "creator": "Autor",
     "viewStickers": "Zobrazit nálepky",
-    "pendingReviewHint": "U správce k posouzení; po schválení se objeví v procházení"
+    "pendingReviewHint": "U správce k posouzení; po schválení se objeví v procházení",
+    "invalidName": "Zvol viditelné jméno do 100 znaků.",
+    "favoritesTitle": "Oblíbené nálepky",
+    "favorite": "Oblíbená nálepka",
+    "favorited": "Nálepka přidána do oblíbených.",
+    "serverEmpty": "Tento prostor zatím nemá album nálepek.",
+    "serverEmptyHint": "Správce prostoru ho může přidat v Nastavení prostoru → Nálepky prostoru."
   },
   "poke": {
     "action": "Drcnout",

@@ -100,6 +100,12 @@
       "named_one": "{{names}} skriver",
       "named_other": "{{names}} skriver",
       "several": "Flere personer skriver"
+    },
+    "preparing": {
+      "image": "Forbereder foto…",
+      "video": "Forbereder video… {{percent}} %",
+      "sendOriginal": "Send originalen",
+      "cancel": "Annuller"
     }
   },
   "menu": {
@@ -254,8 +260,8 @@
     "draft": "Udkast",
     "newVersion": "Ny version",
     "deletePack": "Slet pakke",
-    "stickersCount_one": "{{count}} klistermærke",
-    "stickersCount_other": "{{count}} klistermærker",
+    "stickersCount_one": "{{count}} sticker.",
+    "stickersCount_other": "{{count}} stickers.",
     "noPacks": "Ingen klistermærkepakker fundet",
     "viewPack": "Se pakke",
     "saveDraft": "Gem som udkast",
@@ -274,7 +280,13 @@
     "reviewNotes": "Afvisningsårsag",
     "creator": "Skaber",
     "viewStickers": "Se klistermærker",
-    "pendingReviewHint": "Hos administrator til gennemgang; vises i Udforsk efter godkendelse"
+    "pendingReviewHint": "Hos administrator til gennemgang; vises i Udforsk efter godkendelse",
+    "invalidName": "Vælg et synligt navn på op til 100 tegn.",
+    "favoritesTitle": "Favoritstickers",
+    "favorite": "Favoritsticker",
+    "favorited": "Sticker tilføjet til favoritter.",
+    "serverEmpty": "Dette rum har endnu intet stickeralbum.",
+    "serverEmptyHint": "En rumadministrator kan tilføje et under Rumindstillinger → Rummets stickers."
   },
   "poke": {
     "action": "Prik",

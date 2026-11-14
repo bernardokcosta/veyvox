@@ -1,0 +1,31 @@
+{
+  "message": {
+    "add": "Zapisz",
+    "remove": "Usuń zakładkę"
+  },
+  "menu": {
+    "add": "Zapisz wiadomość",
+    "remove": "Usuń zakładkę"
+  },
+  "toast": {
+    "addFailed": "Nie udało się zapisać zakładki: {{reason}}",
+    "removeFailed": "Nie udało się usunąć zakładki: {{reason}}"
+  },
+  "title": "Zakładki",
+  "list": {
+    "loading": "Ładowanie…",
+    "empty": "Nie ma jeszcze zakładek",
+    "emptyHint": "Zapisz wiadomość z paska działań lub menu, aby znaleźć ją tutaj.",
+    "showMore": "Pokaż więcej",
+    "open": "Otwórz wiadomość od {{name}}",
+    "remove": "Usuń zakładkę"
+  },
+  "status": {
+    "edited": "Oryginał został edytowany. To jest zapisana kopia.",
+    "deleted": "Oryginalna wiadomość została usunięta. To jest zapisana kopia.",
+    "unavailable": "Oryginał nie jest już dla ciebie dostępny. To jest zapisana kopia."
+  },
+  "attachment": {
+    "gone": "plik usunięty"
+  }
+}

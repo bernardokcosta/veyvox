@@ -1,0 +1,31 @@
+{
+  "message": {
+    "add": "Merken",
+    "remove": "Lesezeichen entfernen"
+  },
+  "menu": {
+    "add": "Nachricht merken",
+    "remove": "Lesezeichen entfernen"
+  },
+  "toast": {
+    "addFailed": "Lesezeichen konnte nicht gespeichert werden: {{reason}}",
+    "removeFailed": "Lesezeichen konnte nicht entfernt werden: {{reason}}"
+  },
+  "title": "Lesezeichen",
+  "list": {
+    "loading": "Wird geladen…",
+    "empty": "Noch keine Lesezeichen",
+    "emptyHint": "Merke eine Nachricht über ihre Aktionsleiste oder das Menü, um sie hier wiederzufinden.",
+    "showMore": "Mehr anzeigen",
+    "open": "Nachricht von {{name}} öffnen",
+    "remove": "Lesezeichen entfernen"
+  },
+  "status": {
+    "edited": "Das Original wurde bearbeitet. Dies ist die gespeicherte Kopie.",
+    "deleted": "Die Originalnachricht wurde gelöscht. Dies ist die gespeicherte Kopie.",
+    "unavailable": "Das Original ist für dich nicht mehr verfügbar. Dies ist die gespeicherte Kopie."
+  },
+  "attachment": {
+    "gone": "Datei gelöscht"
+  }
+}

@@ -69,7 +69,16 @@
         "fallbackName": "Câmera {{number}}",
         "detectedFallback": "câmera detectada",
         "currentlyUsing": "Em uso: {{label}}",
-        "none": "Nenhuma câmera detectada."
+        "none": "Nenhuma câmera detectada.",
+        "quality": {
+          "label": "Qualidade da webcam",
+          "managed": "A qualidade é definida pelo servidor: {{resolution}}, {{fps}} fps, {{bitrate}}.",
+          "resolution": "Resolução",
+          "framerate": "Taxa de quadros",
+          "bitrate": "Taxa de bits",
+          "useDefault": "Usar padrão",
+          "fps": "{{value}} fps"
+        }
       },
       "preview": {
         "testAria": "Testar câmera",
@@ -131,7 +140,8 @@
       "desktop": "Desktop",
       "instance": "Instância",
       "bots": "Contas de bot",
-      "developer": "Desenvolvedor"
+      "developer": "Desenvolvedor",
+      "stickers": "Figurinhas"
     },
     "logOut": "Sair",
     "backToMenu": "Voltar ao menu de configurações"
@@ -549,5 +559,20 @@
       "description": "Mostra ferramentas de desenvolvedor, como a aba Contas de bot, nas configurações. Desativar apenas as oculta; seus bots continuam funcionando.",
       "saveFailed": "Não foi possível salvar a configuração. Tente novamente."
     }
+  },
+  "stickers": {
+    "title": "Minha biblioteca de figurinhas",
+    "description": "Álbuns privados que somente você pode ver. Cada álbum aceita até 30 figurinhas animadas ou estáticas.",
+    "packs": "Álbuns privados",
+    "newPack": "Nome do novo álbum",
+    "createPack": "Criar álbum",
+    "favorites": "Favoritas",
+    "favoritesHint": "Sua coleção de figurinhas. Arquive um item no álbum aberto com +.",
+    "noFavorites": "Ainda não há figurinhas favoritas.",
+    "itemName": "Nome da figurinha",
+    "deletePack": "Apagar álbum",
+    "deletePackTitle": "Apagar \"{{name}}\"?",
+    "deletePackDescription": "O álbum será removido. Figurinhas já enviadas continuam disponíveis no chat.",
+    "deletePackSuccess": "Álbum apagado."
   }
 }

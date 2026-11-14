@@ -100,6 +100,12 @@
       "named_one": "{{names}} typt",
       "named_other": "{{names}} typen",
       "several": "Meerdere mensen typen"
+    },
+    "preparing": {
+      "image": "Foto voorbereiden…",
+      "video": "Video voorbereiden… {{percent}}%",
+      "sendOriginal": "Origineel versturen",
+      "cancel": "Annuleren"
     }
   },
   "menu": {
@@ -254,8 +260,8 @@
     "draft": "Concept",
     "newVersion": "Nieuwe versie",
     "deletePack": "Pakket verwijderen",
-    "stickersCount_one": "{{count}} sticker",
-    "stickersCount_other": "{{count}} stickers",
+    "stickersCount_one": "{{count}} sticker.",
+    "stickersCount_other": "{{count}} stickers.",
     "noPacks": "Geen stickerpakketten gevonden",
     "viewPack": "Pakket bekijken",
     "saveDraft": "Als concept opslaan",
@@ -274,7 +280,13 @@
     "reviewNotes": "Reden voor afwijzing",
     "creator": "Maker",
     "viewStickers": "Stickers bekijken",
-    "pendingReviewHint": "In beoordeling bij beheerder, na goedkeuring zichtbaar bij Verkennen"
+    "pendingReviewHint": "In beoordeling bij beheerder, na goedkeuring zichtbaar bij Verkennen",
+    "invalidName": "Kies een zichtbare naam van maximaal 100 tekens.",
+    "favoritesTitle": "Favoriete stickers",
+    "favorite": "Favoriete sticker",
+    "favorited": "Sticker toegevoegd aan favorieten.",
+    "serverEmpty": "Deze ruimte heeft nog geen stickeralbum.",
+    "serverEmptyHint": "Een ruimtebeheerder kan er een toevoegen via Ruimte-instellingen → Stickers van de ruimte."
   },
   "poke": {
     "action": "Porren",

@@ -103,6 +103,12 @@
       "named_many": "{{names}} están escribiendo",
       "named_other": "{{names}} están escribiendo",
       "several": "Varias personas están escribiendo"
+    },
+    "preparing": {
+      "image": "Preparando foto…",
+      "video": "Preparando vídeo… {{percent}} %",
+      "sendOriginal": "Enviar original",
+      "cancel": "Cancelar"
     }
   },
   "menu": {
@@ -262,9 +268,9 @@
     "draft": "Borrador",
     "newVersion": "Nueva versión",
     "deletePack": "Eliminar paquete",
-    "stickersCount_one": "{{count}} sticker",
+    "stickersCount_one": "{{count}} pegatina.",
     "stickersCount_many": "{{count}} stickers",
-    "stickersCount_other": "{{count}} stickers",
+    "stickersCount_other": "{{count}} pegatinas.",
     "noPacks": "No se encontraron paquetes de stickers",
     "viewPack": "Ver paquete",
     "saveDraft": "Guardar como borrador",
@@ -283,7 +289,13 @@
     "reviewNotes": "Motivo del rechazo",
     "creator": "Creador",
     "viewStickers": "Ver stickers",
-    "pendingReviewHint": "El administrador lo está revisando. Aparecerá en Explorar cuando se apruebe"
+    "pendingReviewHint": "El administrador lo está revisando. Aparecerá en Explorar cuando se apruebe",
+    "invalidName": "Elige un nombre visible de hasta 100 caracteres.",
+    "favoritesTitle": "Pegatinas favoritas",
+    "favorite": "Pegatina favorita",
+    "favorited": "Pegatina añadida a favoritas.",
+    "serverEmpty": "Este espacio aún no tiene álbum de pegatinas.",
+    "serverEmptyHint": "Un gestor del espacio puede añadirlo en Ajustes del espacio → Pegatinas del espacio."
   },
   "poke": {
     "action": "Dar un toque",

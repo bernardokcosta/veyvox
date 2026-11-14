@@ -223,7 +223,8 @@
       "memory": "Alzheimer"
     },
     "rules": "Jak hrát",
-    "rulesText": "Každý hráč dostane 7 karet. Shoduj barvu či symbol poslední karty, nebo zahraj divokou a vyber barvu. Vyprázdni ruku pro výhru.\nStop přeskočí dalšího hráče; obrácení mění směr (ve dvou přeskočí). +2 a +4 nutí dalšího hráče hned brát karty a přeskočí jeho tah. Bez kumulace. +4 jen bez karty aktivní barvy; bez výzev.\nVezmi jednu: zahraj jen tu novou kartu, sedne-li, či passni. Nehratelné dobrání passne automaticky.\nNa tah máš 45 sekund. Konec času bere jednu a passne; po dobrání jen passne. Odejde-li někdo, jeho karty se vrátí do balíčku; méně než dva hráči končí kolo bez vítěze. Krátké nové připojení k hlasu místo drží. Restart serveru hry ukončí."
+    "rulesText": "Každý hráč dostane 7 karet. Shoduj barvu či symbol poslední karty, nebo zahraj divokou a vyber barvu. Vyprázdni ruku pro výhru.\nStop přeskočí dalšího hráče; obrácení mění směr (ve dvou přeskočí). +2 a +4 nutí dalšího hráče hned brát karty a přeskočí jeho tah. Bez kumulace. +4 jen bez karty aktivní barvy; bez výzev.\nVezmi jednu: zahraj jen tu novou kartu, sedne-li, či passni. Nehratelné dobrání passne automaticky.\nNa tah máš 45 sekund. Konec času bere jednu a passne; po dobrání jen passne. Odejde-li někdo, jeho karty se vrátí do balíčku; méně než dva hráči končí kolo bez vítěze. Krátké nové připojení k hlasu místo drží. Restart serveru hry ukončí.",
+    "comingSoon": "Již brzy"
   },
   "soundboard": {
     "title": "Zvuková tabule",
@@ -562,5 +563,23 @@
     "stillDenied": "Přístup k mikrofonu je stále odepřen. Povol jej pro tuto stránku v nastavení prohlížeče či zařízení.",
     "notFound": "Nenalezen žádný mikrofon.",
     "failed": "K mikrofonu se nepodařilo dostat."
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}} zahájil hovor",
+    "from": "Od:",
+    "to": "Do:",
+    "status": {
+      "ringing": "Vytáčení…",
+      "active": "Probíhá hovor",
+      "ended": "Hovor ukončen",
+      "missed": "Zmeškaný hovor",
+      "rejected": "Hovor odmítnut",
+      "interrupted": "Hovor přerušen",
+      "cancelled": "Hovor zrušen"
+    },
+    "duration": "Délka"
+  },
+  "callOngoing": "Probíhá hovor",
+  "rejoinCall": "Zpět do hovoru",
+  "callWaiting": "Čeká se na druhou stranu · končí za {{remaining}}"
 }

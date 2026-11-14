@@ -112,6 +112,8 @@ export const channels = sqliteTable('channels', {
   topic: text('topic'),
   position: integer('position').default(0),
   categoryId: text('category_id'),
+  /** Voice channels only: ceiling of each member's microphone Opus bitrate, in kbps. */
+  voiceBitrateKbps: integer('voice_bitrate_kbps').notNull().default(128),
   createdAt: integer('created_at').notNull(),
 }, (table) => ({
   spaceIdx: index('idx_channels_space_id').on(table.spaceId),
@@ -448,8 +450,22 @@ export const instanceSettings = sqliteTable('instance_settings', {
   gifApiKey: text('gif_api_key'),
   bitrateMatrixOverrides: text('bitrate_matrix_overrides'),
   allowCustomBitrate: integer('allow_custom_bitrate').notNull().default(1),
+  /** The instance's camera policy: fixed admin defaults or member choice within bounds. */
+  cameraMode: text('camera_mode').notNull().default('fixed'),
+  cameraDefaultResolution: integer('camera_default_resolution').notNull().default(720),
+  cameraDefaultFramerate: integer('camera_default_framerate').notNull().default(30),
+  cameraDefaultBitrateKbps: integer('camera_default_bitrate_kbps').notNull().default(2000),
+  cameraAllowedResolutions: text('camera_allowed_resolutions').notNull().default('540,720,1080'),
+  cameraAllowedFramerates: text('camera_allowed_framerates').notNull().default('30,60'),
+  cameraMinBitrateKbps: integer('camera_min_bitrate_kbps').notNull().default(300),
+  cameraMaxBitrateKbps: integer('camera_max_bitrate_kbps').notNull().default(4000),
+  cameraAllowCustomBitrate: integer('camera_allow_custom_bitrate').notNull().default(1),
   maxUploadSizeBytes: integer('max_upload_size_bytes'),
   maxStickerSizeBytes: integer('max_sticker_size_bytes'),
+  diskCleanupEnabled: integer('disk_cleanup_enabled').notNull().default(0),
+  diskCleanupThresholdPercent: integer('disk_cleanup_threshold_percent').notNull().default(90),
+  diskCleanupTargetPercent: integer('disk_cleanup_target_percent').notNull().default(80),
+  diskCleanupMinAgeDays: integer('disk_cleanup_min_age_days').notNull().default(30),
   /** First-boot timestamp (ms); backfilled by ensureDefaults, so non-null after boot. */
   installedAt: integer('installed_at'),
   updatedAt: integer('updated_at').notNull(),
@@ -603,6 +619,9 @@ export const stickerPacks = sqliteTable('sticker_packs', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
   description: text('description'),
+  /** Who the pack belongs to: a member's private album ('user'), or one space's album ('space'). Store packs predate scopes and read 'store'. */
+  scopeType: text('scope_type', { enum: ['user', 'space', 'store'] }).notNull().default('store'),
+  spaceId: text('space_id').references(() => spaces.id, { onDelete: 'cascade' }),
   creatorId: text('creator_id').references(() => users.id, { onDelete: 'set null' }),
   creatorName: text('creator_name'),
   coverAssetId: text('cover_asset_id').references(() => stickerAssets.id, { onDelete: 'set null' }),
@@ -616,6 +635,8 @@ export const stickerPacks = sqliteTable('sticker_packs', {
 }, (table) => ({
   statusIdx: index('idx_sticker_packs_status').on(table.status),
   creatorIdx: index('idx_sticker_packs_creator').on(table.creatorId),
+  scopeIdx: index('idx_sticker_packs_scope').on(table.scopeType, table.spaceId, table.creatorId),
+  spacePackUnique: uniqueIndex('idx_sticker_packs_one_space_pack').on(table.spaceId).where(sql`${table.scopeType} = 'space'`),
 }));
 
 export const stickerPackVersions = sqliteTable('sticker_pack_versions', {
@@ -673,3 +694,55 @@ export const gameIcons = sqliteTable('game_icons', {
   iconId: text('icon_id').notNull().references(() => gameIconAssets.id),
   createdAt: integer('created_at').notNull(),
 }, (table) => ({ pk: primaryKey({ columns: [table.userId, table.iconId] }) }));
+
+// Personal bookmarks: a frozen copy of a message plus the ids needed to open
+// it. Everything lives on the instance that serves the message.
+export const messageBookmarks = sqliteTable('message_bookmarks', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  kind: text('kind', { enum: ['channel', 'dm'] }).notNull(),
+  messageId: text('message_id').notNull(),
+  channelId: text('channel_id').notNull(),
+  spaceId: text('space_id'),
+  content: text('content'),
+  authorId: text('author_id').notNull(),
+  authorName: text('author_name').notNull(),
+  spaceName: text('space_name'),
+  channelName: text('channel_name'),
+  messageCreatedAt: integer('message_created_at').notNull(),
+  createdAt: integer('created_at').notNull(),
+}, (table) => ({
+  // One bookmark per message per user: a second save of the same message is the same bookmark.
+  uniqueMessage: uniqueIndex('idx_message_bookmarks_user_message').on(table.userId, table.kind, table.messageId),
+  // The list: newest first, keyset-paged on (created_at, id), so a read touches the index only.
+  listIdx: index('idx_message_bookmarks_user_created').on(table.userId, sql`created_at DESC`, sql`id DESC`),
+  // "Which messages of this channel are bookmarked": bounded by the channel, not by the user's total.
+  channelIdx: index('idx_message_bookmarks_user_channel').on(table.userId, table.kind, table.channelId),
+}));
+
+/**
+ * The attachments of a bookmarked message. `source_*` name the original's files,
+ * which belong to the original message and may no longer exist. `filename` and
+ * `thumbnail_filename` are the bookmark's own copy: NULL while `copy_status` is
+ * 'reference' (files are not copied yet), set when a copy exists. Only the own
+ * copy is ever deleted with a bookmark.
+ */
+export const bookmarkAttachments = sqliteTable('bookmark_attachments', {
+  id: text('id').primaryKey(),
+  bookmarkId: text('bookmark_id').notNull().references(() => messageBookmarks.id, { onDelete: 'cascade' }),
+  position: integer('position').notNull(),
+  originalName: text('original_name').notNull(),
+  mimetype: text('mimetype').notNull(),
+  size: integer('size').notNull(),
+  width: integer('width'),
+  height: integer('height'),
+  duration: real('duration'),
+  playable: integer('playable', { mode: 'boolean' }),
+  sourceFilename: text('source_filename').notNull(),
+  sourceThumbnailFilename: text('source_thumbnail_filename'),
+  filename: text('filename'),
+  thumbnailFilename: text('thumbnail_filename'),
+  copyStatus: text('copy_status', { enum: ['reference', 'copied', 'unavailable'] }).notNull().default('reference'),
+}, (table) => ({
+  bookmarkIdx: index('idx_bookmark_attachments_bookmark_id').on(table.bookmarkId),
+}));

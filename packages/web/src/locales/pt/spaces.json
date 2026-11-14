@@ -68,7 +68,17 @@
         "note": "Este canal fica oculto para membros sem acesso explícito. Usuários com a permissão de Administrador e os donos do espaço sempre podem ver todos os canais.",
         "unhideOnSave": "Ao salvar, este canal ficará visível para todos os membros."
       },
-      "deleteButton": "Excluir canal"
+      "deleteButton": "Excluir canal",
+      "voiceQuality": {
+        "label": "Qualidade de voz",
+        "option": "{{value}} kbps",
+        "description": {
+          "64": "Fala clara. Usa menos banda.",
+          "128": "Vozes mais cheias e naturais.",
+          "256": "Qualidade máxima, ideal para música. Usa mais banda."
+        },
+        "hint": "Define o maior bitrate de áudio que cada membro pode enviar neste canal. Vale para todos, inclusive para quem já está conectado."
+      }
     },
     "delete": {
       "title": "Excluir #{{name}}?",
@@ -362,6 +372,8 @@
       "manageChannels": "Gerenciar canais",
       "manageRoles": "Gerenciar cargos",
       "manageSpace": "Gerenciar espaço",
+      "createStickers": "Criar figurinhas do servidor",
+      "manageStickers": "Gerenciar figurinhas do servidor",
       "createInvite": "Criar convite",
       "kickMembers": "Expulsar membros",
       "banMembers": "Banir membros",
@@ -622,5 +634,12 @@
     "suppressRoles": "Suprimir menções a cargos",
     "massHeading": "Menções em grupo",
     "massNote": "@here alcança os mesmos membros que @everyone. Menções diretas a você sempre notificam."
+  },
+  "stickers": {
+    "title": "Figurinhas do espaço",
+    "description": "Um álbum de figurinhas compartilhado para este espaço, com até 50 figurinhas animadas ou estáticas.",
+    "empty": "Este espaço ainda não tem um álbum de figurinhas.",
+    "create": "Criar álbum do espaço",
+    "add": "Adicionar figurinha"
   }
 }

@@ -1,6 +1,7 @@
 import type { DmChannel, MessageWithUser } from '@veyvox/shared';
 import { parseDmSystemEvent } from '@veyvox/shared/src/dmSystemEvents';
 import { useTranslation } from 'react-i18next';
+import { CallHistoryMessage } from './CallHistoryMessage';
 import { SpaceInviteCard } from './SpaceInviteCard';
 import { dmSystemActor, dmSystemActorName, dmSystemIcon, dmSystemText } from '../../utils/dmFormatters';
 
@@ -28,6 +29,8 @@ export function SystemMessage({ message, dm }: SystemMessageProps) {
   useTranslation(['dm']);
   const event = parseDmSystemEvent(message.content);
   const actorName = dmSystemActorName(dmSystemActor(message, dm?.members));
+
+  if (event?.event === 'call_history') return <CallHistoryMessage event={event} actorName={actorName} />;
 
   if (event?.event === 'space_invite') {
     return (

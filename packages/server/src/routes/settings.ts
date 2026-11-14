@@ -1,12 +1,33 @@
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, FastifyReply } from 'fastify';
 import { eq } from 'drizzle-orm';
 import { getDb, schema } from '../db/index.js';
 import { authenticate, requireAdmin } from '../utils/auth.js';
 import { config } from '../config.js';
 import { sendError } from '../utils/httpErrors.js';
 import { connectionManager } from '../ws/handler.js';
-import type { InstanceStreamingLimits, InstanceAdminSettings } from '@veyvox/shared';
+import type { InstanceStreamingLimits, InstanceAdminSettings, CameraStreamingLimits } from '@veyvox/shared';
 import { STANDARD_RESOLUTIONS, STANDARD_FRAMERATES, BITRATE_MATRIX_KBPS } from '@veyvox/shared/src/constants.js';
+
+function parseAllowedNumbers(raw: string, allowed: readonly number[]): number[] {
+  return raw
+    .split(',')
+    .map((s) => Number(s.trim()))
+    .filter((n) => Number.isFinite(n) && (allowed as readonly number[]).includes(n));
+}
+
+function toCameraLimits(row: typeof schema.instanceSettings.$inferSelect): CameraStreamingLimits {
+  return {
+    mode: row.cameraMode === 'user-choice' ? 'user-choice' : 'fixed',
+    defaultResolution: row.cameraDefaultResolution,
+    defaultFramerate: row.cameraDefaultFramerate,
+    defaultBitrateKbps: row.cameraDefaultBitrateKbps,
+    allowedResolutions: parseAllowedNumbers(row.cameraAllowedResolutions, STANDARD_RESOLUTIONS),
+    allowedFramerates: parseAllowedNumbers(row.cameraAllowedFramerates, STANDARD_FRAMERATES),
+    minBitrateKbps: row.cameraMinBitrateKbps,
+    maxBitrateKbps: row.cameraMaxBitrateKbps,
+    allowCustomBitrate: row.cameraAllowCustomBitrate === 1,
+  };
+}
 
 function rowToLimits(row: typeof schema.instanceSettings.$inferSelect): InstanceStreamingLimits {
   return {
@@ -34,10 +55,73 @@ function rowToLimits(row: typeof schema.instanceSettings.$inferSelect): Instance
       } catch { return null; }
     })(),
     allowCustomBitrate: row.allowCustomBitrate === 1,
+    camera: toCameraLimits(row),
   };
 }
 
 type SettingsRow = typeof schema.instanceSettings.$inferSelect;
+
+/** Bounds the disk-cleanup fields are validated against (see utils/diskPressure.ts). */
+const DISK_THRESHOLD_MIN = 50;
+const DISK_THRESHOLD_MAX = 99;
+const DISK_TARGET_MIN = 10;
+const DISK_TARGET_GAP = 5;
+const DISK_AGE_MIN_DAYS = 1;
+const DISK_AGE_MAX_DAYS = 3650;
+
+/**
+ * Validates and applies the disk-cleanup fields. The target is checked against
+ * the threshold that will be in force after this write (the new one when the
+ * body carries it), so raising the target and lowering the threshold in one
+ * request is judged together. Returns false after sending the error reply.
+ */
+function applyDiskCleanup(
+  body: Record<string, unknown>,
+  updateData: SettingsUpdate,
+  currentRow: SettingsRow,
+  reply: FastifyReply,
+): boolean {
+  if (body.diskCleanupEnabled !== undefined) {
+    if (typeof body.diskCleanupEnabled !== 'boolean') {
+      sendError(reply, 400, 'field_not_boolean', { field: 'diskCleanupEnabled' });
+      return false;
+    }
+    updateData.diskCleanupEnabled = body.diskCleanupEnabled ? 1 : 0;
+  }
+
+  let threshold = currentRow.diskCleanupThresholdPercent;
+  if (body.diskCleanupThresholdPercent !== undefined) {
+    const value = Number(body.diskCleanupThresholdPercent);
+    if (!Number.isInteger(value) || value < DISK_THRESHOLD_MIN || value > DISK_THRESHOLD_MAX) {
+      sendError(reply, 400, 'disk_cleanup_threshold_out_of_range', { min: DISK_THRESHOLD_MIN, max: DISK_THRESHOLD_MAX });
+      return false;
+    }
+    threshold = value;
+    updateData.diskCleanupThresholdPercent = value;
+  }
+
+  const maxTarget = threshold - DISK_TARGET_GAP;
+  const target = body.diskCleanupTargetPercent !== undefined
+    ? Number(body.diskCleanupTargetPercent)
+    : currentRow.diskCleanupTargetPercent;
+  if (body.diskCleanupTargetPercent !== undefined || body.diskCleanupThresholdPercent !== undefined) {
+    if (!Number.isInteger(target) || target < DISK_TARGET_MIN || target > maxTarget) {
+      sendError(reply, 400, 'disk_cleanup_target_out_of_range', { min: DISK_TARGET_MIN, max: maxTarget });
+      return false;
+    }
+    updateData.diskCleanupTargetPercent = target;
+  }
+
+  if (body.diskCleanupMinAgeDays !== undefined) {
+    const value = Number(body.diskCleanupMinAgeDays);
+    if (!Number.isInteger(value) || value < DISK_AGE_MIN_DAYS || value > DISK_AGE_MAX_DAYS) {
+      sendError(reply, 400, 'disk_cleanup_age_out_of_range', { min: DISK_AGE_MIN_DAYS, max: DISK_AGE_MAX_DAYS });
+      return false;
+    }
+    updateData.diskCleanupMinAgeDays = value;
+  }
+  return true;
+}
 type SettingsUpdate = Record<string, number | string | boolean | null>;
 
 function rowToAdminSettings(row: SettingsRow): InstanceAdminSettings {
@@ -52,6 +136,10 @@ function rowToAdminSettings(row: SettingsRow): InstanceAdminSettings {
     gifEnabled: !!gifKey,
     maxUploadSizeMb: Math.round(maxUploadBytes / (1024 * 1024)),
     maxStickerSizeMb: Math.round(maxStickerBytes / (1024 * 1024)),
+    diskCleanupEnabled: row.diskCleanupEnabled === 1,
+    diskCleanupThresholdPercent: row.diskCleanupThresholdPercent,
+    diskCleanupTargetPercent: row.diskCleanupTargetPercent,
+    diskCleanupMinAgeDays: row.diskCleanupMinAgeDays,
   };
 }
 
@@ -143,6 +231,85 @@ export async function settingsRoutes(app: FastifyInstance): Promise<void> {
 
     if (body.allowCustomBitrate !== undefined) {
       updateData.allowCustomBitrate = body.allowCustomBitrate ? 1 : 0;
+    }
+
+    if (body.camera !== undefined) {
+      if (typeof body.camera !== 'object' || body.camera === null || Array.isArray(body.camera)) {
+        return sendError(reply, 400, 'validation_failed', { field: 'camera' });
+      }
+      const cameraRow = db.select().from(schema.instanceSettings).where(eq(schema.instanceSettings.id, 1)).get();
+      if (!cameraRow) {
+        return sendError(reply, 500, 'instance_settings_missing');
+      }
+      const patch = body.camera as Partial<CameraStreamingLimits>;
+      const camera: CameraStreamingLimits = { ...toCameraLimits(cameraRow), ...patch };
+
+      if (camera.mode !== 'fixed' && camera.mode !== 'user-choice') {
+        return sendError(reply, 400, 'camera_mode_invalid');
+      }
+      if (!Array.isArray(camera.allowedResolutions) || camera.allowedResolutions.length === 0) {
+        return sendError(reply, 400, 'camera_resolutions_invalid', {
+          invalid: '', allowed: STANDARD_RESOLUTIONS.join(', '),
+        });
+      }
+      const invalidResolutions = camera.allowedResolutions.filter(
+        (r) => !(STANDARD_RESOLUTIONS as readonly number[]).includes(r),
+      );
+      if (invalidResolutions.length > 0) {
+        return sendError(reply, 400, 'camera_resolutions_invalid', {
+          invalid: invalidResolutions.join(', '), allowed: STANDARD_RESOLUTIONS.join(', '),
+        });
+      }
+      if (!Array.isArray(camera.allowedFramerates) || camera.allowedFramerates.length === 0) {
+        return sendError(reply, 400, 'camera_framerates_invalid', {
+          invalid: '', allowed: STANDARD_FRAMERATES.join(', '),
+        });
+      }
+      const invalidFramerates = camera.allowedFramerates.filter(
+        (fps) => !(STANDARD_FRAMERATES as readonly number[]).includes(fps),
+      );
+      if (invalidFramerates.length > 0) {
+        return sendError(reply, 400, 'camera_framerates_invalid', {
+          invalid: invalidFramerates.join(', '), allowed: STANDARD_FRAMERATES.join(', '),
+        });
+      }
+      if (
+        !Number.isInteger(camera.minBitrateKbps)
+        || !Number.isInteger(camera.maxBitrateKbps)
+        || camera.minBitrateKbps < 100
+        || camera.maxBitrateKbps > 1000000
+        || camera.minBitrateKbps >= camera.maxBitrateKbps
+      ) {
+        return sendError(reply, 400, 'camera_bitrate_out_of_range', { min: 100, max: 1000000 });
+      }
+      if (
+        !Number.isInteger(camera.defaultBitrateKbps)
+        || camera.defaultBitrateKbps < camera.minBitrateKbps
+        || camera.defaultBitrateKbps > camera.maxBitrateKbps
+      ) {
+        return sendError(reply, 400, 'camera_bitrate_out_of_range', {
+          min: camera.minBitrateKbps, max: camera.maxBitrateKbps,
+        });
+      }
+      if (!camera.allowedResolutions.includes(camera.defaultResolution)) {
+        return sendError(reply, 400, 'camera_default_not_allowed', { field: 'resolution' });
+      }
+      if (!camera.allowedFramerates.includes(camera.defaultFramerate)) {
+        return sendError(reply, 400, 'camera_default_not_allowed', { field: 'framerate' });
+      }
+      if (typeof camera.allowCustomBitrate !== 'boolean') {
+        return sendError(reply, 400, 'validation_failed', { field: 'camera.allowCustomBitrate' });
+      }
+
+      updateData.cameraMode = camera.mode;
+      updateData.cameraDefaultResolution = camera.defaultResolution;
+      updateData.cameraDefaultFramerate = camera.defaultFramerate;
+      updateData.cameraDefaultBitrateKbps = camera.defaultBitrateKbps;
+      updateData.cameraAllowedResolutions = [...camera.allowedResolutions].sort((a, b) => a - b).join(',');
+      updateData.cameraAllowedFramerates = [...camera.allowedFramerates].sort((a, b) => a - b).join(',');
+      updateData.cameraMinBitrateKbps = camera.minBitrateKbps;
+      updateData.cameraMaxBitrateKbps = camera.maxBitrateKbps;
+      updateData.cameraAllowCustomBitrate = camera.allowCustomBitrate ? 1 : 0;
     }
 
     if (body.bitrateMatrixOverrides !== undefined) {
@@ -262,6 +429,8 @@ export async function settingsRoutes(app: FastifyInstance): Promise<void> {
     if (!currentRow) {
       return sendError(reply, 500, 'instance_settings_missing');
     }
+
+    if (!applyDiskCleanup(body as Record<string, unknown>, updateData, currentRow, reply)) return;
 
     db.update(schema.instanceSettings).set(updateData).where(eq(schema.instanceSettings.id, 1)).run();
 

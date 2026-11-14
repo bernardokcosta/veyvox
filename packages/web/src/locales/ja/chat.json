@@ -97,6 +97,12 @@
     "typing": {
       "named_other": "{{names}} が入力中",
       "several": "複数人が入力中"
+    },
+    "preparing": {
+      "image": "写真を準備中…",
+      "video": "動画を準備中… {{percent}}%",
+      "sendOriginal": "元のファイルを送信",
+      "cancel": "キャンセル"
     }
   },
   "menu": {
@@ -246,7 +252,7 @@
     "draft": "下書き",
     "newVersion": "新バージョン",
     "deletePack": "パック削除",
-    "stickersCount_other": "{{count}} 枚",
+    "stickersCount_other": "{{count}}個のスタンプ。",
     "noPacks": "ステッカーパックなし",
     "viewPack": "パック表示",
     "saveDraft": "下書き保存",
@@ -265,7 +271,14 @@
     "reviewNotes": "拒否理由",
     "creator": "作成者",
     "viewStickers": "ステッカー表示",
-    "pendingReviewHint": "管理者審査中; 承認後に探索に表示"
+    "pendingReviewHint": "管理者審査中; 承認後に探索に表示",
+    "invalidName": "100文字以内の表示名を選んでください。",
+    "favoritesTitle": "お気に入りスタンプ",
+    "favorite": "お気に入りスタンプ",
+    "favorited": "スタンプをお気に入りに追加しました。",
+    "stickersCount_one": "{{count}}個のスタンプ。",
+    "serverEmpty": "このスペースにはまだスタンプアルバムがありません。",
+    "serverEmptyHint": "スペース管理者はスペース設定 → スペースのスタンプから追加できます。"
   },
   "poke": {
     "action": "つつく",

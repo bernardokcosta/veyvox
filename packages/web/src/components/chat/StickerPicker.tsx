@@ -75,6 +75,8 @@ export function StickerPicker({ onSelect, mobile = false, manageable = true }: S
   const [activeTab, setActiveTab] = useState<string>('personal');
   const [showStore, setShowStore] = useState(false);
   const [currentPackDetail, setCurrentPackDetail] = useState<StickerPackDetail | null>(null);
+  // Private albums, space albums and the collection the library panel manages.
+  const [library, setLibrary] = useState<Awaited<ReturnType<typeof api.stickerLibrary.get>> | null>(null);
 
   /**
    * Where focus goes once a form closed and the grid is drawn again, the
@@ -88,7 +90,15 @@ export function StickerPicker({ onSelect, mobile = false, manageable = true }: S
     api.stickerStore.myPacks()
       .then(packs => {
         setInstalledPacks(packs);
-        setActiveTab(prev => (prev === 'personal' || packs.some(p => p.id === prev) ? prev : 'personal'));
+        setActiveTab(prev => (
+          prev === 'personal'
+          || prev === 'favorites'
+          || prev.startsWith('user:')
+          || prev.startsWith('space:')
+          || packs.some(p => p.id === prev)
+            ? prev
+            : 'personal'
+        ));
       })
       .catch(() => {});
   };
@@ -107,12 +117,24 @@ export function StickerPicker({ onSelect, mobile = false, manageable = true }: S
       .catch((err: unknown) => { if (active) setError(describeError(err)); })
       .finally(() => { if (active) setLoading(false); });
     loadInstalledPacks();
+    if (api.stickerLibrary?.get) {
+      api.stickerLibrary.get().then(next => { if (active) setLibrary(next); }).catch(() => {});
+    }
     return () => { active = false; };
   }, [userId]);
 
   useEffect(() => {
-    if (activeTab === 'personal') {
+    if (activeTab === 'personal' || activeTab === 'favorites') {
       setCurrentPackDetail(null);
+      return;
+    }
+    if (activeTab.startsWith('user:')) {
+      setCurrentPackDetail(library?.privatePacks.find(pack => pack.id === activeTab.slice(5)) ?? null);
+      return;
+    }
+    if (activeTab.startsWith('space:')) {
+      const spaceId = activeTab.slice(6);
+      setCurrentPackDetail(library?.spaces.find(entry => entry.spaceId === spaceId)?.pack ?? null);
       return;
     }
     let active = true;
@@ -122,7 +144,7 @@ export function StickerPicker({ onSelect, mobile = false, manageable = true }: S
       if (active) setCurrentPackDetail(null);
     });
     return () => { active = false; };
-  }, [activeTab]);
+  }, [activeTab, library]);
 
   useEffect(() => {
     const targets = focusAfterForm.current;
@@ -149,13 +171,21 @@ export function StickerPicker({ onSelect, mobile = false, manageable = true }: S
     setNotice('');
     try {
       await api.stickers.remove(id);
-      setItems(rows => rows.filter(row => row.id !== id));
+      if (activeTab === 'favorites') {
+        setLibrary(current => current && { ...current, favorites: current.favorites.filter(row => row.id !== id) });
+      } else {
+        setItems(rows => rows.filter(row => row.id !== id));
+      }
     } catch (err) { setError(describeError(err)); }
     finally { setRemoving(null); }
   };
 
   const full = items.length >= MAX_PERSONAL_STICKERS;
   const visible = filterStickers(items, search);
+  // A space album tab with no album yet: the space the tab names, for the empty state.
+  const activeSpaceEntry = activeTab.startsWith('space:')
+    ? library?.spaces.find(entry => entry.spaceId === activeTab.slice(6)) ?? null
+    : null;
 
   const startUpload = () => {
     setError('');
@@ -213,7 +243,14 @@ export function StickerPicker({ onSelect, mobile = false, manageable = true }: S
           sticker={renaming}
           onCancel={closeRename}
           onRenamed={updated => {
-            setItems(rows => rows.map(row => (row.id === updated.id ? { ...row, name: updated.name } : row)));
+            if (activeTab === 'favorites') {
+              setLibrary(current => current && {
+                ...current,
+                favorites: current.favorites.map(row => (row.id === updated.id ? { ...row, name: updated.name } : row)),
+              });
+            } else {
+              setItems(rows => rows.map(row => (row.id === updated.id ? { ...row, name: updated.name } : row)));
+            }
             closeRename();
           }}
         />
@@ -336,8 +373,43 @@ export function StickerPicker({ onSelect, mobile = false, manageable = true }: S
                 />
               )}
             </>
+          ) : activeTab === 'favorites' ? (
+            <>
+              <div className="flex shrink-0 items-center gap-2.5 px-4 pb-2 pt-3">
+                <span className="flex h-8 w-8 items-center justify-center rounded-[11px] bg-accent-amber/15 text-base text-accent-amber">★</span>
+                <div className="min-w-0">
+                  <h3 className="truncate text-sm font-semibold">{t('stickers.favoritesTitle')}</h3>
+                  <p className="text-xs text-txt-tertiary">{t('stickers.stickersCount', { count: library?.favorites.length ?? 0 })}</p>
+                </div>
+              </div>
+              <StickerGrid
+                items={filterStickers(library?.favorites ?? [], search)}
+                noMatches={(library?.favorites.length ?? 0) > 0 && filterStickers(library?.favorites ?? [], search).length === 0}
+                managing={managing}
+                removing={removing}
+                onSelect={onSelect}
+                onRename={startRename}
+                onRemove={id => void remove(id)}
+              />
+            </>
           ) : currentPackDetail ? (
-            <PackStickerGrid pack={currentPackDetail} onSelect={onSelect} />
+            <>
+              <div className="flex shrink-0 items-center gap-2.5 px-4 pb-2 pt-3">
+                <div className="min-w-0">
+                  <h3 className="truncate text-sm font-semibold">{currentPackDetail.name}</h3>
+                  <p className="truncate text-xs text-txt-tertiary">
+                    {activeSpaceEntry?.name ?? t('stickers.packs')} · {t('stickers.stickersCount', { count: currentPackDetail.items.length })}
+                  </p>
+                </div>
+              </div>
+              <PackStickerGrid pack={currentPackDetail} onSelect={onSelect} />
+            </>
+          ) : activeSpaceEntry ? (
+            <div className="flex-1 flex flex-col items-center justify-center gap-2 p-4 text-center">
+              <p className="text-sm font-medium">{activeSpaceEntry.name}</p>
+              <p className="text-xs text-txt-tertiary">{t('stickers.serverEmpty')}</p>
+              <p className="max-w-56 text-xs leading-5 text-txt-tertiary">{t('stickers.serverEmptyHint')}</p>
+            </div>
           ) : (
             <div className="flex-1 flex items-center justify-center p-4">
               <p className="text-xs text-txt-tertiary">{t('stickers.empty')}</p>
@@ -366,6 +438,75 @@ export function StickerPicker({ onSelect, mobile = false, manageable = true }: S
                   <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                 </svg>
               </button>
+
+              {/* Favorites tab */}
+              {library && library.favorites.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('favorites')}
+                  title={t('stickers.favoritesTitle')}
+                  aria-label={t('stickers.favoritesTitle')}
+                  className={`shrink-0 flex h-7 w-7 items-center justify-center rounded-lg text-sm transition-colors ${
+                    activeTab === 'favorites'
+                      ? 'bg-interactive-active text-accent-amber shadow-sm'
+                      : 'text-txt-tertiary hover:bg-interactive-hover hover:text-txt-primary'
+                  }`}
+                >
+                  ★
+                </button>
+              )}
+
+              {/* Private album tabs */}
+              {library?.privatePacks.map(pack => {
+                const cover = pack.items[0] ? stickerPreviewUrl(pack.items[0].token) || stickerUrl(pack.items[0].token) : null;
+                const isActive = activeTab === `user:${pack.id}`;
+                return (
+                  <button
+                    key={pack.id}
+                    type="button"
+                    onClick={() => setActiveTab(`user:${pack.id}`)}
+                    title={pack.name}
+                    aria-label={pack.name}
+                    className={`shrink-0 flex h-7 w-7 items-center justify-center rounded-lg overflow-hidden transition-colors ${
+                      isActive
+                        ? 'bg-interactive-active ring-1 ring-inset ring-accent-primary text-txt-primary'
+                        : 'opacity-70 hover:opacity-100 hover:bg-interactive-hover'
+                    }`}
+                  >
+                    {cover ? (
+                      <img src={cover} alt={pack.name} className="h-5 w-5 object-contain" />
+                    ) : (
+                      <span className="text-[11px] font-bold">{pack.name[0]}</span>
+                    )}
+                  </button>
+                );
+              })}
+
+              {/* Space album tabs */}
+              {library?.spaces.map(space => space.pack && (() => {
+                const cover = space.pack.items[0] ? stickerPreviewUrl(space.pack.items[0].token) || stickerUrl(space.pack.items[0].token) : null;
+                const isActive = activeTab === `space:${space.spaceId}`;
+                return (
+                  <button
+                    key={space.spaceId}
+                    type="button"
+                    onClick={() => setActiveTab(`space:${space.spaceId}`)}
+                    title={space.pack.name}
+                    aria-label={space.pack.name}
+                    className={`shrink-0 flex h-7 w-7 items-center justify-center rounded-lg overflow-hidden transition-colors ${
+                      isActive
+                        ? 'bg-interactive-active ring-1 ring-inset ring-accent-primary text-txt-primary'
+                        : 'opacity-70 hover:opacity-100 hover:bg-interactive-hover'
+                    }`}
+                  >
+                    {cover ? (
+                      <img src={cover} alt={space.pack.name} className="h-5 w-5 object-contain" />
+                    ) : (
+                      <span className="text-[11px] font-bold">{space.pack.name[0]}</span>
+                    )}
+                  </button>
+                );
+              })())}
 
               {/* Installed packs tabs */}
               {installedPacks.map(pack => {

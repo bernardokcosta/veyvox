@@ -69,7 +69,16 @@
         "fallbackName": "Kamera {{number}}",
         "detectedFallback": "erkannte Kamera",
         "currentlyUsing": "Aktuell verwendet: {{label}}",
-        "none": "Keine Kameras gefunden."
+        "none": "Keine Kameras gefunden.",
+        "quality": {
+          "label": "Webcam-Qualität",
+          "managed": "Die Webcam-Qualität gibt der Server vor: {{resolution}}, {{fps}} fps, {{bitrate}}.",
+          "resolution": "Auflösung",
+          "framerate": "Bildrate",
+          "bitrate": "Bitrate",
+          "useDefault": "Standard verwenden",
+          "fps": "{{value}} fps"
+        }
       },
       "preview": {
         "testAria": "Kamera testen",
@@ -131,7 +140,8 @@
       "desktop": "Desktop",
       "instance": "Instanz",
       "bots": "Bot-Konten",
-      "developer": "Entwickler"
+      "developer": "Entwickler",
+      "stickers": "Sticker"
     },
     "logOut": "Abmelden",
     "backToMenu": "Zurück zum Einstellungsmenü"
@@ -548,5 +558,20 @@
       "description": "Zeigt Entwicklerwerkzeuge, etwa den Tab „Bot-Konten“, in den Einstellungen an. Beim Ausschalten werden sie nur ausgeblendet; deine Bots laufen weiter.",
       "saveFailed": "Die Einstellung konnte nicht gespeichert werden. Versuche es erneut."
     }
+  },
+  "stickers": {
+    "title": "Meine Sticker-Bibliothek",
+    "description": "Private Sticker-Alben, die nur du sehen kannst. Jedes Album enthält bis zu 30 animierte oder statische Sticker.",
+    "packs": "Private Alben",
+    "newPack": "Name des neuen Albums",
+    "createPack": "Album erstellen",
+    "favorites": "Favoriten",
+    "favoritesHint": "Deine Sticker-Sammlung. Lege einen Eintrag mit + in das offene Album.",
+    "noFavorites": "Noch keine favorisierten Sticker.",
+    "itemName": "Sticker-Name",
+    "deletePack": "Album löschen",
+    "deletePackTitle": "\"{{name}}\" löschen?",
+    "deletePackDescription": "Das Album wird entfernt. Bereits gesendete Sticker bleiben im Chat verfügbar.",
+    "deletePackSuccess": "Album gelöscht."
   }
 }

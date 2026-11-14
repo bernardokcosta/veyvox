@@ -68,7 +68,17 @@
         "note": "Acest canal este ascuns membrilor fără acces explicit. Utilizatorii cu permisiunea Administrator sau proprietarii spațiului pot vedea întotdeauna toate canalele.",
         "unhideOnSave": "Salvarea face acest canal vizibil pentru toți membrii."
       },
-      "deleteButton": "Șterge canalul"
+      "deleteButton": "Șterge canalul",
+      "voiceQuality": {
+        "label": "Calitatea vocii",
+        "option": "{{value}} kbps",
+        "description": {
+          "64": "Voce clară. Cel mai mic consum de bandă.",
+          "128": "Voci mai pline și mai naturale.",
+          "256": "Calitate maximă, ideală pentru muzică. Cel mai mare consum de bandă."
+        },
+        "hint": "Stabilește bitrate-ul audio maxim pe care fiecare membru îl poate trimite în acest canal. Se aplică tuturor, inclusiv celor deja conectați."
+      }
     },
     "delete": {
       "title": "Ștergi #{{name}}?",
@@ -362,6 +372,8 @@
       "manageChannels": "Gestionează canalele",
       "manageRoles": "Gestionează rolurile",
       "manageSpace": "Gestionează spațiul",
+      "createStickers": "Creează stickere",
+      "manageStickers": "Gestionează stickere",
       "createInvite": "Creează invitație",
       "kickMembers": "Exclude membri",
       "banMembers": "Interzice membri",
@@ -622,5 +634,12 @@
     "suppressRoles": "Suprimă mențiunile de rol",
     "massHeading": "Mențiuni de grup",
     "massNote": "@here ajunge la aceiași membri ca @everyone. Mențiunile cu numele tău te notifică întotdeauna."
+  },
+  "stickers": {
+    "title": "Stickerele spațiului",
+    "description": "Un album comun pentru acest spațiu, cu până la 50 de stickere animate sau statice.",
+    "empty": "Acest spațiu nu are încă un album de stickere.",
+    "create": "Creează albumul spațiului",
+    "add": "Adaugă sticker"
   }
 }

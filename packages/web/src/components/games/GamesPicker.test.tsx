@@ -50,7 +50,11 @@ describe('shared Games picker', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Games' }));
     const dialog = screen.getByRole('dialog', { name: 'Games' });
     expect(within(dialog).getByRole('button', { name: 'Open Juno' })).toBeInTheDocument();
-    expect(within(dialog).getAllByRole('listitem')).toHaveLength(1);
+    expect(within(dialog).getAllByRole('listitem')).toHaveLength(4);
+    for (const name of ['Jolf', 'Juns', 'Jace']) {
+      expect(within(dialog).getByText(name)).toBeInTheDocument();
+    }
+    expect(within(dialog).getAllByText('Coming soon')).toHaveLength(3);
     expect(useJunoStore.getState().open).toBe(false);
     expect(useVoiceStore.getState().focusedParticipantId).toBe('camera');
     expect(command).not.toHaveBeenCalled();
@@ -58,6 +62,17 @@ describe('shared Games picker', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(useJunoStore.getState().open).toBe(false);
     expect(screen.getByRole('button', { name: 'Games' })).toHaveFocus();
+  });
+  it('announces coming-soon games without letting them open anything', async () => {
+    mount();
+    await userEvent.click(screen.getByRole('button', { name: 'Games' }));
+    const dialog = screen.getByRole('dialog', { name: 'Games' });
+    await userEvent.click(within(dialog).getByText('Jolf'));
+    await userEvent.click(within(dialog).getByText('Juns'));
+    await userEvent.click(within(dialog).getByText('Jace'));
+    expect(useJunoStore.getState().open).toBe(false);
+    expect(command).not.toHaveBeenCalled();
+    expect(screen.getByTestId('route')).toHaveTextContent('/channels/another/text');
   });
   it('opens the connected channel, not the text channel being viewed, only after choosing Juno', async () => {
     mount(); await userEvent.click(screen.getByRole('button', { name: 'Games' }));

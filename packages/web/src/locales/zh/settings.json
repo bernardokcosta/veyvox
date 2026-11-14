@@ -69,7 +69,16 @@
         "fallbackName": "摄像头 {{number}}",
         "detectedFallback": "检测到的摄像头",
         "currentlyUsing": "当前使用：{{label}}",
-        "none": "未检测到摄像头。"
+        "none": "未检测到摄像头。",
+        "quality": {
+          "label": "摄像头画质",
+          "managed": "画质由服务器指定：{{resolution}}、{{fps}} fps、{{bitrate}}。",
+          "resolution": "分辨率",
+          "framerate": "帧率",
+          "bitrate": "码率",
+          "useDefault": "使用默认值",
+          "fps": "{{value}} fps"
+        }
       },
       "preview": {
         "testAria": "测试摄像头",
@@ -131,7 +140,8 @@
       "desktop": "桌面端",
       "instance": "实例",
       "bots": "机器人",
-      "developer": "开发者"
+      "developer": "开发者",
+      "stickers": "贴纸"
     },
     "logOut": "退出登录",
     "backToMenu": "返回设置菜单"
@@ -547,5 +557,20 @@
       "description": "在设置中显示开发者工具，例如“机器人”标签页。关闭只会隐藏它们，您的机器人会继续运行。",
       "saveFailed": "无法保存该设置，请重试。"
     }
+  },
+  "stickers": {
+    "title": "我的贴纸库",
+    "description": "仅你可见的私人专辑。每个专辑最多可容纳 30 个动态或静态贴纸。",
+    "packs": "私人专辑",
+    "newPack": "新专辑名称",
+    "createPack": "创建专辑",
+    "favorites": "收藏",
+    "favoritesHint": "你的贴纸收藏。用 + 将条目归档到打开的专辑中。",
+    "noFavorites": "还没有收藏的贴纸。",
+    "itemName": "贴纸名称",
+    "deletePack": "删除专辑",
+    "deletePackTitle": "删除\"{{name}}\"？",
+    "deletePackDescription": "专辑将被移除。已发送的贴纸仍保留在聊天中。",
+    "deletePackSuccess": "专辑已删除。"
   }
 }

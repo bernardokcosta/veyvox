@@ -100,6 +100,12 @@
       "named_one": "{{names}} is typing",
       "named_other": "{{names}} are typing",
       "several": "Several people are typing"
+    },
+    "preparing": {
+      "image": "Preparing photo…",
+      "video": "Preparing video… {{percent}}%",
+      "sendOriginal": "Send original",
+      "cancel": "Cancel"
     }
   },
   "menu": {
@@ -274,7 +280,13 @@
     "reviewNotes": "Rejection reason",
     "creator": "Creator",
     "viewStickers": "View stickers",
-    "pendingReviewHint": "Under admin review, will be listed on Explore once approved"
+    "pendingReviewHint": "Under admin review, will be listed on Explore once approved",
+    "invalidName": "Choose a visible name with up to 100 characters.",
+    "favoritesTitle": "Favorite stickers",
+    "favorite": "Favorite sticker",
+    "favorited": "Sticker added to favorites.",
+    "serverEmpty": "This space has no sticker album yet",
+    "serverEmptyHint": "A space manager can add one in Space Settings → Space stickers."
   },
   "poke": {
     "action": "Poke",

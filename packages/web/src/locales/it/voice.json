@@ -220,7 +220,8 @@
       "memory": "Alzheimer"
     },
     "rules": "Come si gioca",
-    "rulesText": "Ogni giocatore riceve 7 carte. Abbina il colore o il simbolo dell’ultima carta, oppure gioca un jolly e scegli un colore. Svuota la mano per vincere.\nLa carta Salta fa saltare il giocatore successivo; Inverti cambia il senso di gioco (con due giocatori funziona come Salta). +2 e +4 fanno pescare subito le carte al giocatore successivo e saltano il suo turno. Nessuna accumulazione. Il +4 è consentito solo quando non hai carte del colore attivo; nessuna contestazione.\nPesca una: gioca solo quella nuova carta se è valida, oppure passa. Una pesca non giocabile passa automaticamente.\nHai 45 secondi per turno. Se il tempo scade, peschi una carta e passi; dopo aver pescato, passi soltanto. Se qualcuno esce, le sue carte tornano nel mazzo; con meno di due giocatori la manche termina senza vincitore. Una breve riconnessione vocale conserva il tuo posto. Riavviare il server termina le partite."
+    "rulesText": "Ogni giocatore riceve 7 carte. Abbina il colore o il simbolo dell’ultima carta, oppure gioca un jolly e scegli un colore. Svuota la mano per vincere.\nLa carta Salta fa saltare il giocatore successivo; Inverti cambia il senso di gioco (con due giocatori funziona come Salta). +2 e +4 fanno pescare subito le carte al giocatore successivo e saltano il suo turno. Nessuna accumulazione. Il +4 è consentito solo quando non hai carte del colore attivo; nessuna contestazione.\nPesca una: gioca solo quella nuova carta se è valida, oppure passa. Una pesca non giocabile passa automaticamente.\nHai 45 secondi per turno. Se il tempo scade, peschi una carta e passi; dopo aver pescato, passi soltanto. Se qualcuno esce, le sue carte tornano nel mazzo; con meno di due giocatori la manche termina senza vincitore. Una breve riconnessione vocale conserva il tuo posto. Riavviare il server termina le partite.",
+    "comingSoon": "In arrivo"
   },
   "soundboard": {
     "title": "Soundboard",
@@ -557,5 +558,23 @@
     "stillDenied": "L’accesso al microfono è ancora negato. Consentilo per questo sito nelle impostazioni del browser o del dispositivo.",
     "notFound": "Nessun microfono rilevato.",
     "failed": "Impossibile accedere al microfono."
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}} ha avviato la chiamata",
+    "from": "Dalle:",
+    "to": "Alle:",
+    "status": {
+      "ringing": "Chiamata in corso…",
+      "active": "Chiamata in corso",
+      "ended": "Chiamata terminata",
+      "missed": "Chiamata persa",
+      "rejected": "Chiamata rifiutata",
+      "interrupted": "Chiamata interrotta",
+      "cancelled": "Chiamata annullata"
+    },
+    "duration": "Durata"
+  },
+  "callOngoing": "Chiamata in corso",
+  "rejoinCall": "Torna alla chiamata",
+  "callWaiting": "In attesa dell’altra persona · termina tra {{remaining}}"
 }

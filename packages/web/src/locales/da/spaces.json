@@ -68,7 +68,17 @@
         "note": "Denne kanal er skjult for medlemmer uden eksplicit adgang. Brugere med administratortilladelse eller rumejere ser altid alle kanaler.",
         "unhideOnSave": "Lagring gør denne kanal synlig for hvert medlem."
       },
-      "deleteButton": "Slet kanal"
+      "deleteButton": "Slet kanal",
+      "voiceQuality": {
+        "label": "Stemmekvalitet",
+        "option": "{{value}} kbps",
+        "description": {
+          "64": "Klar tale. Bruger mindst båndbredde.",
+          "128": "Fyldigere, mere naturlige stemmer.",
+          "256": "Højeste kvalitet, bedst til musik. Bruger mest båndbredde."
+        },
+        "hint": "Sætter den højeste lydbitrate, hvert medlem kan sende i denne kanal. Gælder for alle, også dem der allerede er forbundet."
+      }
     },
     "delete": {
       "title": "Slette #{{name}}?",
@@ -361,6 +371,8 @@
       "manageChannels": "Håndtér kanaler",
       "manageRoles": "Håndtér roller",
       "manageSpace": "Håndtér rum",
+      "createStickers": "Opret stickers",
+      "manageStickers": "Administrer stickers",
       "createInvite": "Opret invitation",
       "kickMembers": "Smid medlemmer ud",
       "banMembers": "Udeluk medlemmer",
@@ -611,5 +623,12 @@
     "suppressRoles": "Undertryk rolleomtaler",
     "massHeading": "Gruppeomtaler",
     "massNote": "@here når de samme medlemmer som @everyone. Omtaler af dig ved navn giver dig altid besked."
+  },
+  "stickers": {
+    "title": "Rummets stickers",
+    "description": "Ét delt stickeralbum til dette rum med op til 50 animerede eller statiske stickers.",
+    "empty": "Dette rum har endnu intet stickeralbum.",
+    "create": "Opret rummets album",
+    "add": "Tilføj sticker"
   }
 }

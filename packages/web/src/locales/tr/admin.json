@@ -244,6 +244,33 @@
       "deletedToast_one": "{{count}} dosya silindi ({{size}})",
       "deletedToast_other": "{{count}} dosya silindi ({{size}})",
       "failed": "Medya temizliği başarısız"
+    },
+    "diskCleanup": {
+      "label": "Otomatik temizlik",
+      "enable": "Disk neredeyse dolduğunda otomatik olarak yer aç",
+      "enableHint": "Önce hiçbir şeyin kullanmadığı dosyaları, sonra eski sohbet eklerini en eskiden başlayarak siler. Mesaj metni kalır.",
+      "warning": "Açık: disk aşağıdaki sınıra ulaştığında {{days}} günden eski sohbet ekleri kalıcı olarak silinebilir. Daha yeni dosyalar ve profil fotoğrafları asla silinmez.",
+      "usage": "Diskin %{{percent}}’si kullanımda ({{total}} içinden {{used}})",
+      "usageLabel": "Disk kullanımı",
+      "usageUnknown": "Disk kullanımı okunamadı.",
+      "threshold": "Temizliğe başla",
+      "target": "Şuraya kadar temizle",
+      "minAge": "Şundan yeni dosyaları asla silme",
+      "days": "gün",
+      "problemThreshold": "Başlangıç seviyesi {{min}} ile {{max}} arasında bir tam sayı olmalı.",
+      "problemTarget": "Hedef seviye {{min}} ile {{max}} arasında bir tam sayı olmalı (başlangıcın en az 5 puan altında).",
+      "problemAge": "Yaş {{min}} ile {{max}} arasında tam sayı gün olmalı.",
+      "saved": "Temizlik ayarları kaydedildi",
+      "checkNow": "Şimdi denetle",
+      "checking": "Denetleniyor…",
+      "checkedNothing": "Disk sınırın altında, bu yüzden hiçbir şey silinmedi.",
+      "neverRan": "Henüz temizlik çalışmadı.",
+      "stage": {
+        "safe": "yalnızca kullanılmayan dosyalar",
+        "media": "eski ekler dahil"
+      },
+      "lastRun_one": "Son temizlik {{when}} ({{stage}}): %{{before}} → %{{after}}, {{count}} dosya silindi, {{size}} açıldı.",
+      "lastRun_other": "Son temizlik {{when}} ({{stage}}): %{{before}} → %{{after}}, {{count}} dosya silindi, {{size}} açıldı."
     }
   },
   "streaming": {
@@ -287,6 +314,32 @@
     "capWarning": {
       "title": "Matris değerleri genel üst sınırı aşıyor.",
       "description": "Bazı bit hızı değerleri {{max}} üst sınırını aşıyor. Bu kombinasyonlardaki akışlar üst sınırına göre kalite düşürülecek."
+    },
+    "camera": {
+      "label": "Web kamerası",
+      "description": "Kullanıcıların kamerasını hangi kalitede yayınlayacağını denetler.",
+      "mode": {
+        "label": "Kamera kalite politikası",
+        "fixed": "Sabit (mevcut davranış)",
+        "userChoice": "Kullanıcılar seçer",
+        "fixedHint": "Herkes aşağıdaki kalitede yayınlar.",
+        "userChoiceHint": "Kullanıcılar Ses ve Video ayarlarındaki izinli değerler arasından seçer."
+      },
+      "defaults": {
+        "resolution": "Varsayılan çözünürlük",
+        "framerate": "Varsayılan kare hızı",
+        "bitrate": "Varsayılan bit hızı (kbps)"
+      },
+      "quality": {
+        "resolutions": "İzinli çözünürlükler",
+        "framerates": "İzinli kare hızları",
+        "bitrateRange": "Bit hızı aralığı (kbps)",
+        "min": "Min.",
+        "max": "Maks.",
+        "allowCustom": "Özel bit hızına izin ver",
+        "allowCustomHint": "Kullanıcılar aralık içinde herhangi bir bit hızı ayarlayabilir."
+      },
+      "highEndWarning": "Yüksek kamera ayarları her katılımcının bant genişliğini ve CPU’sunu harcar."
     }
   },
   "updates": {

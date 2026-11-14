@@ -17,6 +17,7 @@ import { useSoundboardStore } from './soundboardStore';
 import { useJunoStore } from './junoStore';
 import { useUnreadCountStore } from './unreadCountStore';
 import { useTransferStore } from './transferStore';
+import { useBookmarkStore } from './bookmarkStore';
 
 interface AuthState {
   /** In-memory lifecycle revision; distinct sessions may reuse the same JWT bytes. */
@@ -60,6 +61,7 @@ function resetUserStores(): void {
   useNotificationSettingsStore.getState().reset();
   useSettingsStore.getState().resetUpdateState();
   useDeveloperModeStore.getState().reset();
+  useBookmarkStore.getState().reset();
 }
 
 function readSessionToken(): string | null {

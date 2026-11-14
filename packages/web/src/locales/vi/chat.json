@@ -100,6 +100,12 @@
       "named_one": "{{names}} đang nhập",
       "named_other": "{{names}} đang nhập",
       "several": "Nhiều người đang nhập"
+    },
+    "preparing": {
+      "image": "Đang chuẩn bị ảnh…",
+      "video": "Đang chuẩn bị video… {{percent}}%",
+      "sendOriginal": "Gửi bản gốc",
+      "cancel": "Huỷ"
     }
   },
   "menu": {
@@ -254,8 +260,8 @@
     "draft": "Nháp",
     "newVersion": "Bản mới",
     "deletePack": "Xóa gói",
-    "stickersCount_one": "{{count}} nhãn dán",
-    "stickersCount_other": "{{count}} nhãn dán",
+    "stickersCount_one": "{{count}} nhãn dán.",
+    "stickersCount_other": "{{count}} nhãn dán.",
     "noPacks": "Không tìm thấy gói nhãn dán",
     "viewPack": "Xem gói",
     "saveDraft": "Lưu thành nháp",
@@ -274,7 +280,13 @@
     "reviewNotes": "Lý do từ chối",
     "creator": "Tác giả",
     "viewStickers": "Xem nhãn dán",
-    "pendingReviewHint": "Đang chờ quản trị duyệt; hiện ở Khám phá sau duyệt"
+    "pendingReviewHint": "Đang chờ quản trị duyệt; hiện ở Khám phá sau duyệt",
+    "invalidName": "Chọn tên hiển thị tối đa 100 ký tự.",
+    "favoritesTitle": "Nhãn dán yêu thích",
+    "favorite": "Nhãn dán yêu thích",
+    "favorited": "Đã thêm nhãn dán vào yêu thích.",
+    "serverEmpty": "Không gian này chưa có album nhãn dán.",
+    "serverEmptyHint": "Người quản lý có thể thêm trong Cài đặt không gian → Nhãn dán của không gian."
   },
   "poke": {
     "action": "Chọc",

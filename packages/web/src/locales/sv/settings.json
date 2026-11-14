@@ -69,7 +69,16 @@
         "fallbackName": "Kamera {{number}}",
         "detectedFallback": "upptäckt kamera",
         "currentlyUsing": "Använder nu: {{label}}",
-        "none": "Inga kameror upptäckta."
+        "none": "Inga kameror upptäckta.",
+        "quality": {
+          "label": "Kamerakvalitet",
+          "managed": "Servern bestämmer kamerakvaliteten: {{resolution}}, {{fps}} fps, {{bitrate}}.",
+          "resolution": "Upplösning",
+          "framerate": "Bildfrekvens",
+          "bitrate": "Bithastighet",
+          "useDefault": "Använd standard",
+          "fps": "{{value}} fps"
+        }
       },
       "preview": {
         "testAria": "Testa kamera",
@@ -131,7 +140,8 @@
       "desktop": "Dator",
       "instance": "Instans",
       "bots": "Bottar",
-      "developer": "Utvecklare"
+      "developer": "Utvecklare",
+      "stickers": "Klistermärken"
     },
     "logOut": "Logga ut",
     "backToMenu": "Tillbaka till inställningsmenyn"
@@ -548,5 +558,20 @@
       "description": "Visa utvecklarverktyg, som fliken Bottar, i inställningar. Avstängning döljer dem bara; dina bottar fortsätter köras.",
       "saveFailed": "Kunde inte spara inställningen. Försök igen."
     }
+  },
+  "stickers": {
+    "title": "Mitt klistermärkesbibliotek",
+    "description": "Privata album som bara du kan se. Varje album rymmer upp till 30 animerade eller statiska klistermärken.",
+    "packs": "Privata album",
+    "newPack": "Nytt albumnamn",
+    "createPack": "Skapa album",
+    "favorites": "Favoriter",
+    "favoritesHint": "Din klistermärkessamling. Arkivera en post i det öppna albumet med +.",
+    "noFavorites": "Inga favoritklistermärken ännu.",
+    "itemName": "Klistermärkesnamn",
+    "deletePack": "Ta bort album",
+    "deletePackTitle": "Ta bort \"{{name}}\"?",
+    "deletePackDescription": "Albumet tas bort. Redan skickade klistermärken blir kvar i chatten.",
+    "deletePackSuccess": "Album borttaget."
   }
 }

@@ -257,6 +257,34 @@
       "deletedToast_many": "Se han eliminado {{count}} archivos ({{size}})",
       "deletedToast_other": "Se han eliminado {{count}} archivos ({{size}})",
       "failed": "No se pudieron limpiar los archivos multimedia"
+    },
+    "diskCleanup": {
+      "label": "Limpieza automática",
+      "enable": "Liberar espacio automáticamente cuando el disco esté casi lleno",
+      "enableHint": "Primero borra archivos que nada usa, luego adjuntos antiguos del chat, del más viejo al más nuevo. El texto se conserva.",
+      "warning": "Activada: cuando el disco alcance el límite, los adjuntos de más de {{days}} días podrán borrarse para siempre. Los más nuevos y las fotos de perfil nunca se tocan.",
+      "usage": "{{percent}} % del disco en uso ({{used}} de {{total}})",
+      "usageLabel": "Uso del disco",
+      "usageUnknown": "No se pudo leer el uso del disco.",
+      "threshold": "Empezar a limpiar en",
+      "target": "Limpiar hasta",
+      "minAge": "Nunca borrar archivos de menos de",
+      "days": "días",
+      "problemThreshold": "El nivel de inicio debe ser un número entero entre {{min}} y {{max}}.",
+      "problemTarget": "El nivel objetivo debe ser un número entero entre {{min}} y {{max}} (al menos 5 puntos por debajo del inicio).",
+      "problemAge": "La edad debe ser un número entero de días entre {{min}} y {{max}}.",
+      "saved": "Ajustes de limpieza guardados",
+      "checkNow": "Comprobar ahora",
+      "checking": "Comprobando…",
+      "checkedNothing": "El disco está por debajo del límite, no se borró nada.",
+      "neverRan": "Aún no se ha ejecutado ninguna limpieza.",
+      "stage": {
+        "safe": "solo archivos sin uso",
+        "media": "incluidos adjuntos antiguos"
+      },
+      "lastRun_one": "Última limpieza {{when}} ({{stage}}): {{before}} % → {{after}} %, {{count}} archivo(s) borrado(s), {{size}} liberados.",
+      "lastRun_other": "Última limpieza {{when}} ({{stage}}): {{before}} % → {{after}} %, {{count}} archivo(s) borrado(s), {{size}} liberados.",
+      "lastRun_many": "Última limpieza {{when}} ({{stage}}): {{before}} % → {{after}} %, {{count}} archivo(s) borrado(s), {{size}} liberados."
     }
   },
   "streaming": {
@@ -300,6 +328,32 @@
     "capWarning": {
       "title": "Los valores de la matriz superan el límite global.",
       "description": "Algunas tasas de bits superan tu máximo de {{max}}. La calidad de las transmisiones con esas combinaciones se reducirá para respetar el límite."
+    },
+    "camera": {
+      "label": "Cámara web",
+      "description": "Controla la calidad con la que los usuarios emiten su cámara.",
+      "mode": {
+        "label": "Política de calidad de cámara",
+        "fixed": "Fija (comportamiento actual)",
+        "userChoice": "Eligen los usuarios",
+        "fixedHint": "Todos emiten en la calidad siguiente.",
+        "userChoiceHint": "Los usuarios eligen entre los valores permitidos en Voz y vídeo."
+      },
+      "defaults": {
+        "resolution": "Resolución predeterminada",
+        "framerate": "Fotogramas predeterminados",
+        "bitrate": "Bitrate predeterminado (kbps)"
+      },
+      "quality": {
+        "resolutions": "Resoluciones permitidas",
+        "framerates": "Fotogramas permitidos",
+        "bitrateRange": "Rango de bitrate (kbps)",
+        "min": "Mín.",
+        "max": "Máx.",
+        "allowCustom": "Permitir bitrate personalizado",
+        "allowCustomHint": "Los usuarios pueden fijar cualquier bitrate del rango."
+      },
+      "highEndWarning": "Los ajustes altos de cámara cuestan ancho de banda y CPU a cada participante."
     }
   },
   "updates": {

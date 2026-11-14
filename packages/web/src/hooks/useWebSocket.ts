@@ -23,6 +23,7 @@ import { useActivityStore } from '../stores/activityStore';
 import { useDiscoverStore } from '../stores/discoverStore';
 import { useUIStore } from '../stores/uiStore';
 import { useNotificationSettingsStore } from '../stores/notificationSettingsStore';
+import { useBookmarkStore } from '../stores/bookmarkStore';
 import { notePendingReady } from '../stores/pendingMessageRehydrate';
 import { recordDiagnostic } from '../utils/diagnostics';
 import { broadcastVoiceStatus, broadcastDeafenViaLiveKit, joinVoiceChannel } from '../utils/voice';
@@ -113,6 +114,8 @@ function handleEvent(event: ServerEvent, readyAlreadyDelivered: boolean, current
       if (!readyAlreadyDelivered) {
         useChatStore.setState({ messages: new Map(), hasMore: new Map() });
         if (chat.currentChannelId) void chat.loadMessages(chat.currentChannelId, true);
+        // Bookmarks pushed while no socket was open are gone from the store.
+        useBookmarkStore.getState().resync();
       }
       useUnreadCountStore.getState().hydrate(event.unreadCounts);
       if (event.readStates) chat.setReadStates(event.readStates, useSpaceStore.getState().channelLastMessageIds);
@@ -153,6 +156,10 @@ function handleEvent(event: ServerEvent, readyAlreadyDelivered: boolean, current
       }
       if (voice.activeDmCall) broadcastVoiceStatus();
       const calls = event.activeCalls ?? [];
+      // A 1-on-1 left with one member still runs: its countdown survives a reload.
+      const waiting = new Map<string, number>();
+      for (const call of calls) if (call.dmChannelId && call.waitingUntil) waiting.set(call.dmChannelId, call.waitingUntil);
+      useVoiceStore.setState({ dmWaitingUntil: waiting });
       // Restoring a ring is not permission to auto-connect media after a reload.
       const ring = calls.find(call => call.state === 'ringing' && call.callerId !== event.user.id);
       if (ring) {
@@ -281,7 +288,20 @@ function handleEvent(event: ServerEvent, readyAlreadyDelivered: boolean, current
       break;
     }
     case 'dm_call_rejected': if (dmCallEventIsOurs(event)) teardownDmCall(); break;
-    case 'dm_call_ended': voice.setVoiceUsers(event.dmChannelId, []); if (dmCallEventIsOurs(event)) teardownDmCall(); break;
+    case 'dm_call_waiting': {
+      const waiting = new Map(useVoiceStore.getState().dmWaitingUntil);
+      if (event.endsAt === null) waiting.delete(event.dmChannelId);
+      else waiting.set(event.dmChannelId, event.endsAt);
+      useVoiceStore.setState({ dmWaitingUntil: waiting });
+      break;
+    }
+    case 'dm_call_ended': {
+      voice.setVoiceUsers(event.dmChannelId, []);
+      const waiting = new Map(useVoiceStore.getState().dmWaitingUntil);
+      if (waiting.delete(event.dmChannelId)) useVoiceStore.setState({ dmWaitingUntil: waiting });
+      if (dmCallEventIsOurs(event)) teardownDmCall();
+      break;
+    }
     case 'dm_channel_created': spaces.upsertDmChannel(event.dmChannel); break;
     case 'dm_channel_closed': spaces.removeDmChannel(event.dmChannelId); break;
     case 'dm_member_added': spaces.upsertUserView(event.user); spaces.addDmMember(event.dmChannelId, event.user); break;
@@ -289,7 +309,15 @@ function handleEvent(event: ServerEvent, readyAlreadyDelivered: boolean, current
     case 'dm_owner_updated': spaces.updateDmOwner(event.dmChannelId, event.newOwnerId); break;
     case 'dm_channel_updated': spaces.updateDmMetadata(event.dmChannelId, { name: event.name, icon: event.icon }); break;
     case 'channel_created':
-    case 'channel_updated': spaces.upsertChannel(event.channel, event.spaceId); break;
+    case 'channel_updated': {
+      spaces.upsertChannel(event.channel, event.spaceId);
+      // An admin changed the quality of the call this client is in: the live
+      // microphone follows it (useLiveKit).
+      if (event.channel.id === useVoiceStore.getState().currentVoiceChannelId) {
+        useVoiceStore.setState({ channelVoiceBitrateKbps: event.channel.voiceBitrateKbps ?? null });
+      }
+      break;
+    }
     case 'channel_deleted': {
       spaces.removeChannel(event.channelId); if (chat.currentChannelId === event.channelId) chat.setCurrentChannel(null);
       const voiceUsers = new Map(voice.voiceUsers), voiceChannelElapsedSeconds = new Map(voice.voiceChannelElapsedSeconds);
@@ -302,6 +330,8 @@ function handleEvent(event: ServerEvent, readyAlreadyDelivered: boolean, current
     case 'category_deleted': spaces.removeCategory(event.categoryId, event.spaceId); break;
     case 'channel_layout_updated': spaces.applyChannelLayout(event.spaceId, event.channels, event.categories); break;
     case 'notification_settings_updated': useNotificationSettingsStore.getState().apply(event.setting); break;
+    case 'bookmark_added': useBookmarkStore.getState().applyAdded(event.bookmark); break;
+    case 'bookmark_removed': useBookmarkStore.getState().applyRemoved(event.kind, event.channelId, event.messageId); break;
     case 'space_layout_updated':
       if ((event.updatedAt ?? 0) >= spaces._layoutUpdatedAt) useSpaceStore.setState({ spaceLayout: event.layout, folders: event.folders, _layoutUpdatedAt: event.updatedAt ?? 0 }); break;
     case 'join_request_accepted': spaces.addSpaceFromReady(event.space); break;

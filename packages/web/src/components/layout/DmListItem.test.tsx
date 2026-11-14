@@ -6,6 +6,7 @@ import { DmListItem } from './DmListItem';
 import { junoUser } from '../games/junoTestFixtures';
 import { useAuthStore } from '../../stores/authStore';
 import { useSpaceStore } from '../../stores/spaceStore';
+import { useVoiceStore } from '../../stores/voiceStore';
 const me = junoUser('me', 'Me'), partner = { ...junoUser('other'), username: 'exact@retained.invalid', displayName: null };
 const dm: DmChannel = { id: 'dm', ownerId: null, name: null, icon: null, createdAt: 1, members: [me, partner] };
 const select = vi.fn(), close = vi.fn(), leave = vi.fn();
@@ -29,5 +30,14 @@ describe('native DM list rows', () => {
     const view = render(<DmListItem {...props} dm={{ ...dm, members: [me] }} />);
     expect(view.container).toBeEmptyDOMElement(); view.rerender(<DmListItem {...props} />);
     expect(screen.getByText(partner.username)).toBeInTheDocument();
+  });
+  it('shows a running call instead of the last message', () => {
+    useVoiceStore.setState({ voiceUsers: new Map([[dm.id, ['other']]]) });
+    try {
+      render(<DmListItem {...props} />);
+      expect(screen.getByText(/Call in progress/)).toBeInTheDocument();
+    } finally {
+      useVoiceStore.setState({ voiceUsers: new Map() });
+    }
   });
 });
