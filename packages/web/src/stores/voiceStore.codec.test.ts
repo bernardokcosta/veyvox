@@ -15,10 +15,17 @@ describe('screen-share codec persistence', () => {
     expect(useVoiceStore.getInitialState().screenShareConfig.codec).toBe('vp9');
     useVoiceStore.getState().setScreenShareConfig({ codec: 'h265' });
     const saved = JSON.parse(localStorage.getItem(KEY) ?? '{}');
-    expect(saved.version).toBe(16);
+    expect(saved.version).toBe(17);
     expect(saved.state.screenShareConfig.codec).toBe('h265');
     await useVoiceStore.persist.rehydrate();
     expect(useVoiceStore.getState().screenShareConfig.codec).toBe('h265');
+  });
+
+  it('gives a version 16 store the default camera config without touching the rest', async () => {
+    localStorage.setItem(KEY, JSON.stringify({ version: 16, state: { screenShareConfig: { fps: 120 } } }));
+    await useVoiceStore.persist.rehydrate();
+    expect(useVoiceStore.getState().cameraConfig).toEqual({ height: 720, fps: 30, customBitrateKbps: null });
+    expect(useVoiceStore.getState().screenShareConfig.fps).toBe(120);
   });
 
   it.each(['vp9', 'h264', 'h265'] as const)('preserves saved %s and unrelated settings from version 15', async (codec) => {

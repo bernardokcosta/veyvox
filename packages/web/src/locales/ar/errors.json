@@ -185,7 +185,7 @@
   "channel_topic_invalid": "يجب أن يكون موضوع القناة نصًا.",
   "channel_topic_length": "يمكن أن تكون مواضيع القنوات {{max}} حرفًا كحد أقصى.",
   "channel_type_invalid": "القناة إما نصية أو صوتية.",
-  "voice_bitrate_invalid": "يجب أن تكون جودة الصوت واحدة من {{options}} كيلوبت/ث.",
+  "voice_bitrate_invalid": "يجب أن تكون جودة الصوت واحدة من {{allowed}} كيلوبت/ث.",
   "voice_bitrate_text_channel": "فقط القنوات الصوتية لها جودة صوت.",
   "camera_mode_invalid": "يجب أن يكون وضع الكاميرا \"fixed\" أو \"user-choice\".",
   "camera_resolutions_invalid": "دقات كاميرا غير صالحة: {{invalid}}. المسموح: {{allowed}}.",

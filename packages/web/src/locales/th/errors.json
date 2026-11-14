@@ -185,7 +185,7 @@
   "channel_topic_invalid": "หัวข้อช่องต้องเป็นข้อความ",
   "channel_topic_length": "หัวข้อช่องยาวได้สูงสุด {{max}} อักขระ",
   "channel_type_invalid": "ช่องเป็นช่องข้อความหรือช่องเสียง",
-  "voice_bitrate_invalid": "คุณภาพเสียงต้องเป็นหนึ่งใน {{options}} kbps",
+  "voice_bitrate_invalid": "คุณภาพเสียงต้องเป็นหนึ่งใน {{allowed}} kbps",
   "voice_bitrate_text_channel": "เฉพาะช่องเสียงเท่านั้นที่มีคุณภาพเสียง",
   "camera_mode_invalid": "โหมดกล้องต้องเป็น \"fixed\" หรือ \"user-choice\"",
   "camera_resolutions_invalid": "ความละเอียดกล้องไม่ถูกต้อง: {{invalid}} อนุญาต: {{allowed}}",

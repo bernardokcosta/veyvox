@@ -185,7 +185,7 @@
   "channel_topic_invalid": "A channel topic must be text.",
   "channel_topic_length": "Channel topics can be at most {{max}} characters long.",
   "channel_type_invalid": "A channel is either a text channel or a voice channel.",
-  "voice_bitrate_invalid": "Voice quality must be one of {{options}} kbps.",
+  "voice_bitrate_invalid": "Voice quality must be one of {{allowed}} kbps.",
   "voice_bitrate_text_channel": "Only voice channels have a voice quality.",
   "camera_mode_invalid": "The camera mode must be \"fixed\" or \"user-choice\".",
   "camera_resolutions_invalid": "Invalid camera resolutions: {{invalid}}. Allowed: {{allowed}}.",

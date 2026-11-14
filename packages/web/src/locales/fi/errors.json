@@ -185,7 +185,7 @@
   "channel_topic_invalid": "Kanavan aiheen on oltava tekstiä.",
   "channel_topic_length": "Kanavien aiheet voivat olla enintään {{max}} merkkiä.",
   "channel_type_invalid": "Kanava on joko teksti- tai äänikanava.",
-  "voice_bitrate_invalid": "Äänenlaadun on oltava yksi arvoista {{options}} kbps.",
+  "voice_bitrate_invalid": "Äänenlaadun on oltava yksi arvoista {{allowed}} kbps.",
   "voice_bitrate_text_channel": "Vain äänikanavilla on äänenlaatu.",
   "camera_mode_invalid": "Kameran tilan on oltava \"fixed\" tai \"user-choice\".",
   "camera_resolutions_invalid": "Virheelliset kameran resoluutiot: {{invalid}}. Sallitut: {{allowed}}.",

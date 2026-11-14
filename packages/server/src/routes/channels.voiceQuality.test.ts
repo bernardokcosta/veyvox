@@ -108,7 +108,7 @@ describe('voice channel quality', () => {
     const res = await app.inject({ method: 'PATCH', url: '/api/channels/voice', payload: { voiceBitrateKbps: 96 } });
     expect(res.statusCode).toBe(400);
     expect(res.json().code).toBe('voice_bitrate_invalid');
-    expect(res.json().details).toEqual({ options: '64, 128, 256' });
+    expect(res.json().details).toEqual({ allowed: '64, 128, 256' });
     expect(testDb.select().from(schema.channels).all().find((c) => c.id === 'voice')?.voiceBitrateKbps).toBe(128);
   });
 

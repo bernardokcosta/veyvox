@@ -59,7 +59,10 @@ describe('the single ordered migration transaction', () => {
   it('recognizes the proven original 0042 hash and upgrades without rewriting its applied history', () => {
     const { db, folder } = historical0042Fixture();
     const before = ledger(db), beforeChanges = vi.fn();
-    expect(readMigrationState(db, folder).pending.map(m => m.folderMillis)).toHaveLength(2);
+    // Two pre-existing pending migrations plus every migration added since
+    // (0051 bookmarks, 0052 disk cleanup, 0053 sticker scopes, 0054 voice
+    // bitrate, 0055 camera limits).
+    expect(readMigrationState(db, folder).pending.map(m => m.folderMillis)).toHaveLength(7);
     runMigrations(db, { migrationsFolder: folder, beforeChanges });
     expect(ledger(db).slice(0, 49)).toEqual(before);
     expect(db.prepare('SELECT id,password_hash FROM users').all()).toEqual([{ id: 'native', password_hash: 'synthetic-credential-native' }]);

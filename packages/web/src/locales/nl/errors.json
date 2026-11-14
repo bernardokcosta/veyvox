@@ -185,7 +185,7 @@
   "channel_topic_invalid": "Een kanaalonderwerp moet tekst zijn.",
   "channel_topic_length": "Kanaalonderwerpen mogen hooguit {{max}} tekens zijn.",
   "channel_type_invalid": "Een kanaal is een tekst- of spraakkanaal.",
-  "voice_bitrate_invalid": "De spraakkwaliteit moet een van {{options}} kbps zijn.",
+  "voice_bitrate_invalid": "De spraakkwaliteit moet een van {{allowed}} kbps zijn.",
   "voice_bitrate_text_channel": "Alleen spraakkanalen hebben een spraakkwaliteit.",
   "camera_mode_invalid": "De cameramodus moet \"fixed\" of \"user-choice\" zijn.",
   "camera_resolutions_invalid": "Ongeldige cameraresoluties: {{invalid}}. Toegestaan: {{allowed}}.",

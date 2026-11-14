@@ -185,7 +185,7 @@
   "channel_topic_invalid": "채널 주제는 텍스트.",
   "channel_topic_length": "채널 주제는 최대 {{max}}자.",
   "channel_type_invalid": "채널은 텍스트 또는 음성 채널.",
-  "voice_bitrate_invalid": "음성 품질은 {{options}} kbps 중 하나여야 합니다.",
+  "voice_bitrate_invalid": "음성 품질은 {{allowed}} kbps 중 하나여야 합니다.",
   "voice_bitrate_text_channel": "음성 채널에만 음성 품질이 있습니다.",
   "camera_mode_invalid": "카메라 모드는 \"fixed\" 또는 \"user-choice\"여야 합니다.",
   "camera_resolutions_invalid": "잘못된 카메라 해상도: {{invalid}}. 허용: {{allowed}}.",

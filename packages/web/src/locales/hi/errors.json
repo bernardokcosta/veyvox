@@ -185,7 +185,7 @@
   "channel_topic_invalid": "चैनल विषय पाठ हो।",
   "channel_topic_length": "चैनल विषय अधिकतम {{max}} वर्णों के हों।",
   "channel_type_invalid": "चैनल या तो पाठ या वॉयस चैनल है।",
-  "voice_bitrate_invalid": "आवाज़ की गुणवत्ता {{options}} kbps में से एक होनी चाहिए।",
+  "voice_bitrate_invalid": "आवाज़ की गुणवत्ता {{allowed}} kbps में से एक होनी चाहिए।",
   "voice_bitrate_text_channel": "केवल वॉइस चैनलों में आवाज़ की गुणवत्ता होती है।",
   "camera_mode_invalid": "कैमरा मोड \"fixed\" या \"user-choice\" होना चाहिए।",
   "camera_resolutions_invalid": "अमान्य कैमरा रिज़ॉल्यूशन: {{invalid}}। अनुमत: {{allowed}}।",

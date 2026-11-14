@@ -5,6 +5,8 @@ import { drizzle } from 'drizzle-orm/better-sqlite3';
 import jwt from 'jsonwebtoken';
 import * as schema from '../db/schema.js';
 import { buildNativeDatabase, seedNativeUser } from '../testing/standaloneUpgrade.js';
+import { setWorkerId } from '../utils/snowflake.js';
+setWorkerId(13);
 import { connectionManager } from './handler.js';
 import { handleDmCallStartForTest as start } from './events.js';
 import type { WebSocket } from 'ws';

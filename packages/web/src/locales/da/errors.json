@@ -185,7 +185,7 @@
   "channel_topic_invalid": "Et kanaltema skal være tekst.",
   "channel_topic_length": "Kanaltemaer må højst være {{max}} tegn.",
   "channel_type_invalid": "En kanal er enten en tekstkanal eller en stemmekanal.",
-  "voice_bitrate_invalid": "Stemmekvaliteten skal være en af {{options}} kbps.",
+  "voice_bitrate_invalid": "Stemmekvaliteten skal være en af {{allowed}} kbps.",
   "voice_bitrate_text_channel": "Kun talekanaler har en stemmekvalitet.",
   "camera_mode_invalid": "Kameratilstanden skal være \"fixed\" eller \"user-choice\".",
   "camera_resolutions_invalid": "Ugyldige kameraopløsninger: {{invalid}}. Tilladt: {{allowed}}.",

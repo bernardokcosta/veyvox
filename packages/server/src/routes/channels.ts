@@ -426,7 +426,7 @@ export async function channelRoutes(app: FastifyInstance): Promise<void> {
         return sendError(reply, 400, 'voice_bitrate_text_channel');
       }
       if (!isVoiceBitrateKbps(voiceBitrateKbps)) {
-        return sendError(reply, 400, 'voice_bitrate_invalid', { options: VOICE_BITRATE_OPTIONS_KBPS.join(', ') });
+        return sendError(reply, 400, 'voice_bitrate_invalid', { allowed: VOICE_BITRATE_OPTIONS_KBPS.join(', ') });
       }
       updates.voiceBitrateKbps = voiceBitrateKbps;
     }

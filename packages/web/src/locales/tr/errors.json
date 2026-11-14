@@ -185,7 +185,7 @@
   "channel_topic_invalid": "Kanal konusu metin olmalı.",
   "channel_topic_length": "Kanal konuları en fazla {{max}} karakter olabilir.",
   "channel_type_invalid": "Bir kanal ya metin ya da ses kanalıdır.",
-  "voice_bitrate_invalid": "Ses kalitesi {{options}} kbps değerlerinden biri olmalı.",
+  "voice_bitrate_invalid": "Ses kalitesi {{allowed}} kbps değerlerinden biri olmalı.",
   "voice_bitrate_text_channel": "Yalnızca ses kanallarının ses kalitesi vardır.",
   "camera_mode_invalid": "Kamera modu \"fixed\" veya \"user-choice\" olmalı.",
   "camera_resolutions_invalid": "Geçersiz kamera çözünürlükleri: {{invalid}}. İzinli: {{allowed}}.",

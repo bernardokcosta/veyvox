@@ -224,7 +224,7 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   channel_topic_invalid: 'Channel topic must be a string',
   channel_topic_length: 'Channel topic can be at most {{max}} characters',
   channel_type_invalid: 'Channel type must be "text" or "voice"',
-  voice_bitrate_invalid: 'Voice quality must be one of the {{options}} kbps presets',
+  voice_bitrate_invalid: 'Voice quality must be one of the {{allowed}} kbps presets',
   voice_bitrate_text_channel: 'Only voice channels have a voice quality',
   camera_mode_invalid: 'Camera mode must be "fixed" or "user-choice"',
   camera_resolutions_invalid: 'Camera resolutions must be chosen from {{allowed}}',
