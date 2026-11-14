@@ -562,5 +562,23 @@
     "stillDenied": "Dostęp do mikrofonu wciąż jest odrzucony. Zezwól na niego dla tej strony w ustawieniach przeglądarki albo urządzenia.",
     "notFound": "Nie wykryto mikrofonu.",
     "failed": "Nie udało się uzyskać dostępu do mikrofonu."
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}} rozpoczął połączenie",
+    "from": "Od:",
+    "to": "Do:",
+    "status": {
+      "ringing": "Łączenie…",
+      "active": "Trwa połączenie",
+      "ended": "Połączenie zakończone",
+      "missed": "Nieodebrane połączenie",
+      "rejected": "Połączenie odrzucone",
+      "interrupted": "Połączenie przerwane",
+      "cancelled": "Połączenie anulowane"
+    },
+    "duration": "Czas trwania"
+  },
+  "callOngoing": "Trwa połączenie",
+  "rejoinCall": "Wróć do połączenia",
+  "callWaiting": "Oczekiwanie na drugą stronę · koniec za {{remaining}}"
 }

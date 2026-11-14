@@ -552,5 +552,23 @@
     "stillDenied": "Mikrofonin käyttö on yhä evätty. Salli se tälle sivustolle selain- tai laiteasetuksissa.",
     "notFound": "Mikrofonia ei havaittu.",
     "failed": "Mikrofoniin ei saatu yhteyttä."
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}} aloitti puhelun",
+    "from": "Alku:",
+    "to": "Loppu:",
+    "status": {
+      "ringing": "Soitetaan…",
+      "active": "Puhelu käynnissä",
+      "ended": "Puhelu päättyi",
+      "missed": "Vastaamaton puhelu",
+      "rejected": "Puhelu hylätty",
+      "interrupted": "Puhelu keskeytyi",
+      "cancelled": "Puhelu peruttu"
+    },
+    "duration": "Kesto"
+  },
+  "callOngoing": "Puhelu käynnissä",
+  "rejoinCall": "Takaisin puheluun",
+  "callWaiting": "Odotetaan toista · päättyy {{remaining}} kuluttua"
 }

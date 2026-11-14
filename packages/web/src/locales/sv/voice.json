@@ -552,5 +552,23 @@
     "stillDenied": "Mikrofonåtkomsten är fortfarande nekad. Tillåt den för denna webbplats i webbläsar- eller enhetsinställningar.",
     "notFound": "Ingen mikrofon upptäckt.",
     "failed": "Kunde inte få åtkomst till mikrofonen."
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}} startade samtalet",
+    "from": "Från:",
+    "to": "Till:",
+    "status": {
+      "ringing": "Ringer…",
+      "active": "Samtal pågår",
+      "ended": "Samtal avslutat",
+      "missed": "Missat samtal",
+      "rejected": "Samtal avvisat",
+      "interrupted": "Samtal avbrutet",
+      "cancelled": "Samtal avbrutet"
+    },
+    "duration": "Längd"
+  },
+  "callOngoing": "Samtal pågår",
+  "rejoinCall": "Tillbaka till samtalet",
+  "callWaiting": "Väntar på den andra · avslutas om {{remaining}}"
 }

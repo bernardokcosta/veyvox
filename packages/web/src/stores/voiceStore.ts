@@ -103,6 +103,12 @@ export interface VoiceState {
    * read by `useLiveKit`, which applies it to the live microphone. Not persisted.
    */
   channelVoiceBitrateKbps: number | null;
+  /**
+   * A 1-on-1 with one member left: when the room ends unless someone rejoins,
+   * keyed by DM channel id. Written by `dm_call_waiting` and the ready
+   * snapshot; cleared by a null event or a room that is gone. Not persisted.
+   */
+  dmWaitingUntil: Map<string, number>;
   focusedParticipantId: string | null;
   screenShareConfig: ScreenShareConfig;
   cameraConfig: CameraConfig;
@@ -296,6 +302,7 @@ export const useVoiceStore = create<VoiceState>()(
       outputDeviceId: 'default',
       cameraDeviceId: null,
       channelVoiceBitrateKbps: null,
+      dmWaitingUntil: new Map(),
       focusedParticipantId: null,
       screenShareConfig: { height: 720, fps: 60, mode: 'gaming', customBitrateKbps: null, shareAudio: !isElectron(), forceSdr: false, codec: 'vp9' },
       cameraConfig: { height: 720, fps: 30, customBitrateKbps: null },
@@ -838,6 +845,7 @@ export const useVoiceStore = create<VoiceState>()(
         outputDeviceId: 'default',
         cameraDeviceId: null,
         channelVoiceBitrateKbps: null,
+        dmWaitingUntil: new Map(),
         focusedParticipantId: null,
         participantVolumes: new Map(),
         participantMutes: new Map(),

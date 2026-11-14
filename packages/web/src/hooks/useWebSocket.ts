@@ -156,6 +156,10 @@ function handleEvent(event: ServerEvent, readyAlreadyDelivered: boolean, current
       }
       if (voice.activeDmCall) broadcastVoiceStatus();
       const calls = event.activeCalls ?? [];
+      // A 1-on-1 left with one member still runs: its countdown survives a reload.
+      const waiting = new Map<string, number>();
+      for (const call of calls) if (call.dmChannelId && call.waitingUntil) waiting.set(call.dmChannelId, call.waitingUntil);
+      useVoiceStore.setState({ dmWaitingUntil: waiting });
       // Restoring a ring is not permission to auto-connect media after a reload.
       const ring = calls.find(call => call.state === 'ringing' && call.callerId !== event.user.id);
       if (ring) {
@@ -284,7 +288,20 @@ function handleEvent(event: ServerEvent, readyAlreadyDelivered: boolean, current
       break;
     }
     case 'dm_call_rejected': if (dmCallEventIsOurs(event)) teardownDmCall(); break;
-    case 'dm_call_ended': voice.setVoiceUsers(event.dmChannelId, []); if (dmCallEventIsOurs(event)) teardownDmCall(); break;
+    case 'dm_call_waiting': {
+      const waiting = new Map(useVoiceStore.getState().dmWaitingUntil);
+      if (event.endsAt === null) waiting.delete(event.dmChannelId);
+      else waiting.set(event.dmChannelId, event.endsAt);
+      useVoiceStore.setState({ dmWaitingUntil: waiting });
+      break;
+    }
+    case 'dm_call_ended': {
+      voice.setVoiceUsers(event.dmChannelId, []);
+      const waiting = new Map(useVoiceStore.getState().dmWaitingUntil);
+      if (waiting.delete(event.dmChannelId)) useVoiceStore.setState({ dmWaitingUntil: waiting });
+      if (dmCallEventIsOurs(event)) teardownDmCall();
+      break;
+    }
     case 'dm_channel_created': spaces.upsertDmChannel(event.dmChannel); break;
     case 'dm_channel_closed': spaces.removeDmChannel(event.dmChannelId); break;
     case 'dm_member_added': spaces.upsertUserView(event.user); spaces.addDmMember(event.dmChannelId, event.user); break;

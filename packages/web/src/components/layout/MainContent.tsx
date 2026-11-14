@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSpaceStore } from '../../stores/spaceStore';
+import { useSpaceStore, isDmChannel } from '../../stores/spaceStore';
+import { DmCallStatus } from '../voice/DmCallStatus';
 import { useChatStore } from '../../stores/chatStore';
 import { useUIStore } from '../../stores/uiStore';
 import { MessageList } from '../chat/MessageList';
@@ -418,6 +419,7 @@ export function MainContent() {
           </div>
         </div>
         <MessageList channelId={currentChannelId} jumpToMessageId={jumpToMessageId} onJumpHandled={clearJumpRequest} />
+        {currentChannelId && isDmChannel(currentChannelId) && <DmCallStatus channelId={currentChannelId} />}
         {dmPartnerDeleted
           ? <DmDeletedNotice />
           : <MessageInput channelId={currentChannelId} channelName={`@${dmName}`} placeholder={dmInputPlaceholder} />}

@@ -557,5 +557,23 @@
     "stillDenied": "L’accesso al microfono è ancora negato. Consentilo per questo sito nelle impostazioni del browser o del dispositivo.",
     "notFound": "Nessun microfono rilevato.",
     "failed": "Impossibile accedere al microfono."
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}} ha avviato la chiamata",
+    "from": "Dalle:",
+    "to": "Alle:",
+    "status": {
+      "ringing": "Chiamata in corso…",
+      "active": "Chiamata in corso",
+      "ended": "Chiamata terminata",
+      "missed": "Chiamata persa",
+      "rejected": "Chiamata rifiutata",
+      "interrupted": "Chiamata interrotta",
+      "cancelled": "Chiamata annullata"
+    },
+    "duration": "Durata"
+  },
+  "callOngoing": "Chiamata in corso",
+  "rejoinCall": "Torna alla chiamata",
+  "callWaiting": "In attesa dell’altra persona · termina tra {{remaining}}"
 }

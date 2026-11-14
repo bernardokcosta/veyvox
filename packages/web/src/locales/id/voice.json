@@ -552,5 +552,23 @@
     "stillDenied": "Akses mikrofon masih ditolak. Izinkan untuk situs ini di pengaturan peramban atau perangkat.",
     "notFound": "Tidak ada mikrofon terdeteksi.",
     "failed": "Tidak dapat mengakses mikrofon."
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}} memulai panggilan",
+    "from": "Dari:",
+    "to": "Sampai:",
+    "status": {
+      "ringing": "Memanggil…",
+      "active": "Panggilan berlangsung",
+      "ended": "Panggilan berakhir",
+      "missed": "Panggilan tak terjawab",
+      "rejected": "Panggilan ditolak",
+      "interrupted": "Panggilan terputus",
+      "cancelled": "Panggilan dibatalkan"
+    },
+    "duration": "Durasi"
+  },
+  "callOngoing": "Panggilan berlangsung",
+  "rejoinCall": "Kembali ke panggilan",
+  "callWaiting": "Menunggu lawan bicara · berakhir dalam {{remaining}}"
 }

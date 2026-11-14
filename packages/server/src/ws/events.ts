@@ -1657,10 +1657,15 @@ async function handleDmCallEnd(event: Record<string, unknown>, userId: string): 
   if (!dmChannelId || typeof dmChannelId !== 'string' || !isDmMember(dmChannelId, userId)) return;
   const room = connectionManager.getRoom(dmChannelId);
   if (!room || room.roomType !== 'dm') return;
-  if ((room.metadata as DmRoomMeta).group) {
-    connectionManager.leaveGroupDmCall(dmChannelId, userId);
+  const meta = room.metadata as DmRoomMeta;
+  if (meta.group || meta.state === 'active') {
+    // Hanging up or cancelling takes only the sender out of a group
+    // call; it ends with the last one out. A member who is not in the
+    // call changes nothing.
+    if (connectionManager.leaveGroupDmCall(dmChannelId, userId) !== 'ended') return;
   } else {
-    connectionManager.endDmRoom(dmChannelId, 'dm_call_ended');
+    connectionManager.endDmRoom(dmChannelId, 'dm_call_ended', meta.callerId === userId ? 'cancelled' : undefined);
+    return;
   }
 }
 

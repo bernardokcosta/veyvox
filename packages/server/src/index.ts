@@ -48,6 +48,7 @@ import { startStorageWorker, stopStorageWorker } from './utils/storageWorker.js'
 import { startDiskPressureWorker, stopDiskPressureWorker } from './utils/diskPressure.js';
 import { startBackupWorker, stopBackupWorker } from './utils/backupWorker.js';
 import { resetStalePresenceOnBoot } from './utils/presenceBoot.js';
+import { recoverInterruptedDmCalls } from './utils/dmCallHistory.js';
 
 import { registerWebSocket } from './ws/handler.js';
 import path from 'path';
@@ -213,6 +214,10 @@ async function main(): Promise<void> {
 
   // Initialize database
   getDb();
+
+  // A restart cannot reconstruct the moment a call was lost: calls still
+  // recorded as ringing or active become interrupted, not ended.
+  recoverInterruptedDmCalls();
 
   // The previous process's disconnect timers are gone. Reset stale live status
   // without changing saved chosen status. Must run

@@ -552,5 +552,23 @@
     "stillDenied": "Mikrofontilgangen er fortsatt nektet. Tillat den for dette nettstedet i nettleser- eller enhetsinnstillinger.",
     "notFound": "Ingen mikrofon oppdaget.",
     "failed": "Kunne ikke få tilgang til mikrofonen."
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}} startet samtalen",
+    "from": "Fra:",
+    "to": "Til:",
+    "status": {
+      "ringing": "Ringer…",
+      "active": "Samtale pågår",
+      "ended": "Samtale avsluttet",
+      "missed": "Mist samtale",
+      "rejected": "Samtale avvist",
+      "interrupted": "Samtale avbrutt",
+      "cancelled": "Samtale avbrutt"
+    },
+    "duration": "Varighet"
+  },
+  "callOngoing": "Samtale pågår",
+  "rejoinCall": "Tilbake til samtalen",
+  "callWaiting": "Venter på den andre · avsluttes om {{remaining}}"
 }

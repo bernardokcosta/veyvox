@@ -557,5 +557,23 @@
     "stillDenied": "Accesul la microfon este încă refuzat. Permite-l pentru acest site în setările browserului sau ale dispozitivului.",
     "notFound": "Nu s-a detectat niciun microfon.",
     "failed": "Microfonul nu a putut fi accesat."
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}} a pornit apelul",
+    "from": "De la:",
+    "to": "La:",
+    "status": {
+      "ringing": "Se apelează…",
+      "active": "Apel în curs",
+      "ended": "Apel încheiat",
+      "missed": "Apel ratat",
+      "rejected": "Apel refuzat",
+      "interrupted": "Apel întrerupt",
+      "cancelled": "Apel anulat"
+    },
+    "duration": "Durată"
+  },
+  "callOngoing": "Apel în curs",
+  "rejoinCall": "Înapoi la apel",
+  "callWaiting": "Se așteaptă cealaltă persoană · se termină în {{remaining}}"
 }

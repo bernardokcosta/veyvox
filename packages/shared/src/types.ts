@@ -464,6 +464,8 @@ export interface ActiveCallInfo {
   participants: string[];
   startedAt: number;
   state: 'ringing' | 'active';
+  /** A 1-on-1 with one member left: when the call ends unless someone rejoins. */
+  waitingUntil?: number;
 }
 
 // ─── DM Types ───────────────────────────────────────────────────────────────
@@ -634,6 +636,8 @@ export type ServerEvent =
   // Only the authenticated answerer's other sessions stop ringing.
   | { type: 'dm_call_accepted'; dmChannelId: string; answeredByUserId: string }
   | { type: 'dm_call_rejected'; dmChannelId: string }
+  /** A 1-on-1 with one member left: the room ends at `endsAt` unless someone rejoins (null = both back). */
+  | { type: 'dm_call_waiting'; dmChannelId: string; endsAt: number | null }
   | { type: 'dm_call_ended'; dmChannelId: string }
   | { type: 'voice_status_update'; userId: string; channelId: string; isMuted: boolean; isDeafened: boolean; isCameraOn: boolean; isScreenSharing: boolean }
   | { type: 'space_voice_state'; spaceId: string; voiceStates: Record<string, string[]>; voiceChannelElapsedSeconds: Record<string, number>; voiceUserStates: Record<string, { isMuted: boolean; isDeafened: boolean; isCameraOn: boolean; isScreenSharing: boolean }>; spaceVoiceStates: Record<string, { spaceMuted: boolean; spaceDeafened: boolean; permissionMuted: boolean }> }

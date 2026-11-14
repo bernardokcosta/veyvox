@@ -552,5 +552,23 @@
     "stillDenied": "Quyền micro vẫn bị từ chối. Hãy cho phép nó cho trang này trong cài đặt trình duyệt hay thiết bị.",
     "notFound": "Không phát hiện micro.",
     "failed": "Không thể truy cập micro."
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}} đã bắt đầu cuộc gọi",
+    "from": "Từ:",
+    "to": "Đến:",
+    "status": {
+      "ringing": "Đang gọi…",
+      "active": "Cuộc gọi đang diễn ra",
+      "ended": "Cuộc gọi đã kết thúc",
+      "missed": "Cuộc gọi nhỡ",
+      "rejected": "Cuộc gọi bị từ chối",
+      "interrupted": "Cuộc gọi bị gián đoạn",
+      "cancelled": "Cuộc gọi đã hủy"
+    },
+    "duration": "Thời lượng"
+  },
+  "callOngoing": "Cuộc gọi đang diễn ra",
+  "rejoinCall": "Quay lại cuộc gọi",
+  "callWaiting": "Đang chờ người kia · kết thúc sau {{remaining}}"
 }

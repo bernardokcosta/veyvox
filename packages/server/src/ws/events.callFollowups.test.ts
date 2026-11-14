@@ -4,11 +4,13 @@ import { drizzle } from 'drizzle-orm/better-sqlite3';
 import type { WebSocket } from 'ws';
 import * as schema from '../db/schema.js';
 import { buildNativeDatabase, seedNativeUser } from '../testing/standaloneUpgrade.js';
+import { setWorkerId } from '../utils/snowflake.js';
 import { connectionManager } from './handler.js';
 import { handleDmCallStartForTest as start, handleDmCallAcceptForTest as accept, handleClientEvent } from './events.js';
 let sqlite: Database.Database;
 let db: ReturnType<typeof drizzle<typeof schema>>;
 vi.mock('../db/index.js', () => ({ getDb: () => db, getRawDb: () => sqlite, schema }));
+setWorkerId(11);
 const sockets = new Map<string, WebSocket>();
 function ws(id: string): WebSocket { return sockets.get(id)!; }
 function received(id: string, type: string): Record<string, unknown>[] {

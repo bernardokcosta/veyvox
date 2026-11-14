@@ -552,5 +552,23 @@
     "stillDenied": "Microfoontoegang is nog steeds geweigerd. Sta hem toe voor deze site in je browser- of apparaatinstellingen.",
     "notFound": "Geen microfoon gedetecteerd.",
     "failed": "Kon geen toegang tot de microfoon krijgen."
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}} is het gesprek begonnen",
+    "from": "Van:",
+    "to": "Tot:",
+    "status": {
+      "ringing": "Aan het bellen…",
+      "active": "Gesprek bezig",
+      "ended": "Gesprek beëindigd",
+      "missed": "Gemist gesprek",
+      "rejected": "Gesprek geweigerd",
+      "interrupted": "Gesprek onderbroken",
+      "cancelled": "Gesprek geannuleerd"
+    },
+    "duration": "Duur"
+  },
+  "callOngoing": "Gesprek bezig",
+  "rejoinCall": "Terug naar het gesprek",
+  "callWaiting": "Wachten op de ander · eindigt over {{remaining}}"
 }

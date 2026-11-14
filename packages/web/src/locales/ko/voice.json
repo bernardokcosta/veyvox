@@ -547,5 +547,23 @@
     "stillDenied": "마이크 접근이 계속 거부됩니다. 브라우저나 기기 설정에서 이 사이트에 허용하세요.",
     "notFound": "마이크를 찾을 수 없습니다.",
     "failed": "마이크에 접근할 수 없습니다."
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}}님이 통화를 시작했습니다",
+    "from": "시작:",
+    "to": "종료:",
+    "status": {
+      "ringing": "거는 중…",
+      "active": "통화 중",
+      "ended": "통화 종료",
+      "missed": "부재중 통화",
+      "rejected": "통화 거절",
+      "interrupted": "통화 중단",
+      "cancelled": "통화 취소"
+    },
+    "duration": "통화 시간"
+  },
+  "callOngoing": "통화 중",
+  "rejoinCall": "통화로 돌아가기",
+  "callWaiting": "상대를 기다리는 중 · {{remaining}} 후 종료"
 }

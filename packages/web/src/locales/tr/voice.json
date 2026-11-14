@@ -552,5 +552,23 @@
     "stillDenied": "Mikrofon erişimi hâlâ reddediliyor. Bu site için tarayıcı veya cihaz ayarlarından izin ver.",
     "notFound": "Mikrofon bulunamadı.",
     "failed": "Mikrofona erişilemedi."
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}} aramayı başlattı",
+    "from": "Başlangıç:",
+    "to": "Bitiş:",
+    "status": {
+      "ringing": "Aranıyor…",
+      "active": "Arama sürüyor",
+      "ended": "Arama bitti",
+      "missed": "Cevapsız arama",
+      "rejected": "Arama reddedildi",
+      "interrupted": "Arama kesildi",
+      "cancelled": "Arama iptal edildi"
+    },
+    "duration": "Süre"
+  },
+  "callOngoing": "Arama sürüyor",
+  "rejoinCall": "Aramaya dön",
+  "callWaiting": "Diğer kişi bekleniyor · {{remaining}} içinde bitiyor"
 }

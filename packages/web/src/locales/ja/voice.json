@@ -547,5 +547,23 @@
     "stillDenied": "マイク権限は依然拒否。このサイト用にブラウザ・機器設定で許可。",
     "notFound": "マイクなし。",
     "failed": "マイクにアクセス不可。"
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}} が通話を開始しました",
+    "from": "開始:",
+    "to": "終了:",
+    "status": {
+      "ringing": "発信中…",
+      "active": "通話中",
+      "ended": "通話終了",
+      "missed": "不在着信",
+      "rejected": "通話拒否",
+      "interrupted": "通話中断",
+      "cancelled": "通話キャンセル"
+    },
+    "duration": "通話時間"
+  },
+  "callOngoing": "通話中",
+  "rejoinCall": "通話に戻る",
+  "callWaiting": "相手を待っています · あと {{remaining}} で終了"
 }

@@ -552,5 +552,23 @@
     "stillDenied": "Mikrofonadgang er stadig nægtet. Tillad den for dette websted i browser- eller enhedsindstillinger.",
     "notFound": "Ingen mikrofon registreret.",
     "failed": "Kunne ikke få adgang til mikrofonen."
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}} startede opkaldet",
+    "from": "Fra:",
+    "to": "Til:",
+    "status": {
+      "ringing": "Ringer…",
+      "active": "Opkald i gang",
+      "ended": "Opkald afsluttet",
+      "missed": "Mistet opkald",
+      "rejected": "Opkald afvist",
+      "interrupted": "Opkald afbrudt",
+      "cancelled": "Opkald annulleret"
+    },
+    "duration": "Varighed"
+  },
+  "callOngoing": "Opkald i gang",
+  "rejoinCall": "Tilbage til opkaldet",
+  "callWaiting": "Venter på den anden · slutter om {{remaining}}"
 }
