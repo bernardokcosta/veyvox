@@ -14,9 +14,10 @@ const target = { userId: 'a', channelId: 'voice', origin: window.location.origin
 const node = { stop: vi.fn(), disconnect: vi.fn(), connect: vi.fn(), start: vi.fn(), buffer: null, onended: null };
 const gain = { gain: { value: 0, setValueAtTime: vi.fn(), linearRampToValueAtTime: vi.fn() }, connect: vi.fn(), disconnect: vi.fn() };
 afterEach(() => vi.useRealTimers());
-function cue(id: string, remainingMs = 45_000, face: 'memory' | 'intoxicated' = 'memory') {
+function cue(id: string, remainingMs = 45_000, face: 'memory' | 'intoxicated' | 'pizza' = 'memory') {
   const state = useJunoStore.getState();
   useJunoStore.setState({ snapshot: { revision: (state.snapshot?.revision ?? 0) + 1, game: { ...junoGame('playing'), remainingMs,
+    ...(face === 'pizza' ? { pizzaResolution: { id, remainingMs: 5_000 } } : {}),
     lastMove: { id, type: 'play', userId: 'b', targetUserId: 'a', card: { id: 'rare', face, color: null } } } } });
 }
 beforeEach(() => {
@@ -32,6 +33,15 @@ beforeEach(() => {
 });
 
 describe('Juno neon session playback', () => {
+  it('plays only one supplied pizza cue and cancels it on deafen without replay on reopening', async () => {
+    const view = render(<JunoMemorySound target={target} connected />);
+    await act(async () => cue('pizza', 45_000, 'pizza'));
+    expect(audio.loadSound).toHaveBeenCalledExactlyOnceWith('juno_pizza');
+    await act(async () => cue('pizza', 45_000, 'pizza')); expect(node.start).toHaveBeenCalledOnce();
+    act(() => useVoiceStore.setState({ isDeafened: true })); expect(node.stop).toHaveBeenCalledOnce();
+    view.unmount(); render(<JunoMemorySound target={target} connected />);
+    expect(audio.loadSound).toHaveBeenCalledOnce();
+  });
   it('plays the supplied Entorpecido edition once through the existing SFX bus and cancels it on deafen', async () => {
     render(<JunoMemorySound target={target} connected />);
     await act(async () => cue('intoxicated', 45_000, 'intoxicated'));

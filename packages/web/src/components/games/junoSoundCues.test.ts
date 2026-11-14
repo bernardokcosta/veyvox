@@ -5,13 +5,22 @@ import { junoGame } from './junoTestFixtures';
 
 const previous = (): JunoView => ({ ...junoGame('playing'), currentPlayerId: 'b' });
 function play(face: JunoFace): JunoView {
-  return { ...previous(), remainingMs: 45_000, lastMove: { id: 'new', type: 'play', userId: 'b', card: { id: 'card', color: null, face } } };
+  return { ...previous(), remainingMs: 45_000, ...(face === 'pizza' ? { pizzaResolution: { id: 'new', remainingMs: 5_000 } } : {}),
+    lastMove: { id: 'new', type: 'play', userId: 'b', card: { id: 'card', color: null, face } } };
 }
 describe('Juno neon cue selection', () => {
-  it.each([['8', 'play'], ['draw2', 'draw2'], ['draw4', 'draw4'], ['reverse', 'reverse'], ['skip', 'skip'], ['wild', 'wild'], ['memory', 'memory'], ['intoxicated', 'intoxicated']] as const)
+  it.each([['8', 'play'], ['draw2', 'draw2'], ['draw4', 'draw4'], ['reverse', 'reverse'], ['skip', 'skip'], ['wild', 'wild'], ['memory', 'memory'], ['intoxicated', 'intoxicated'], ['pizza', 'pizza']] as const)
     ('selects %s without layering an ordinary play', (face, cue) => {
       expect(junoMoveSounds(previous(), play(face), 'a')).toEqual([cue]);
     });
+  it('waits until pizza resolution ends for the turn alert without repeating the pizza cue', () => {
+    const active = { ...play('pizza'), currentPlayerId: 'a' };
+    expect(junoMoveSounds(previous(), active, 'a')).toEqual(['pizza']);
+    const ended = { ...active, pizzaResolution: undefined };
+    expect(junoMoveSounds(active, ended, 'a')).toEqual(['turn']);
+    expect(junoMoveSounds(ended, ended, 'a')).toEqual([]);
+    expect(junoMoveSounds(previous(), { ...active, pizzaResolution: { id: 'new', remainingMs: 1_000 } }, 'a')).toEqual([]);
+  });
   it('deduplicates polls, old playing turns and different rounds', () => {
     const next = play('8');
     expect(junoMoveSounds(next, next, 'a')).toEqual([]);
@@ -68,11 +77,12 @@ describe('Juno neon cue selection', () => {
     expect(junoMoveSounds(next, next, 'a')).toEqual([]);
     expect(junoMoveSounds(previous(), { ...next, winnerId: null }, 'a')).toEqual([]);
   });
-  it('has exactly 16 pack files plus two supplied rare-card cues with bounded gains/lanes', () => {
-    expect(Object.keys(JUNO_SOUNDS)).toHaveLength(18);
+  it('has exactly 16 pack files plus three supplied rare-card cues with bounded gains/lanes', () => {
+    expect(Object.keys(JUNO_SOUNDS)).toHaveLength(19);
     expect(JUNO_SOUNDS.memory).toMatchObject({ sound: 'juno_memory', gain: 1 });
     expect(JUNO_SOUNDS.intoxicated).toMatchObject({ sound: 'juno_intoxicated', gain: 1 });
+    expect(JUNO_SOUNDS.pizza).toMatchObject({ sound: 'juno_pizza', gain: 1 });
     expect(JUNO_SOUNDS.button).toMatchObject({ sound: 'juno/botao', gain: .35, lane: 'interface' });
-    expect(new Set(Object.values(JUNO_SOUNDS).map(cue => cue.sound)).size).toBe(18);
+    expect(new Set(Object.values(JUNO_SOUNDS).map(cue => cue.sound)).size).toBe(19);
   });
 });

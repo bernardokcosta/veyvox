@@ -1,5 +1,20 @@
 # Juno artwork provenance
 
+Pizza Maluca artwork, pizza/flour/particle sprites, impact and WAV were supplied
+and approved for source implementation on 2026-11-14. `cards/pizza.webp` maps the
+complete 1060×1484 artwork to the existing 720×1056 geometry without padding and
+uses the same radius-66 corner mask as other rare cards. The small pizza sprite
+keeps its square proportions; flour/particle WebPs are lossless with alpha.
+`ui/flour-impact.webp` keeps the supplied 16-frame animation byte-for-byte.
+`/sounds/juno_pizza.ogg` is the complete approximately 2.2053-second stereo 24kHz
+WAV encoded as Vorbis, without trimming, volume changes or normalization. All
+source/output hashes, dimensions and sizes are in the manifest. Sources remain
+untouched; no replacement artwork, extra dubbing edition or license claim is
+inferred. The supplied MP4 was inspected through timestamp-spaced reference
+frames, not shipped as a gameplay sprite. Spoken content was not transcribed.
+The user separately authorized commit, push and release 1.17.16 after source
+validation; this does not authorize deployment or imply additional media rights.
+
 The Entorpecido card PNG and original WAV were supplied and authorized for
 implementation in 1.17.13 on 2026-11-12. At the user's request,
 `cards/intoxicated.webp` now crops the transparent outer canvas of the 1060×1484

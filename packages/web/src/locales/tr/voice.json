@@ -12,6 +12,12 @@
     "joinedOtherSession": "Ses bağlantısı kesildi — başka bir oturumdan katıldın"
   },
   "juno": {
+    "pizza": {
+      "title": "Çılgın Pizza",
+      "rules": "Rengi değiştirmeden herhangi bir renk veya sayının üzerine oynanabilir. Her elden rastgele 0–5 kartı diğer oyunculara aktarır ve her zaman en az bir kart bırakır. Değişim 5 saniye sürer; aktarılan kartlar oynandıklarında bile un izini korur.",
+      "resolving": "Çılgın Pizza elleri karıştırıyor…",
+      "floured": "Unlanmış"
+    },
     "intoxicated": {
       "title": "Sersemlemiş",
       "instruction": "Bu tur sersemlemiş: yanlış kart veya joker rengi seçme olasılığı %50.",

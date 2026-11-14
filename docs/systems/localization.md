@@ -32,6 +32,14 @@ never receive that card. Rules illustrate the new card in supported lobbies or
 frozen enabled rounds, not a mixed-client round that lacks it. Actual art/clip
 remain in the supplied real pt-BR media edition; no other dubbing is fabricated.
 
+Pizza Maluca uses `voice:juno.pizza` in all 25 catalogs for its name, rules,
+static resolution message and accessible flour-covered card label. Interface
+translations do not create media editions: supplied art and complete cue remain
+pt-BR only in `JUNO_DUBBINGS`, with existing Automatic fallback. Rules show it
+only in capable lobbies or enabled frozen rounds. Flour markers never reveal
+masked card descriptions. Removing the Games picker's bottom description does
+not delete its shared catalog key, which remains the lobby's accessible copy.
+
 Juno now has a game-local locale boundary (`JunoLocale`), sharing the existing
 catalog loader/resources but not the app's selected language. Device preference
 `language: auto` follows current/later Veyvox language; an explicit existing

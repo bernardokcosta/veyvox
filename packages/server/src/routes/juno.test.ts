@@ -31,6 +31,22 @@ beforeEach(async () => {
 afterEach(async () => { await app.close(); });
 const create = () => app.inject({ method: 'POST', url, headers, payload: { type: 'create' } });
 describe('Juno authorized transport', () => {
+  it('negotiates pizza only with both preceding capabilities and rejects malformed or duplicate declarations', async () => {
+    for (const query of ['?pizza=1', '?memory=1&pizza=1', '?memory=1&intoxicated=1&pizza=0',
+      '?memory=1&intoxicated=1&pizza=1&pizza=1']) {
+      expect((await app.inject({ method: 'GET', url: url + query, headers })).statusCode).toBe(400);
+    }
+    const enhanced = url + '?memory=1&intoxicated=1&pizza=1';
+    let view = (await app.inject({ method: 'POST', url: enhanced, headers, payload: { type: 'create' } })).json<JunoSnapshot>();
+    expect(view.supportsPizza).toBe(true);
+    for (const [type, who] of [['join', 'guest'], ['start', 'remote-row']] as const) {
+      view = (await app.inject({ method: 'POST', url: enhanced, headers: { authorization: who },
+        payload: { type, gameId: view.game!.id, revision: view.revision } })).json<JunoSnapshot>();
+    }
+    expect(view.game?.pizzaEnabled).toBe(true);
+    const old = await app.inject({ method: 'GET', url: url + '?memory=1&intoxicated=1', headers });
+    expect(old.statusCode).toBe(409); expect(old.json().game).toBeUndefined();
+  });
   it('negotiates Entorpecido separately and denies unsupported reads before returning private state', async () => {
     const enhanced = url + '?memory=1&intoxicated=1';
     let view = (await app.inject({ method: 'POST', url: enhanced, headers, payload: { type: 'create' } })).json<JunoSnapshot>();
@@ -160,7 +176,7 @@ describe('Juno authorized transport', () => {
     try {
       const payload = { type: 'report', gameId: snapshot.game!.id, revision: snapshot.revision, targetUserId: 'opponent', opportunityId: 'miss-1' };
       expect((await app.inject({ method: 'POST', url, headers, payload })).statusCode).toBe(200);
-      expect(command).toHaveBeenCalledWith('voice', { userId: 'remote-row', name: 'Alice' }, payload, false, false);
+      expect(command).toHaveBeenCalledWith('voice', { userId: 'remote-row', name: 'Alice' }, payload, false, false, false);
       state.room = 'other'; expect((await app.inject({ method: 'POST', url, headers, payload })).statusCode).toBe(403);
       expect(command).toHaveBeenCalledTimes(1);
     } finally { command.mockRestore(); }

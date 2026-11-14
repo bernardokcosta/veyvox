@@ -10,6 +10,7 @@ import { useUIStore } from '../../stores/uiStore';
 import { useVoiceStore } from '../../stores/voiceStore';
 import { useAuthStore } from '../../stores/authStore';
 import { useSpaceStore } from '../../stores/spaceStore';
+import i18n from '../../i18n';
 
 vi.mock('../../audio/AudioManager', () => ({ AudioManager: { getInstance: () => ({}) } }));
 vi.mock('../voice/ScreenShareSettingsPopover', () => ({ ScreenShareSettingsPopover: () => null }));
@@ -45,6 +46,15 @@ function mount(withCallBar = false) {
 }
 
 describe('shared Games picker', () => {
+  it('omits only the bottom description and keeps the prompt, tiles and actions', async () => {
+    mount(); await userEvent.click(screen.getByRole('button', { name: 'Games' }));
+    const dialog = screen.getByRole('dialog', { name: 'Games' });
+    expect(within(dialog).queryByText(i18n.t('voice:juno.description'))).not.toBeInTheDocument();
+    expect(within(dialog).getByText(i18n.t('voice:juno.chooseGame'))).toBeInTheDocument();
+    expect(within(dialog).getAllByRole('listitem')).toHaveLength(4);
+    expect(within(dialog).getByRole('button', { name: 'Open Juno' })).toBeInTheDocument();
+    expect(command).not.toHaveBeenCalled();
+  });
   it('shows a game list first and does not focus, create or join Juno on opening/canceling', async () => {
     mount();
     await userEvent.click(screen.getByRole('button', { name: 'Games' }));

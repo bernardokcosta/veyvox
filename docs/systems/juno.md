@@ -25,7 +25,7 @@ new dependency is used.
   volume preferences. `JunoLocale` scopes existing catalogs to Juno; `JunoSettings`
   reuses the shared modal. `JunoMusic` and `audio/junoMusic.ts` own focused-only
   streamed music on the existing output bus.
-- `packages/web/public/games/juno/`: 56 distinct fronts, one back and separate
+- `packages/web/public/games/juno/`: 57 distinct fronts, one back and separate
   cosmic UI assets; hashes/source entries in `manifest.json`, provenance in README.
 
 ## Rules
@@ -84,7 +84,7 @@ Practice/XP/settlement rules are unchanged.
 
 ### Rare Entorpecido card (1.17.13)
 
-Fully capable cohorts use 110 cards: classic 108, one memory and one colorless
+Cohorts supporting memory and Entorpecido use at least 110 cards: classic 108, one memory and one colorless
 `intoxicated`. Like memory, it plays over any color/face without choosing or
 changing the color, cannot be the initial discard, and affects the next player
 in the current direction. `intoxication: {id,targetUserId}` lasts for that turn
@@ -111,6 +111,50 @@ Reduced motion keeps static status/color feedback without drift or blur. The
 confirmed miss may show the other card only to its owner, not flying into the
 public discard. Supplied complete artwork/audio remain local and unchanged in
 content; derived WebP/Vorbis hashes are in the existing asset manifest.
+
+### Rare Pizza Maluca card
+
+Fully capable cohorts use 111 cards, adding exactly one colorless `pizza` to
+the existing 110. It plays over any color/face without choosing/changing color
+and cannot be the initial discard. Ordinary last-card victory wins immediately,
+without a transfer or pause; otherwise every hand participates after discarding
+the pizza. Crypto RNG uniformly chooses 0 through min(5, N - 1) original cards
+from each hand without replacement and independently chooses each recipient
+from the other players. Selections precede all transfers, so incoming cards never
+cascade. Unequal counts, split destinations and an all-zero exchange are valid;
+no exchange empties a hand, creates cards or changes direction/XP/practice rules.
+
+Transferred instances retain `floured: true` through later moves, public play
+feedback, discard and recycling for the whole round. Fresh rounds create clean
+instances. Private hand and public played-card projections carry the marker;
+opponent hands expose only aggregate `flouredCardCount`. Their capped back fans
+are representative, never hidden slot/ID mappings. Memory-masked slots remain
+opaque and neutral. Public `lastMove.pizzaTransfers` contains only
+`{fromUserId,toUserId,amount}`, never transferred card IDs/faces/colors/indices.
+
+`pizzaResolution: {id,remainingMs}` advertises the five-second server pause.
+Play/draw/pass/announce/report are refused during it; leave/presence cleanup still
+work. The existing sweep/read/command lifecycle releases the pause, with a full
+45-second next turn and computer pacing beginning afterward. Valid report
+deadlines are frozen, not expired/revived by animation time. Gaining cards clears
+calls/opportunities; transfer alone down to one is not a missed JUNO. A deliberate
+two-card pizza play down to one retains normal call/report rules only if the
+author gains no cards, with the report window starting after the pause. Departure
+cancels remaining travel/pause, keeps committed transfers and flour, preserves
+only elapsed report pause and grants the surviving turn its full deadline.
+An intoxicated failed attempt never activates pizza; a blind legal pizza clears
+memory through the ordinary engine path. Results/expiry clear active resolution.
+
+The supplied small pizza, card-back flights, light flour trail and impacts use
+measured occupied hands and interface-scale conversion. Size is one third of
+the local card height (discard fallback for spectators). At most 20 ghosts and
+32 finite particles are allocated; animation handles/timers/observers expire or
+cancel on layout/roster/access changes. Flour is an inset, clipped overlay in
+the same 720:1056 wrapper as the face, not a differently transformed image.
+Reduced motion keeps static resolution/flour feedback without travel or spin.
+Initial views/polls/reopening never replay the effect; the next-turn cue waits
+until resolution ends. Media remains supplied pt-BR only, including the complete
+approximately 2.2053-second `juno_pizza.ogg` on the existing effects/output bus.
 
 ## Space XP and ranking
 
@@ -173,12 +217,14 @@ Spectators receive `hand: []`. Neither the
 draw order nor opponent hands are serialized. Cards use opaque random ids.
 
 State/command clients declare `?memory=1`, optionally with `intoxicated=1` (which
-requires memory). Both accept only exact `1`; duplicates/unknown keys are invalid.
-Snapshots advertise root `supportsMemory`/`supportsIntoxicated: true`.
+requires memory) and `pizza=1` (which requires both). All accept only exact `1`;
+duplicates/unknown keys are invalid. Snapshots advertise root
+`supportsMemory`/`supportsIntoxicated`/`supportsPizza: true`.
 Seated humans refresh their declarations in the lobby;
 at start every human must support it to freeze `memoryEnabled: true`. Computers
 support them internally. `intoxicatedEnabled` additionally requires every human
-to declare the new capability. Mixed cohorts use the supported 108/109-card deck;
+to declare that capability; `pizzaEnabled` additionally requires all humans to
+declare pizza. Mixed cohorts use their supported 108/109/110-card deck;
 later declarations cannot change an active deck. Rematch creates a fresh lobby.
 Older hosts ignore the query; ranking URLs are unchanged. GET query variants
 share the same existing 600/minute/address read budget.
@@ -192,8 +238,9 @@ computer hands are never returned. Client update-required errors clear cached
 private state, and old unmasked reads cannot replace a newer masked revision.
 The rule does not erase previously seen cards or prevent memory/collusion.
 
-The new client probes GET with both flags and may fall back once to memory-only
-on exact 400 `invalid_body` from an old host, within the same auth/session boundary.
+The new client probes GET with all three flags and may fall back to intoxicated,
+then memory-only, at most twice on exact 400 `invalid_body` from an old host,
+within the same auth/session boundary.
 Later polls and POSTs use confirmed support from the existing scoped snapshot;
 reconnect/scope reset renegotiates. Compatibility never retries a mutation.
 

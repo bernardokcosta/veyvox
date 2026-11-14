@@ -12,6 +12,12 @@
     "joinedOtherSession": "Vocal déconnecté : tu as rejoint depuis une autre session"
   },
   "juno": {
+    "pizza": {
+      "title": "Pizza folle",
+      "rules": "Se joue sur n’importe quelle couleur ou valeur sans changer la couleur. Transfère au hasard de 0 à 5 cartes de chaque main vers d’autres joueurs, en laissant toujours au moins une carte. L’échange dure 5 secondes ; les cartes transférées gardent leur farine, même lorsqu’elles sont jouées.",
+      "resolving": "La Pizza folle mélange les mains…",
+      "floured": "Couverte de farine"
+    },
     "intoxicated": {
       "title": "Étourdi",
       "instruction": "Étourdi pour ce tour : 50% de risque de mauvaise carte ou couleur de joker.",

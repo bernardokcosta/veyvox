@@ -770,6 +770,85 @@
       "bytes": 27024,
       "sha256": "c9e97999e94233b50b03954c8496a24b189a9e040cd5dbe8fe788d6f1c3ba006",
       "dimensions": [180, 150]
+    },
+    {
+      "path": "cards/pizza.webp",
+      "sourceFile": "Pizza Maluca Cósmica.png",
+      "sourceSha256": "6f80604b0ae2490fcc4ba079a91003fcf017fee221f721c4e816851d70fc68f4",
+      "sourceDimensions": [
+        1060,
+        1484
+      ],
+      "roundedMaskRadius": 66,
+      "fit": "fill; normalize full supplied art to existing card dimensions without padding",
+      "dimensions": [
+        720,
+        1056
+      ],
+      "hasAlpha": true,
+      "bytes": 195190,
+      "sha256": "cd1992f50bba3252d5319e228e83177414cc470f83e21ba8d229b61efb6af2de"
+    },
+    {
+      "path": "ui/pizza.webp",
+      "sourceFile": "artes/pizza_isolada_512.png",
+      "sourceSha256": "fbc9978847740e6fa263fb716c3293e08bc7ea34b0891cfe83dfb0aa9c066eb9",
+      "dimensions": [
+        512,
+        512
+      ],
+      "hasAlpha": true,
+      "bytes": 119786,
+      "sha256": "aec0f4597ea57a60ba2f94e95cd17ed9a97031a5f0938ea447294a5c402fb3c7"
+    },
+    {
+      "path": "ui/flour.webp",
+      "sourceFile": "artes/overlay_farinha_720x1056.png",
+      "sourceSha256": "a36c25b5ff38c03b0c0271b56803790e3118a4f1d44be772faa2155281d6d6ce",
+      "dimensions": [
+        720,
+        1056
+      ],
+      "hasAlpha": true,
+      "bytes": 191434,
+      "sha256": "638d3e77403a80aef5feb6bc446a62b1401512adb604814cb51a254b49c32b9f"
+    },
+    {
+      "path": "ui/flour-particle.webp",
+      "sourceFile": "artes/particula_farinha.png",
+      "sourceSha256": "32ac287c14ba24705bcec7e5796a2cbf7abbd11f736a6ac72cf9a6f238a17fb9",
+      "dimensions": [
+        128,
+        128
+      ],
+      "hasAlpha": true,
+      "bytes": 2260,
+      "sha256": "0a69717d36e0b1ccba7f10e4de8472f173d7a5c6043fa1197db2cc4af2ecd3c8"
+    },
+    {
+      "path": "ui/flour-impact.webp",
+      "sourceFile": "animacoes/impacto_farinha_1x.webp",
+      "sourceSha256": "d64ff0f92fcf158b73095617d59c881d8c9dd421a7f3e0f51d88b0f0d49e3a4f",
+      "dimensions": [
+        480,
+        480
+      ],
+      "hasAlpha": true,
+      "frames": 16,
+      "unchanged": true,
+      "bytes": 52964,
+      "sha256": "d64ff0f92fcf158b73095617d59c881d8c9dd421a7f3e0f51d88b0f0d49e3a4f"
     }
-  ]
+  ],
+  "pizzaAudio": {
+    "path": "/sounds/juno_pizza.ogg",
+    "sourceFile": "hf_20261114_204721_75c2b04e-370d-40b3-bf65-d5dc26f49edc.wav",
+    "sourceSha256": "d52f43f3cfa6e12ecb96c5ee9a66d0554284b25efa455fcf16fa2094d2f5cb14",
+    "format": "Ogg Vorbis",
+    "durationSeconds": 2.2052916666666667,
+    "sampleRate": 24000,
+    "channels": 2,
+    "bytes": 21036,
+    "sha256": "dccd68e1afa71e56c73f79c5cc2dceada30b84af0e2d35155bf0f2fa07996842"
+  }
 }

@@ -12,6 +12,12 @@
     "joinedOtherSession": "Rozłączono głos — dołączono z innej sesji"
   },
   "juno": {
+    "pizza": {
+      "title": "Szalona pizza",
+      "rules": "Można zagrać na dowolny kolor lub numer bez zmiany koloru. Losowo przekazuje od 0 do 5 kart z każdej ręki innym graczom, zawsze pozostawiając co najmniej jedną kartę. Wymiana trwa 5 sekund; przekazane karty zachowują mąkę także po zagraniu.",
+      "resolving": "Szalona pizza miesza karty w rękach…",
+      "floured": "Pokryta mąką"
+    },
     "intoxicated": {
       "title": "Odurzenie",
       "instruction": "Odurzenie w tej turze: 50% szans na złą kartę lub kolor jokera.",

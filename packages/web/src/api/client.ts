@@ -464,8 +464,8 @@ export class VeyvoxApiClient {
   };
 
   juno: {
-    get: (channelId: string, supportsIntoxicated?: boolean) => Promise<JunoSnapshot>;
-    command: (channelId: string, command: JunoCommand, supportsIntoxicated?: boolean) => Promise<JunoSnapshot>;
+    get: (channelId: string, supportsIntoxicated?: boolean, supportsPizza?: boolean) => Promise<JunoSnapshot>;
+    command: (channelId: string, command: JunoCommand, supportsIntoxicated?: boolean, supportsPizza?: boolean) => Promise<JunoSnapshot>;
     ranking: (spaceId: string, query?: { limit?: number; offset?: number }) => Promise<JunoRankingPage>;
   };
   soundboard: {
@@ -619,20 +619,23 @@ export class VeyvoxApiClient {
       }), signal));
     }
     this.juno = {
-      get: async (channelId, supportsIntoxicated = true) => {
+      get: async (channelId, supportsIntoxicated = true, supportsPizza = supportsIntoxicated) => {
         const route = `/channels/${encodeURIComponent(channelId)}/juno?memory=1`;
         const generation = sessionGeneration, token = getToken();
-        try { return await request<JunoSnapshot>('GET', route + (supportsIntoxicated ? '&intoxicated=1' : '')); }
-        catch (error) {
-          // Old hosts reject unknown query keys before reading the table. Only
-          // this read-only protocol probe may fall back, in the same session.
-          if (!supportsIntoxicated || !(error instanceof HttpError) || error.status !== 400 || error.code !== 'invalid_body'
-            || generation !== sessionGeneration || getToken() !== token) throw error;
-          return request<JunoSnapshot>('GET', route);
+        let intoxicated = supportsIntoxicated, pizza = supportsPizza && intoxicated;
+        for (;;) {
+          try { return await request<JunoSnapshot>('GET', route + (intoxicated ? '&intoxicated=1' : '') + (pizza ? '&pizza=1' : '')); }
+          catch (error) {
+            // Only read-only probes downgrade, at most twice in this session.
+            if ((!pizza && !intoxicated) || !(error instanceof HttpError) || error.status !== 400 || error.code !== 'invalid_body'
+              || generation !== sessionGeneration || getToken() !== token) throw error;
+            if (pizza) pizza = false;
+            else intoxicated = false;
+          }
         }
       },
-      command: (channelId, command, supportsIntoxicated = false) => request<JunoSnapshot>('POST',
-        `/channels/${encodeURIComponent(channelId)}/juno?memory=1${supportsIntoxicated ? '&intoxicated=1' : ''}`, command),
+      command: (channelId, command, supportsIntoxicated = false, supportsPizza = false) => request<JunoSnapshot>('POST',
+        `/channels/${encodeURIComponent(channelId)}/juno?memory=1${supportsIntoxicated ? '&intoxicated=1' : ''}${supportsIntoxicated && supportsPizza ? '&pizza=1' : ''}`, command),
       ranking: (spaceId, query = {}) => {
         const params = new URLSearchParams();
         if (query.limit !== undefined) params.set('limit', String(query.limit));

@@ -24,6 +24,13 @@ function geometry(guide: HTMLElement) {
 }
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 describe('illustrated Juno rules', () => {
+  it('teaches pizza and its persistent flour only in supported lobbies or enabled frozen rounds', async () => {
+    const { guide, rerender } = await open({ game: { ...game, pizzaEnabled: true }, supportsPizza: true });
+    expect(guide.querySelector('img[src="/games/juno/cards/pizza.webp"]')).toBeInTheDocument();
+    expect(guide).toHaveTextContent(/0.*5/); expect(guide).toHaveTextContent(/at least one card/i);
+    rerender(<div className="juno-table"><div className="juno-header"><JunoRules game={game} supportsPizza /></div></div>);
+    expect(guide.querySelector('img[src="/games/juno/cards/pizza.webp"]')).toBeNull();
+  });
   it('teaches the supplied Entorpecido only when the host supports it', async () => {
     const { guide, rerender } = await open({ game: { ...game, intoxicatedEnabled: true }, supportsIntoxicated: true });
     expect(guide.querySelector('img[src="/games/juno/cards/intoxicated.webp"]')).toBeInTheDocument();
