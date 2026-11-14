@@ -1,0 +1,31 @@
+{
+  "message": {
+    "add": "Salva",
+    "remove": "Rimuovi segnalibro"
+  },
+  "menu": {
+    "add": "Salva messaggio",
+    "remove": "Rimuovi segnalibro"
+  },
+  "toast": {
+    "addFailed": "Impossibile salvare il segnalibro: {{reason}}",
+    "removeFailed": "Impossibile rimuovere il segnalibro: {{reason}}"
+  },
+  "title": "Segnalibri",
+  "list": {
+    "loading": "Caricamento…",
+    "empty": "Nessun segnalibro per ora",
+    "emptyHint": "Salva un messaggio dalla barra delle azioni o dal menu per ritrovarlo qui.",
+    "showMore": "Mostra altro",
+    "open": "Apri il messaggio di {{name}}",
+    "remove": "Rimuovi segnalibro"
+  },
+  "status": {
+    "edited": "Il messaggio originale è stato modificato. Questa è la copia salvata.",
+    "deleted": "Il messaggio originale è stato eliminato. Questa è la copia salvata.",
+    "unavailable": "Il messaggio originale non è più disponibile per te. Questa è la copia salvata."
+  },
+  "attachment": {
+    "gone": "file eliminato"
+  }
+}

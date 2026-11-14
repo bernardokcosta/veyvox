@@ -68,7 +68,17 @@
         "note": "This channel is hidden from members without explicit access. Users with the Administrator permission or space owners can always see all channels.",
         "unhideOnSave": "Saving makes this channel visible to every member."
       },
-      "deleteButton": "Delete Channel"
+      "deleteButton": "Delete Channel",
+      "voiceQuality": {
+        "label": "Voice Quality",
+        "option": "{{value}} kbps",
+        "description": {
+          "64": "Clear speech. Uses the least bandwidth.",
+          "128": "Fuller, more natural voices.",
+          "256": "Highest quality, best for music. Uses the most bandwidth."
+        },
+        "hint": "Sets the highest audio bitrate each member can send in this channel. It applies to everyone, including people already connected."
+      }
     },
     "delete": {
       "title": "Delete #{{name}}?",
@@ -361,6 +371,8 @@
       "manageChannels": "Manage Channels",
       "manageRoles": "Manage Roles",
       "manageSpace": "Manage Space",
+      "createStickers": "Create stickers",
+      "manageStickers": "Manage stickers",
       "createInvite": "Create Invite",
       "kickMembers": "Kick Members",
       "banMembers": "Ban Members",
@@ -611,5 +623,12 @@
     "suppressRoles": "Suppress role mentions",
     "massHeading": "Group mentions",
     "massNote": "@here reaches the same members as @everyone. Mentions of you by name always notify you."
+  },
+  "stickers": {
+    "title": "Space stickers",
+    "description": "One shared sticker album for this space, with up to 50 static or animated stickers.",
+    "empty": "This space does not have a sticker album yet.",
+    "create": "Create space album",
+    "add": "Add sticker"
   }
 }

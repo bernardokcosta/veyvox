@@ -68,7 +68,17 @@
         "note": "Bu kanal, açık erişimi olmayan üyelerden gizlenir. Yönetici iznine sahip kullanıcılar veya alan sahipleri tüm kanalları her zaman görebilir.",
         "unhideOnSave": "Kaydetmek bu kanalı her üyeye görünür yapar."
       },
-      "deleteButton": "Kanalı sil"
+      "deleteButton": "Kanalı sil",
+      "voiceQuality": {
+        "label": "Ses kalitesi",
+        "option": "{{value}} kbps",
+        "description": {
+          "64": "Net konuşma. En az bant genişliği.",
+          "128": "Daha dolgun, doğal sesler.",
+          "256": "En yüksek kalite, müzik için ideal. En fazla bant genişliği."
+        },
+        "hint": "Bu kanalda her üyenin gönderebileceği en yüksek ses bit hızını ayarlar. Bağlı olanlar dahil herkes için geçerlidir."
+      }
     },
     "delete": {
       "title": "#{{name}} silinsin mi?",
@@ -361,6 +371,8 @@
       "manageChannels": "Kanalları yönet",
       "manageRoles": "Rolleri yönet",
       "manageSpace": "Alanı yönet",
+      "createStickers": "Çıkartma oluştur",
+      "manageStickers": "Çıkartmaları yönet",
       "createInvite": "Davet oluştur",
       "kickMembers": "Üyeleri at",
       "banMembers": "Üyeleri yasakla",
@@ -611,5 +623,12 @@
     "suppressRoles": "Rol etiketlemelerini bastır",
     "massHeading": "Grup etiketlemeleri",
     "massNote": "@here, @everyone ile aynı üyelere ulaşır. Adınla etiketlenmen seni her zaman bilgilendirir."
+  },
+  "stickers": {
+    "title": "Alanın çıkartmaları",
+    "description": "Bu alan için tek bir ortak çıkartma albümü; en fazla 50 animasyonlu veya durağan çıkartma.",
+    "empty": "Bu alanın henüz çıkartma albümü yok.",
+    "create": "Alan albümü oluştur",
+    "add": "Çıkartma ekle"
   }
 }

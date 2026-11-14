@@ -244,6 +244,33 @@
       "deletedToast_one": "Slettet {{count}} fil ({{size}})",
       "deletedToast_other": "Slettet {{count}} filer ({{size}})",
       "failed": "Medieopprydding mislyktes"
+    },
+    "diskCleanup": {
+      "label": "Automatisk opprydding",
+      "enable": "Frigjør plass automatisk når disken nesten er full",
+      "enableHint": "Sletter først filer som ingenting bruker, deretter gamle chatvedlegg, eldste først. Meldingsteksten beholdes.",
+      "warning": "På: når disken når grensen nedenfor, kan chatvedlegg eldre enn {{days}} dager bli slettet for godt. Nyere filer og profilbilder røres aldri.",
+      "usage": "{{percent}} % av disken i bruk ({{used}} av {{total}})",
+      "usageLabel": "Diskbruk",
+      "usageUnknown": "Diskbruken kunne ikke leses.",
+      "threshold": "Start opprydding ved",
+      "target": "Rydd ned til",
+      "minAge": "Slett aldri filer nyere enn",
+      "days": "dager",
+      "problemThreshold": "Startnivået må være et helt tall mellom {{min}} og {{max}}.",
+      "problemTarget": "Målnivået må være et helt tall mellom {{min}} og {{max}} (minst 5 poeng under startnivået).",
+      "problemAge": "Alderen må være et helt antall dager mellom {{min}} og {{max}}.",
+      "saved": "Oppryddingsinnstillinger lagret",
+      "checkNow": "Sjekk nå",
+      "checking": "Sjekker…",
+      "checkedNothing": "Disken er under grensen, så ingenting ble slettet.",
+      "neverRan": "Ingen opprydding har kjørt ennå.",
+      "stage": {
+        "safe": "kun ubrukte filer",
+        "media": "inkludert gamle vedlegg"
+      },
+      "lastRun_one": "Siste opprydding {{when}} ({{stage}}): {{before}} % → {{after}} %, {{count}} fil(er) slettet, {{size}} frigitt.",
+      "lastRun_other": "Siste opprydding {{when}} ({{stage}}): {{before}} % → {{after}} %, {{count}} fil(er) slettet, {{size}} frigitt."
     }
   },
   "streaming": {
@@ -287,6 +314,32 @@
     "capWarning": {
       "title": "Matriseverdier overskrider den globale grensen.",
       "description": "Noen bitrater overskrider maksimumet ditt {{max}}. Strømmer med disse kombinasjonene senkes til grensen din."
+    },
+    "camera": {
+      "label": "Webkamera",
+      "description": "Styrer kvaliteten brukerne sender kameraet sitt i.",
+      "mode": {
+        "label": "Kvalitetspolicy for kamera",
+        "fixed": "Fast (dagens oppførsel)",
+        "userChoice": "Brukerne velger",
+        "fixedHint": "Alle sender med kvaliteten nedenfor.",
+        "userChoiceHint": "Brukerne velger blant tillatte verdier i Tale & Video."
+      },
+      "defaults": {
+        "resolution": "Standardoppløsning",
+        "framerate": "Standardbildehastighet",
+        "bitrate": "Standardbitrate (kbps)"
+      },
+      "quality": {
+        "resolutions": "Tillatte oppløsninger",
+        "framerates": "Tillatte bildehastigheter",
+        "bitrateRange": "Bitrateområde (kbps)",
+        "min": "Min.",
+        "max": "Maks.",
+        "allowCustom": "Tillat egendefinert bitrate",
+        "allowCustomHint": "Brukerne kan sette en hvilken som helst bitrate i området."
+      },
+      "highEndWarning": "Høye kamerainnstillinger koster opplastingsbåndbredde og CPU for hver deltaker."
     }
   },
   "updates": {

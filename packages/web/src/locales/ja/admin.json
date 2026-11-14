@@ -231,6 +231,33 @@
       "files_other": "ファイル {{count}} ({{size}})",
       "deletedToast_other": "ファイル {{count}} を削除 ({{size}})",
       "failed": "メディア整理失敗"
+    },
+    "diskCleanup": {
+      "label": "自動クリーンアップ",
+      "enable": "ディスクがほぼいっぱいになったら自動で空き容量を確保する",
+      "enableHint": "まず誰も使っていないファイルを削除し、次に古いチャット添付ファイルを古い順に削除します。メッセージ本文は残ります。",
+      "warning": "オン: ディスクが下の上限に達すると、{{days}}日より古いチャット添付ファイルが完全に削除されることがあります。新しいファイルやプロフィール画像は削除されません。",
+      "usage": "ディスク使用率{{percent}}%（{{total}}中{{used}}）",
+      "usageLabel": "ディスク使用量",
+      "usageUnknown": "ディスク使用量を読み取れませんでした。",
+      "threshold": "クリーンアップ開始",
+      "target": "クリーンアップ目標",
+      "minAge": "これより新しいファイルは削除しない",
+      "days": "日",
+      "problemThreshold": "開始レベルは{{min}}から{{max}}の整数でなければなりません。",
+      "problemTarget": "目標レベルは{{min}}から{{max}}の整数でなければなりません（開始レベルより少なくとも5ポイント低く）。",
+      "problemAge": "日数は{{min}}から{{max}}の整数でなければなりません。",
+      "saved": "クリーンアップ設定を保存しました",
+      "checkNow": "今すぐ確認",
+      "checking": "確認中…",
+      "checkedNothing": "ディスクは上限を下回っているため、何も削除されませんでした。",
+      "neverRan": "クリーンアップはまだ実行されていません。",
+      "stage": {
+        "safe": "未使用ファイルのみ",
+        "media": "古い添付ファイルを含む"
+      },
+      "lastRun_one": "前回のクリーンアップ {{when}}（{{stage}}）: {{before}}% → {{after}}%、{{count}}ファイルを削除、{{size}}を解放。",
+      "lastRun_other": "前回のクリーンアップ {{when}}（{{stage}}）: {{before}}% → {{after}}%、{{count}}ファイルを削除、{{size}}を解放。"
     }
   },
   "streaming": {
@@ -274,6 +301,32 @@
     "capWarning": {
       "title": "行列値が全体上限超過。",
       "description": "一部ビットレートが最大 {{max}} 超過。その組合せのストリームは上限に下げられます。"
+    },
+    "camera": {
+      "label": "ウェブカメラ",
+      "description": "ユーザーがカメラを配信する画質を制御します。",
+      "mode": {
+        "label": "カメラ画質ポリシー",
+        "fixed": "固定（現在の動作）",
+        "userChoice": "ユーザーが選択",
+        "fixedHint": "全員が下の画質で配信します。",
+        "userChoiceHint": "ユーザーは音声とビデオ設定の許可値から選びます。"
+      },
+      "defaults": {
+        "resolution": "既定の解像度",
+        "framerate": "既定のフレームレート",
+        "bitrate": "既定のビットレート (kbps)"
+      },
+      "quality": {
+        "resolutions": "許可する解像度",
+        "framerates": "許可するフレームレート",
+        "bitrateRange": "ビットレート範囲 (kbps)",
+        "min": "最小",
+        "max": "最大",
+        "allowCustom": "カスタムビットレートを許可",
+        "allowCustomHint": "ユーザーは範囲内の任意のビットレートを設定できます。"
+      },
+      "highEndWarning": "高いカメラ設定は全参加者の帯域とCPUを消費します。"
     }
   },
   "updates": {

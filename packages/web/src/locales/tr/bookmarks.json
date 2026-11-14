@@ -1,0 +1,31 @@
+{
+  "message": {
+    "add": "Yer imle",
+    "remove": "Yer imini kaldır"
+  },
+  "menu": {
+    "add": "Mesajı yer imle",
+    "remove": "Yer imini kaldır"
+  },
+  "toast": {
+    "addFailed": "Yer imi kaydedilemedi: {{reason}}",
+    "removeFailed": "Yer imi kaldırılamadı: {{reason}}"
+  },
+  "title": "Yer imleri",
+  "list": {
+    "loading": "Yükleniyor…",
+    "empty": "Henüz yer imi yok",
+    "emptyHint": "Bir mesajı eylem çubuğundan veya menüsünden yer imleyerek burada bulabilirsin.",
+    "showMore": "Daha fazla göster",
+    "open": "{{name}} kişisinin mesajını aç",
+    "remove": "Yer imini kaldır"
+  },
+  "status": {
+    "edited": "Orijinal mesaj düzenlendi. Bu, kaydedilmiş kopyadır.",
+    "deleted": "Orijinal mesaj silindi. Bu, kaydedilmiş kopyadır.",
+    "unavailable": "Orijinal mesaj artık senin için kullanılamıyor. Bu, kaydedilmiş kopyadır."
+  },
+  "attachment": {
+    "gone": "dosya silindi"
+  }
+}

@@ -217,7 +217,8 @@
       "memory": "Alzheimer"
     },
     "rules": "Slik spiller man",
-    "rulesText": "Hver spiller får 7 kort. Match det siste kortets farge eller symbol, eller spill en joker og velg en farge. Tøm hånden for å vinne.\nHopp over hopper over neste spiller; snu endrer retning (med to spillere hopper den over). +2 og +4 får neste spiller til straks å trekke kort og hopper over turen dens. Ingen stabling. +4 bare når du ikke har kort i den aktive fargen; ingen utfordringer.\nTrekk ett: spill bare det nye kortet hvis det passer, eller pass. Et uspillbart trekk passer automatisk.\nDu har 45 sekunder per tur. Tidsutløp trekker ett og passer; etter trekk passer den bare. Går noen, går kortene vedkommende tilbake til bunken; færre enn to spillere avslutter runden uten vinner. En kort talegjenkobling holder plassen. Omstart av serveren avslutter spill."
+    "rulesText": "Hver spiller får 7 kort. Match det siste kortets farge eller symbol, eller spill en joker og velg en farge. Tøm hånden for å vinne.\nHopp over hopper over neste spiller; snu endrer retning (med to spillere hopper den over). +2 og +4 får neste spiller til straks å trekke kort og hopper over turen dens. Ingen stabling. +4 bare når du ikke har kort i den aktive fargen; ingen utfordringer.\nTrekk ett: spill bare det nye kortet hvis det passer, eller pass. Et uspillbart trekk passer automatisk.\nDu har 45 sekunder per tur. Tidsutløp trekker ett og passer; etter trekk passer den bare. Går noen, går kortene vedkommende tilbake til bunken; færre enn to spillere avslutter runden uten vinner. En kort talegjenkobling holder plassen. Omstart av serveren avslutter spill.",
+    "comingSoon": "Kommer snart"
   },
   "soundboard": {
     "title": "Lydtavle",
@@ -552,5 +553,23 @@
     "stillDenied": "Mikrofontilgangen er fortsatt nektet. Tillat den for dette nettstedet i nettleser- eller enhetsinnstillinger.",
     "notFound": "Ingen mikrofon oppdaget.",
     "failed": "Kunne ikke få tilgang til mikrofonen."
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}} startet samtalen",
+    "from": "Fra:",
+    "to": "Til:",
+    "status": {
+      "ringing": "Ringer…",
+      "active": "Samtale pågår",
+      "ended": "Samtale avsluttet",
+      "missed": "Mist samtale",
+      "rejected": "Samtale avvist",
+      "interrupted": "Samtale avbrutt",
+      "cancelled": "Samtale avbrutt"
+    },
+    "duration": "Varighet"
+  },
+  "callOngoing": "Samtale pågår",
+  "rejoinCall": "Tilbake til samtalen",
+  "callWaiting": "Venter på den andre · avsluttes om {{remaining}}"
 }

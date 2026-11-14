@@ -244,6 +244,33 @@
       "deletedToast_one": "Tog bort {{count}} fil ({{size}})",
       "deletedToast_other": "Tog bort {{count}} filer ({{size}})",
       "failed": "Medierensningen misslyckades"
+    },
+    "diskCleanup": {
+      "label": "Automatisk rensning",
+      "enable": "Frigör utrymme automatiskt när disken nästan är full",
+      "enableHint": "Tar först bort filer som inget använder, sedan gamla chattbilagor, äldst först. Meddelandetexten blir kvar.",
+      "warning": "På: när disken når gränsen nedan kan chattbilagor äldre än {{days}} dagar raderas för gott. Nyare filer och profilbilder rörs aldrig.",
+      "usage": "{{percent}} % av disken används ({{used}} av {{total}})",
+      "usageLabel": "Diskanvändning",
+      "usageUnknown": "Diskanvändningen kunde inte läsas.",
+      "threshold": "Börja rensa vid",
+      "target": "Rensa ned till",
+      "minAge": "Radera aldrig filer nyare än",
+      "days": "dagar",
+      "problemThreshold": "Startnivån måste vara ett heltal mellan {{min}} och {{max}}.",
+      "problemTarget": "Målnivån måste vara ett heltal mellan {{min}} och {{max}} (minst 5 poäng under startnivån).",
+      "problemAge": "Åldern måste vara ett helt antal dagar mellan {{min}} och {{max}}.",
+      "saved": "Rensningsinställningar sparade",
+      "checkNow": "Kontrollera nu",
+      "checking": "Kontrollerar…",
+      "checkedNothing": "Disken ligger under gränsen, så inget raderades.",
+      "neverRan": "Ingen rensning har körts ännu.",
+      "stage": {
+        "safe": "endast oanvända filer",
+        "media": "inklusive gamla bilagor"
+      },
+      "lastRun_one": "Senaste rensning {{when}} ({{stage}}): {{before}} % → {{after}} %, {{count}} fil(er) raderade, {{size}} frigjort.",
+      "lastRun_other": "Senaste rensning {{when}} ({{stage}}): {{before}} % → {{after}} %, {{count}} fil(er) raderade, {{size}} frigjort."
     }
   },
   "streaming": {
@@ -287,6 +314,32 @@
     "capWarning": {
       "title": "Matrisvärden överskrider den globala gränsen.",
       "description": "Vissa bitrates överskrider ditt maximum {{max}}. Strömmar med dessa kombinationer sänks till din gräns."
+    },
+    "camera": {
+      "label": "Webbkamera",
+      "description": "Styr kvaliteten som användarna sänder sin kamera i.",
+      "mode": {
+        "label": "Kvalitetspolicy för kamera",
+        "fixed": "Fast (nuvarande beteende)",
+        "userChoice": "Användarna väljer",
+        "fixedHint": "Alla sänder i kvaliteten nedan.",
+        "userChoiceHint": "Användarna väljer bland tillåtna värden i Röst & Video."
+      },
+      "defaults": {
+        "resolution": "Standardupplösning",
+        "framerate": "Standardbildfrekvens",
+        "bitrate": "Standardbithastighet (kbps)"
+      },
+      "quality": {
+        "resolutions": "Tillåtna upplösningar",
+        "framerates": "Tillåtna bildfrekvenser",
+        "bitrateRange": "Bithastighetsintervall (kbps)",
+        "min": "Min.",
+        "max": "Max.",
+        "allowCustom": "Tillåt anpassad bithastighet",
+        "allowCustomHint": "Användarna kan ställa in valfri bithastighet i intervallet."
+      },
+      "highEndWarning": "Höga kamerainställningar kostar uppladdningsbandbredd och CPU för varje deltagare."
     }
   },
   "updates": {

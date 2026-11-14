@@ -9,7 +9,7 @@ import type { InstanceStreamingLimits } from '@veyvox/shared';
 import { StreamQualityControls, StreamSummary } from '../components/voice/StreamQualityControls';
 import { useVoiceStore } from '../stores/voiceStore';
 import type { ScreenShareAudioState } from '../stores/voiceStore';
-import { useSettingsStore } from '../stores/settingsStore';
+import { useSettingsStore, DEFAULT_CAMERA_LIMITS } from '../stores/settingsStore';
 import i18n, { initI18n } from '../i18n';
 import { initializeInterfaceScale } from '../platform/interfaceScale';
 import '../styles/globals.css';
@@ -24,6 +24,7 @@ const HOME_LIMITS: InstanceStreamingLimits = {
   maxFramerate: 120,
   bitrateMatrixOverrides: null,
   allowCustomBitrate: true,
+  camera: DEFAULT_CAMERA_LIMITS,
 };
 
 const STRICT_LIMITS: InstanceStreamingLimits = {

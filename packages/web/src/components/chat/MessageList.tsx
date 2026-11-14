@@ -40,6 +40,7 @@ import {
   type ScrollAnchor,
 } from './scrollAnchor';
 import { layoutPixels } from '../../platform/interfaceScale';
+import { useBookmarkedConversation } from '../../hooks/useBookmarks';
 
 const EMPTY_MESSAGES: MessageWithUser[] = [];
 const EMPTY_PENDING_BUBBLES: PendingBubble[] = [];
@@ -193,6 +194,9 @@ function shouldShowDateDivider(prev: MessageWithUser | undefined, curr: MessageW
 
 export function MessageList({ channelId, jumpToMessageId, onJumpHandled }: MessageListProps) {
   const { t } = useTranslation(['chat', 'common']);
+  // Read which of this conversation's messages the user has bookmarked, so each
+  // row can show its own state without asking.
+  useBookmarkedConversation(channelId);
   const messages = useChatStore((s) => s.messages.get(channelId)) ?? EMPTY_MESSAGES;
   const loadMessages = useChatStore((s) => s.loadMessages);
   const loadMoreMessages = useChatStore((s) => s.loadMoreMessages);

@@ -398,14 +398,11 @@ function evictUserFromDmVoiceRoom(channelId: string, userId: string): void {
         userId,
         action: 'leave',
       });
-      // Auto-end call if DM room is now empty
+      // Auto-end call if DM room is now empty. endDmRoom writes the call's
+      // final history row; destroying the room directly would leave it open.
       const updatedRoom = connectionManager.getRoom(channelId);
       if (updatedRoom && updatedRoom.participants.size === 0) {
-        connectionManager.destroyRoom(channelId);
-        connectionManager.sendToDmMembers(channelId, {
-          type: 'dm_call_ended',
-          dmChannelId: channelId,
-        });
+        connectionManager.endDmRoom(channelId, 'dm_call_ended');
       }
     }
     connectionManager.clearVoiceUserStatus(userId);

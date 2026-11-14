@@ -3,6 +3,9 @@ import type { WebSocket } from 'ws';
 import { verifyJwt } from '../utils/auth.js';
 import { consumeWsEvent, wsEventRateLimitError } from '../utils/rateLimits.js';
 import { getDb, schema } from '../db/index.js';
+import { generateSnowflake } from '../utils/snowflake.js';
+import { dmSystemContent } from '../utils/dmSystemMessages.js';
+import type { CallHistoryEvent } from '@veyvox/shared/src/dmSystemEvents.js';
 import { eq, and, or, inArray, desc, sql } from 'drizzle-orm';
 import { handleClientEvent } from './events.js';
 import { recordSocketAddress } from './socketAddress.js';
@@ -17,6 +20,7 @@ import type {
   Channel,
   ChannelCategory,
   DmChannel,
+  DmMessageWithUser,
   ServerEvent,
   SpaceFolder,
   SpaceLayoutItem,
@@ -62,6 +66,13 @@ export interface DmRoomMeta {
   type: 'dm';
   callerId: string;
   state: 'ringing' | 'active';
+  /** A 1-on-1 left with one member: when the room ends unless someone rejoins. */
+  waitingUntil?: number;
+  /** The call_history system message this call writes and keeps updating. */
+  historyMessageId?: string;
+  historyFinished?: boolean;
+  /** When the call connected; null while it still rings. */
+  connectedAt?: number;
   /**
    * The call is in a group conversation (`isGroupConversation`). A group
    * member's end or decline removes only that member; in a 1-on-1 either
@@ -128,6 +139,8 @@ class ConnectionManager {
   private pendingVoiceReconnects: Map<string, PendingVoiceReconnect> = new Map();
   // roomId → Timeout for ringing DM rooms (60s auto-cleanup)
   private ringingTimeouts: Map<string, NodeJS.Timeout> = new Map();
+  // roomId → Timeout for a 1-on-1 with one member left (5m grace before it ends)
+  private dmWaitingTimeouts = new Map<string, NodeJS.Timeout>();
   // Space-muted/deafened users (moderator action)
   private spaceMutedUsers: Set<string> = new Set(); // Stores spaceId:userId
   private spaceDeafenedUsers: Set<string> = new Set(); // Stores spaceId:userId
@@ -693,6 +706,10 @@ class ConnectionManager {
     });
     if (!created) return false;
 
+    // The call's own history starts here; every later state rewrites the
+    // same message instead of posting a new one.
+    this.writeDmCallHistory(dmChannelId, 'ringing');
+
     // 60s ringing timeout: nobody but the caller joined, so the call ends.
     const timeout = setTimeout(() => {
       this.ringingTimeouts.delete(dmChannelId);
@@ -712,10 +729,71 @@ class ConnectionManager {
    * (`dm_call_ended`, or `dm_call_rejected` for a call every ringee declined).
    * Returns false when there is no such room.
    */
-  endDmRoom(dmChannelId: string, kind: 'dm_call_ended' | 'dm_call_rejected'): boolean {
+  /**
+   * The call's history as one system message, rewritten on every state: the
+   * list shows a single row per call, never a post per transition. A restart
+   * (recoverInterruptedDmCalls) marks a row it finds still open as
+   * interrupted.
+   */
+  private writeDmCallHistory(dmChannelId: string, status: CallHistoryEvent['status']): void {
+    const room = this.voiceRooms.get(dmChannelId);
+    if (!room || room.roomType !== 'dm') return;
+    const meta = room.metadata as DmRoomMeta;
+    const db = getDb();
+    const caller = db.select().from(schema.users).where(eq(schema.users.id, meta.callerId)).get();
+    if (!caller) return;
+    const now = Date.now();
+    const content = dmSystemContent({ event: 'call_history', startedAt: room.startedAt, connectedAt: meta.connectedAt ?? null, endedAt: ['ringing', 'active', 'interrupted'].includes(status) ? null : now, status });
+    const existing = meta.historyMessageId;
+    const id = existing ?? generateSnowflake();
+    if (existing) db.update(schema.dmMessages).set({ content }).where(eq(schema.dmMessages.id, id)).run();
+    else {
+      db.insert(schema.dmMessages).values({ id, dmChannelId, userId: meta.callerId, content, type: 'system', createdAt: room.startedAt }).run();
+      meta.historyMessageId = id;
+    }
+    const message: DmMessageWithUser = { id, dmChannelId, userId: meta.callerId, content, type: 'system', createdAt: room.startedAt, editedAt: null, replyToId: null, user: sanitizeUser(caller), attachments: [], embeds: [], reactions: [], replyTo: null };
+    meta.historyFinished = status !== 'ringing' && status !== 'active';
+    this.sendToDmMembers(dmChannelId, { type: existing ? 'dm_message_updated' : 'dm_message_created', message });
+  }
+
+  /**
+   * A 1-on-1 with one member left waits five minutes for a rejoin instead of
+   * ending at once; the members see the countdown (dm_call_waiting). Group
+   * calls end with the last one out, as before.
+   */
+  private updateDmWaiting(dmChannelId: string): void {
+    const room = this.voiceRooms.get(dmChannelId);
+    if (!room || room.roomType !== 'dm') return;
+    const meta = room.metadata as DmRoomMeta;
+    if (meta.group || meta.state !== 'active') return;
+    if (room.participants.size >= 2) {
+      const timer = this.dmWaitingTimeouts.get(dmChannelId);
+      if (timer) clearTimeout(timer);
+      this.dmWaitingTimeouts.delete(dmChannelId);
+      if (meta.waitingUntil !== undefined) {
+        delete meta.waitingUntil;
+        this.sendToDmMembers(dmChannelId, { type: 'dm_call_waiting', dmChannelId, endsAt: null });
+      }
+    } else if (room.participants.size === 1 && !this.dmWaitingTimeouts.has(dmChannelId)) {
+      meta.waitingUntil = Date.now() + 5 * 60_000;
+      this.sendToDmMembers(dmChannelId, { type: 'dm_call_waiting', dmChannelId, endsAt: meta.waitingUntil });
+      const timer = setTimeout(() => {
+        if (this.voiceRooms.get(dmChannelId) !== room || room.participants.size !== 1) return;
+        this.endDmRoom(dmChannelId, 'dm_call_ended');
+      }, 5 * 60_000);
+      timer.unref?.();
+      this.dmWaitingTimeouts.set(dmChannelId, timer);
+    }
+  }
+
+  endDmRoom(dmChannelId: string, kind: 'dm_call_ended' | 'dm_call_rejected', outcome?: 'cancelled'): boolean {
     const room = this.voiceRooms.get(dmChannelId);
     if (!room || room.roomType !== 'dm') return false;
     const meta = room.metadata as DmRoomMeta;
+    // The history closes first: 'rejected' when every ringee declined,
+    // 'cancelled' when the caller hung up a ringing call, 'ended' when an
+    // active call ran down, 'missed' when a ringing call got no answer.
+    this.writeDmCallHistory(dmChannelId, outcome ?? (kind === 'dm_call_rejected' ? 'rejected' : meta.state === 'active' ? 'ended' : 'missed'));
     const participants = Array.from(room.participants);
     // The caller of a ringing call holds no seat but owns the voice binding,
     // unless they have since joined some other room.
@@ -750,6 +828,7 @@ class ConnectionManager {
       this.endDmRoom(dmChannelId, 'dm_call_ended');
       return 'ended';
     }
+    this.updateDmWaiting(dmChannelId);
     return 'left';
   }
 
@@ -805,6 +884,8 @@ class ConnectionManager {
     const meta = room.metadata as DmRoomMeta;
     if (meta.state !== 'ringing') return false;
     meta.state = 'active';
+    meta.connectedAt = Date.now();
+    this.writeDmCallHistory(dmChannelId, 'active');
 
     // Clear ringing timeout
     const timeout = this.ringingTimeouts.get(dmChannelId);
@@ -834,6 +915,7 @@ class ConnectionManager {
 
     room.participants.add(userId);
     this.userToRoom.set(userId, roomId);
+    this.updateDmWaiting(roomId);
     return room;
   }
 
@@ -892,6 +974,12 @@ class ConnectionManager {
     if (timeout) {
       clearTimeout(timeout);
       this.ringingTimeouts.delete(roomId);
+    }
+    // Clear the 1-on-1 waiting grace, if one was running
+    const waiting = this.dmWaitingTimeouts.get(roomId);
+    if (waiting) {
+      clearTimeout(waiting);
+      this.dmWaitingTimeouts.delete(roomId);
     }
 
     return displaced;
@@ -1486,6 +1574,7 @@ export function buildReadyPayload(userId: string): {
             position: ch.position ?? 0,
             categoryId: ch.categoryId ?? null,
             isPrivate: privateChannelIds.has(ch.id),
+            ...(ch.type === 'voice' ? { voiceBitrateKbps: ch.voiceBitrateKbps } : {}),
             createdAt: ch.createdAt,
             lastMessageId: lastMsgMap.get(ch.id) ?? null,
             myPermissions: permissionsToString(chPerms),
@@ -1593,6 +1682,7 @@ export function buildReadyPayload(userId: string): {
         participants: Array.from(room.participants),
         startedAt: room.startedAt,
         state: dmMeta.state,
+        waitingUntil: dmMeta.waitingUntil,
       });
       // Inject DM call participants into voiceStates so frontend's generic handler works
       if (room.participants.size > 0) {

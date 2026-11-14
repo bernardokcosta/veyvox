@@ -100,6 +100,12 @@
       "named_one": "{{names}} yazıyor",
       "named_other": "{{names}} yazıyor",
       "several": "Birkaç kişi yazıyor"
+    },
+    "preparing": {
+      "image": "Fotoğraf hazırlanıyor…",
+      "video": "Video hazırlanıyor… %{{percent}}",
+      "sendOriginal": "Orijinali gönder",
+      "cancel": "İptal"
     }
   },
   "menu": {
@@ -254,8 +260,8 @@
     "draft": "Taslak",
     "newVersion": "Yeni sürüm",
     "deletePack": "Paketi sil",
-    "stickersCount_one": "{{count}} sticker",
-    "stickersCount_other": "{{count}} sticker",
+    "stickersCount_one": "{{count}} çıkartma.",
+    "stickersCount_other": "{{count}} çıkartma.",
     "noPacks": "Sticker paketi bulunamadı",
     "viewPack": "Paketi görüntüle",
     "saveDraft": "Taslak olarak kaydet",
@@ -274,7 +280,13 @@
     "reviewNotes": "Reddetme nedeni",
     "creator": "Oluşturan",
     "viewStickers": "Sticker'ları görüntüle",
-    "pendingReviewHint": "Yönetici incelemesinde; onaylandığında Keşfet'te listelenecek"
+    "pendingReviewHint": "Yönetici incelemesinde; onaylandığında Keşfet'te listelenecek",
+    "invalidName": "100 karaktere kadar görünür bir ad seç.",
+    "favoritesTitle": "Favori çıkartmalar",
+    "favorite": "Favori çıkartma",
+    "favorited": "Çıkartma favorilere eklendi.",
+    "serverEmpty": "Bu alanın henüz çıkartma albümü yok.",
+    "serverEmptyHint": "Alan yöneticisi Alan Ayarları → Alanın çıkartmaları bölümünden ekleyebilir."
   },
   "poke": {
     "action": "Dürt",

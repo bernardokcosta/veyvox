@@ -68,7 +68,17 @@
         "note": "Este canal está oculto para los miembros sin acceso explícito. Los propietarios del espacio y los usuarios con el permiso Administrador siempre pueden ver todos los canales.",
         "unhideOnSave": "Al guardar, este canal será visible para todos los miembros."
       },
-      "deleteButton": "Eliminar canal"
+      "deleteButton": "Eliminar canal",
+      "voiceQuality": {
+        "label": "Calidad de voz",
+        "option": "{{value}} kbps",
+        "description": {
+          "64": "Voz clara. Usa el menor ancho de banda.",
+          "128": "Voces más plenas y naturales.",
+          "256": "Máxima calidad, ideal para música. Usa el mayor ancho de banda."
+        },
+        "hint": "Define la tasa máxima de audio que cada miembro puede enviar en este canal. Vale para todos, incluidos los ya conectados."
+      }
     },
     "delete": {
       "title": "¿Eliminar #{{name}}?",
@@ -362,6 +372,8 @@
       "manageChannels": "Gestionar canales",
       "manageRoles": "Gestionar roles",
       "manageSpace": "Gestionar espacio",
+      "createStickers": "Crear pegatinas",
+      "manageStickers": "Gestionar pegatinas",
       "createInvite": "Crear invitación",
       "kickMembers": "Expulsar miembros",
       "banMembers": "Bloquear miembros",
@@ -622,5 +634,12 @@
     "suppressRoles": "Suprimir menciones de roles",
     "massHeading": "Menciones de grupo",
     "massNote": "@here llega a los mismos miembros que @everyone. Las menciones directas a tu nombre siempre generan notificaciones."
+  },
+  "stickers": {
+    "title": "Pegatinas del espacio",
+    "description": "Un álbum compartido para este espacio, con hasta 50 pegatinas animadas o estáticas.",
+    "empty": "Este espacio aún no tiene álbum de pegatinas.",
+    "create": "Crear álbum del espacio",
+    "add": "Añadir pegatina"
   }
 }

@@ -69,7 +69,16 @@
         "fallbackName": "Máy ảnh {{number}}",
         "detectedFallback": "camera phát hiện",
         "currentlyUsing": "Đang dùng: {{label}}",
-        "none": "Không phát hiện camera nào."
+        "none": "Không phát hiện camera nào.",
+        "quality": {
+          "label": "Chất lượng camera",
+          "managed": "Máy chủ quyết định chất lượng: {{resolution}}, {{fps}} fps, {{bitrate}}.",
+          "resolution": "Độ phân giải",
+          "framerate": "Tốc độ khung hình",
+          "bitrate": "Bitrate",
+          "useDefault": "Dùng mặc định",
+          "fps": "{{value}} fps"
+        }
       },
       "preview": {
         "testAria": "Thử camera",
@@ -131,7 +140,8 @@
       "desktop": "Máy tính",
       "instance": "Máy chủ",
       "bots": "Bot",
-      "developer": "Nhà phát triển"
+      "developer": "Nhà phát triển",
+      "stickers": "Nhãn dán"
     },
     "logOut": "Đăng xuất",
     "backToMenu": "Về menu cài đặt"
@@ -548,5 +558,20 @@
       "description": "Hiện công cụ nhà phát triển, như tab Bot, trong cài đặt. Tắt chỉ ẩn chúng; bot của bạn vẫn chạy.",
       "saveFailed": "Lưu cài đặt thất bại. Thử lại."
     }
+  },
+  "stickers": {
+    "title": "Thư viện nhãn dán của tôi",
+    "description": "Album riêng chỉ bạn thấy. Mỗi album chứa tối đa 30 nhãn dán động hoặc tĩnh.",
+    "packs": "Album riêng",
+    "newPack": "Tên album mới",
+    "createPack": "Tạo album",
+    "favorites": "Yêu thích",
+    "favoritesHint": "Bộ sưu tập nhãn dán của bạn. Lưu mục vào album đang mở bằng +.",
+    "noFavorites": "Chưa có nhãn dán yêu thích.",
+    "itemName": "Tên nhãn dán",
+    "deletePack": "Xóa album",
+    "deletePackTitle": "Xóa \"{{name}}\"?",
+    "deletePackDescription": "Album sẽ bị xóa. Nhãn dán đã gửi vẫn ở lại trong chat.",
+    "deletePackSuccess": "Đã xóa album."
   }
 }

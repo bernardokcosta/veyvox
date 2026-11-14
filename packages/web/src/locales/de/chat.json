@@ -100,6 +100,12 @@
       "named_one": "{{names}} schreibt",
       "named_other": "{{names}} schreiben",
       "several": "Mehrere Personen schreiben"
+    },
+    "preparing": {
+      "image": "Foto wird vorbereitet…",
+      "video": "Video wird vorbereitet… {{percent}} %",
+      "sendOriginal": "Original senden",
+      "cancel": "Abbrechen"
     }
   },
   "menu": {
@@ -254,8 +260,8 @@
     "draft": "Entwurf",
     "newVersion": "Neue Version",
     "deletePack": "Paket löschen",
-    "stickersCount_one": "{{count}} Sticker",
-    "stickersCount_other": "{{count}} Sticker",
+    "stickersCount_one": "{{count}} Sticker.",
+    "stickersCount_other": "{{count}} Sticker.",
     "noPacks": "Keine Stickerpakete gefunden",
     "viewPack": "Paket ansehen",
     "saveDraft": "Als Entwurf speichern",
@@ -274,7 +280,13 @@
     "reviewNotes": "Ablehnungsgrund",
     "creator": "Ersteller",
     "viewStickers": "Sticker ansehen",
-    "pendingReviewHint": "Wird von der Administration geprüft und nach der Genehmigung unter „Sticker entdecken“ angezeigt."
+    "pendingReviewHint": "Wird von der Administration geprüft und nach der Genehmigung unter „Sticker entdecken“ angezeigt.",
+    "invalidName": "Wähle einen sichtbaren Namen mit höchstens 100 Zeichen.",
+    "favoritesTitle": "Favorisierte Sticker",
+    "favorite": "Sticker favorisieren",
+    "favorited": "Sticker zu Favoriten hinzugefügt.",
+    "serverEmpty": "Dieser Space hat noch kein Sticker-Album.",
+    "serverEmptyHint": "Ein Space-Manager kann eines in den Space-Einstellungen unter Space-Sticker anlegen."
   },
   "poke": {
     "action": "Anstupsen",

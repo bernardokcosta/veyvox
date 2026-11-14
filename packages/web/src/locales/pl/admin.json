@@ -270,6 +270,35 @@
       "deletedToast_many": "Usunięto {{count}} plików ({{size}})",
       "deletedToast_other": "Usunięto {{count}} pliku ({{size}})",
       "failed": "Sprzątanie multimediów nie powiodło się"
+    },
+    "diskCleanup": {
+      "label": "Automatyczne czyszczenie",
+      "enable": "Automatycznie zwalniaj miejsce, gdy dysk jest prawie pełny",
+      "enableHint": "Najpierw usuwa pliki, których nic nie używa, potem stare załączniki czatu, od najstarszych. Tekst wiadomości zostaje.",
+      "warning": "Włączone: gdy dysk osiągnie poniższy limit, załączniki czatu starsze niż {{days}} dni mogą zostać trwale usunięte. Nowsze pliki i zdjęcia profilowe nigdy nie są ruszane.",
+      "usage": "Wykorzystanie dysku: {{percent}}% ({{used}} z {{total}})",
+      "usageLabel": "Wykorzystanie dysku",
+      "usageUnknown": "Nie można odczytać wykorzystania dysku.",
+      "threshold": "Zacznij czyścić od",
+      "target": "Czyść do",
+      "minAge": "Nigdy nie usuwaj plików nowszych niż",
+      "days": "dni",
+      "problemThreshold": "Poziom początkowy musi być liczbą całkowitą między {{min}} a {{max}}.",
+      "problemTarget": "Poziom docelowy musi być liczbą całkowitą między {{min}} a {{max}} (co najmniej 5 punktów poniżej poziomu początkowego).",
+      "problemAge": "Wiek musi być całkowitą liczbą dni między {{min}} a {{max}}.",
+      "saved": "Zapisano ustawienia czyszczenia",
+      "checkNow": "Sprawdź teraz",
+      "checking": "Sprawdzanie…",
+      "checkedNothing": "Dysk jest poniżej limitu, więc nic nie usunięto.",
+      "neverRan": "Nie wykonano jeszcze żadnego czyszczenia.",
+      "stage": {
+        "safe": "tylko nieużywane pliki",
+        "media": "w tym stare załączniki"
+      },
+      "lastRun_one": "Ostatnie czyszczenie {{when}} ({{stage}}): {{before}}% → {{after}}%, usunięto {{count}} plik, zwolniono {{size}}.",
+      "lastRun_other": "Ostatnie czyszczenie {{when}} ({{stage}}): {{before}}% → {{after}}%, usunięto {{count}} plików, zwolniono {{size}}.",
+      "lastRun_few": "Ostatnie czyszczenie {{when}} ({{stage}}): {{before}}% → {{after}}%, usunięto {{count}} pliki, zwolniono {{size}}.",
+      "lastRun_many": "Ostatnie czyszczenie {{when}} ({{stage}}): {{before}}% → {{after}}%, usunięto {{count}} plików, zwolniono {{size}}."
     }
   },
   "streaming": {
@@ -313,6 +342,32 @@
     "capWarning": {
       "title": "Wartości macierzy przekraczają globalny limit.",
       "description": "Niektóre szybkości przekraczają Twoje maksimum {{max}}. Streamy w tych kombinacjach będą miały obniżoną jakość do limitu."
+    },
+    "camera": {
+      "label": "Kamera internetowa",
+      "description": "Określa jakość, w jakiej użytkownicy nadają obraz z kamery.",
+      "mode": {
+        "label": "Zasady jakości kamery",
+        "fixed": "Stałe (bieżące zachowanie)",
+        "userChoice": "Wybierają użytkownicy",
+        "fixedHint": "Wszyscy nadają w jakości poniżej.",
+        "userChoiceHint": "Użytkownicy wybierają spośród dozwolonych wartości w Głos i wideo."
+      },
+      "defaults": {
+        "resolution": "Domyślna rozdzielczość",
+        "framerate": "Domyślna liczba klatek",
+        "bitrate": "Domyślny bitrate (kb/s)"
+      },
+      "quality": {
+        "resolutions": "Dozwolone rozdzielczości",
+        "framerates": "Dozwolone liczby klatek",
+        "bitrateRange": "Zakres bitrate (kb/s)",
+        "min": "Min.",
+        "max": "Maks.",
+        "allowCustom": "Zezwalaj na własny bitrate",
+        "allowCustomHint": "Użytkownicy mogą ustawić dowolny bitrate z zakresu."
+      },
+      "highEndWarning": "Wysokie ustawienia kamery kosztują pasmo i CPU każdego uczestnika."
     }
   },
   "updates": {

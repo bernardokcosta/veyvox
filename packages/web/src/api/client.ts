@@ -1,5 +1,5 @@
 import type { ChatCommandsResponse, CreateInteractionRequest, CreateInteractionResponse } from '@veyvox/shared';
-import type { PersonalSticker, StickerPackSummary, StickerPackDetail, StickerPackItem } from '@veyvox/shared/src/stickers';
+import type { PersonalSticker, StickerPackSummary, StickerPackDetail, StickerPackItem, FavoriteSticker } from '@veyvox/shared/src/stickers';
 import type { SoundboardDocument, SoundboardSettings, SoundboardSound } from '@veyvox/shared/src/soundboard';
 import type { GameIconUpload } from '@veyvox/shared/src/gameIcons';
 import type { JunoCommand, JunoSnapshot, JunoRankingPage } from '@veyvox/shared/src/juno';
@@ -54,6 +54,8 @@ import type {
   StorageStats,
   OrphanedFile,
   CleanupResult,
+  DiskPressureRun,
+  DiskPressureStatus,
   AdminUserListResponse,
   AdminUser,
   AdminResetPasswordResponse,
@@ -85,6 +87,7 @@ import type {
   CreateBotTokenResponse,
   BotSpacesResponse,
 } from '@veyvox/shared';
+import type { Bookmark, BookmarkKind, BookmarkPage } from '@veyvox/shared/src/bookmarks';
 import { MESSAGE_PAGING_AFTER, MESSAGE_PAGING_HEADER } from '@veyvox/shared';
 import { recordDiagnostic } from '../utils/diagnostics';
 import { diagnosticError } from '@veyvox/shared/src/diagnostics';
@@ -413,6 +416,8 @@ export class VeyvoxApiClient {
     storageCleanup: (dryRun?: boolean) => Promise<CleanupResult>;
     cleanupOldMedia: (maxAgeDays: number, dryRun?: boolean) => Promise<CleanupResult>;
     cleanupTusSessions: (maxAgeHours: number, dryRun?: boolean) => Promise<CleanupResult>;
+    diskStatus: () => Promise<DiskPressureStatus>;
+    diskSweep: () => Promise<{ run: DiskPressureRun | null; status: DiskPressureStatus }>;
     listUsers: (params?: { q?: string; page?: number; pageSize?: number; showDeleted?: boolean; role?: string; joinedAfter?: string; joinedBefore?: string; sort?: string }) => Promise<AdminUserListResponse>;
     setUserRole: (userId: string, isAdmin: boolean) => Promise<AdminUser>;
     resetUserPassword: (userId: string) => Promise<AdminResetPasswordResponse>;
@@ -433,6 +438,29 @@ export class VeyvoxApiClient {
     collect: (data: { id: string; token: string; name: string }) => Promise<PersonalSticker>;
     rename: (id: string, name: string) => Promise<PersonalSticker>;
     remove: (id: string) => Promise<{ success: boolean }>;
+  };
+  stickerLibrary: {
+    get: () => Promise<{
+      privatePacks: StickerPackDetail[];
+      spaces: Array<{
+        spaceId: string;
+        name: string;
+        icon?: string | null;
+        avatarColor?: string | null;
+        canCreate: boolean;
+        canManage: boolean;
+        pack: StickerPackDetail | null;
+      }>;
+      favorites: FavoriteSticker[];
+    }>;
+    createPrivatePack: (data: { name: string; description?: string }) => Promise<StickerPackDetail>;
+    renamePrivatePack: (packId: string, name: string) => Promise<StickerPackDetail>;
+    deletePrivatePack: (packId: string) => Promise<{ success: boolean }>;
+    createSpacePack: (spaceId: string) => Promise<StickerPackDetail>;
+    addItem: (packId: string, data: { name: string; image: string }) => Promise<StickerPackItem>;
+    renameItem: (packId: string, itemId: string, name: string) => Promise<StickerPackItem>;
+    removeItem: (packId: string, itemId: string) => Promise<{ success: boolean }>;
+    addFavoriteToPack: (packId: string, data: { favoriteId: string; name?: string }) => Promise<StickerPackItem>;
   };
 
   juno: {
@@ -466,6 +494,12 @@ export class VeyvoxApiClient {
   };
   gameIcons: {
     upload: (data: { image: string }) => Promise<GameIconUpload>;
+  };
+  bookmarks: {
+    list: (params?: { cursor?: string; limit?: number }) => Promise<BookmarkPage>;
+    keys: (kind: BookmarkKind, channelId: string) => Promise<string[]>;
+    add: (kind: BookmarkKind, messageId: string) => Promise<Bookmark>;
+    remove: (kind: BookmarkKind, messageId: string) => Promise<{ success: boolean }>;
   };
 
   constructor(baseUrl: string, getToken: () => string | null, onUnauthorized?: () => void) {
@@ -622,6 +656,18 @@ export class VeyvoxApiClient {
       remove: (id) => request('DELETE', `/stickers/${encodeURIComponent(id)}`),
     };
 
+    this.stickerLibrary = {
+      get: () => request('GET', '/sticker-library'),
+      createPrivatePack: (data) => request('POST', '/private-sticker-packs', data),
+      renamePrivatePack: (packId, name) => request('PATCH', `/private-sticker-packs/${encodeURIComponent(packId)}`, { name }),
+      deletePrivatePack: (packId) => request('DELETE', `/private-sticker-packs/${encodeURIComponent(packId)}`),
+      createSpacePack: (spaceId) => request('POST', `/spaces/${encodeURIComponent(spaceId)}/sticker-pack`),
+      addItem: (packId, data) => request('POST', `/sticker-library/packs/${encodeURIComponent(packId)}/items`, data),
+      renameItem: (packId, itemId, name) => request('PATCH', `/sticker-library/packs/${encodeURIComponent(packId)}/items/${encodeURIComponent(itemId)}`, { name }),
+      removeItem: (packId, itemId) => request('DELETE', `/sticker-library/packs/${encodeURIComponent(packId)}/items/${encodeURIComponent(itemId)}`),
+      addFavoriteToPack: (packId, data) => request('POST', `/private-sticker-packs/${encodeURIComponent(packId)}/items/from-favorite`, data),
+    };
+
     this.stickerStore = {
       listPacks: (params) => {
         const qs = new URLSearchParams();
@@ -647,6 +693,22 @@ export class VeyvoxApiClient {
 
     this.gameIcons = {
       upload: (data) => request('POST', '/game-icons', data),
+    };
+
+    this.bookmarks = {
+      list: (params = {}) => {
+        const query = new URLSearchParams();
+        if (params.cursor) query.set('cursor', params.cursor);
+        if (params.limit !== undefined) query.set('limit', String(params.limit));
+        const suffix = query.size > 0 ? `?${query}` : '';
+        return request<BookmarkPage>('GET', `/bookmarks${suffix}`);
+      },
+      keys: (kind, channelId) =>
+        request<string[]>('GET', `/bookmarks/keys?kind=${kind}&channelId=${encodeURIComponent(channelId)}`),
+      add: (kind, messageId) =>
+        request<Bookmark>('PUT', `/bookmarks/${kind}/${encodeURIComponent(messageId)}`),
+      remove: (kind, messageId) =>
+        request<{ success: boolean }>('DELETE', `/bookmarks/${kind}/${encodeURIComponent(messageId)}`),
     };
 
     this.auth = {
@@ -978,6 +1040,8 @@ export class VeyvoxApiClient {
         request<CleanupResult>('POST', '/admin/storage/cleanup-media', { maxAgeDays, dryRun }),
       cleanupTusSessions: (maxAgeHours: number, dryRun = false) =>
         request<CleanupResult>('POST', '/admin/storage/cleanup-tus', { maxAgeHours, dryRun }),
+      diskStatus: () => request<DiskPressureStatus>('GET', '/admin/storage/disk'),
+      diskSweep: () => request<{ run: DiskPressureRun | null; status: DiskPressureStatus }>('POST', '/admin/storage/disk/sweep'),
       listUsers: (params) => {
         const qs = new URLSearchParams();
         if (params?.q) qs.set('q', params.q);

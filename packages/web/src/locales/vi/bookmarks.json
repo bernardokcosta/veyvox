@@ -1,0 +1,31 @@
+{
+  "message": {
+    "add": "Đánh dấu",
+    "remove": "Bỏ đánh dấu"
+  },
+  "menu": {
+    "add": "Đánh dấu tin nhắn",
+    "remove": "Bỏ đánh dấu"
+  },
+  "toast": {
+    "addFailed": "Không lưu được dấu trang: {{reason}}",
+    "removeFailed": "Không bỏ được dấu trang: {{reason}}"
+  },
+  "title": "Dấu trang",
+  "list": {
+    "loading": "Đang tải…",
+    "empty": "Chưa có dấu trang nào",
+    "emptyHint": "Đánh dấu một tin nhắn từ thanh thao tác hoặc menu để tìm thấy nó ở đây.",
+    "showMore": "Xem thêm",
+    "open": "Mở tin nhắn của {{name}}",
+    "remove": "Bỏ dấu trang"
+  },
+  "status": {
+    "edited": "Tin nhắn gốc đã được chỉnh sửa. Đây là bản sao đã lưu.",
+    "deleted": "Tin nhắn gốc đã bị xoá. Đây là bản sao đã lưu.",
+    "unavailable": "Bạn không còn xem được tin nhắn gốc. Đây là bản sao đã lưu."
+  },
+  "attachment": {
+    "gone": "tệp đã bị xoá"
+  }
+}

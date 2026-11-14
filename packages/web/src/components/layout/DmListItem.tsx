@@ -4,6 +4,7 @@ import { Avatar } from '../ui/Avatar';
 import { AvatarStack } from '../ui/AvatarStack';
 import { userDisplayName } from '../../utils/identity';
 import { useAuthStore } from '../../stores/authStore';
+import { useVoiceStore } from '../../stores/voiceStore';
 import { useCanonicalUserView } from '../../utils/userViewLookup';
 import { formatDmTimestamp, formatDmSidebarPreview, formatDmHeaderName } from '../../utils/dmFormatters';
 import { BotBadge } from '../ui/BotBadge';
@@ -25,7 +26,8 @@ interface DmListItemProps {
 }
 
 export function DmListItem({ dm, isActive, isUnread, user, onSelect, onClose, onLeave, onContextMenu }: DmListItemProps) {
-  const { t } = useTranslation('dm');
+  const { t } = useTranslation(['dm', 'voice']);
+  const callRunning = useVoiceStore((s) => (s.voiceUsers.get(dm.id)?.length ?? 0) > 0);
   const selfId = useAuthStore(s => s.user?.id ?? null);
   const otherMembers = dm.members.filter(m => m.id !== selfId);
   const isGroup = !!dm.ownerId;
@@ -98,7 +100,7 @@ export function DmListItem({ dm, isActive, isUnread, user, onSelect, onClose, on
   // sender prefix for group user-messages. We only need to provide the
   // empty-group fallback ourselves.
   const preview = formatDmSidebarPreview(dm, selfId);
-  const previewText = preview ?? (isGroup ? `${dm.members.length} Members` : null);
+  const previewText = callRunning ? `☎ ${t('voice:callOngoing')}` : preview ?? (isGroup ? `${dm.members.length} Members` : null);
 
   const itemJsx = (
     <div

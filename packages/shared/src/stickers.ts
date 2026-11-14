@@ -66,6 +66,13 @@ export const MAX_STICKER_PACK_NAME_LENGTH = 100;
 export const MAX_STICKER_PACK_DESC_LENGTH = 500;
 /** Maximum number of stickers per sticker pack. */
 export const MAX_STICKERS_PER_PACK = 100;
+/** Most stickers one private album holds. */
+export const MAX_PRIVATE_STICKERS_PER_PACK = 30;
+/** Most stickers one space album holds. */
+export const MAX_SPACE_STICKERS = 50;
+
+/** Who a sticker pack belongs to: a member's private album, or one space's album. */
+export type StickerPackScope = 'user' | 'space';
 
 export type StickerPackStatus =
   | 'draft'
@@ -81,6 +88,9 @@ export interface StickerPackSummary {
   id: string;
   name: string;
   description: string | null;
+  /** Who the pack belongs to. Store packs predate scopes and read 'store'. */
+  scopeType?: StickerPackScope;
+  spaceId?: string | null;
   creatorId: string | null;
   creatorName: string | null;
   coverAssetId: string | null;
@@ -116,6 +126,17 @@ export interface StickerPackDetail extends StickerPackSummary {
   reviewedBy: string | null;
   reviewedAt: number | null;
   items: StickerPackItem[];
+  canManage?: boolean;
+  canAdd?: boolean;
+  itemLimit?: number;
+}
+
+/** One entry of the caller's own sticker collection, with when it was saved. */
+export interface FavoriteSticker {
+  id: string;
+  name: string;
+  token: string;
+  createdAt: number;
 }
 
 

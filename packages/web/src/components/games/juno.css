@@ -268,6 +268,18 @@ button.juno-seat-empty:hover:not(:disabled) { border-color: #27ef7d; color: #27e
 .juno-tile-logo { display: block; width: 125px; max-width: 100%; }
 .juno-tile div > span { display: block; text-align: left; font-size: 11px; color: #d2def4; margin-top: 2px; }
 .juno-tile-open { position: absolute; bottom: 10px; right: 12px; font-size: 11px; }
+
+/* Compact square variant for the games picker: cards on top, logo and seats
+   stacked below. Opt-in only; the voice grid keeps the wide layout. */
+.juno-tile-compact { flex-direction: column; gap: 6px; padding: 12px 10px; justify-content: center; }
+.juno-tile-compact .juno-tile-cards { width: 64px; height: 64px; }
+.juno-tile-compact .juno-tile-cards > img { width: 37px; top: 5px; left: 13px; }
+.juno-tile-compact .juno-tile-cards > img:first-child { transform: translateX(-18px) rotate(-18deg); }
+.juno-tile-compact .juno-tile-cards > img:nth-child(2) { transform: translateY(-5px); }
+.juno-tile-compact .juno-tile-cards > img:last-child { transform: translateX(18px) rotate(18deg); }
+.juno-tile-compact .juno-tile-logo { width: 84px; margin: 0 auto; }
+.juno-tile-compact div > span { text-align: center; }
+.juno-tile-compact .juno-tile-open { position: static; margin-top: 2px; }
 .juno-effects { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 5; }
 .juno-effect-card, .juno-effect-draw { position: absolute; left: 50%; top: 40%; width: clamp(38px, 10cqh, 82px); animation: juno-card-flight .5s cubic-bezier(.2, .8, .3, 1) both; }
 .juno-effect-draw { animation-direction: reverse; }

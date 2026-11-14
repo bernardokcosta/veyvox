@@ -217,7 +217,8 @@
       "memory": "Alzheimer"
     },
     "rules": "Nasıl oynanır",
-    "rulesText": "Her oyuncu 7 kart alır. Son kartın rengini veya simgesini eşleştir ya da bir joker oynayıp renk seç. Kazanmak için elini boşalt.\nAtla, sıradaki oyuncuyu atlar; Ters çevir yönü değiştirir (iki oyuncuyla atlar). +2 ve +4, sıradaki oyuncuya hemen kart çektirir ve sırasını atlar. Üst üste koyma yok. +4 yalnızca etkin renkte kartın yoksa oynanabilir; itiraz yok.\nBir kart çek: yalnızca uyuyorsa o yeni kartı oyna veya pas geç. Oynanamayan çekim otomatik pas geçirir.\nSıran başına 45 saniyen var. Süre dolunca bir kart çekilir ve pas geçilir; çektikten sonra yalnızca pas geçilir. Biri ayrılırsa kartları desteye döner; iki oyuncudan az kalırsa tur kazanan olmadan biter. Kısa bir ses yeniden bağlanması koltuğunu korur. Sunucuyu yeniden başlatmak oyunları bitirir."
+    "rulesText": "Her oyuncu 7 kart alır. Son kartın rengini veya simgesini eşleştir ya da bir joker oynayıp renk seç. Kazanmak için elini boşalt.\nAtla, sıradaki oyuncuyu atlar; Ters çevir yönü değiştirir (iki oyuncuyla atlar). +2 ve +4, sıradaki oyuncuya hemen kart çektirir ve sırasını atlar. Üst üste koyma yok. +4 yalnızca etkin renkte kartın yoksa oynanabilir; itiraz yok.\nBir kart çek: yalnızca uyuyorsa o yeni kartı oyna veya pas geç. Oynanamayan çekim otomatik pas geçirir.\nSıran başına 45 saniyen var. Süre dolunca bir kart çekilir ve pas geçilir; çektikten sonra yalnızca pas geçilir. Biri ayrılırsa kartları desteye döner; iki oyuncudan az kalırsa tur kazanan olmadan biter. Kısa bir ses yeniden bağlanması koltuğunu korur. Sunucuyu yeniden başlatmak oyunları bitirir.",
+    "comingSoon": "Yakında"
   },
   "soundboard": {
     "title": "Soundboard",
@@ -552,5 +553,23 @@
     "stillDenied": "Mikrofon erişimi hâlâ reddediliyor. Bu site için tarayıcı veya cihaz ayarlarından izin ver.",
     "notFound": "Mikrofon bulunamadı.",
     "failed": "Mikrofona erişilemedi."
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}} aramayı başlattı",
+    "from": "Başlangıç:",
+    "to": "Bitiş:",
+    "status": {
+      "ringing": "Aranıyor…",
+      "active": "Arama sürüyor",
+      "ended": "Arama bitti",
+      "missed": "Cevapsız arama",
+      "rejected": "Arama reddedildi",
+      "interrupted": "Arama kesildi",
+      "cancelled": "Arama iptal edildi"
+    },
+    "duration": "Süre"
+  },
+  "callOngoing": "Arama sürüyor",
+  "rejoinCall": "Aramaya dön",
+  "callWaiting": "Diğer kişi bekleniyor · {{remaining}} içinde bitiyor"
 }

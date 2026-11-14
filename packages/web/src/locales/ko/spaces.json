@@ -68,7 +68,17 @@
         "note": "이 채널은 명시적 접근 없는 멤버에게 숨겨집니다. 관리자 권한 사용자나 스페이스 소유자는 항상 모든 채널을 봅니다.",
         "unhideOnSave": "저장하면 이 채널이 모든 멤버에게 표시됩니다."
       },
-      "deleteButton": "채널 삭제"
+      "deleteButton": "채널 삭제",
+      "voiceQuality": {
+        "label": "음성 품질",
+        "option": "{{value}} kbps",
+        "description": {
+          "64": "선명한 음성. 대역폭 사용 최소.",
+          "128": "더 풍부하고 자연스러운 음성.",
+          "256": "최고 품질, 음악에 최적. 대역폭 사용 최대."
+        },
+        "hint": "이 채널에서 각 멤버가 전송할 수 있는 최대 오디오 비트레이트를 설정합니다. 이미 연결된 사람을 포함해 모두에게 적용됩니다."
+      }
     },
     "delete": {
       "title": "#{{name}} 삭제?",
@@ -360,6 +370,8 @@
       "manageChannels": "채널 관리",
       "manageRoles": "역할 관리",
       "manageSpace": "스페이스 관리",
+      "createStickers": "스티커 만들기",
+      "manageStickers": "스티커 관리",
       "createInvite": "초대 만들기",
       "kickMembers": "멤버 추방",
       "banMembers": "멤버 차단",
@@ -600,5 +612,12 @@
     "suppressRoles": "역할 언급 억제",
     "massHeading": "그룹 언급",
     "massNote": "@here는 @everyone과 같은 멤버에 도달합니다. 이름 언급은 항상 알립니다."
+  },
+  "stickers": {
+    "title": "스페이스 스티커",
+    "description": "이 스페이스를 위한 공유 스티커 앨범 하나로, 애니메이션 또는 정적 스티커를 최대 50개까지 담을 수 있습니다.",
+    "empty": "이 스페이스에는 아직 스티커 앨범이 없습니다.",
+    "create": "스페이스 앨범 만들기",
+    "add": "스티커 추가"
   }
 }

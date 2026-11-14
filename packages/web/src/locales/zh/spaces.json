@@ -68,7 +68,17 @@
         "note": "没有显式访问权限的成员将无法看到此频道。拥有管理员权限的用户或空间拥有者始终可以查看所有频道。",
         "unhideOnSave": "保存后，所有成员都将看到此频道。"
       },
-      "deleteButton": "删除频道"
+      "deleteButton": "删除频道",
+      "voiceQuality": {
+        "label": "语音质量",
+        "option": "{{value}} kbps",
+        "description": {
+          "64": "清晰的语音，占用带宽最少。",
+          "128": "声音更饱满、更自然。",
+          "256": "最高音质，最适合音乐，占用带宽最多。"
+        },
+        "hint": "设置此频道中每位成员可发送的最高音频码率，对所有人生效，包括已连接的成员。"
+      }
     },
     "delete": {
       "title": "删除 #{{name}}？",
@@ -360,6 +370,8 @@
       "manageChannels": "管理频道",
       "manageRoles": "管理身份组",
       "manageSpace": "管理空间",
+      "createStickers": "创建贴纸",
+      "manageStickers": "管理贴纸",
       "createInvite": "创建邀请",
       "kickMembers": "踢出成员",
       "banMembers": "封禁成员",
@@ -600,5 +612,12 @@
     "suppressRoles": "屏蔽 @身份组 提醒",
     "massHeading": "群组提及",
     "massNote": "@here 与 @everyone 通知的成员相同。直接提及您的消息始终会通知您。"
+  },
+  "stickers": {
+    "title": "空间贴纸",
+    "description": "此空间的共享贴纸专辑一个，最多可容纳 50 个动态或静态贴纸。",
+    "empty": "此空间还没有贴纸专辑。",
+    "create": "创建空间专辑",
+    "add": "添加贴纸"
   }
 }

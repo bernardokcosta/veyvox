@@ -35,11 +35,13 @@ function seedLegacy(dbPath: string): void {
   try {
     const db = drizzle(sqlite, { schema });
     // Seed the exact generated post-core/pre-cleanup boundary, not the latest
-    // native schema with re-invented historical columns.
+    // native schema with re-invented historical columns. Explicit column
+    // lists, so columns migrations after the boundary added (disk cleanup,
+    // camera limits, voice bitrate) are never named against this old table.
     buildOldDatabase(sqlite, { through: 50 });
-    db.insert(schema.instanceSettings).values({ id: 1,
-      workerId: 1, instanceName: 'Legacy-enabled fixture', registrationOpen: 1,
-      updatedAt: 1 }).run();
+    sqlite.prepare(`INSERT INTO instance_settings
+      (id, worker_id, instance_name, registration_open, updated_at)
+      VALUES (1, 1, 'Legacy-enabled fixture', 1, 1)`).run();
     sqlite.prepare(`UPDATE instance_settings SET discovery_enabled=1,directory_enabled=1,directory_browse_enabled=1,
       directory_dirty=1,directory_last_ping_at=123,directory_last_error=?,support_card_enabled=0`).run(oldError);
     db.insert(schema.users).values([
@@ -51,7 +53,8 @@ function seedLegacy(dbPath: string): void {
         visibility, description: 'Retained description', createdAt: 1 }).run();
       sqlite.prepare('UPDATE spaces SET directory_listed=1 WHERE id=?').run(id);
       db.insert(schema.spaceMembers).values({ spaceId: id, userId: 'legacy-owner', joinedAt: 1 }).run();
-      db.insert(schema.channels).values({ id: `${id}-channel`, spaceId: id, name: 'welcome', type: 'text', createdAt: 1 }).run();
+      sqlite.prepare(`INSERT INTO channels (id, space_id, name, type, created_at)
+        VALUES (?, ?, 'welcome', 'text', 1)`).run(`${id}-channel`, id);
       db.insert(schema.roles).values({ id, spaceId: id, name: '@everyone',
         permissions: (PermissionBits.VIEW_CHANNEL | PermissionBits.READ_MESSAGE_HISTORY).toString(), createdAt: 1 }).run();
     }

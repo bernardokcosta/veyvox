@@ -217,7 +217,8 @@
       "memory": "Alzheimer"
     },
     "rules": "Hoe te spelen",
-    "rulesText": "Elke speler krijgt 7 kaarten. Match de kleur of het symbool van de laatste kaart, of speel een wild en kies een kleur. Maak je hand leeg om te winnen.\nOverslaan slaat de volgende speler over; omkeren verandert de richting (met twee spelers slaat het over). +2 en +4 laten de volgende speler direct kaarten pakken en slaan zijn beurt over. Niet stapelen. +4 alleen als je geen kaart van de actieve kleur hebt; geen uitdagingen.\nEén pakken: speel alleen die nieuwe kaart als hij past, of pas. Een onspeelbaar pakken past automatisch.\nJe hebt 45 seconden per beurt. Tijd op pakt één en past; na pakken past het alleen. Als iemand vertrekt gaan zijn kaarten terug naar het deck; minder dan twee spelers beëindigt de ronde zonder winnaar. Een korte voicereconnect houdt je plaats. De server herstarten beëindigt spellen."
+    "rulesText": "Elke speler krijgt 7 kaarten. Match de kleur of het symbool van de laatste kaart, of speel een wild en kies een kleur. Maak je hand leeg om te winnen.\nOverslaan slaat de volgende speler over; omkeren verandert de richting (met twee spelers slaat het over). +2 en +4 laten de volgende speler direct kaarten pakken en slaan zijn beurt over. Niet stapelen. +4 alleen als je geen kaart van de actieve kleur hebt; geen uitdagingen.\nEén pakken: speel alleen die nieuwe kaart als hij past, of pas. Een onspeelbaar pakken past automatisch.\nJe hebt 45 seconden per beurt. Tijd op pakt één en past; na pakken past het alleen. Als iemand vertrekt gaan zijn kaarten terug naar het deck; minder dan twee spelers beëindigt de ronde zonder winnaar. Een korte voicereconnect houdt je plaats. De server herstarten beëindigt spellen.",
+    "comingSoon": "Binnenkort"
   },
   "soundboard": {
     "title": "Soundboard",
@@ -552,5 +553,23 @@
     "stillDenied": "Microfoontoegang is nog steeds geweigerd. Sta hem toe voor deze site in je browser- of apparaatinstellingen.",
     "notFound": "Geen microfoon gedetecteerd.",
     "failed": "Kon geen toegang tot de microfoon krijgen."
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}} is het gesprek begonnen",
+    "from": "Van:",
+    "to": "Tot:",
+    "status": {
+      "ringing": "Aan het bellen…",
+      "active": "Gesprek bezig",
+      "ended": "Gesprek beëindigd",
+      "missed": "Gemist gesprek",
+      "rejected": "Gesprek geweigerd",
+      "interrupted": "Gesprek onderbroken",
+      "cancelled": "Gesprek geannuleerd"
+    },
+    "duration": "Duur"
+  },
+  "callOngoing": "Gesprek bezig",
+  "rejoinCall": "Terug naar het gesprek",
+  "callWaiting": "Wachten op de ander · eindigt over {{remaining}}"
 }

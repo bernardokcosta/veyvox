@@ -4,7 +4,7 @@ import { and, eq, inArray, isNotNull, lt } from 'drizzle-orm';
 import { FileStore } from '@tus/file-store';
 import { config } from '../config.js';
 import { getDb, getRawDb, schema } from '../db/index.js';
-import { deleteUnreferencedUploadFiles, deleteAttachmentFiles, getProfileReferencedFilenames, getReferencedFilenames } from './fileCleanup.js';
+import { deleteUnreferencedUploadFiles, deleteAttachmentFiles, deleteUploadFile, getProfileReferencedFilenames, getReferencedFilenames } from './fileCleanup.js';
 import { cleanupUnusedStickerAssets } from './stickerAssets.js';
 import { cleanupGameIconAssets } from './gameIconAssets.js';
 import type { StorageStats, StorageBreakdown, OrphanedFile, CleanupResult } from '@veyvox/shared';
@@ -351,6 +351,73 @@ export function cleanupOldMedia(maxAgeDays: number, dryRun: boolean): CleanupRes
     catch (error) { errors.push(`Failed to delete old media files: ${error instanceof Error ? error.message : String(error)}`); }
   }
   return { dryRun, deletedFiles, freedBytes, deletedAttachmentRecords, errors };
+}
+
+/** Most chat attachments one pressure sweep will consider; the rest wait for the next sweep. */
+const PRESSURE_CANDIDATE_CAP = 20_000;
+/** Files deleted between two checks of `shouldStop`, so the disk is not re-read per file. */
+const PRESSURE_STOP_CHECK_EVERY = 20;
+
+/**
+ * Delete chat attachments oldest first, until `shouldStop()` says the disk has
+ * room again. Used by the disk-pressure worker (`diskPressure.ts`) after the
+ * safe cleanups were not enough.
+ *
+ * - Nothing newer than `minAgeDays` is touched, however full the disk is.
+ * - Files in use as a profile image (avatar, banner, space icon) are skipped.
+ * - The attachment row goes with its file, the same as `cleanupOldMedia`; the
+ *   message keeps its text.
+ *
+ * `shouldStop` is asked before the first deletion and then every
+ * PRESSURE_STOP_CHECK_EVERY files, so a disk that is already fine deletes nothing.
+ */
+export function deleteOldestMedia(minAgeDays: number, shouldStop: () => boolean): CleanupResult {
+  const db = getDb();
+  const cutoff = Date.now() - minAgeDays * 24 * 60 * 60 * 1000;
+  const profileReferenced = getProfileReferencedFilenames();
+  const errors: string[] = [];
+  let deletedFiles = 0;
+  let freedBytes = 0;
+  let deletedAttachmentRecords = 0;
+
+  if (shouldStop()) return { dryRun: false, deletedFiles, freedBytes, deletedAttachmentRecords, errors };
+
+  const candidates = getRawDb().prepare(`
+    SELECT id, filename, size FROM attachments
+    WHERE (message_id IS NOT NULL OR dm_message_id IS NOT NULL)
+      AND created_at < ?
+    ORDER BY created_at ASC
+    LIMIT ?
+  `).all(cutoff, PRESSURE_CANDIDATE_CAP) as { id: string; filename: string; size: number }[];
+
+  for (const att of candidates) {
+    if (profileReferenced.has(path.basename(att.filename))) continue;
+    // The row of a file that is already gone is dropped without counting
+    // bytes that were never freed here.
+    const existed = fs.existsSync(path.join(config.uploadDir, path.basename(att.filename)));
+    try {
+      // Strict: a failure must surface as an error, not as a deleted row
+      // with counted bytes for a file that is still on disk.
+      deleteUploadFile(att.filename, { strict: true });
+    } catch (err: unknown) {
+      errors.push(`Failed to delete old media ${att.id}: ${err instanceof Error ? err.message : String(err)}`);
+      continue;
+    }
+    try {
+      db.delete(schema.attachments).where(eq(schema.attachments.id, att.id)).run();
+    } catch (err: unknown) {
+      errors.push(`Failed to delete old media ${att.id}: ${err instanceof Error ? err.message : String(err)}`);
+      continue;
+    }
+    if (existed) {
+      deletedFiles++;
+      freedBytes += att.size;
+    }
+    deletedAttachmentRecords++;
+    if (deletedFiles % PRESSURE_STOP_CHECK_EVERY === 0 && shouldStop()) break;
+  }
+
+  return { dryRun: false, deletedFiles, freedBytes, deletedAttachmentRecords, errors };
 }
 
 /**

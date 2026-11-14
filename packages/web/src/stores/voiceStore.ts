@@ -18,6 +18,13 @@ export interface ScreenShareConfig {
   codec: ScreenShareCodec;
 }
 
+/** The member's camera quality choice: capture height, framerate and an optional bitrate override. */
+export interface CameraConfig {
+  height: number;
+  fps: number;
+  customBitrateKbps: number | null;
+}
+
 /**
  * What the live screen share has in the way of system audio. Kept apart from
  * `ScreenShareConfig.shareAudio`, which is the user's preference: a share can
@@ -89,8 +96,22 @@ export interface VoiceState {
   inputDeviceId: string;
   outputDeviceId: string;
   cameraDeviceId: string | null; // null = auto-select on next camera enable
+  /**
+   * The microphone bitrate ceiling, in kbps, that the admin set on the space
+   * voice channel this client is in; null in a DM call or on a server that
+   * predates the setting. Written when joining and by `channel_updated`, and
+   * read by `useLiveKit`, which applies it to the live microphone. Not persisted.
+   */
+  channelVoiceBitrateKbps: number | null;
+  /**
+   * A 1-on-1 with one member left: when the room ends unless someone rejoins,
+   * keyed by DM channel id. Written by `dm_call_waiting` and the ready
+   * snapshot; cleared by a null event or a room that is gone. Not persisted.
+   */
+  dmWaitingUntil: Map<string, number>;
   focusedParticipantId: string | null;
   screenShareConfig: ScreenShareConfig;
+  cameraConfig: CameraConfig;
   /**
    * The source shared last time, so the setup screen can stage it again
    * without being asked. Desktop only: browsers do not let the page name a
@@ -169,6 +190,7 @@ export interface VoiceState {
   toggleDeafen: () => void;
   setFocusedParticipant: (id: string | null) => void;
   setScreenShareConfig: (config: Partial<ScreenShareConfig>) => void;
+  setCameraConfig: (config: Partial<CameraConfig>) => void;
   setLastScreenShareSourceId: (sourceId: string | null) => void;
   noiseSuppression: boolean;
   echoCancellation: boolean;
@@ -279,8 +301,11 @@ export const useVoiceStore = create<VoiceState>()(
       inputDeviceId: 'default',
       outputDeviceId: 'default',
       cameraDeviceId: null,
+      channelVoiceBitrateKbps: null,
+      dmWaitingUntil: new Map(),
       focusedParticipantId: null,
       screenShareConfig: { height: 720, fps: 60, mode: 'gaming', customBitrateKbps: null, shareAudio: !isElectron(), forceSdr: false, codec: 'vp9' },
+      cameraConfig: { height: 720, fps: 30, customBitrateKbps: null },
       lastScreenShareSourceId: null,
       participantVolumes: new Map(),
       setParticipantVolume: (userId, volume) => {
@@ -589,6 +614,9 @@ export const useVoiceStore = create<VoiceState>()(
       setScreenShareConfig: (config) => set((state) => ({
         screenShareConfig: { ...state.screenShareConfig, ...config },
       })),
+      setCameraConfig: (config) => set((state) => ({
+        cameraConfig: { ...state.cameraConfig, ...config },
+      })),
       noiseSuppression: true,
       echoCancellation: true,
       autoGainControl: true,
@@ -816,6 +844,8 @@ export const useVoiceStore = create<VoiceState>()(
         inputDeviceId: 'default',
         outputDeviceId: 'default',
         cameraDeviceId: null,
+        channelVoiceBitrateKbps: null,
+        dmWaitingUntil: new Map(),
         focusedParticipantId: null,
         participantVolumes: new Map(),
         participantMutes: new Map(),
@@ -838,7 +868,7 @@ export const useVoiceStore = create<VoiceState>()(
     }),
     {
       name: 'backspace-voice-settings',
-      version: 16,
+      version: 17,
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {
           persistedState.streamAttenuationEnabled = false;
@@ -913,6 +943,9 @@ export const useVoiceStore = create<VoiceState>()(
         if (version < 16 && persistedState.screenShareConfig) {
           persistedState.screenShareConfig.codec = normalizeScreenShareCodec(persistedState.screenShareConfig.codec);
         }
+        if (version < 17) {
+          persistedState.cameraConfig = { height: 720, fps: 30, customBitrateKbps: null };
+        }
         return persistedState;
       },
       storage: createJSONStorage(() => localStorage),
@@ -928,6 +961,7 @@ export const useVoiceStore = create<VoiceState>()(
         outputDeviceId: state.outputDeviceId,
         cameraDeviceId: state.cameraDeviceId,
         screenShareConfig: state.screenShareConfig,
+        cameraConfig: state.cameraConfig,
         lastScreenShareSourceId: state.lastScreenShareSourceId,
         echoCancellation: state.echoCancellation,
         autoGainControl: state.autoGainControl,

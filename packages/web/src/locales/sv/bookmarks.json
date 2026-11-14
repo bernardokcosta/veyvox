@@ -1,0 +1,31 @@
+{
+  "message": {
+    "add": "Spara",
+    "remove": "Ta bort bokmärke"
+  },
+  "menu": {
+    "add": "Bokmärk meddelande",
+    "remove": "Ta bort bokmärke"
+  },
+  "toast": {
+    "addFailed": "Bokmärket kunde inte sparas: {{reason}}",
+    "removeFailed": "Bokmärket kunde inte tas bort: {{reason}}"
+  },
+  "title": "Bokmärken",
+  "list": {
+    "loading": "Läser in…",
+    "empty": "Inga bokmärken än",
+    "emptyHint": "Bokmärk ett meddelande via åtgärdsfältet eller menyn så hittar du det här.",
+    "showMore": "Visa mer",
+    "open": "Öppna meddelandet från {{name}}",
+    "remove": "Ta bort bokmärke"
+  },
+  "status": {
+    "edited": "Originalet redigerades. Det här är den sparade kopian.",
+    "deleted": "Originalmeddelandet raderades. Det här är den sparade kopian.",
+    "unavailable": "Originalet är inte längre tillgängligt för dig. Det här är den sparade kopian."
+  },
+  "attachment": {
+    "gone": "filen raderad"
+  }
+}

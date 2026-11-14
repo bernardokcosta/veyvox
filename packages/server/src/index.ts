@@ -14,6 +14,8 @@ import { spaceRoutes } from './routes/spaces.js';
 import { channelRoutes } from './routes/channels.js';
 import { messageRoutes } from './routes/messages.js';
 import { pinRoutes } from './routes/pins.js';
+import { bookmarkRoutes } from './routes/bookmarks.js';
+import { stickerLibraryRoutes } from './routes/stickerLibrary.js';
 import { stickerRoutes } from './routes/stickers.js';
 import { soundboardRoutes } from './routes/soundboard.js';
 import { junoRoutes } from './routes/juno.js';
@@ -43,8 +45,10 @@ import { diagnosticRoutes } from './routes/diagnostics.js';
 import { DiagnosticLogStore, diagnosticLoggerStream, captureServerConsole, writeDiagnostic, installFatalDiagnostics } from './utils/diagnosticLogs.js';
 import { buildCspHeaderValue, CSP_REPORT_GROUP, CSP_REPORT_PATH } from './utils/csp.js';
 import { startStorageWorker, stopStorageWorker } from './utils/storageWorker.js';
+import { startDiskPressureWorker, stopDiskPressureWorker } from './utils/diskPressure.js';
 import { startBackupWorker, stopBackupWorker } from './utils/backupWorker.js';
 import { resetStalePresenceOnBoot } from './utils/presenceBoot.js';
+import { recoverInterruptedDmCalls } from './utils/dmCallHistory.js';
 
 import { registerWebSocket } from './ws/handler.js';
 import path from 'path';
@@ -211,6 +215,10 @@ async function main(): Promise<void> {
   // Initialize database
   getDb();
 
+  // A restart cannot reconstruct the moment a call was lost: calls still
+  // recorded as ringing or active become interrupted, not ended.
+  recoverInterruptedDmCalls();
+
   // The previous process's disconnect timers are gone. Reset stale live status
   // without changing saved chosen status. Must run
   // before WS auth is accepted so the first connection broadcasts the correct
@@ -223,6 +231,8 @@ async function main(): Promise<void> {
   await app.register(channelRoutes);
   await app.register(messageRoutes);
   await app.register(pinRoutes);
+  await app.register(bookmarkRoutes);
+  await app.register(stickerLibraryRoutes);
   await app.register(uploadRoutes);
   await app.register(stickerRoutes);
   await app.register(soundboardRoutes);
@@ -284,11 +294,14 @@ async function main(): Promise<void> {
 
   startBackupWorker();
 
+  startDiskPressureWorker();
+
   const shutdown = async () => {
     writeDiagnostic(diagnosticLogs, 'server', { event: 'server-stopped', subsystem: 'server', level: 'info', version: config.version });
     console.log('Shutting down...');
     stopStorageWorker();
     stopBackupWorker();
+    stopDiskPressureWorker();
     await app.close();
     closeDatabase(); // checkpoints WAL — leaves a complete on-disk file
     process.exit(0);

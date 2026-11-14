@@ -1,0 +1,31 @@
+{
+  "message": {
+    "add": "Guardar",
+    "remove": "Quitar marcador"
+  },
+  "menu": {
+    "add": "Guardar mensaje",
+    "remove": "Quitar marcador"
+  },
+  "toast": {
+    "addFailed": "No se pudo guardar el marcador: {{reason}}",
+    "removeFailed": "No se pudo quitar el marcador: {{reason}}"
+  },
+  "title": "Marcadores",
+  "list": {
+    "loading": "Cargando…",
+    "empty": "Todavía no hay marcadores",
+    "emptyHint": "Guarda un mensaje desde su barra de acciones o su menú para encontrarlo aquí.",
+    "showMore": "Mostrar más",
+    "open": "Abrir el mensaje de {{name}}",
+    "remove": "Quitar marcador"
+  },
+  "status": {
+    "edited": "El original se editó. Esta es la copia guardada.",
+    "deleted": "El mensaje original se eliminó. Esta es la copia guardada.",
+    "unavailable": "El original ya no está disponible para ti. Esta es la copia guardada."
+  },
+  "attachment": {
+    "gone": "archivo eliminado"
+  }
+}

@@ -103,6 +103,12 @@
       "named_many": "{{names}} estão digitando",
       "named_other": "{{names}} estão digitando",
       "several": "Várias pessoas estão digitando"
+    },
+    "preparing": {
+      "image": "Preparando foto…",
+      "video": "Preparando vídeo… {{percent}}%",
+      "sendOriginal": "Enviar original",
+      "cancel": "Cancelar"
     }
   },
   "menu": {
@@ -250,9 +256,9 @@
     "draft": "Rascunho",
     "newVersion": "Nova Versão",
     "deletePack": "Excluir Pacote",
-    "stickersCount_one": "{{count}} figurinha",
+    "stickersCount_one": "{{count}} figurinha.",
     "stickersCount_many": "{{count}} figurinhas",
-    "stickersCount_other": "{{count}} figurinhas",
+    "stickersCount_other": "{{count}} figurinhas.",
     "noPacks": "Nenhum pacote de figurinhas encontrado",
     "viewPack": "Ver Pacote",
     "saveDraft": "Salvar como Rascunho",
@@ -271,7 +277,13 @@
     "reviewNotes": "Motivo da rejeição",
     "creator": "Criador",
     "viewStickers": "Ver figurinhas",
-    "pendingReviewHint": "Em análise pelo administrador. Será exibido em Explorar após a aprovação."
+    "pendingReviewHint": "Em análise pelo administrador. Será exibido em Explorar após a aprovação.",
+    "invalidName": "Escolha um nome visível com até 100 caracteres.",
+    "favoritesTitle": "Figurinhas favoritas",
+    "favorite": "Favoritar figurinha",
+    "favorited": "Figurinha adicionada às favoritas.",
+    "serverEmpty": "Este espaço ainda não tem um álbum de figurinhas.",
+    "serverEmptyHint": "Um gerente do espaço pode adicionar um em Configurações do espaço → Figurinhas do espaço."
   },
   "poke": {
     "action": "Cutucar",

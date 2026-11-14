@@ -14,6 +14,8 @@ import { placeCaret } from './placeCaret';
 import { TypingIndicator } from './TypingIndicator';
 import { InputPopover, type InputPopoverTab } from './InputPopover';
 import { StagedTransferTiles } from './StagedTransferTiles';
+import { PreparingFileTiles, type PreparingFile } from './PreparingFileTiles';
+import { compressionKind, prepareForUpload, shouldTryCompression } from '../../utils/mediaCompression';
 import { ChatDropOverlay } from './ChatDropOverlay';
 import { useFileDropZone } from '../../hooks/useFileDropZone';
 import { hasPermissionBit, PermissionBits } from '../../utils/permissions';
@@ -135,6 +137,29 @@ function MessageInputContent({ channelId, channelName, placeholder, revision }: 
   // the raw File, so previews only exist for files picked in this session
   // (after reload, persisted transfers fall back to the icon placeholder).
   const previewUrlsRef = useRef<Map<string, string>>(new Map());
+
+  // Files still being shrunk on this device (utils/mediaCompression.ts). An
+  // upload tile takes over as soon as its encode ends.
+  const [preparing, setPreparing] = useState<PreparingFile[]>([]);
+  const preparingControls = useRef<Map<string, { controller: AbortController; action: 'original' | 'cancel' | null }>>(new Map());
+
+  // Files still being shrunk before their upload starts. handleSubmit awaits
+  // them (see waitForPreparing): a caption typed while a video encodes ships
+  // with the file instead of alone.
+  const preparingWaiters = useRef<Array<() => void>>([]);
+  useEffect(() => {
+    if (preparing.length === 0) {
+      const waiters = preparingWaiters.current;
+      preparingWaiters.current = [];
+      for (const resolve of waiters) resolve();
+    }
+  }, [preparing]);
+
+  /** Resolves once no file is still being shrunk (at once when none is). */
+  const waitForPreparing = useCallback((): Promise<void> => {
+    if (preparingControls.current.size === 0) return Promise.resolve();
+    return new Promise<void>((resolve) => { preparingWaiters.current.push(resolve); });
+  }, []);
 
   const sendMessage = useChatStore((s) => s.sendMessage);
   const returnToPresent = useChatStore((s) => s.returnToPresent);
@@ -496,10 +521,41 @@ function MessageInputContent({ channelId, channelName, placeholder, revision }: 
    */
   const enqueueFile = useCallback(
     async (
-      input: { file: File; handle?: FileSystemFileHandle | undefined },
+      input: { file: File; handle?: FileSystemFileHandle | undefined; mode?: 'compress' | 'original' },
     ): Promise<void> => {
-      const { file, handle } = input;
+      let { file, handle } = input;
+      const { mode = 'compress' } = input;
       if (!current()) return;
+
+      // Shrink a photo or video first. Anything this device cannot improve, and
+      // any failure, comes back as the original file.
+      const kind = mode === 'compress' && shouldTryCompression(file) ? compressionKind(file) : null;
+      if (kind) {
+        const prepId = makeFileHandleKey();
+        const controller = new AbortController();
+        preparingControls.current.set(prepId, { controller, action: null });
+        setPreparing((list) => [...list, { id: prepId, name: file.name, kind, progress: null }]);
+        let action: 'original' | 'cancel' | null = null;
+        try {
+          const prepared = await prepareForUpload(file, 'compress', {
+            signal: controller.signal,
+            onProgress: (fraction) => {
+              setPreparing((list) => list.map((entry) => (entry.id === prepId ? { ...entry, progress: fraction } : entry)));
+            },
+          });
+          action = preparingControls.current.get(prepId)?.action ?? null;
+          if (action === 'cancel' || !current()) return;
+          if (action !== 'original' && prepared.compressed) {
+            file = prepared.file;
+            // The handle points at the original bytes; a resume would read those.
+            handle = undefined;
+          }
+        } finally {
+          preparingControls.current.delete(prepId);
+          setPreparing((list) => list.filter((entry) => entry.id !== prepId));
+        }
+      }
+
       let fileHandleId: string | undefined;
       if (handle && supportsFsHandles()) {
         try {
@@ -540,6 +596,17 @@ function MessageInputContent({ channelId, channelName, placeholder, revision }: 
     },
     [channelId, startUpload, attachToComposer, addToast, t, current],
   );
+
+  /**
+   * Stop shrinking a file: upload the original (`original`) or drop it
+   * (`cancel`). An encode that already ended has nothing to settle.
+   */
+  const settlePreparing = useCallback((id: string, action: 'original' | 'cancel') => {
+    const entry = preparingControls.current.get(id);
+    if (!entry) return;
+    entry.action = action;
+    if (action === 'cancel') entry.controller.abort();
+  }, []);
 
   const removeStagedTransfer = useCallback(
     (transferId: string) => {
@@ -595,6 +662,26 @@ function MessageInputContent({ channelId, channelName, placeholder, revision }: 
     );
     if (hasUnshippable) return;
 
+    // A file still being shrunk is not staged yet: wait for it, so a caption
+    // typed while a video encodes ships with the file instead of alone. A
+    // cancelled prepare drops its file; "send original" stages it as is. The
+    // wait always spans a render, so the transfers below are re-read fresh
+    // from the stores rather than trusted from this render's closure.
+    if (preparingControls.current.size > 0) {
+      await waitForPreparing();
+      if (!current()) return;
+    }
+    const stagedNow = ((): Transfer[] => {
+      const composerNow = useComposerStore.getState().get(channelId);
+      const transfersNow = useTransferStore.getState().transfers;
+      const out: Transfer[] = [];
+      for (const tid of composerNow.stagedTransferIds) {
+        const t = transfersNow.get(tid);
+        if (t) out.push(t);
+      }
+      return out;
+    })();
+
     setMentionState(null);
     setActivePopover(null);
 
@@ -606,7 +693,7 @@ function MessageInputContent({ channelId, channelName, placeholder, revision }: 
 
     // A slash command of a bot in this chat: invoke it instead of posting the text.
     const commandHead = /^\/([a-z0-9_-]+)(?:\s+([\s\S]*))?$/i.exec(trimmed);
-    if (commandHead && stagedTransfers.length === 0) {
+    if (commandHead && stagedNow.length === 0) {
       // An Enter while the previous one is still resolving or invoking this command does nothing.
       if (commandSubmitRef.current) return;
       commandSubmitRef.current = true;
@@ -658,7 +745,7 @@ function MessageInputContent({ channelId, channelName, placeholder, revision }: 
       }
     }
 
-    if (stagedTransfers.length === 0) {
+    if (stagedNow.length === 0) {
       // Consume the draft synchronously; network completion must not erase newer typing.
       clearComposer(channelId);
       try {
@@ -687,7 +774,7 @@ function MessageInputContent({ channelId, channelName, placeholder, revision }: 
     // tusExpiresAt: min across staged transfers, default to 24h from now if absent.
     const now = Date.now();
     const fallbackExpires = now + DEFAULT_TUS_TTL_MS;
-    const expirations = stagedTransfers
+    const expirations = stagedNow
       .map((t) => t.tusExpiresAt)
       .filter((x): x is number => typeof x === 'number' && x > 0);
     const tusExpiresAt = expirations.length > 0 ? Math.min(...expirations) : fallbackExpires;
@@ -700,7 +787,7 @@ function MessageInputContent({ channelId, channelName, placeholder, revision }: 
       channelId,
       content: trimmed,
       replyToId,
-      transferIds: stagedTransfers.map((t) => t.id),
+      transferIds: stagedNow.map((t) => t.id),
       createdAtLocal: now,
       state: 'sending',
       tusExpiresAt,
@@ -1346,6 +1433,12 @@ function MessageInputContent({ channelId, channelName, placeholder, revision }: 
             anchorRef={mentionAnchorRef}
           />
         )}
+
+        <PreparingFileTiles
+          files={preparing}
+          onSendOriginal={(id) => settlePreparing(id, 'original')}
+          onCancel={(id) => settlePreparing(id, 'cancel')}
+        />
 
         <StagedTransferTiles
           stagedTransfers={stagedTransfers}

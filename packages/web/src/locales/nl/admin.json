@@ -244,6 +244,33 @@
       "deletedToast_one": "{{count}} bestand verwijderd ({{size}})",
       "deletedToast_other": "{{count}} bestanden verwijderd ({{size}})",
       "failed": "Media opschonen mislukt"
+    },
+    "diskCleanup": {
+      "label": "Automatisch opschonen",
+      "enable": "Automatisch ruimte vrijmaken als de schijf bijna vol is",
+      "enableHint": "Verwijdert eerst bestanden die niets gebruikt, daarna oude chatbijlagen, oudste eerst. De berichttekst blijft.",
+      "warning": "Aan: als de schijf de onderstaande limiet bereikt, kunnen chatbijlagen ouder dan {{days}} dagen definitief worden verwijderd. Nieuwere bestanden en profielfoto’s worden nooit aangeraakt.",
+      "usage": "{{percent}}% van de schijf in gebruik ({{used}} van {{total}})",
+      "usageLabel": "Schijfgebruik",
+      "usageUnknown": "Het schijfgebruik kon niet worden gelezen.",
+      "threshold": "Begin met opschonen bij",
+      "target": "Schoon op tot",
+      "minAge": "Verwijder nooit bestanden nieuwer dan",
+      "days": "dagen",
+      "problemThreshold": "Het startniveau moet een geheel getal tussen {{min}} en {{max}} zijn.",
+      "problemTarget": "Het doelniveau moet een geheel getal tussen {{min}} en {{max}} zijn (minstens 5 punten onder het startniveau).",
+      "problemAge": "De leeftijd moet een geheel aantal dagen tussen {{min}} en {{max}} zijn.",
+      "saved": "Opschooninstellingen opgeslagen",
+      "checkNow": "Nu controleren",
+      "checking": "Controleren…",
+      "checkedNothing": "De schijf zit onder de limiet, dus er is niets verwijderd.",
+      "neverRan": "Er is nog geen opschoning uitgevoerd.",
+      "stage": {
+        "safe": "alleen ongebruikte bestanden",
+        "media": "inclusief oude bijlagen"
+      },
+      "lastRun_one": "Laatste opschoning {{when}} ({{stage}}): {{before}}% → {{after}}%, {{count}} bestand(en) verwijderd, {{size}} vrijgemaakt.",
+      "lastRun_other": "Laatste opschoning {{when}} ({{stage}}): {{before}}% → {{after}}%, {{count}} bestand(en) verwijderd, {{size}} vrijgemaakt."
     }
   },
   "streaming": {
@@ -287,6 +314,32 @@
     "capWarning": {
       "title": "Matrixwaarden overschrijden de globale limiet.",
       "description": "Sommige bitrates overschrijden je maximum {{max}}. Stromen met die combinaties worden naar je limiet verlaagd."
+    },
+    "camera": {
+      "label": "Webcam",
+      "description": "Regelt de kwaliteit waarmee gebruikers hun camera uitzenden.",
+      "mode": {
+        "label": "Webcamkwaliteitsbeleid",
+        "fixed": "Vast (huidig gedrag)",
+        "userChoice": "Gebruikers kiezen",
+        "fixedHint": "Iedereen zendt uit in de onderstaande kwaliteit.",
+        "userChoiceHint": "Gebruikers kiezen uit de toegestane waarden in Spraak & Video."
+      },
+      "defaults": {
+        "resolution": "Standaardresolutie",
+        "framerate": "Standaardbeeldsnelheid",
+        "bitrate": "Standaardbitrate (kbps)"
+      },
+      "quality": {
+        "resolutions": "Toegestane resoluties",
+        "framerates": "Toegestane beeldsnelheden",
+        "bitrateRange": "Bitratebereik (kbps)",
+        "min": "Min.",
+        "max": "Max.",
+        "allowCustom": "Aangepaste bitrate toestaan",
+        "allowCustomHint": "Gebruikers mogen elke bitrate binnen het bereik instellen."
+      },
+      "highEndWarning": "Hoge camera-instellingen kosten uploadbandbreedte en CPU van elke deelnemer."
     }
   },
   "updates": {

@@ -244,6 +244,33 @@
       "deletedToast_one": "Đã xóa {{count}} tệp ({{size}})",
       "deletedToast_other": "Đã xóa {{count}} tệp ({{size}})",
       "failed": "Dọn phương tiện thất bại"
+    },
+    "diskCleanup": {
+      "label": "Dọn dẹp tự động",
+      "enable": "Tự động giải phóng dung lượng khi ổ đĩa gần đầy",
+      "enableHint": "Xóa trước các tệp không gì dùng đến, rồi đến tệp đính kèm cũ, từ cũ nhất. Văn bản tin nhắn được giữ lại.",
+      "warning": "Bật: khi ổ đĩa chạm ngưỡng bên dưới, tệp đính kèm cũ hơn {{days}} ngày có thể bị xóa vĩnh viễn. Tệp mới hơn và ảnh hồ sơ không bao giờ bị động đến.",
+      "usage": "Đã dùng {{percent}}% ổ đĩa ({{used}} trên {{total}})",
+      "usageLabel": "Mức dùng ổ đĩa",
+      "usageUnknown": "Không đọc được mức dùng ổ đĩa.",
+      "threshold": "Bắt đầu dọn khi đạt",
+      "target": "Dọn xuống còn",
+      "minAge": "Không bao giờ xóa tệp mới hơn",
+      "days": "ngày",
+      "problemThreshold": "Mức bắt đầu phải là số nguyên từ {{min}} đến {{max}}.",
+      "problemTarget": "Mức đích phải là số nguyên từ {{min}} đến {{max}} (thấp hơn mức bắt đầu ít nhất 5 điểm).",
+      "problemAge": "Số ngày phải là số nguyên từ {{min}} đến {{max}}.",
+      "saved": "Đã lưu cài đặt dọn dẹp",
+      "checkNow": "Kiểm tra ngay",
+      "checking": "Đang kiểm tra…",
+      "checkedNothing": "Ổ đĩa dưới ngưỡng nên không có gì bị xóa.",
+      "neverRan": "Chưa có lần dọn dẹp nào.",
+      "stage": {
+        "safe": "chỉ tệp không dùng",
+        "media": "gồm cả tệp đính kèm cũ"
+      },
+      "lastRun_one": "Lần dọn gần nhất {{when}} ({{stage}}): {{before}}% → {{after}}%, đã xóa {{count}} tệp, giải phóng {{size}}.",
+      "lastRun_other": "Lần dọn gần nhất {{when}} ({{stage}}): {{before}}% → {{after}}%, đã xóa {{count}} tệp, giải phóng {{size}}."
     }
   },
   "streaming": {
@@ -287,6 +314,32 @@
     "capWarning": {
       "title": "Giá trị ma trận vượt giới hạn toàn cục.",
       "description": "Một số bitrate vượt tối đa {{max}} của bạn. Luồng với tổ hợp đó sẽ hạ xuống giới hạn của bạn."
+    },
+    "camera": {
+      "label": "Camera",
+      "description": "Điều khiển chất lượng người dùng phát camera.",
+      "mode": {
+        "label": "Chính sách chất lượng camera",
+        "fixed": "Cố định (hành vi hiện tại)",
+        "userChoice": "Người dùng chọn",
+        "fixedHint": "Mọi người phát ở chất lượng bên dưới.",
+        "userChoiceHint": "Người dùng chọn trong các giá trị cho phép ở Thoại & Video."
+      },
+      "defaults": {
+        "resolution": "Độ phân giải mặc định",
+        "framerate": "Tốc độ khung hình mặc định",
+        "bitrate": "Bitrate mặc định (kbps)"
+      },
+      "quality": {
+        "resolutions": "Độ phân giải cho phép",
+        "framerates": "Tốc độ khung hình cho phép",
+        "bitrateRange": "Khoảng bitrate (kbps)",
+        "min": "Tối thiểu",
+        "max": "Tối đa",
+        "allowCustom": "Cho phép bitrate tùy chỉnh",
+        "allowCustomHint": "Người dùng được đặt bitrate bất kỳ trong khoảng."
+      },
+      "highEndWarning": "Cài đặt camera cao tốn băng thông và CPU của mọi người tham gia."
     }
   },
   "updates": {

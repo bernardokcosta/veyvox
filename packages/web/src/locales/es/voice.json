@@ -205,10 +205,23 @@
     "cardCount_one": "{{count}} carta",
     "cardCount_many": "{{count}} cartas",
     "cardCount_other": "{{count}} cartas",
-    "colors": { "coral": "Rojo", "amber": "Amarillo", "mint": "Verde", "sky": "Azul" },
-    "faces": { "skip": "Salto", "reverse": "Cambio de sentido", "draw2": "Roba dos", "wild": "Comodín", "draw4": "Comodín roba cuatro", "memory": "Alzheimer" },
+    "colors": {
+      "coral": "Rojo",
+      "amber": "Amarillo",
+      "mint": "Verde",
+      "sky": "Azul"
+    },
+    "faces": {
+      "skip": "Salto",
+      "reverse": "Cambio de sentido",
+      "draw2": "Roba dos",
+      "wild": "Comodín",
+      "draw4": "Comodín roba cuatro",
+      "memory": "Alzheimer"
+    },
     "rules": "Cómo jugar",
-    "rulesText": "Cada jugador recibe 7 cartas. Juega una carta del mismo color o símbolo que la última, o juega un comodín y elige un color. Quédate sin cartas para ganar.\nSalto omite el turno del siguiente jugador; Cambio de sentido invierte la dirección (con dos jugadores, salta al rival). +2 y +4 hacen que el siguiente jugador robe cartas de inmediato y pierda su turno. Las penalizaciones no se acumulan. El +4 solo se permite si no tienes ninguna carta del color activo; no se puede desafiar.\nRoba una carta: solo puedes jugar esa carta nueva si encaja o pasar. Si no se puede jugar, el turno pasa automáticamente.\nTienes 45 segundos por turno. Si se agota el tiempo, robas una carta y pasas; si ya has robado, solo pasas. Si alguien sale, sus cartas vuelven al mazo; con menos de dos jugadores, la ronda termina sin ganador. Una reconexión breve de voz conserva tu asiento. Reiniciar el servidor termina las partidas."
+    "rulesText": "Cada jugador recibe 7 cartas. Juega una carta del mismo color o símbolo que la última, o juega un comodín y elige un color. Quédate sin cartas para ganar.\nSalto omite el turno del siguiente jugador; Cambio de sentido invierte la dirección (con dos jugadores, salta al rival). +2 y +4 hacen que el siguiente jugador robe cartas de inmediato y pierda su turno. Las penalizaciones no se acumulan. El +4 solo se permite si no tienes ninguna carta del color activo; no se puede desafiar.\nRoba una carta: solo puedes jugar esa carta nueva si encaja o pasar. Si no se puede jugar, el turno pasa automáticamente.\nTienes 45 segundos por turno. Si se agota el tiempo, robas una carta y pasas; si ya has robado, solo pasas. Si alguien sale, sus cartas vuelven al mazo; con menos de dos jugadores, la ronda termina sin ganador. Una reconexión breve de voz conserva tu asiento. Reiniciar el servidor termina las partidas.",
+    "comingSoon": "Próximamente"
   },
   "soundboard": {
     "title": "Panel de sonidos",
@@ -252,7 +265,10 @@
     "maxSounds": "Número máximo de sonidos",
     "policyHint": "Los clips se limitan a 30 segundos y los límites de tamaño de archivo siguen vigentes. Reducir la duración máxima conserva los sonidos existentes, pero impide reproducir los que la superen. Subir requiere Adjuntar archivos; reproducir requiere Hablar."
   },
-  "chatPanel": { "title": "Chat", "close": "Cerrar chat" },
+  "chatPanel": {
+    "title": "Chat",
+    "close": "Cerrar chat"
+  },
   "badges": {
     "mutedNoPermission": "Silenciado (sin permiso para hablar)",
     "spaceMuted": "Micrófono silenciado en el espacio",
@@ -293,8 +309,18 @@
     "title": "Información de conexión",
     "notConnected": "Sin conexión",
     "gathering": "Recopilando estadísticas…",
-    "section": { "network": "Red", "audio": "Audio", "video": "Vídeo" },
-    "network": { "ping": "Ping", "packetLoss": "Pérdida de paquetes", "jitter": "Jitter", "server": "Servidor", "protocol": "Protocolo" },
+    "section": {
+      "network": "Red",
+      "audio": "Audio",
+      "video": "Vídeo"
+    },
+    "network": {
+      "ping": "Ping",
+      "packetLoss": "Pérdida de paquetes",
+      "jitter": "Jitter",
+      "server": "Servidor",
+      "protocol": "Protocolo"
+    },
     "video": {
       "requestedCodec": "Códec solicitado",
       "negotiatedCodec": "Códec negociado",
@@ -303,7 +329,13 @@
       "nackDelta": "Incremento de NACK",
       "pliDelta": "Incremento de PLI"
     },
-    "source": { "microphone": "Micrófono", "camera": "Cámara", "screen": "Pantalla", "screenAudio": "Audio de pantalla", "unknown": "Desconocido" },
+    "source": {
+      "microphone": "Micrófono",
+      "camera": "Cámara",
+      "screen": "Pantalla",
+      "screenAudio": "Audio de pantalla",
+      "unknown": "Desconocido"
+    },
     "remoteParticipant": "Remoto"
   },
   "screenPicker": {
@@ -318,7 +350,10 @@
       "requestAgain": "Volver a solicitar permiso"
     },
     "title": "Compartir pantalla",
-    "tabs": { "screens": "Pantallas", "windows": "Ventanas" },
+    "tabs": {
+      "screens": "Pantallas",
+      "windows": "Ventanas"
+    },
     "searchWindows": "Buscar ventanas…",
     "noWindowsMatch": "No hay ventanas que coincidan con tu búsqueda",
     "noScreens": "No hay pantallas disponibles",
@@ -342,7 +377,10 @@
     "stageReady": "Todo listo para transmitir",
     "permissionHintMac": "macOS bloquea la captura de pantalla hasta que Veyvox tenga permiso de Grabación de pantalla. Concédelo en Ajustes del Sistema → Privacidad y seguridad → Grabación de pantalla y vuelve a intentarlo.",
     "retrySources": "Volver a intentar",
-    "kind": { "monitor": "Pantalla", "window": "Ventana" }
+    "kind": {
+      "monitor": "Pantalla",
+      "window": "Ventana"
+    }
   },
   "streamSettings": {
     "title": "Ajustes de transmisión",
@@ -350,9 +388,16 @@
     "resolution": "Resolución",
     "frameRate": "Frecuencia de fotogramas",
     "contentMode": "Tipo de contenido",
-    "mode": { "gaming": "Juegos", "text": "Texto" },
+    "mode": {
+      "gaming": "Juegos",
+      "text": "Texto"
+    },
     "codec": "Códec",
-    "codecOption": { "vp9": "VP9", "h264": "H264", "h265": "H265 (HEVC)" },
+    "codecOption": {
+      "vp9": "VP9",
+      "h264": "H264",
+      "h265": "H265 (HEVC)"
+    },
     "h265Note": "Chromium elige el codificador; la aceleración por hardware depende del dispositivo y del controlador. Si un espectador no puede recibir H265, la transmisión cambia a H264 para todos.",
     "h265Unavailable": "H265 no está disponible para transmitir por WebRTC en este dispositivo.",
     "h265LocalFallback": "Se conserva tu preferencia por H265, pero este dispositivo no lo ofrece para WebRTC. Esta transmisión usa H264.",
@@ -384,7 +429,11 @@
     "systemAudioAdding": "Añadiendo audio del sistema…",
     "systemAudioLiveUnavailable": "El audio del sistema solo se puede añadir al iniciar una transmisión. Reiníciala para incluirlo.",
     "softwareH264Fallback": "La codificación H264 por hardware no está disponible. Se está usando OpenH264 por software; VP9 podría rendir mejor.",
-    "degradation": { "maintainResolution": "mantener resolución", "maintainFramerate": "mantener frecuencia de fotogramas", "balanced": "equilibrado" },
+    "degradation": {
+      "maintainResolution": "mantener resolución",
+      "maintainFramerate": "mantener frecuencia de fotogramas",
+      "balanced": "equilibrado"
+    },
     "summary": "{{bitrate}} · {{degradation}}"
   },
   "stream": {
@@ -476,7 +525,10 @@
       "notFound": "No se ha detectado ninguna cámara.",
       "failed": "No se pudo iniciar la vista previa de la cámara."
     },
-    "empty": { "title": "Aún no hay nadie en este canal.", "hint": "¡Sé la primera persona en entrar!" },
+    "empty": {
+      "title": "Aún no hay nadie en este canal.",
+      "hint": "¡Sé la primera persona en entrar!"
+    },
     "unmuteMicrophone": "Activar micrófono",
     "muteMicrophone": "Silenciar micrófono",
     "switchChannel": "Cambiar de canal",
@@ -506,5 +558,23 @@
     "stillDenied": "El acceso al micrófono sigue denegado. Permítelo para este sitio en los ajustes del navegador o del dispositivo.",
     "notFound": "No se ha detectado ningún micrófono.",
     "failed": "No se pudo acceder al micrófono."
-  }
+  },
+  "history": {
+    "startedBy": "{{actor}} inició la llamada",
+    "from": "Desde:",
+    "to": "Hasta:",
+    "status": {
+      "ringing": "Llamando…",
+      "active": "Llamada en curso",
+      "ended": "Llamada terminada",
+      "missed": "Llamada perdida",
+      "rejected": "Llamada rechazada",
+      "interrupted": "Llamada interrumpida",
+      "cancelled": "Llamada cancelada"
+    },
+    "duration": "Duración"
+  },
+  "callOngoing": "Llamada en curso",
+  "rejoinCall": "Volver a la llamada",
+  "callWaiting": "Esperando a la otra persona · termina en {{remaining}}"
 }

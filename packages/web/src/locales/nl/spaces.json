@@ -68,7 +68,17 @@
         "note": "Dit kanaal is verborgen voor leden zonder expliciete toegang. Gebruikers met beheerdersrechten of ruimte-eigenaars zien altijd alle kanalen.",
         "unhideOnSave": "Opslaan maakt dit kanaal voor elk lid zichtbaar."
       },
-      "deleteButton": "Kanaal verwijderen"
+      "deleteButton": "Kanaal verwijderen",
+      "voiceQuality": {
+        "label": "Spraakkwaliteit",
+        "option": "{{value}} kbps",
+        "description": {
+          "64": "Heldere spraak. Minste bandbreedte.",
+          "128": "Vollere, natuurlijkere stemmen.",
+          "256": "Hoogste kwaliteit, het beste voor muziek. Meeste bandbreedte."
+        },
+        "hint": "Stelt de hoogste audiobitrate in die elk lid in dit kanaal kan versturen. Geldt voor iedereen, ook voor wie al verbonden is."
+      }
     },
     "delete": {
       "title": "#{{name}} verwijderen?",
@@ -361,6 +371,8 @@
       "manageChannels": "Kanalen beheren",
       "manageRoles": "Rollen beheren",
       "manageSpace": "Ruimte beheren",
+      "createStickers": "Stickers maken",
+      "manageStickers": "Stickers beheren",
       "createInvite": "Uitnodiging aanmaken",
       "kickMembers": "Leden verwijderen",
       "banMembers": "Leden verbannen",
@@ -611,5 +623,12 @@
     "suppressRoles": "Rol-vermeldingen onderdrukken",
     "massHeading": "Groepsvermeldingen",
     "massNote": "@here bereikt dezelfde leden als @everyone. Vermeldingen van jou bij naam melden je altijd."
+  },
+  "stickers": {
+    "title": "Stickers van de ruimte",
+    "description": "Eén gedeeld stickeralbum voor deze ruimte, met maximaal 50 geanimeerde of statische stickers.",
+    "empty": "Deze ruimte heeft nog geen stickeralbum.",
+    "create": "Ruimtealbum maken",
+    "add": "Sticker toevoegen"
   }
 }

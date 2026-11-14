@@ -196,6 +196,8 @@ export interface Channel {
   position: number;
   categoryId: string | null;
   isPrivate?: boolean;
+  /** Voice channels only: ceiling of each member's microphone bitrate, in kbps. */
+  voiceBitrateKbps?: number;
   createdAt: number;
   lastMessageId?: string | null;
   myPermissions?: string; // Computed per-user BigInt decimal string
@@ -462,6 +464,8 @@ export interface ActiveCallInfo {
   participants: string[];
   startedAt: number;
   state: 'ringing' | 'active';
+  /** A 1-on-1 with one member left: when the call ends unless someone rejoins. */
+  waitingUntil?: number;
 }
 
 // ─── DM Types ───────────────────────────────────────────────────────────────
@@ -591,6 +595,14 @@ export type ClientEvent =
 
 // Server → Client Events
 export type ServerEvent =
+  // A bookmark of the caller's own list was added from another of their
+  // sessions. Sent to the user's own sockets only, never relayed. `bookmark` is
+  // the same object `PUT /api/bookmarks/:kind/:messageId` returns.
+  | { type: 'bookmark_added'; bookmark: import('./bookmarks.js').Bookmark }
+  // A bookmark of this instance was removed from the user's list. Idempotent
+  // like the DELETE route: `channelId` lets the client clear the state of an
+  // open conversation without reading the message again.
+  | { type: 'bookmark_removed'; kind: import('./bookmarks.js').BookmarkKind; channelId: string; messageId: string }
   | { type: 'soundboard_updated'; spaceId: string }
   | { type: 'soundboard_play'; channelId: string; spaceId: string; sound: import('./soundboard.js').SoundboardSound }
   | { type: 'channel_poke'; message: MessageWithUser }
@@ -624,6 +636,8 @@ export type ServerEvent =
   // Only the authenticated answerer's other sessions stop ringing.
   | { type: 'dm_call_accepted'; dmChannelId: string; answeredByUserId: string }
   | { type: 'dm_call_rejected'; dmChannelId: string }
+  /** A 1-on-1 with one member left: the room ends at `endsAt` unless someone rejoins (null = both back). */
+  | { type: 'dm_call_waiting'; dmChannelId: string; endsAt: number | null }
   | { type: 'dm_call_ended'; dmChannelId: string }
   | { type: 'voice_status_update'; userId: string; channelId: string; isMuted: boolean; isDeafened: boolean; isCameraOn: boolean; isScreenSharing: boolean }
   | { type: 'space_voice_state'; spaceId: string; voiceStates: Record<string, string[]>; voiceChannelElapsedSeconds: Record<string, number>; voiceUserStates: Record<string, { isMuted: boolean; isDeafened: boolean; isCameraOn: boolean; isScreenSharing: boolean }>; spaceVoiceStates: Record<string, { spaceMuted: boolean; spaceDeafened: boolean; permissionMuted: boolean }> }
@@ -723,6 +737,8 @@ export interface UpdateChannelRequest {
   topic?: string | null;
   position?: number;
   categoryId?: string | null;
+  /** Voice channels only: one of the voice bitrate presets, in kbps. */
+  voiceBitrateKbps?: number;
 }
 
 export interface UpdateSpaceRequest {
@@ -946,6 +962,10 @@ export interface InstanceAdminSettings {
   gifEnabled?: boolean;
   maxUploadSizeMb: number;
   maxStickerSizeMb: number;
+  diskCleanupEnabled: boolean;
+  diskCleanupThresholdPercent: number;
+  diskCleanupTargetPercent: number;
+  diskCleanupMinAgeDays: number;
 }
 
 export interface InstanceStreamingLimits {
@@ -957,6 +977,21 @@ export interface InstanceStreamingLimits {
   maxResolution: number;
   maxFramerate: number;
   bitrateMatrixOverrides: Record<string, number> | null;
+  allowCustomBitrate: boolean;
+  camera: CameraStreamingLimits;
+}
+
+/** The instance's camera policy: the admin's defaults and what members may pick. */
+export interface CameraStreamingLimits {
+  /** `fixed` = the admin's default is the whole policy; `user-choice` = members pick within the bounds. */
+  mode: 'fixed' | 'user-choice';
+  defaultResolution: number;
+  defaultFramerate: number;
+  defaultBitrateKbps: number;
+  allowedResolutions: number[];
+  allowedFramerates: number[];
+  minBitrateKbps: number;
+  maxBitrateKbps: number;
   allowCustomBitrate: boolean;
 }
 
@@ -1073,6 +1108,35 @@ export interface CleanupResult {
   freedBytes: number;
   deletedAttachmentRecords: number;
   errors: string[];
+}
+
+/** One sweep of the disk-pressure cleanup (`server/src/utils/diskPressure.ts`). */
+export interface DiskPressureRun {
+  /** When the sweep ran (ms since epoch). */
+  at: number;
+  /** Used-space percentage before and after the sweep. */
+  usedPercentBefore: number;
+  usedPercentAfter: number;
+  /** `safe` freed enough with orphans and abandoned uploads; `media` also had to delete old chat attachments. */
+  stage: 'safe' | 'media';
+  deletedFiles: number;
+  freedBytes: number;
+  errors: string[];
+}
+
+/** What `GET /api/admin/storage/disk` reports. */
+export interface DiskPressureStatus {
+  enabled: boolean;
+  /** Null when the filesystem could not be read. */
+  usedPercent: number | null;
+  totalBytes: number | null;
+  usedBytes: number | null;
+  thresholdPercent: number;
+  targetPercent: number;
+  minAgeDays: number;
+  /** How often the worker looks at the disk. */
+  checkIntervalMinutes: number;
+  lastRun: DiskPressureRun | null;
 }
 
 // ─── Admin User Management Types ──────────────────────────────────────────

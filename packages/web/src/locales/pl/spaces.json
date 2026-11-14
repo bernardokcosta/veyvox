@@ -68,7 +68,17 @@
         "note": "Ten kanał jest ukryty przed członkami bez jawnego dostępu. Użytkownicy z uprawnieniem administratora albo właściciele przestrzeni zawsze widzą wszystkie kanały.",
         "unhideOnSave": "Zapisanie sprawi, że kanał będzie widoczny dla wszystkich członków."
       },
-      "deleteButton": "Usuń kanał"
+      "deleteButton": "Usuń kanał",
+      "voiceQuality": {
+        "label": "Jakość głosu",
+        "option": "{{value}} kb/s",
+        "description": {
+          "64": "Wyraźna mowa. Najmniejsze zużycie pasma.",
+          "128": "Pełniejsze, naturalniejsze głosy.",
+          "256": "Najwyższa jakość, najlepsza do muzyki. Największe zużycie pasma."
+        },
+        "hint": "Ustawia najwyższy bitrate audio, jaki każdy członek może wysyłać w tym kanale. Dotyczy wszystkich, także połączonych."
+      }
     },
     "delete": {
       "title": "Usunąć #{{name}}?",
@@ -363,6 +373,8 @@
       "manageChannels": "Zarządzanie kanałami",
       "manageRoles": "Zarządzanie rolami",
       "manageSpace": "Zarządzanie przestrzenią",
+      "createStickers": "Twórz naklejki",
+      "manageStickers": "Zarządzaj naklejkami",
       "createInvite": "Tworzenie zaproszeń",
       "kickMembers": "Wyrzucanie członków",
       "banMembers": "Banowanie członków",
@@ -633,5 +645,12 @@
     "suppressRoles": "Tłum wzmianki o rolach",
     "massHeading": "Wzmianki grupowe",
     "massNote": "@here sięga tych samych członków co @everyone. Wzmianki o Tobie po imieniu zawsze Cię powiadamiają."
+  },
+  "stickers": {
+    "title": "Naklejki przestrzeni",
+    "description": "Jeden współdzielony album naklejek dla tej przestrzeni, do 50 animowanych lub statycznych naklejek.",
+    "empty": "Ta przestrzeń nie ma jeszcze albumu naklejek.",
+    "create": "Utwórz album przestrzeni",
+    "add": "Dodaj naklejkę"
   }
 }

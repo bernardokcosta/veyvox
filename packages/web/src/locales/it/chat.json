@@ -103,6 +103,12 @@
       "named_many": "{{names}} stanno scrivendo",
       "named_other": "{{names}} stanno scrivendo",
       "several": "Diverse persone stanno scrivendo"
+    },
+    "preparing": {
+      "image": "Preparazione della foto…",
+      "video": "Preparazione del video… {{percent}}%",
+      "sendOriginal": "Invia originale",
+      "cancel": "Annulla"
     }
   },
   "menu": {
@@ -262,9 +268,9 @@
     "draft": "Bozza",
     "newVersion": "Nuova versione",
     "deletePack": "Elimina pacchetto",
-    "stickersCount_one": "{{count}} sticker",
+    "stickersCount_one": "{{count}} adesivo.",
     "stickersCount_many": "{{count}} sticker",
-    "stickersCount_other": "{{count}} sticker",
+    "stickersCount_other": "{{count}} adesivi.",
     "noPacks": "Nessun pacchetto di sticker trovato",
     "viewPack": "Visualizza pacchetto",
     "saveDraft": "Salva come bozza",
@@ -283,7 +289,13 @@
     "reviewNotes": "Motivo del rifiuto",
     "creator": "Autore",
     "viewStickers": "Visualizza sticker",
-    "pendingReviewHint": "In revisione da parte dell’amministratore; sarà elencato in Esplora dopo l’approvazione"
+    "pendingReviewHint": "In revisione da parte dell’amministratore; sarà elencato in Esplora dopo l’approvazione",
+    "invalidName": "Scegli un nome visibile fino a 100 caratteri.",
+    "favoritesTitle": "Adesivi preferiti",
+    "favorite": "Adesivo preferito",
+    "favorited": "Adesivo aggiunto ai preferiti.",
+    "serverEmpty": "Questo spazio non ha ancora un album di adesivi.",
+    "serverEmptyHint": "Un gestore dello spazio può aggiungerlo in Impostazioni spazio → Adesivi dello spazio."
   },
   "poke": {
     "action": "Stuzzica",

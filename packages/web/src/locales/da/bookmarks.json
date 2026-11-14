@@ -1,0 +1,31 @@
+{
+  "message": {
+    "add": "Bogmærk",
+    "remove": "Fjern bogmærke"
+  },
+  "menu": {
+    "add": "Bogmærk besked",
+    "remove": "Fjern bogmærke"
+  },
+  "toast": {
+    "addFailed": "Bogmærket kunne ikke gemmes: {{reason}}",
+    "removeFailed": "Bogmærket kunne ikke fjernes: {{reason}}"
+  },
+  "title": "Bogmærker",
+  "list": {
+    "loading": "Indlæser…",
+    "empty": "Ingen bogmærker endnu",
+    "emptyHint": "Sæt et bogmærke på en besked via handlingslinjen eller menuen for at finde den her.",
+    "showMore": "Vis mere",
+    "open": "Åbn beskeden fra {{name}}",
+    "remove": "Fjern bogmærke"
+  },
+  "status": {
+    "edited": "Den oprindelige besked blev redigeret. Dette er den gemte kopi.",
+    "deleted": "Den oprindelige besked blev slettet. Dette er den gemte kopi.",
+    "unavailable": "Den oprindelige besked er ikke længere tilgængelig for dig. Dette er den gemte kopi."
+  },
+  "attachment": {
+    "gone": "fil slettet"
+  }
+}

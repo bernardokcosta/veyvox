@@ -1,0 +1,31 @@
+{
+  "message": {
+    "add": "Opslaan",
+    "remove": "Bladwijzer verwijderen"
+  },
+  "menu": {
+    "add": "Bericht opslaan",
+    "remove": "Bladwijzer verwijderen"
+  },
+  "toast": {
+    "addFailed": "Bladwijzer opslaan mislukt: {{reason}}",
+    "removeFailed": "Bladwijzer verwijderen mislukt: {{reason}}"
+  },
+  "title": "Bladwijzers",
+  "list": {
+    "loading": "Laden…",
+    "empty": "Nog geen bladwijzers",
+    "emptyHint": "Sla een bericht op via de actiebalk of het menu om het hier terug te vinden.",
+    "showMore": "Meer tonen",
+    "open": "Bericht van {{name}} openen",
+    "remove": "Bladwijzer verwijderen"
+  },
+  "status": {
+    "edited": "Het origineel is bewerkt. Dit is de opgeslagen kopie.",
+    "deleted": "Het oorspronkelijke bericht is verwijderd. Dit is de opgeslagen kopie.",
+    "unavailable": "Het origineel is niet meer beschikbaar voor jou. Dit is de opgeslagen kopie."
+  },
+  "attachment": {
+    "gone": "bestand verwijderd"
+  }
+}
