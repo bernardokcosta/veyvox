@@ -48,6 +48,7 @@ import { StreamRepublishTracker } from '../utils/streamRepublish';
 import { StreamResumeMemory, type RememberedStream } from '../utils/streamResume';
 import { getMediaStreamTrack } from '../utils/livekitInternals';
 import { deactivate as deactivateHwOverdrive } from '../utils/hwOverdrive';
+import { applyMicBitrate, audioPresetForKbps } from '../utils/voiceQuality';
 
 let _activeRoom: Room | null = null;
 /**
@@ -299,6 +300,9 @@ export function useLiveKit() {
   const isCameraOn = useVoiceStore((s) => s.isCameraOn);
   const isScreenSharing = useVoiceStore((s) => s.isScreenSharing);
   const screenShareConfig = useVoiceStore((s) => s.screenShareConfig);
+  // The quality the admin set on the channel this client is in. It changes
+  // while connected when an admin edits the channel (channel_updated).
+  const channelVoiceBitrateKbps = useVoiceStore((s) => s.channelVoiceBitrateKbps);
   // The host's limits shape the effective config, so a document that arrives
   // after the share started must reach the running encoder too.
   const streamingLimits = useSettingsStore(state => state.streamingLimits);
@@ -696,6 +700,14 @@ export function useLiveKit() {
     })();
   }, [cameraDeviceId, isCameraOn, isConnected]);
 
+  // An admin changing the channel's voice quality reaches people already in
+  // the call; the join path below covers everyone arriving afterwards.
+  useEffect(() => {
+    const r = roomRef.current;
+    if (!r || !isConnected) return;
+    void applyMicBitrate(r, channelVoiceBitrateKbps);
+  }, [channelVoiceBitrateKbps, isConnected]);
+
   const connect = useCallback(async (channelId: string, isDm?: boolean) => {
     const storedId = isDm ? `dm-${channelId}` : channelId;
     if (connectedChannelRef.current === storedId && roomRef.current?.state === ConnectionState.Connected) return;
@@ -786,7 +798,16 @@ export function useLiveKit() {
       // are issued only by the authenticated current-server API.
       const { token, url } = isDm ? await api.livekit.dmToken(channelId) : await api.livekit.token(channelId);
       if (gen !== _connectGeneration) return;
-      const newRoom = new Room({ adaptiveStream: true, dynacast: true, publishDefaults: { videoCodec: 'h264', simulcast: true } });
+      // A space voice channel carries the admin's chosen microphone quality;
+      // a DM call has none, and LiveKit's default stays.
+      const channelBitrateKbps = isDm
+        ? null
+        : useSpaceStore.getState().channels?.find((c) => c.id === channelId)?.voiceBitrateKbps ?? null;
+      useVoiceStore.setState({ channelVoiceBitrateKbps: channelBitrateKbps });
+      const newRoom = new Room({
+        adaptiveStream: true, dynacast: true,
+        publishDefaults: { videoCodec: 'h264', simulcast: true, audioPreset: audioPresetForKbps(channelBitrateKbps) },
+      });
       roomRef.current = newRoom;
       // This room's own tracker. Its handlers use it directly, and act only
       // while the room is current: a replaced room's late events belong to

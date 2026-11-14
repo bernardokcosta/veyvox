@@ -185,6 +185,8 @@
   "channel_topic_invalid": "Téma kanálu musí být text.",
   "channel_topic_length": "Téma kanálu smí mít nejvýše {{max}} znaků.",
   "channel_type_invalid": "Kanál je textový či hlasový.",
+  "voice_bitrate_invalid": "Kvalita hlasu musí být jedna z {{options}} kb/s.",
+  "voice_bitrate_text_channel": "Kvalitu hlasu mají jen hlasové kanály.",
   "category_not_in_space": "Tato kategorie do tohoto prostoru nepatří.",
   "channel_not_in_space": "Tento kanál do tohoto prostoru nepatří.",
   "position_invalid": "Pozice musí být nula či kladné číslo.",

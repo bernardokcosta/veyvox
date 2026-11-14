@@ -185,6 +185,8 @@
   "channel_topic_invalid": "Chủ đề kênh phải là văn bản.",
   "channel_topic_length": "Chủ đề kênh tối đa {{max}} ký tự.",
   "channel_type_invalid": "Kênh là kênh văn bản hoặc kênh voice.",
+  "voice_bitrate_invalid": "Chất lượng giọng phải là một trong {{options}} kbps.",
+  "voice_bitrate_text_channel": "Chỉ kênh thoại mới có chất lượng giọng.",
   "category_not_in_space": "Hạng mục đó không thuộc không gian này.",
   "channel_not_in_space": "Kênh đó không thuộc không gian này.",
   "position_invalid": "Vị trí phải là 0 hoặc số dương.",

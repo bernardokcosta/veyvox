@@ -68,7 +68,17 @@
         "note": "Ten kanał jest ukryty przed członkami bez jawnego dostępu. Użytkownicy z uprawnieniem administratora albo właściciele przestrzeni zawsze widzą wszystkie kanały.",
         "unhideOnSave": "Zapisanie sprawi, że kanał będzie widoczny dla wszystkich członków."
       },
-      "deleteButton": "Usuń kanał"
+      "deleteButton": "Usuń kanał",
+      "voiceQuality": {
+        "label": "Jakość głosu",
+        "option": "{{value}} kb/s",
+        "description": {
+          "64": "Wyraźna mowa. Najmniejsze zużycie pasma.",
+          "128": "Pełniejsze, naturalniejsze głosy.",
+          "256": "Najwyższa jakość, najlepsza do muzyki. Największe zużycie pasma."
+        },
+        "hint": "Ustawia najwyższy bitrate audio, jaki każdy członek może wysyłać w tym kanale. Dotyczy wszystkich, także połączonych."
+      }
     },
     "delete": {
       "title": "Usunąć #{{name}}?",

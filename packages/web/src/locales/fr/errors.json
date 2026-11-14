@@ -185,6 +185,8 @@
   "channel_topic_invalid": "Le sujet du canal doit être du texte.",
   "channel_topic_length": "Le sujet du canal ne peut pas dépasser {{max}} caractères.",
   "channel_type_invalid": "Un canal doit être textuel ou vocal.",
+  "voice_bitrate_invalid": "La qualité vocale doit être l’une de {{options}} kbps.",
+  "voice_bitrate_text_channel": "Seuls les salons vocaux ont une qualité vocale.",
   "category_not_in_space": "Cette catégorie n’appartient pas à cet espace.",
   "channel_not_in_space": "Ce canal n’appartient pas à cet espace.",
   "position_invalid": "La position doit être zéro ou un nombre positif.",

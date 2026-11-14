@@ -185,6 +185,8 @@
   "channel_topic_invalid": "Topik kanal harus teks.",
   "channel_topic_length": "Topik kanal maksimal {{max}} karakter.",
   "channel_type_invalid": "Kanal adalah kanal teks atau voice.",
+  "voice_bitrate_invalid": "Kualitas suara harus salah satu dari {{options}} kbps.",
+  "voice_bitrate_text_channel": "Hanya channel suara yang punya kualitas suara.",
   "category_not_in_space": "Kategori itu bukan milik ruang ini.",
   "channel_not_in_space": "Kanal itu bukan milik ruang ini.",
   "position_invalid": "Posisi harus nol atau angka positif.",

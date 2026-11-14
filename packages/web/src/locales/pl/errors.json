@@ -185,6 +185,8 @@
   "channel_topic_invalid": "Temat kanału musi być tekstem.",
   "channel_topic_length": "Temat kanału może mieć maksymalnie {{max}} znaków.",
   "channel_type_invalid": "Kanał jest tekstowy albo głosowy.",
+  "voice_bitrate_invalid": "Jakość głosu musi być jedną z {{options}} kb/s.",
+  "voice_bitrate_text_channel": "Tylko kanały głosowe mają jakość głosu.",
   "category_not_in_space": "Ta kategoria nie należy do tej przestrzeni.",
   "channel_not_in_space": "Ten kanał nie należy do tej przestrzeni.",
   "position_invalid": "Pozycja musi być zerem albo dodatnią liczbą.",

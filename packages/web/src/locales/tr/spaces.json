@@ -68,7 +68,17 @@
         "note": "Bu kanal, açık erişimi olmayan üyelerden gizlenir. Yönetici iznine sahip kullanıcılar veya alan sahipleri tüm kanalları her zaman görebilir.",
         "unhideOnSave": "Kaydetmek bu kanalı her üyeye görünür yapar."
       },
-      "deleteButton": "Kanalı sil"
+      "deleteButton": "Kanalı sil",
+      "voiceQuality": {
+        "label": "Ses kalitesi",
+        "option": "{{value}} kbps",
+        "description": {
+          "64": "Net konuşma. En az bant genişliği.",
+          "128": "Daha dolgun, doğal sesler.",
+          "256": "En yüksek kalite, müzik için ideal. En fazla bant genişliği."
+        },
+        "hint": "Bu kanalda her üyenin gönderebileceği en yüksek ses bit hızını ayarlar. Bağlı olanlar dahil herkes için geçerlidir."
+      }
     },
     "delete": {
       "title": "#{{name}} silinsin mi?",

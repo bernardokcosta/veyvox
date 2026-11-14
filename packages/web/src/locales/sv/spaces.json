@@ -68,7 +68,17 @@
         "note": "Denna kanal är dold för medlemmar utan uttrycklig åtkomst. Användare med administratörsbehörighet eller rumsägare ser alltid alla kanaler.",
         "unhideOnSave": "Sparning gör denna kanal synlig för varje medlem."
       },
-      "deleteButton": "Ta bort kanal"
+      "deleteButton": "Ta bort kanal",
+      "voiceQuality": {
+        "label": "Röstkvalitet",
+        "option": "{{value}} kbps",
+        "description": {
+          "64": "Tydligt tal. Minst bandbredd.",
+          "128": "Fylligare, mer naturliga röster.",
+          "256": "Högsta kvalitet, bäst för musik. Mest bandbredd."
+        },
+        "hint": "Ställer in den högsta ljudbithastighet varje medlem kan skicka i denna kanal. Gäller alla, även redan anslutna."
+      }
     },
     "delete": {
       "title": "Ta bort #{{name}}?",

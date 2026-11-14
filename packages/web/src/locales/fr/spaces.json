@@ -68,7 +68,17 @@
         "note": "Ce canal est masqué pour les membres sans accès explicite. Les utilisateurs avec la permission Administrateur et les propriétaires de l’espace peuvent toujours voir tous les canaux.",
         "unhideOnSave": "Enregistrer rendra ce canal visible par tous les membres."
       },
-      "deleteButton": "Supprimer le canal"
+      "deleteButton": "Supprimer le canal",
+      "voiceQuality": {
+        "label": "Qualité vocale",
+        "option": "{{value}} kbps",
+        "description": {
+          "64": "Parole claire. Le moins de bande passante.",
+          "128": "Des voix plus pleines et naturelles.",
+          "256": "Qualité maximale, idéale pour la musique. Le plus de bande passante."
+        },
+        "hint": "Définit le débit audio maximal que chaque membre peut envoyer dans ce salon. Vaut pour tout le monde, y compris les personnes déjà connectées."
+      }
     },
     "delete": {
       "title": "Supprimer #{{name}} ?",

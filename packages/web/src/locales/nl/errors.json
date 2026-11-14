@@ -185,6 +185,8 @@
   "channel_topic_invalid": "Een kanaalonderwerp moet tekst zijn.",
   "channel_topic_length": "Kanaalonderwerpen mogen hooguit {{max}} tekens zijn.",
   "channel_type_invalid": "Een kanaal is een tekst- of spraakkanaal.",
+  "voice_bitrate_invalid": "De spraakkwaliteit moet een van {{options}} kbps zijn.",
+  "voice_bitrate_text_channel": "Alleen spraakkanalen hebben een spraakkwaliteit.",
   "category_not_in_space": "Die categorie hoort niet bij deze ruimte.",
   "channel_not_in_space": "Dat kanaal hoort niet bij deze ruimte.",
   "position_invalid": "De positie moet nul of een positief getal zijn.",

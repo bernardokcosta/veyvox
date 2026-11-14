@@ -185,6 +185,8 @@
   "channel_topic_invalid": "Kanavan aiheen on oltava tekstiä.",
   "channel_topic_length": "Kanavien aiheet voivat olla enintään {{max}} merkkiä.",
   "channel_type_invalid": "Kanava on joko teksti- tai äänikanava.",
+  "voice_bitrate_invalid": "Äänenlaadun on oltava yksi arvoista {{options}} kbps.",
+  "voice_bitrate_text_channel": "Vain äänikanavilla on äänenlaatu.",
   "category_not_in_space": "Tämä luokka ei kuulu tähän tilaan.",
   "channel_not_in_space": "Tämä kanava ei kuulu tähän tilaan.",
   "position_invalid": "Sijainnin on oltava nolla tai positiivinen luku.",

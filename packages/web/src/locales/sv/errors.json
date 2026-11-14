@@ -185,6 +185,8 @@
   "channel_topic_invalid": "Ett kanalämne måste vara text.",
   "channel_topic_length": "Kanalämnen får vara högst {{max}} tecken.",
   "channel_type_invalid": "En kanal är antingen en textkanal eller en röstkanal.",
+  "voice_bitrate_invalid": "Röstkvaliteten måste vara en av {{options}} kbps.",
+  "voice_bitrate_text_channel": "Endast röstkanaler har röstkvalitet.",
   "category_not_in_space": "Den kategorin hör inte till detta rum.",
   "channel_not_in_space": "Den kanalen hör inte till detta rum.",
   "position_invalid": "Positionen måste vara noll eller ett positivt tal.",

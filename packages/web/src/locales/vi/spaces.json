@@ -68,7 +68,17 @@
         "note": "Kênh này ẩn với thành viên không có quyền rõ ràng. Người có quyền quản trị hay chủ không gian luôn thấy mọi kênh.",
         "unhideOnSave": "Lưu làm kênh này hiện với mọi thành viên."
       },
-      "deleteButton": "Xóa kênh"
+      "deleteButton": "Xóa kênh",
+      "voiceQuality": {
+        "label": "Chất lượng giọng",
+        "option": "{{value}} kbps",
+        "description": {
+          "64": "Giọng rõ ràng. Ít tốn băng thông nhất.",
+          "128": "Giọng đầy và tự nhiên hơn.",
+          "256": "Chất lượng cao nhất, tốt nhất cho nhạc. Tốn băng thông nhất."
+        },
+        "hint": "Đặt bitrate âm thanh tối đa mỗi thành viên được gửi trong kênh này. Áp dụng cho mọi người, kể cả người đang kết nối."
+      }
     },
     "delete": {
       "title": "Xóa #{{name}}?",

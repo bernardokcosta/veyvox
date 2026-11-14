@@ -292,7 +292,15 @@ function handleEvent(event: ServerEvent, readyAlreadyDelivered: boolean, current
     case 'dm_owner_updated': spaces.updateDmOwner(event.dmChannelId, event.newOwnerId); break;
     case 'dm_channel_updated': spaces.updateDmMetadata(event.dmChannelId, { name: event.name, icon: event.icon }); break;
     case 'channel_created':
-    case 'channel_updated': spaces.upsertChannel(event.channel, event.spaceId); break;
+    case 'channel_updated': {
+      spaces.upsertChannel(event.channel, event.spaceId);
+      // An admin changed the quality of the call this client is in: the live
+      // microphone follows it (useLiveKit).
+      if (event.channel.id === useVoiceStore.getState().currentVoiceChannelId) {
+        useVoiceStore.setState({ channelVoiceBitrateKbps: event.channel.voiceBitrateKbps ?? null });
+      }
+      break;
+    }
     case 'channel_deleted': {
       spaces.removeChannel(event.channelId); if (chat.currentChannelId === event.channelId) chat.setCurrentChannel(null);
       const voiceUsers = new Map(voice.voiceUsers), voiceChannelElapsedSeconds = new Map(voice.voiceChannelElapsedSeconds);

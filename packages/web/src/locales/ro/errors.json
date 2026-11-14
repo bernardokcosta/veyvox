@@ -185,6 +185,8 @@
   "channel_topic_invalid": "Subiectul unui canal trebuie să fie text.",
   "channel_topic_length": "Subiectul canalului poate avea cel mult {{max}} caractere.",
   "channel_type_invalid": "Un canal este fie text, fie vocal.",
+  "voice_bitrate_invalid": "Calitatea vocii trebuie să fie una dintre {{options}} kbps.",
+  "voice_bitrate_text_channel": "Doar canalele vocale au calitate a vocii.",
   "category_not_in_space": "Acea categorie nu aparține acestui spațiu.",
   "channel_not_in_space": "Acel canal nu aparține acestui spațiu.",
   "position_invalid": "Poziția trebuie să fie zero sau un număr pozitiv.",

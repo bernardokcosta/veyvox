@@ -68,7 +68,17 @@
         "note": "Denne kanalen er skjult for medlemmer uten eksplisitt tilgang. Brukere med administratortillatelse eller romeiere ser alltid alle kanaler.",
         "unhideOnSave": "Lagring gjør denne kanalen synlig for hvert medlem."
       },
-      "deleteButton": "Slett kanal"
+      "deleteButton": "Slett kanal",
+      "voiceQuality": {
+        "label": "Talekvalitet",
+        "option": "{{value}} kbps",
+        "description": {
+          "64": "Klar tale. Minst båndbredde.",
+          "128": "Fyldigere, mer naturlige stemmer.",
+          "256": "Høyeste kvalitet, best for musikk. Mest båndbredde."
+        },
+        "hint": "Setter den høyeste lydbitraten hvert medlem kan sende i denne kanalen. Gjelder for alle, også dem som allerede er tilkoblet."
+      }
     },
     "delete": {
       "title": "Slette #{{name}}?",

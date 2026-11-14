@@ -185,6 +185,8 @@
   "channel_topic_invalid": "หัวข้อช่องต้องเป็นข้อความ",
   "channel_topic_length": "หัวข้อช่องยาวได้สูงสุด {{max}} อักขระ",
   "channel_type_invalid": "ช่องเป็นช่องข้อความหรือช่องเสียง",
+  "voice_bitrate_invalid": "คุณภาพเสียงต้องเป็นหนึ่งใน {{options}} kbps",
+  "voice_bitrate_text_channel": "เฉพาะช่องเสียงเท่านั้นที่มีคุณภาพเสียง",
   "category_not_in_space": "หมวดนั้นไม่อยู่ในสเปซนี้",
   "channel_not_in_space": "ช่องนั้นไม่อยู่ในสเปซนี้",
   "position_invalid": "ตำแหน่งต้องเป็นศูนย์หรือเลขบวก",

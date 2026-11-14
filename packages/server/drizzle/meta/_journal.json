@@ -379,6 +379,13 @@
       "when": 1794674731721,
       "tag": "0053_sticker_pack_scopes",
       "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "6",
+      "when": 1794676777549,
+      "tag": "0054_voice_channel_bitrate",
+      "breakpoints": true
     }
   ]
 }

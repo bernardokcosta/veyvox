@@ -185,6 +185,8 @@
   "channel_topic_invalid": "チャンネルトピックはテキスト。",
   "channel_topic_length": "チャンネルトピックは最大 {{max}} 文字。",
   "channel_type_invalid": "チャンネルはテキストチャンネルか音声チャンネルのいずれかです。",
+  "voice_bitrate_invalid": "音声品質は {{options}} kbps のいずれかでなければなりません。",
+  "voice_bitrate_text_channel": "音声品質があるのはボイスチャンネルのみです。",
   "category_not_in_space": "そのカテゴリはこのスペースに属していません。",
   "channel_not_in_space": "そのチャンネルはこのスペースに属していません。",
   "position_invalid": "位置は0か正数。",

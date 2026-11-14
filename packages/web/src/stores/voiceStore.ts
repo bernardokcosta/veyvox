@@ -89,6 +89,13 @@ export interface VoiceState {
   inputDeviceId: string;
   outputDeviceId: string;
   cameraDeviceId: string | null; // null = auto-select on next camera enable
+  /**
+   * The microphone bitrate ceiling, in kbps, that the admin set on the space
+   * voice channel this client is in; null in a DM call or on a server that
+   * predates the setting. Written when joining and by `channel_updated`, and
+   * read by `useLiveKit`, which applies it to the live microphone. Not persisted.
+   */
+  channelVoiceBitrateKbps: number | null;
   focusedParticipantId: string | null;
   screenShareConfig: ScreenShareConfig;
   /**
@@ -279,6 +286,7 @@ export const useVoiceStore = create<VoiceState>()(
       inputDeviceId: 'default',
       outputDeviceId: 'default',
       cameraDeviceId: null,
+      channelVoiceBitrateKbps: null,
       focusedParticipantId: null,
       screenShareConfig: { height: 720, fps: 60, mode: 'gaming', customBitrateKbps: null, shareAudio: !isElectron(), forceSdr: false, codec: 'vp9' },
       lastScreenShareSourceId: null,
@@ -816,6 +824,7 @@ export const useVoiceStore = create<VoiceState>()(
         inputDeviceId: 'default',
         outputDeviceId: 'default',
         cameraDeviceId: null,
+        channelVoiceBitrateKbps: null,
         focusedParticipantId: null,
         participantVolumes: new Map(),
         participantMutes: new Map(),

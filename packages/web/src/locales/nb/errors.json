@@ -185,6 +185,8 @@
   "channel_topic_invalid": "Et kanaltema må være tekst.",
   "channel_topic_length": "Kanaltemaer kan være høyst {{max}} tegn.",
   "channel_type_invalid": "En kanal er enten en tekstkanal eller en talekanal.",
+  "voice_bitrate_invalid": "Talekvaliteten må være en av {{options}} kbps.",
+  "voice_bitrate_text_channel": "Bare talekanaler har talekvalitet.",
   "category_not_in_space": "Den kategorien hører ikke til dette rommet.",
   "channel_not_in_space": "Den kanalen hører ikke til dette rommet.",
   "position_invalid": "Posisjonen må være null eller et positivt tall.",

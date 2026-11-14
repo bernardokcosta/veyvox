@@ -185,6 +185,8 @@
   "channel_topic_invalid": "채널 주제는 텍스트.",
   "channel_topic_length": "채널 주제는 최대 {{max}}자.",
   "channel_type_invalid": "채널은 텍스트 또는 음성 채널.",
+  "voice_bitrate_invalid": "음성 품질은 {{options}} kbps 중 하나여야 합니다.",
+  "voice_bitrate_text_channel": "음성 채널에만 음성 품질이 있습니다.",
   "category_not_in_space": "그 카테고리는 이 스페이스에 속하지 않습니다.",
   "channel_not_in_space": "그 채널은 이 스페이스에 속하지 않습니다.",
   "position_invalid": "위치는 0 또는 양수.",
