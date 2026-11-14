@@ -100,6 +100,12 @@
       "named_one": "{{names}} mengetik",
       "named_other": "{{names}} mengetik",
       "several": "Beberapa orang mengetik"
+    },
+    "preparing": {
+      "image": "Menyiapkan foto…",
+      "video": "Menyiapkan video… {{percent}}%",
+      "sendOriginal": "Kirim asli",
+      "cancel": "Batal"
     }
   },
   "menu": {

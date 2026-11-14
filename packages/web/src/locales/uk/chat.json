@@ -106,6 +106,12 @@
       "named_many": "{{names}} друкують",
       "named_other": "{{names}} друкує",
       "several": "Кілька людей друкують"
+    },
+    "preparing": {
+      "image": "Підготовка фото…",
+      "video": "Підготовка відео… {{percent}} %",
+      "sendOriginal": "Надіслати оригінал",
+      "cancel": "Скасувати"
     }
   },
   "menu": {

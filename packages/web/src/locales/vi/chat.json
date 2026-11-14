@@ -100,6 +100,12 @@
       "named_one": "{{names}} đang nhập",
       "named_other": "{{names}} đang nhập",
       "several": "Nhiều người đang nhập"
+    },
+    "preparing": {
+      "image": "Đang chuẩn bị ảnh…",
+      "video": "Đang chuẩn bị video… {{percent}}%",
+      "sendOriginal": "Gửi bản gốc",
+      "cancel": "Huỷ"
     }
   },
   "menu": {

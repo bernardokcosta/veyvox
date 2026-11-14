@@ -100,6 +100,12 @@
       "named_one": "{{names}} typt",
       "named_other": "{{names}} typen",
       "several": "Meerdere mensen typen"
+    },
+    "preparing": {
+      "image": "Foto voorbereiden…",
+      "video": "Video voorbereiden… {{percent}}%",
+      "sendOriginal": "Origineel versturen",
+      "cancel": "Annuleren"
     }
   },
   "menu": {

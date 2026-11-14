@@ -97,6 +97,12 @@
     "typing": {
       "named_other": "{{names}} 입력 중",
       "several": "여러 사람이 입력 중"
+    },
+    "preparing": {
+      "image": "사진 준비 중…",
+      "video": "동영상 준비 중… {{percent}}%",
+      "sendOriginal": "원본 보내기",
+      "cancel": "취소"
     }
   },
   "menu": {

@@ -100,6 +100,12 @@
       "named_one": "{{names}} skriver",
       "named_other": "{{names}} skriver",
       "several": "Flere personer skriver"
+    },
+    "preparing": {
+      "image": "Forbereder foto…",
+      "video": "Forbereder video… {{percent}} %",
+      "sendOriginal": "Send originalen",
+      "cancel": "Annuller"
     }
   },
   "menu": {

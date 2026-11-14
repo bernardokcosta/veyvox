@@ -106,6 +106,12 @@
       "named_many": "{{names}} piszą…",
       "named_other": "{{names}} piszą…",
       "several": "Kilka osób pisze"
+    },
+    "preparing": {
+      "image": "Przygotowywanie zdjęcia…",
+      "video": "Przygotowywanie wideo… {{percent}}%",
+      "sendOriginal": "Wyślij oryginał",
+      "cancel": "Anuluj"
     }
   },
   "menu": {

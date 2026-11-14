@@ -100,6 +100,12 @@
       "named_one": "{{names}} yazıyor",
       "named_other": "{{names}} yazıyor",
       "several": "Birkaç kişi yazıyor"
+    },
+    "preparing": {
+      "image": "Fotoğraf hazırlanıyor…",
+      "video": "Video hazırlanıyor… %{{percent}}",
+      "sendOriginal": "Orijinali gönder",
+      "cancel": "İptal"
     }
   },
   "menu": {

@@ -112,6 +112,12 @@
       "named_many": "{{names}} يكتب",
       "named_other": "{{names}} يكتب",
       "several": "عدة أشخاص يكتبون"
+    },
+    "preparing": {
+      "image": "جارٍ تجهيز الصورة…",
+      "video": "جارٍ تجهيز الفيديو… {{percent}}%",
+      "sendOriginal": "إرسال الأصل",
+      "cancel": "إلغاء"
     }
   },
   "menu": {

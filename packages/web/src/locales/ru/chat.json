@@ -106,6 +106,12 @@
       "named_many": "{{names}} печатают",
       "named_other": "{{names}} печатают",
       "several": "Несколько человек печатают"
+    },
+    "preparing": {
+      "image": "Подготовка фото…",
+      "video": "Подготовка видео… {{percent}} %",
+      "sendOriginal": "Отправить оригинал",
+      "cancel": "Отмена"
     }
   },
   "menu": {

@@ -100,6 +100,12 @@
       "named_one": "{{names}} is typing",
       "named_other": "{{names}} are typing",
       "several": "Several people are typing"
+    },
+    "preparing": {
+      "image": "Preparing photo…",
+      "video": "Preparing video… {{percent}}%",
+      "sendOriginal": "Send original",
+      "cancel": "Cancel"
     }
   },
   "menu": {

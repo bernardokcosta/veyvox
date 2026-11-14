@@ -103,6 +103,12 @@
       "named_many": "{{names}} están escribiendo",
       "named_other": "{{names}} están escribiendo",
       "several": "Varias personas están escribiendo"
+    },
+    "preparing": {
+      "image": "Preparando foto…",
+      "video": "Preparando vídeo… {{percent}} %",
+      "sendOriginal": "Enviar original",
+      "cancel": "Cancelar"
     }
   },
   "menu": {

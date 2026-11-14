@@ -14,6 +14,8 @@ import { placeCaret } from './placeCaret';
 import { TypingIndicator } from './TypingIndicator';
 import { InputPopover, type InputPopoverTab } from './InputPopover';
 import { StagedTransferTiles } from './StagedTransferTiles';
+import { PreparingFileTiles, type PreparingFile } from './PreparingFileTiles';
+import { compressionKind, prepareForUpload, shouldTryCompression } from '../../utils/mediaCompression';
 import { ChatDropOverlay } from './ChatDropOverlay';
 import { useFileDropZone } from '../../hooks/useFileDropZone';
 import { hasPermissionBit, PermissionBits } from '../../utils/permissions';
@@ -135,6 +137,11 @@ function MessageInputContent({ channelId, channelName, placeholder, revision }: 
   // the raw File, so previews only exist for files picked in this session
   // (after reload, persisted transfers fall back to the icon placeholder).
   const previewUrlsRef = useRef<Map<string, string>>(new Map());
+
+  // Files still being shrunk on this device (utils/mediaCompression.ts). An
+  // upload tile takes over as soon as its encode ends.
+  const [preparing, setPreparing] = useState<PreparingFile[]>([]);
+  const preparingControls = useRef<Map<string, { controller: AbortController; action: 'original' | 'cancel' | null }>>(new Map());
 
   const sendMessage = useChatStore((s) => s.sendMessage);
   const returnToPresent = useChatStore((s) => s.returnToPresent);
@@ -496,10 +503,41 @@ function MessageInputContent({ channelId, channelName, placeholder, revision }: 
    */
   const enqueueFile = useCallback(
     async (
-      input: { file: File; handle?: FileSystemFileHandle | undefined },
+      input: { file: File; handle?: FileSystemFileHandle | undefined; mode?: 'compress' | 'original' },
     ): Promise<void> => {
-      const { file, handle } = input;
+      let { file, handle } = input;
+      const { mode = 'compress' } = input;
       if (!current()) return;
+
+      // Shrink a photo or video first. Anything this device cannot improve, and
+      // any failure, comes back as the original file.
+      const kind = mode === 'compress' && shouldTryCompression(file) ? compressionKind(file) : null;
+      if (kind) {
+        const prepId = makeFileHandleKey();
+        const controller = new AbortController();
+        preparingControls.current.set(prepId, { controller, action: null });
+        setPreparing((list) => [...list, { id: prepId, name: file.name, kind, progress: null }]);
+        let action: 'original' | 'cancel' | null = null;
+        try {
+          const prepared = await prepareForUpload(file, 'compress', {
+            signal: controller.signal,
+            onProgress: (fraction) => {
+              setPreparing((list) => list.map((entry) => (entry.id === prepId ? { ...entry, progress: fraction } : entry)));
+            },
+          });
+          action = preparingControls.current.get(prepId)?.action ?? null;
+          if (action === 'cancel' || !current()) return;
+          if (action !== 'original' && prepared.compressed) {
+            file = prepared.file;
+            // The handle points at the original bytes; a resume would read those.
+            handle = undefined;
+          }
+        } finally {
+          preparingControls.current.delete(prepId);
+          setPreparing((list) => list.filter((entry) => entry.id !== prepId));
+        }
+      }
+
       let fileHandleId: string | undefined;
       if (handle && supportsFsHandles()) {
         try {
@@ -540,6 +578,17 @@ function MessageInputContent({ channelId, channelName, placeholder, revision }: 
     },
     [channelId, startUpload, attachToComposer, addToast, t, current],
   );
+
+  /**
+   * Stop shrinking a file: upload the original (`original`) or drop it
+   * (`cancel`). An encode that already ended has nothing to settle.
+   */
+  const settlePreparing = useCallback((id: string, action: 'original' | 'cancel') => {
+    const entry = preparingControls.current.get(id);
+    if (!entry) return;
+    entry.action = action;
+    if (action === 'cancel') entry.controller.abort();
+  }, []);
 
   const removeStagedTransfer = useCallback(
     (transferId: string) => {
@@ -1346,6 +1395,12 @@ function MessageInputContent({ channelId, channelName, placeholder, revision }: 
             anchorRef={mentionAnchorRef}
           />
         )}
+
+        <PreparingFileTiles
+          files={preparing}
+          onSendOriginal={(id) => settlePreparing(id, 'original')}
+          onCancel={(id) => settlePreparing(id, 'cancel')}
+        />
 
         <StagedTransferTiles
           stagedTransfers={stagedTransfers}

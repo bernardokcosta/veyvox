@@ -103,6 +103,12 @@
       "named_many": "{{names}} écrivent",
       "named_other": "{{names}} écrivent",
       "several": "Plusieurs personnes écrivent"
+    },
+    "preparing": {
+      "image": "Préparation de la photo…",
+      "video": "Préparation de la vidéo… {{percent}} %",
+      "sendOriginal": "Envoyer l’original",
+      "cancel": "Annuler"
     }
   },
   "menu": {

@@ -103,6 +103,12 @@
       "named_few": "{{names}} scriu",
       "named_other": "{{names}} scriu",
       "several": "Mai multe persoane scriu"
+    },
+    "preparing": {
+      "image": "Se pregătește fotografia…",
+      "video": "Se pregătește videoclipul… {{percent}} %",
+      "sendOriginal": "Trimite originalul",
+      "cancel": "Anulează"
     }
   },
   "menu": {

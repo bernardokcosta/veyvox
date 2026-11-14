@@ -106,6 +106,12 @@
       "named_many": "{{names}} píše",
       "named_other": "{{names}} píše",
       "several": "Píše několik lidí"
+    },
+    "preparing": {
+      "image": "Připravuji fotografii…",
+      "video": "Připravuji video… {{percent}} %",
+      "sendOriginal": "Odeslat originál",
+      "cancel": "Zrušit"
     }
   },
   "menu": {
