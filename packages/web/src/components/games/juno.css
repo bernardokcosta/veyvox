@@ -110,7 +110,8 @@ button.juno-seat-empty:hover:not(:disabled) { border-color: #27ef7d; color: #27e
 .juno-card-art { display: block; width: 100%; height: auto; aspect-ratio: 720 / 1056; object-fit: contain; }
 .juno-floured-card { position: relative; overflow: hidden; border-radius: 9.1667% / 6.25%; }
 .juno-card-face { display: block; width: 100%; height: 100%; aspect-ratio: 720 / 1056; }
-.juno-card-flour { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: fill; opacity: .9; pointer-events: none; }
+/* Densify the supplied sparse alpha without adding a flat white wash; keep the face center clean. */
+.juno-card-flour { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: fill; filter: drop-shadow(0 0 0 #faf8ef) drop-shadow(0 0 0 #faf8ef) drop-shadow(0 0 0 #faf8ef) drop-shadow(0 0 0 #faf8ef); mask-image: radial-gradient(ellipse at center, transparent 28%, #000 72%); opacity: .5; pointer-events: none; }
 .juno-lobby-cards > img { position: absolute; top: 6px; left: 80px; width: min(11cqh, 65px); height: auto; }
 .juno-lobby-cards > img:nth-child(1) { transform: translate(-60px, 4px) rotate(-20deg); }
 .juno-lobby-cards > img:nth-child(2) { transform: translateX(-20px) rotate(-7deg); }

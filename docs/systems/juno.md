@@ -118,10 +118,14 @@ Fully capable cohorts use 111 cards, adding exactly one colorless `pizza` to
 the existing 110. It plays over any color/face without choosing/changing color
 and cannot be the initial discard. Ordinary last-card victory wins immediately,
 without a transfer or pause; otherwise every hand participates after discarding
-the pizza. Crypto RNG uniformly chooses 0 through min(5, N - 1) original cards
-from each hand without replacement and independently chooses each recipient
-from the other players. Selections precede all transfers, so incoming cards never
-cascade. Unequal counts, split destinations and an all-zero exchange are valid;
+the pizza. Crypto RNG uniformly rolls 1 through 5 for every hand, then clamps
+the result to max(0, N - 1) original cards, selected without replacement.
+Each card independently chooses an equally likely recipient from the other
+players, with no total receipt limit (a player can receive more than five).
+Selections precede all transfers, so incoming cards never cascade.
+Unequal counts and split destinations are valid; zero outgoing cards are possible
+only for a hand with at most one card. Equal net hand sizes can still hide real
+exchanges of different card instances;
 no exchange empties a hand, creates cards or changes direction/XP/practice rules.
 
 Transferred instances retain `floured: true` through later moves, public play
@@ -151,10 +155,45 @@ the local card height (discard fallback for spectators). At most 20 ghosts and
 32 finite particles are allocated; animation handles/timers/observers expire or
 cancel on layout/roster/access changes. Flour is an inset, clipped overlay in
 the same 720:1056 wrapper as the face, not a differently transformed image.
+The supplied texture's sparse alpha is densified with zero-offset shadows,
+limited to 50% opacity and masked toward the edges. No flat white background is
+added: the face center, numbers and colors stay clear. The original asset remains
+unchanged, including on small representative opponent backs.
 Reduced motion keeps static resolution/flour feedback without travel or spin.
 Initial views/polls/reopening never replay the effect; the next-turn cue waits
 until resolution ends. Media remains supplied pt-BR only, including the complete
 approximately 2.2053-second `juno_pizza.ogg` on the existing effects/output bus.
+
+`junoPizzaTimeline` owns the common public departure/arrival schedule for both
+card flights and displayed hands. The author's occupied hand is visited first,
+following the round direction; up to five cards depart with a 45ms stagger from
+100ms after that hand's visit and arrive 700ms later, inside the five-second pause.
+All boundaries are rounded upward to integer milliseconds. Hands and native
+animations share the first observation's start anchor, retained across polls;
+native animation start times also account for delayed rendering/pending play,
+and timeout delays are rounded upward so they cannot fire before a boundary.
+`useJunoPizzaPresentation` temporarily projects the previous private view and
+aggregate opponent counts onto that clock. The authoritative store is never
+rolled back or replaced with cosmetic state. Previously known outgoing cards
+disappear on departure; received, already-floured cards appear on arrival.
+Representative mid-flight slot order does not expose or assert hidden
+card-to-recipient identities. A missing/incompatible previous view, initial
+late mount, reduced motion, resize/visibility cancellation, access/roster change
+or resolution completion uses the committed view directly, without replay.
+
+### Playable pizza workbench (development only)
+
+Run `pnpm preview:juno`, then open
+`http://127.0.0.1:5173/dev-juno-pizza.html`. It renders the real `JunoTable`,
+commands, sounds and built-in bots, backed by a separate loopback-only
+in-memory `JunoRooms` process on port 39998. Choose 2–4 seats and use the reset
+button to restart. The initial deal swaps existing card instances so the player
+owns the single pizza; production dealing is unchanged. The preview clock waits
+for the first action so the opening pizza remains available while inspecting.
+The spectator link shares the table but receives no private hand. There are no
+accounts, persistent data, production API routes, voice connections or XP awards.
+Mutations accept only the known local development origins. Neither the HTML entry
+nor its client module is reachable from the production app/build.
 
 ## Space XP and ranking
 

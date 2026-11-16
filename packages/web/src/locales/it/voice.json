@@ -14,7 +14,7 @@
   "juno": {
     "pizza": {
       "title": "Pizza pazza",
-      "rules": "Si gioca su qualsiasi colore o numero senza cambiare colore. Trasferisce casualmente da 0 a 5 carte di ogni mano ad altri giocatori, lasciando sempre almeno una carta. Lo scambio dura 5 secondi; le carte trasferite mantengono la farina, anche quando vengono giocate.",
+      "rules": "Si gioca su qualsiasi colore o numero senza cambiare colore. Estrae da 1 a 5 con pari probabilità per ogni mano e rimuove quel numero di carte, o meno per lasciarne almeno una. Ogni carta va casualmente a un altro giocatore con pari probabilità; puoi riceverne più di cinque in totale. Lo scambio dura 5 secondi; le carte trasferite mantengono la farina, anche quando vengono giocate.",
       "resolving": "La Pizza pazza sta mescolando le mani…",
       "floured": "Infarinata"
     },

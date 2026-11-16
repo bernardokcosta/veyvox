@@ -14,7 +14,7 @@
   "juno": {
     "pizza": {
       "title": "Pizza Gila",
-      "rules": "Bisa dimainkan di atas warna atau angka apa pun tanpa mengubah warna. Memindahkan 0–5 kartu secara acak dari setiap tangan ke pemain lain, selalu menyisakan setidaknya satu kartu. Pertukaran berlangsung 5 detik; kartu yang dipindahkan tetap bertepung, bahkan saat dimainkan.",
+      "rules": "Bisa dimainkan di atas warna atau angka apa pun tanpa mengubah warna. Mengundi angka 1–5 dengan peluang sama untuk setiap tangan dan mengambil kartu sebanyak itu, atau lebih sedikit agar tersisa setidaknya satu. Setiap kartu diberikan secara acak kepada pemain lain dengan peluang sama; kamu bisa menerima lebih dari lima secara keseluruhan. Pertukaran berlangsung 5 detik; kartu yang dipindahkan tetap bertepung, bahkan saat dimainkan.",
       "resolving": "Pizza Gila sedang mengacak kartu di tangan…",
       "floured": "Bertepung"
     },

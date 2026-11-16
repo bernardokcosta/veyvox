@@ -14,7 +14,7 @@
   "juno": {
     "pizza": {
       "title": "Pizza loca",
-      "rules": "Se puede jugar sobre cualquier color o número sin cambiar el color. Transfiere al azar de 0 a 5 cartas de cada mano a otros jugadores, dejando siempre al menos una carta. El intercambio dura 5 segundos; las cartas transferidas conservan la harina, incluso al jugarlas.",
+      "rules": "Se puede jugar sobre cualquier color o número sin cambiar el color. Sortea del 1 al 5 con la misma probabilidad para cada mano y retira esa cantidad de cartas, o menos para dejar al menos una. Cada carta va al azar a otro jugador con la misma probabilidad; puedes recibir más de cinco en total. El intercambio dura 5 segundos; las cartas transferidas conservan la harina, incluso al jugarlas.",
       "resolving": "La Pizza loca está mezclando las manos…",
       "floured": "Con harina"
     },

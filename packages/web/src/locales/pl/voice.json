@@ -14,7 +14,7 @@
   "juno": {
     "pizza": {
       "title": "Szalona pizza",
-      "rules": "Można zagrać na dowolny kolor lub numer bez zmiany koloru. Losowo przekazuje od 0 do 5 kart z każdej ręki innym graczom, zawsze pozostawiając co najmniej jedną kartę. Wymiana trwa 5 sekund; przekazane karty zachowują mąkę także po zagraniu.",
+      "rules": "Można zagrać na dowolny kolor lub numer bez zmiany koloru. Dla każdej ręki losuje liczbę od 1 do 5 z równymi szansami i zabiera tyle kart lub mniej, aby została co najmniej jedna. Każda karta trafia losowo do innego gracza z równymi szansami; łącznie możesz otrzymać więcej niż pięć kart. Wymiana trwa 5 sekund; przekazane karty zachowują mąkę także po zagraniu.",
       "resolving": "Szalona pizza miesza karty w rękach…",
       "floured": "Pokryta mąką"
     },

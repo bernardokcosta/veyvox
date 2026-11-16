@@ -7,7 +7,7 @@ export function redistributeJunoPizza(players: readonly { userId: string; hand: 
   const selected: { source: number; destination: number; card: JunoCard }[] = [];
   for (let source = 0; source < players.length; source++) {
     const pool = [...players[source]!.hand];
-    const count = randomInt(Math.min(5, Math.max(0, pool.length - 1)) + 1);
+    const count = Math.min(randomInt(5) + 1, Math.max(0, pool.length - 1));
     for (let i = 0; i < count; i++) {
       const card = pool.splice(randomInt(pool.length), 1)[0]!;
       const other = randomInt(players.length - 1);

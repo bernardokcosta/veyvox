@@ -14,7 +14,7 @@
   "juno": {
     "pizza": {
       "title": "Galna pizzan",
-      "rules": "Kan spelas på vilken färg eller siffra som helst utan att ändra färgen. Flyttar slumpmässigt 0–5 kort från varje hand till andra spelare och lämnar alltid minst ett kort kvar. Bytet tar 5 sekunder; flyttade kort behåller mjölet även när de spelas.",
+      "rules": "Kan spelas på vilken färg eller siffra som helst utan att ändra färgen. Lottar ett tal från 1 till 5 med lika stor sannolikhet för varje hand och tar så många kort, eller färre så att minst ett blir kvar. Varje kort går slumpmässigt till en annan spelare med lika stor sannolikhet; du kan få fler än fem totalt. Bytet tar 5 sekunder; flyttade kort behåller mjölet även när de spelas.",
       "resolving": "Galna pizzan blandar korten i händerna…",
       "floured": "Mjölbestänkt"
     },

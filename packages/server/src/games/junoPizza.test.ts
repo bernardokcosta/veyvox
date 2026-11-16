@@ -3,6 +3,7 @@ import { randomInt } from 'node:crypto';
 import { canPlayJuno, type JunoCard } from '@veyvox/shared/src/juno.js';
 import { actInRound, createJunoDeck, JunoRooms, startRound, type JunoRound } from './juno.js';
 import { chooseJunoBlindCard, chooseJunoBotAction } from './junoBot.js';
+import { redistributeJunoPizza } from './junoPizza.js';
 
 vi.mock('node:crypto', async original => ({ ...await original<typeof import('node:crypto')>(), randomInt: vi.fn(() => 0) }));
 const random = vi.mocked(randomInt as (max: number) => number);
@@ -29,6 +30,57 @@ function room(count = 3, capable = true) {
 }
 
 describe('Pizza Maluca authoritative exchange', () => {
+  it.each([1, 2, 3, 4, 5])('rolls %i from the same five-way range before clamping small hands', rolled => {
+    const players = Array.from({ length: 7 }, (_, i) => ({
+      userId: String(i), hand: Array.from({ length: i + 1 }, (_, j) => card(`${i}:${j}`)),
+    }));
+    for (let source = 0; source < players.length; source++) {
+      random.mockImplementationOnce(max => { expect(max).toBe(5); return rolled - 1; });
+      for (let i = 0; i < Math.min(rolled, source); i++) random.mockReturnValueOnce(0).mockReturnValueOnce(0);
+    }
+    const transfers = redistributeJunoPizza(players);
+    for (let source = 0; source < players.length; source++) {
+      expect(transfers.filter(t => t.fromUserId === String(source)).reduce((n, t) => n + t.amount, 0))
+        .toBe(Math.min(rolled, source));
+      expect(players[source]!.hand.some(c => c.id.startsWith(`${source}:`))).toBe(true);
+    }
+  });
+  it.each([2, 3, 4])('exchanges at least one original card per eligible hand at the minimum roll with %i players', count => {
+    const state = round(count); const before = state.players.map(p => p.hand.filter(c => c.face !== 'pizza').map(c => c.id));
+    play(state);
+    for (let i = 0; i < count; i++) {
+      expect(state.lastMove!.pizzaTransfers!.filter(t => t.fromUserId === String(i)).reduce((n, t) => n + t.amount, 0)).toBe(1);
+      expect(state.players[i]!.hand.map(c => c.id)).not.toEqual(before[i]);
+    }
+    expect(cards(state).filter(c => c.floured)).toHaveLength(count);
+    if (count === 2) expect(state.players.map(p => p.hand.length)).toEqual([7, 7]);
+  });
+  it('can send every source card to one equally eligible recipient who receives more than five overall', () => {
+    const players = round(4).players.map(p => ({ ...p, hand: p.hand.filter(c => c.face !== 'pizza') }));
+    const original = players.flatMap(p => p.hand.map(c => c.id)).sort();
+    random.mockImplementation(max => max === 5 ? 4 : 0);
+    const transfers = redistributeJunoPizza(players);
+    expect(transfers).toEqual([
+      { fromUserId: '0', toUserId: '1', amount: 5 },
+      { fromUserId: '1', toUserId: '0', amount: 5 },
+      { fromUserId: '2', toUserId: '0', amount: 5 },
+      { fromUserId: '3', toUserId: '0', amount: 5 },
+    ]);
+    expect(players[0]!.hand.filter(c => c.floured)).toHaveLength(15);
+    expect(players.map(p => p.hand.length)).toEqual([17, 7, 2, 2]);
+    expect(players.flatMap(p => p.hand.map(c => c.id)).sort()).toEqual(original);
+  });
+  it.each([2, 3, 4])('maps each equally likely recipient index to another player with %i seats', count => {
+    for (let recipient = 0; recipient < count - 1; recipient++) {
+      const players = round(count).players.map(p => ({ ...p, hand: p.hand.filter(c => c.face !== 'pizza') }));
+      random.mockReset().mockImplementation(max => max === count - 1 ? recipient : 0);
+      const transfers = redistributeJunoPizza(players);
+      expect(random.mock.calls.filter(([max]) => max === count - 1)).toHaveLength(count);
+      expect(transfers).toEqual(players.map((person, source) => ({
+        fromUserId: person.userId, toUserId: String(recipient >= source ? recipient + 1 : recipient), amount: 1,
+      })));
+    }
+  });
   it('adds one pizza only to the enhanced deck and starts with a numeric discard', () => {
     expect(createJunoDeck()).toHaveLength(108);
     expect(createJunoDeck(true)).toHaveLength(109);
@@ -43,8 +95,9 @@ describe('Pizza Maluca authoritative exchange', () => {
     expect(canPlayJuno(state.players[0]!.hand[0]!, state.players[0]!.hand, state.discard[0]!, state.color)).toBe(true);
     play(state);
     expect(state.color).toBe('sky'); expect(state.turn).toBe(direction === 1 ? 1 : 2);
-    expect(state.lastMove).toMatchObject({ type: 'play', card: { face: 'pizza' }, pizzaTransfers: [] });
-    expect(cards(state).some(c => c.floured)).toBe(false);
+    expect(state.lastMove).toMatchObject({ type: 'play', card: { face: 'pizza' } });
+    expect(state.lastMove!.pizzaTransfers!.reduce((n, t) => n + t.amount, 0)).toBe(3);
+    expect(cards(state).filter(c => c.floured)).toHaveLength(3);
   });
   it.each([2, 3, 4])('sends up to five original cards per source without emptying any of %i hands', count => {
     const state = round(count); const original = cards(state).map(c => c.id).sort();
@@ -133,7 +186,8 @@ describe('Pizza Maluca resolution and projection', () => {
     actInRound(state, '1', { type: 'draw' }, 5_100); expect(state.pizzaResolution).toBeUndefined();
   });
   it('freezes valid report windows, removes expired ones, and starts an ordinary pizza miss after the pause', () => {
-    const state = round(); state.players[0]!.hand.splice(2); state.players[2]!.hand.splice(1);
+    const state = round(); state.players[0]!.hand.splice(2);
+    state.players[1]!.hand.splice(1); state.players[2]!.hand.splice(1);
     state.reportWindows = [{ id: 'valid', targetUserId: '2', deadline: 1_000 }, { id: 'expired', targetUserId: '2', deadline: 99 }];
     play(state);
     expect(state.reportWindows.find(w => w.id === 'valid')?.deadline).toBe(6_000);
@@ -165,7 +219,7 @@ describe('Pizza Maluca resolution and projection', () => {
     expect(result.game?.pizzaResolution).toEqual({ id: result.game?.lastMove?.id, remainingMs: 5_000 });
     expect(result.game?.remainingMs).toBe(45_000);
     const spectator = rooms.read('voice', 'watcher', true, true, true).game!;
-    expect(spectator.hand).toEqual([]); expect(spectator.players.map(p => p.flouredCardCount)).toEqual([0, 1, 2]);
+    expect(spectator.hand).toEqual([]); expect(spectator.players.map(p => p.flouredCardCount)).toEqual([0, 2, 4]);
     expect(JSON.stringify(spectator)).not.toMatch(/0:|1:|2:/);
     expect(spectator.lastMove!.pizzaTransfers!.every(t => Object.keys(t).sort().join(',') === 'amount,fromUserId,toUserId')).toBe(true);
     table.round.memoryCurse = { id: 'curse', targetUserId: '1' };
@@ -183,6 +237,7 @@ describe('Pizza Maluca resolution and projection', () => {
   });
   it('cancels travel on departure but retains committed flour, elapsed report pause and a full next timer', () => {
     const { rooms, table, view, setNow } = room(); table.round = round(); table.round.players[0]!.hand.splice(2);
+    table.round.players[1]!.hand.splice(1); table.round.players[2]!.hand.splice(1);
     setNow(100);
     const active = rooms.command('voice', { userId: '0', name: '0' },
       { type: 'play', cardId: 'pizza', gameId: view.game!.id, revision: view.revision }, true, true, true);

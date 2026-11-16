@@ -14,7 +14,7 @@
   "juno": {
     "pizza": {
       "title": "Hullu pizza",
-      "rules": "Voidaan pelata minkä tahansa värin tai numeron päälle väriä muuttamatta. Siirtää satunnaisesti 0–5 korttia jokaisesta kädestä muille pelaajille ja jättää aina vähintään yhden kortin. Vaihto kestää 5 sekuntia; siirrettyihin kortteihin jää jauho myös pelattaessa.",
+      "rules": "Voidaan pelata minkä tahansa värin tai numeron päälle väriä muuttamatta. Arpoo jokaiselle kädelle luvun 1–5 yhtä suurin todennäköisyyksin ja poistaa niin monta korttia tai vähemmän, jotta vähintään yksi jää. Jokainen kortti menee satunnaisesti toiselle pelaajalle yhtä suurella todennäköisyydellä; voit saada yhteensä yli viisi korttia. Vaihto kestää 5 sekuntia; siirrettyihin kortteihin jää jauho myös pelattaessa.",
       "resolving": "Hullu pizza sekoittaa käsien kortteja…",
       "floured": "Jauhoinen"
     },

@@ -45,8 +45,10 @@ within the same session, remembering support in their existing scoped snapshot;
 mutations are never replayed for compatibility.
 
 Pizza plays use the ordinary `play/cardId` command, retaining active color. Its
-server-owned exchange transfers 0–5 original cards per hand while leaving at
-least one, with independent random recipients and no incoming-card cascade.
+server-owned exchange rolls 1–5 with equal probability for each hand, then clamps
+the removal to the original hand size minus one (minimum zero), always leaving
+at least one. Every removed card independently picks an equally likely other
+player; total receipts can exceed five and incoming cards cannot cascade.
 Public `lastMove.pizzaTransfers` exposes only `{fromUserId,toUserId,amount}`.
 Optional `pizzaResolution: {id,remainingMs}` freezes game actions for five seconds
 and preserves the next full turn/report timers; leave remains possible. Card
