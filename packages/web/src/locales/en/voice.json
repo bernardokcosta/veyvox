@@ -14,7 +14,7 @@
   "juno": {
     "pizza": {
       "title": "Crazy Pizza",
-      "rules": "Play on any color or number without changing the color. Randomly transfers 0–5 cards from each hand to other players, always leaving at least one card. The exchange lasts 5 seconds; transferred cards keep their flour, even when played.",
+      "rules": "Play on any color or number without changing the color. Rolls 1–5 with equal chances for each hand and removes that many cards, or fewer to leave at least one. Each card goes randomly to another player with equal chances; you can receive more than five overall. The exchange lasts 5 seconds; transferred cards keep their flour, even when played.",
       "resolving": "Crazy Pizza is mixing the hands…",
       "floured": "Flour-covered"
     },

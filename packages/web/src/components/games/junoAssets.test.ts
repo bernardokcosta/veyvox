@@ -15,6 +15,14 @@ interface Manifest {
   pizzaAudio: { path: string; sha256: string; sourceSha256: string; bytes: number; durationSeconds: number };
 }
 describe('supplied Juno asset inventory', () => {
+  it('densifies only the supplied edge flour, caps it at 50% and never washes the whole card white', () => {
+    const css = readFileSync(path.resolve(import.meta.dirname, 'juno.css'), 'utf8');
+    const style = css.match(/\.juno-card-flour\s*\{([^}]+)\}/)?.[1];
+    expect(style).not.toMatch(/background(?:-color)?:/);
+    expect(style).toMatch(/mask-image:\s*radial-gradient\(ellipse at center,\s*transparent 28%,\s*#000 72%\)/);
+    expect(style).toMatch(/filter:\s*(?:drop-shadow\(0 0 0 #faf8ef\)\s*){4}/);
+    expect(style).toMatch(/opacity:\s*\.5\s*;/);
+  });
   it('ships the supplied pizza, flour and complete pt-BR Vorbis cue with recorded provenance', () => {
     const manifest = JSON.parse(readFileSync(path.join(root, 'manifest.json'), 'utf8')) as Manifest;
     expect(manifest.files.find(f => f.path === 'cards/pizza.webp')).toMatchObject({

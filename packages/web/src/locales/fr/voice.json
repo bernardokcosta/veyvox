@@ -14,7 +14,7 @@
   "juno": {
     "pizza": {
       "title": "Pizza folle",
-      "rules": "Se joue sur n’importe quelle couleur ou valeur sans changer la couleur. Transfère au hasard de 0 à 5 cartes de chaque main vers d’autres joueurs, en laissant toujours au moins une carte. L’échange dure 5 secondes ; les cartes transférées gardent leur farine, même lorsqu’elles sont jouées.",
+      "rules": "Se joue sur n’importe quelle couleur ou valeur sans changer la couleur. Tire au sort de 1 à 5 avec des chances égales pour chaque main et retire autant de cartes, ou moins pour en laisser au moins une. Chaque carte va au hasard à un autre joueur avec des chances égales ; vous pouvez en recevoir plus de cinq au total. L’échange dure 5 secondes ; les cartes transférées gardent leur farine, même lorsqu’elles sont jouées.",
       "resolving": "La Pizza folle mélange les mains…",
       "floured": "Couverte de farine"
     },

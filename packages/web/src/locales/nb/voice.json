@@ -14,7 +14,7 @@
   "juno": {
     "pizza": {
       "title": "Sprø pizza",
-      "rules": "Kan spilles på hvilken som helst farge eller hvilket som helst tall uten å endre fargen. Flytter tilfeldig 0–5 kort fra hver hånd til andre spillere og lar alltid minst ett kort være igjen. Byttet varer i 5 sekunder; flyttede kort beholder melet, også når de spilles.",
+      "rules": "Kan spilles på hvilken som helst farge eller hvilket som helst tall uten å endre fargen. Trekker et tall fra 1 til 5 med lik sannsynlighet for hver hånd og tar så mange kort, eller færre slik at minst ett blir igjen. Hvert kort går tilfeldig til en annen spiller med lik sannsynlighet; du kan motta mer enn fem totalt. Byttet varer i 5 sekunder; flyttede kort beholder melet, også når de spilles.",
       "resolving": "Den sprø pizzaen blander hendene…",
       "floured": "Drysset med mel"
     },

@@ -14,7 +14,7 @@
   "juno": {
     "pizza": {
       "title": "Pizza nebună",
-      "rules": "Poate fi jucată peste orice culoare sau număr fără a schimba culoarea. Transferă aleatoriu 0–5 cărți din fiecare mână către alți jucători, lăsând întotdeauna cel puțin o carte. Schimbul durează 5 secunde; cărțile transferate păstrează făina chiar și după ce sunt jucate.",
+      "rules": "Poate fi jucată peste orice culoare sau număr fără a schimba culoarea. Alege pentru fiecare mână un număr de la 1 la 5 cu șanse egale și ia atâtea cărți, sau mai puține pentru a lăsa cel puțin una. Fiecare carte merge aleatoriu la alt jucător cu șanse egale; poți primi mai mult de cinci în total. Schimbul durează 5 secunde; cărțile transferate păstrează făina chiar și după ce sunt jucate.",
       "resolving": "Pizza nebună amestecă mâinile…",
       "floured": "Acoperită cu făină"
     },

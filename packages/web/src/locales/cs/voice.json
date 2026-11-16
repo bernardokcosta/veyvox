@@ -14,7 +14,7 @@
   "juno": {
     "pizza": {
       "title": "Bláznivá pizza",
-      "rules": "Lze zahrát na libovolnou barvu nebo číslo beze změny barvy. Náhodně přesune 0–5 karet z každé ruky ostatním hráčům a vždy ponechá alespoň jednu kartu. Výměna trvá 5 sekund; přesunuté karty si zachovají mouku i po zahrání.",
+      "rules": "Lze zahrát na libovolnou barvu nebo číslo beze změny barvy. Pro každou ruku vylosuje číslo od 1 do 5 se stejnou pravděpodobností a odebere tolik karet, nebo méně, aby alespoň jedna zůstala. Každá karta jde náhodně k jinému hráči se stejnou pravděpodobností; celkem můžete dostat více než pět karet. Výměna trvá 5 sekund; přesunuté karty si zachovají mouku i po zahrání.",
       "resolving": "Bláznivá pizza míchá karty v rukou…",
       "floured": "Poprášená moukou"
     },

@@ -14,7 +14,7 @@
   "juno": {
     "pizza": {
       "title": "Gekke pizza",
-      "rules": "Kan op elke kleur of elk getal worden gespeeld zonder de kleur te veranderen. Verplaatst willekeurig 0–5 kaarten uit elke hand naar andere spelers, waarbij altijd minstens één kaart overblijft. De uitwisseling duurt 5 seconden; verplaatste kaarten behouden hun bloem, ook als ze worden gespeeld.",
+      "rules": "Kan op elke kleur of elk getal worden gespeeld zonder de kleur te veranderen. Loot voor elke hand met gelijke kansen een getal van 1 tot 5 en neemt zoveel kaarten weg, of minder zodat er minstens één overblijft. Elke kaart gaat met gelijke kansen naar een willekeurige andere speler; je kunt in totaal meer dan vijf ontvangen. De uitwisseling duurt 5 seconden; verplaatste kaarten behouden hun bloem, ook als ze worden gespeeld.",
       "resolving": "De gekke pizza schudt de handen door elkaar…",
       "floured": "Met bloem bestoven"
     },

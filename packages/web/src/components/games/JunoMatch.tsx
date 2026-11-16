@@ -11,6 +11,7 @@ import { JUNO_ASSETS } from './junoAssets';
 import { junoSeats } from './junoSeats';
 import { JunoEffects } from './JunoEffects';
 import { JunoPizzaEffects } from './JunoPizzaEffects';
+import { useJunoPizzaPresentation } from './useJunoPizzaPresentation';
 
 const COLOR_KEYS = { coral: 'juno.colors.coral', amber: 'juno.colors.amber', mint: 'juno.colors.mint', sky: 'juno.colors.sky' } as const;
 const FACE_KEYS = { skip: 'juno.faces.skip', reverse: 'juno.faces.reverse', draw2: 'juno.faces.draw2', wild: 'juno.faces.wild', draw4: 'juno.faces.draw4', memory: 'juno.faces.memory', intoxicated: 'juno.intoxicated.title', pizza: 'juno.pizza.title' } as const;
@@ -23,8 +24,9 @@ export function JunoMatch() {
   const [announceRevision, setAnnounceRevision] = useState<number | null>(null);
   const colorTrigger = useRef<HTMLButtonElement | null>(null);
   const reportDescriptionId = useId();
-  const game = snapshot?.game;
-  if (!game || game.phase !== 'playing') return null;
+  const presentation = useJunoPizzaPresentation(snapshot?.game ?? null, target?.userId, observedAt, connected && !stale);
+  const game = presentation.game;
+  if (!snapshot || !game || game.phase !== 'playing') return null;
   const revision = snapshot.revision; const selfId = target?.userId;
   const elapsed = Math.max(0, now - observedAt), resolutionMs = game.pizzaResolution?.remainingMs ?? 0;
   const resolving = resolutionMs > elapsed, turnElapsed = Math.max(0, elapsed - resolutionMs);
@@ -83,7 +85,7 @@ export function JunoMatch() {
   const movePosition = Object.entries(seats).find(([, person]) => person?.userId === effectPlayer?.userId)?.[0] ?? 'top';
   return <div className={`juno-match${game.supportsReports ? ' juno-reports' : ''}${myTurn ? ' juno-my-turn' : ''}${blind ? ' juno-memory-active' : ''}${intoxicated ? ' juno-intoxicated-active' : ''}`}>
     <JunoEffects move={game.lastMove} position={movePosition} name={playerName(effectPlayer)} viewerId={selfId} />
-    <JunoPizzaEffects move={game.lastMove} players={game.players} direction={game.direction} viewerId={selfId} resolution={game.pizzaResolution} active={connected && !stale} />
+    <JunoPizzaEffects move={game.lastMove} players={game.players} direction={game.direction} viewerId={selfId} resolution={game.pizzaResolution} active={connected && !stale} startedAt={presentation.startedAt} onStop={presentation.onStop} />
     <div className="juno-arena">
       <img className="juno-orbit" src={JUNO_ASSETS.orbit} alt="" aria-hidden="true" />
       {seat('top')}{seat('left')}{seat('right')}

@@ -14,7 +14,7 @@
   "juno": {
     "pizza": {
       "title": "Skør pizza",
-      "rules": "Kan spilles på enhver farve eller ethvert tal uden at ændre farven. Flytter tilfældigt 0–5 kort fra hver hånd til andre spillere og efterlader altid mindst ét kort. Byttet varer 5 sekunder; flyttede kort beholder melet, også når de spilles.",
+      "rules": "Kan spilles på enhver farve eller ethvert tal uden at ændre farven. Trækker et tal fra 1 til 5 med lige stor sandsynlighed for hver hånd og fjerner så mange kort, eller færre så mindst ét bliver tilbage. Hvert kort går tilfældigt til en anden spiller med lige stor sandsynlighed; du kan modtage mere end fem i alt. Byttet varer 5 sekunder; flyttede kort beholder melet, også når de spilles.",
       "resolving": "Den skøre pizza blander hænderne…",
       "floured": "Drysset med mel"
     },

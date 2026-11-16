@@ -14,7 +14,7 @@
   "juno": {
     "pizza": {
       "title": "Pizza điên",
-      "rules": "Có thể đánh lên bất kỳ màu hoặc số nào mà không đổi màu. Chuyển ngẫu nhiên 0–5 lá từ tay mỗi người sang người chơi khác, luôn để lại ít nhất một lá. Việc đổi bài kéo dài 5 giây; các lá được chuyển vẫn giữ lớp bột mì, kể cả khi được đánh ra.",
+      "rules": "Có thể đánh lên bất kỳ màu hoặc số nào mà không đổi màu. Bốc số từ 1 đến 5 với xác suất bằng nhau cho mỗi tay bài rồi lấy đi số lá đó, hoặc ít hơn để còn ít nhất một lá. Mỗi lá được chuyển ngẫu nhiên cho người chơi khác với cơ hội bằng nhau; bạn có thể nhận tổng cộng hơn năm lá. Việc đổi bài kéo dài 5 giây; các lá được chuyển vẫn giữ lớp bột mì, kể cả khi được đánh ra.",
       "resolving": "Pizza điên đang trộn bài trên tay…",
       "floured": "Phủ bột mì"
     },
