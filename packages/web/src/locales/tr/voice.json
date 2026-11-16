@@ -14,7 +14,7 @@
   "juno": {
     "pizza": {
       "title": "Çılgın Pizza",
-      "rules": "Rengi değiştirmeden herhangi bir renk veya sayının üzerine oynanabilir. Her elden rastgele 0–5 kartı diğer oyunculara aktarır ve her zaman en az bir kart bırakır. Değişim 5 saniye sürer; aktarılan kartlar oynandıklarında bile un izini korur.",
+      "rules": "Rengi değiştirmeden herhangi bir renk veya sayının üzerine oynanabilir. Her el için 1 ile 5 arasında eşit olasılıkla bir sayı seçer ve o kadar kart alır; en az bir kart kalması için gerekirse daha az alır. Her kart eşit olasılıkla rastgele başka bir oyuncuya gider; toplamda beşten fazla kart alabilirsin. Değişim 5 saniye sürer; aktarılan kartlar oynandıklarında bile un izini korur.",
       "resolving": "Çılgın Pizza elleri karıştırıyor…",
       "floured": "Unlanmış"
     },

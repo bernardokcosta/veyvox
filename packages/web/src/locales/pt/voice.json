@@ -14,7 +14,7 @@
   "juno": {
     "pizza": {
       "title": "Pizza Maluca",
-      "rules": "Pode ser jogada sobre qualquer cor ou número, sem mudar a cor. Transfere aleatoriamente de 0 a 5 cartas de cada mão para outros jogadores, sempre deixando pelo menos uma carta. A troca dura 5 segundos; as cartas transferidas mantêm a farinha, inclusive quando são jogadas.",
+      "rules": "Pode ser jogada sobre qualquer cor ou número, sem mudar a cor. Sorteia de 1 a 5 com chances iguais para cada mão e retira essa quantidade de cartas, ou menos para deixar pelo menos uma. Cada carta vai aleatoriamente para outro jogador, com chances iguais; você pode receber mais de cinco no total. A troca dura 5 segundos; as cartas transferidas mantêm a farinha, inclusive quando são jogadas.",
       "resolving": "A Pizza Maluca está misturando as mãos…",
       "floured": "Com farinha"
     },

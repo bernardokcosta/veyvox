@@ -14,6 +14,7 @@
     "dev:server": "pnpm --filter @veyvox/server dev",
     "dev:web": "pnpm --filter @veyvox/web dev",
     "dev": "pnpm --parallel --filter @veyvox/server --filter @veyvox/web dev",
+    "preview:juno": "pnpm --parallel --filter @veyvox/server --filter @veyvox/web preview:juno",
     "build:shared": "pnpm --filter @veyvox/shared build",
     "build:server": "pnpm --filter @veyvox/server build",
     "build:web": "pnpm --filter @veyvox/web build",

@@ -34,6 +34,8 @@ remain in the supplied real pt-BR media edition; no other dubbing is fabricated.
 
 Pizza Maluca uses `voice:juno.pizza` in all 25 catalogs for its name, rules,
 static resolution message and accessible flour-covered card label. Interface
+rules describe an equal-probability 1–5 roll before clamping to leave one card,
+and equally likely other-player recipients for each transferred card. Interface
 translations do not create media editions: supplied art and complete cue remain
 pt-BR only in `JUNO_DUBBINGS`, with existing Automatic fallback. Rules show it
 only in capable lobbies or enabled frozen rounds. Flour markers never reveal

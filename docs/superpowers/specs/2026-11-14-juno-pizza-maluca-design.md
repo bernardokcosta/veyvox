@@ -2,6 +2,16 @@
 
 ## Status and objective
 
+**2026-11-16 correction:** The user clarified that the zero-inclusive selection
+below was incorrect. The current rule rolls 1–5 with equal probability before
+clamping to leave one original card, and gives each removed card an independent,
+equally likely other-player recipient. The user further requested synchronized
+visible hand departures/arrivals, a playable development preview and textured
+edge flour capped at 50%, explicitly rejecting a flat white wash.
+See [the correction plan](../plans/2026-11-16-juno-pizza-correction.md) and
+[`docs/systems/juno.md`](../../systems/juno.md) for the current contract; the
+zero-inclusive passages below record the superseded initial design.
+
 Approved by the user on 2026-11-14, including the summarized defaults:
 one copy, retaining the active color, ordinary last-card victory without an
 exchange, and flour identity through the whole round. The user selected

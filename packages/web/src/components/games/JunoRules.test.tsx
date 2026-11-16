@@ -27,7 +27,10 @@ describe('illustrated Juno rules', () => {
   it('teaches pizza and its persistent flour only in supported lobbies or enabled frozen rounds', async () => {
     const { guide, rerender } = await open({ game: { ...game, pizzaEnabled: true }, supportsPizza: true });
     expect(guide.querySelector('img[src="/games/juno/cards/pizza.webp"]')).toBeInTheDocument();
-    expect(guide).toHaveTextContent(/0.*5/); expect(guide).toHaveTextContent(/at least one card/i);
+    const rules = guide.querySelector('.juno-guide-memory:last-child');
+    expect(rules).toHaveTextContent(/1–5 with equal chances/i);
+    expect(rules).toHaveTextContent(/fewer to leave at least one/i);
+    expect(rules).toHaveTextContent(/more than five overall/i);
     rerender(<div className="juno-table"><div className="juno-header"><JunoRules game={game} supportsPizza /></div></div>);
     expect(guide.querySelector('img[src="/games/juno/cards/pizza.webp"]')).toBeNull();
   });
