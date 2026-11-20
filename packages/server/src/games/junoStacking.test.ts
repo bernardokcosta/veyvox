@@ -149,7 +149,7 @@ describe('Juno stacking engine', () => {
   });
   it('downgrades to classic when a seated human predates stacking support, and refuses stacking views to them', async () => {
     const { JunoRooms } = await import('./juno.js');
-    let now = 0;
+    const now = 0;
     const rooms = new JunoRooms({ present: () => true, changed: () => {}, now: () => now });
     const full = [true, true, true, true, true] as const;
     const old = [true, true, true, true, false] as const;

@@ -56,8 +56,7 @@ it('falls back only an unsupported GET query, while negotiated old-host reads an
   ]);
   await client.juno.get('voice', false); await client.juno.command('voice', { type: 'create' }, false);
   expect(vi.mocked(globalThis.fetch).mock.calls.slice(2).map(c => c[0])).toEqual([
-    'https://host.test/api/channels/voice/juno?memory=1&six=1&stacking=1',
-    'https://host.test/api/channels/voice/juno?memory=1&six=1', 'https://host.test/api/channels/voice/juno?memory=1',
+    'https://host.test/api/channels/voice/juno?memory=1&six=1&stacking=1', 'https://host.test/api/channels/voice/juno?memory=1',
   ]);
 });
 

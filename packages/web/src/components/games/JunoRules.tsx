@@ -57,7 +57,7 @@ export function JunoRules({ game, supportsMemory, supportsIntoxicated, supportsP
     }
     if (scroller.scrollTop > 0 && scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1) current = 'table';
     setActiveSection(current);
-  }, [specialCards, stacking, showMemory]);
+  }, [stacking, showMemory]);
   useEffect(() => {
     const scroller = scroll.current;
     if (!open || !scroller) return;
