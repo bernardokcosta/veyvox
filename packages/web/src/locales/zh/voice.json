@@ -393,7 +393,10 @@
       "text": "文字"
     },
     "codec": "编解码器",
+    "forceSdrReselect": "SDR 捕获已结束。请重新选择来源，以继续使用强制 SDR 共享。",
     "codecOption": {
+      "auto": "自动画质",
+      "recommended": "推荐编解码器：{{codec}}",
       "vp9": "VP9",
       "h264": "H264",
       "h265": "H265 (HEVC)"

@@ -11,14 +11,21 @@ beforeEach(() => {
 });
 
 describe('screen-share codec persistence', () => {
-  it('persists HEVC without changing the VP9 default', async () => {
-    expect(useVoiceStore.getInitialState().screenShareConfig.codec).toBe('vp9');
+  it('defaults new profiles to automatic 1080p60 while preserving explicit HEVC', async () => {
+    expect(useVoiceStore.getInitialState().screenShareConfig).toMatchObject({ height: 1080, fps: 60, codec: 'auto', customBitrateKbps: null });
     useVoiceStore.getState().setScreenShareConfig({ codec: 'h265' });
     const saved = JSON.parse(localStorage.getItem(KEY) ?? '{}');
-    expect(saved.version).toBe(17);
+    expect(saved.version).toBe(18);
     expect(saved.state.screenShareConfig.codec).toBe('h265');
     await useVoiceStore.persist.rehydrate();
     expect(useVoiceStore.getState().screenShareConfig.codec).toBe('h265');
+  });
+
+  it('keeps the previously saved 720p60 VP9 choice after the upgrade', async () => {
+    const config = { ...useVoiceStore.getInitialState().screenShareConfig, height: 720, codec: 'vp9' };
+    localStorage.setItem(KEY, JSON.stringify({ version: 17, state: { screenShareConfig: config } }));
+    await useVoiceStore.persist.rehydrate();
+    expect(useVoiceStore.getState().screenShareConfig).toEqual(config);
   });
 
   it('gives a version 16 store the default camera config without touching the rest', async () => {

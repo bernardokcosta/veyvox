@@ -399,7 +399,10 @@
       "text": "Texte"
     },
     "codec": "Codec",
+    "forceSdrReselect": "La capture SDR s’est arrêtée. Sélectionne de nouveau la source pour continuer à partager en SDR forcé.",
     "codecOption": {
+      "auto": "Qualité automatique",
+      "recommended": "Codec recommandé : {{codec}}",
       "vp9": "VP9",
       "h264": "H264",
       "h265": "H265 (HEVC)"

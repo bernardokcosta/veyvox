@@ -10,6 +10,8 @@ import { HttpError } from '../../api/client';
 import { JUNO_SOUNDS } from './junoSoundCues';
 const audio = vi.hoisted(() => ({ loadSound: vi.fn(), resumeContext: vi.fn(), createBufferSource: vi.fn(), createGain: vi.fn(), ensureContext: vi.fn(), getMasterOutput: vi.fn() }));
 vi.mock('../../audio/AudioManager', () => ({ AudioManager: { getInstance: () => audio } }));
+const getTable = vi.hoisted(() => vi.fn());
+vi.mock('../../api/client', async original => ({ ...await original<typeof import('../../api/client')>(), api: { juno: { get: getTable } } }));
 const target = { userId: 'a', channelId: 'voice', origin: window.location.origin };
 const node = { stop: vi.fn(), disconnect: vi.fn(), connect: vi.fn(), start: vi.fn(), buffer: null, onended: null };
 const gain = { gain: { value: 0, setValueAtTime: vi.fn(), linearRampToValueAtTime: vi.fn() }, connect: vi.fn(), disconnect: vi.fn() };
@@ -64,6 +66,28 @@ describe('Juno neon session playback', () => {
     await act(async () => useJunoStore.getState().playFeedback?.('select'));
     expect(audio.loadSound).toHaveBeenLastCalledWith('juno/selecionar_carta'); expect(gain.gain.value).toBeCloseTo(.8 * .35 * .25);
     expect(useJunoPreferences.getState().musicVolume).toBe(100);
+  });
+  it('keeps successive confirmed cues audible to a passive listener', async () => {
+    const passive = { ...target, userId: 'spectator' };
+    useJunoStore.getState().bind(passive, true);
+    const game = { ...junoGame('playing'), currentPlayerId: 'b', remainingMs: 45_000 };
+    useJunoStore.setState({ snapshot: { revision: 1, game } });
+    render(<JunoMemorySound target={passive} connected />);
+    getTable.mockResolvedValueOnce({ revision: 2, game: { ...game, lastMove: { id: 'one', type: 'draw', userId: 'b', amount: 1 } } })
+      .mockResolvedValueOnce({ revision: 3, game: { ...game, lastMove: { id: 'two', type: 'announce', userId: 'b' } } });
+    await act(async () => useJunoStore.getState().invalidate('voice'));
+    await act(async () => useJunoStore.getState().invalidate('voice'));
+    expect(audio.loadSound.mock.calls).toEqual([['juno/carta_comprada'], ['juno/uno']]);
+    expect(node.start).toHaveBeenCalledTimes(2);
+  });
+  it('keeps the turn cue when a seated player minimizes the table', async () => {
+    const game = { ...junoGame('playing'), currentPlayerId: 'b', remainingMs: 45_000 };
+    useJunoStore.setState({ open: false, snapshot: { revision: 1, game } });
+    render(<JunoMemorySound target={target} connected />);
+    getTable.mockResolvedValueOnce({ revision: 2, game: { ...game, currentPlayerId: 'a', lastMove: { id: 'pass', type: 'pass', userId: 'b' } } });
+    await act(async () => useJunoStore.getState().invalidate('voice'));
+    expect(audio.loadSound).toHaveBeenCalledExactlyOnceWith('juno/seu_turno');
+    expect(node.start).toHaveBeenCalledOnce();
   });
   it('retains local feedback when the parent binds the target after child effects', async () => {
     useJunoStore.getState().reset();

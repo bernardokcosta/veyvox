@@ -21,7 +21,7 @@ import {
 vi.mock('./hwOverdrive', () => ({ activate: vi.fn(), deactivate: vi.fn() }));
 vi.mock('./voice', () => ({ broadcastVoiceStatus: vi.fn() }));
 vi.mock('../audio/AudioManager', () => ({ AudioManager: { getInstance: () => ({}) } }));
-vi.mock('./livekitInternals', () => ({ getPublisherPC: vi.fn(() => null), getMediaStreamTrack: vi.fn(() => null) }));
+vi.mock('./livekitInternals', async original => ({ ...await original<typeof import('./livekitInternals')>(), getPublisherPC: vi.fn(() => null), getMediaStreamTrack: vi.fn(() => null) }));
 vi.mock('../stores/settingsStore', () => ({
   getStreamingLimits: () => ({
     minBitrateKbps: 500,

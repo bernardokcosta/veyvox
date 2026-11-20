@@ -396,7 +396,10 @@
       "text": "Văn bản"
     },
     "codec": "Codec",
+    "forceSdrReselect": "Phiên ghi SDR đã kết thúc. Hãy chọn lại nguồn để tiếp tục chia sẻ với chế độ buộc dùng SDR.",
     "codecOption": {
+      "auto": "Chất lượng tự động",
+      "recommended": "Bộ mã hóa đề xuất: {{codec}}",
       "vp9": "VP9",
       "h264": "H264",
       "h265": "H265 (HEVC)"

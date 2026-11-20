@@ -396,7 +396,10 @@
       "text": "Teksti"
     },
     "codec": "Koodekki",
+    "forceSdrReselect": "SDR-kaappaus päättyi. Valitse lähde uudelleen jatkaaksesi jakamista pakotetulla SDR:llä.",
     "codecOption": {
+      "auto": "Automaattinen laatu",
+      "recommended": "Suositeltu koodekki: {{codec}}",
       "vp9": "VP9",
       "h264": "H264",
       "h265": "H265 (HEVC)"

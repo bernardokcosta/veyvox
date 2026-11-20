@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { normalizeScreenShareCodec, resolveScreenShareCodec, supportsScreenShareH265 } from './screenShareCodec';
+import { normalizeScreenShareCodec, resolveAdvertisedScreenShareCodec, resolveScreenShareCodec, supportsScreenShareH265 } from './screenShareCodec';
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -37,6 +37,17 @@ describe('screen-share codec capabilities', () => {
     expect(resolveScreenShareCodec('vp9')).toBe('vp9');
     capabilities(['video/H265']);
     expect(resolveScreenShareCodec('h265')).toBe('h265');
+  });
+
+  it('does not fall into a host-forced HEVC choice when VP9 is unavailable or Auto is set', () => {
+    const host = (...codecs: string[]) => ({ enabledPublishVideoCodecs: codecs.map(codec => ({ mime: `video/${codec}` })) });
+    capabilities(['video/VP8', 'video/H264']);
+    expect(resolveAdvertisedScreenShareCodec(host('H265', 'VP8', 'H264'), 'vp9')).toBe('vp8');
+    expect(resolveAdvertisedScreenShareCodec(host('H264', 'VP9'), 'vp9')).toBe('h264');
+    capabilities(['video/H265', 'video/VP8', 'video/H264']);
+    expect(resolveAdvertisedScreenShareCodec(host('H265', 'VP8'), resolveScreenShareCodec('auto'))).toBe('vp8');
+    expect(resolveAdvertisedScreenShareCodec(host('H265'), resolveScreenShareCodec('auto'))).toBeNull();
+    expect(resolveAdvertisedScreenShareCodec(host('H265'), resolveScreenShareCodec('h265'))).toBe('h265');
   });
 });
 

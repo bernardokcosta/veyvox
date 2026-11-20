@@ -314,15 +314,15 @@ ScreenShareConfig {
   customBitrateKbps: number | null, // Admin override (if allowed)
   shareAudio: boolean,              // System audio loopback (see Platform Support below)
   forceSdr: boolean,                // Opt-in Windows HDR → SDR video conversion; default false
-  codec: 'vp9' | 'h264' | 'h265'    // Persisted codec preference; HEVC is opt-in
+  codec: 'auto' | 'vp9' | 'h264' | 'h265' // Device-local preference, not the negotiated result
 }
 ```
 
 ### Build Pipeline (`buildScreenShareOptions()`)
-1. Resolve bitrate from matrix (custom > override > default > native estimate)
-2. Clamp to instance limits (minBitrateKbps, maxBitrateKbps)
-3. Resolve the persisted codec: VP9 (default), H.264 or H.265/HEVC. An unavailable local HEVC choice uses effective H.264 without changing the saved preference.
-4. VP9/H.264 choices retain a reduced-FPS/bitrate VP8 simulcast backup, paused by dynacast when unused. An HEVC choice instead uses full-ceiling H.264 fallback with forced codec regression, not permanent dual encoding.
+1. New profiles default to the Automatic 1080p60 target with an automatic bitrate. Automatic recommends H.264: HEVC-first is gated on identifying and safely recovering a first-publication codec failure. Saving the preset never changes Force SDR, the capture mode or system audio. Publication and live sender updates fit the request to local codec capabilities and the server's advertised codecs without rewriting stored choices. Only a manual, supported HEVC choice can select HEVC. If the server's list has no compatible entry, the app does not request a new video publication.
+2. Resolve bitrate (permitted custom > host override > codec recommendation), scaling the recommendation or override to actual dimensions in native mode. VP9 and HEVC retain the existing matrix; H.264 has conservative higher recommendations, such as 10 vs 8 Mb/s at 1080p60. They are ceilings, not received-quality guarantees.
+3. Clamp the primary and H.264 fallback to instance limits (minBitrateKbps, maxBitrateKbps).
+4. VP9/H.264 choices retain a reduced-FPS/bitrate VP8 simulcast backup, paused by dynacast when unused. An HEVC choice instead uses full-FPS H.264 fallback with its own bitrate ceiling and forced codec regression, not permanent dual encoding.
 5. Content hint: `'detail'` (text) or `'motion'` (gaming)
 6. Degradation preference: preserve resolution for text, balanced for gaming
 
@@ -355,7 +355,9 @@ keeps the ordinary display-media/audio acquisition, then
 native first frame. Preview and publication use that same generated track;
 original audio tracks retain their identity and no microphone is acquired by
 the adapter. Failure stops every owned resource and reports an error, never
-returns raw HDR video as a successful SDR capture.
+returns raw HDR video as a successful SDR capture. If a corrected track
+later ends, the warning asks the user to reselect the same source with
+Force SDR enabled instead of telling them to disable the preference.
 
 Changing this preference while staging aborts/disposes the old preview and
 takes a fresh authorized capture of its explicit tile. During publication the
@@ -393,11 +395,11 @@ acceptance gates are documented in [desktop.md](desktop.md),
 [desktop-security.md](desktop-security.md) and the 1.15.1 validation ledger.
 
 ### Codec and sender parameters
-- `utils/screenShareCodec.ts` owns the three requested codec values, safe HEVC
+- `utils/screenShareCodec.ts` owns the automatic preset, three manual codec values, safe HEVC
   capability detection and effective local fallback. H.265 availability comes
   from WebRTC sender capabilities (`supportsH265` in LiveKit), not the user-agent
   or WebCodecs. Missing/failing capability APIs disable the HEVC pill and explain
-  why. Voice settings schema 16 preserves valid codec preferences, normalizes
+   why. Voice settings schema 18 preserves valid codec preferences, normalizes
   invalid values to VP9, and fills missing config fields on hydration. A saved
   HEVC preference is never rewritten just because another device lacks support.
 - H.265 is screen-share-only; cameras remain H.264. Chromium/driver selects its
@@ -423,9 +425,11 @@ acceptance gates are documented in [desktop.md](desktop.md),
   fallback tracks are mapped to their publication in shared stats and initial
   encoder inspection; paused senders are not mistaken for the active codec based
   on old cumulative byte counters. Missing implementation data remains unknown.
-- HEVC live quality changes update the active fallback sender as well as the
-  primary and LiveKit 2.23's cached publish/encoding options. A late regression
-  must not revive old bitrate/FPS ceilings or a stale degradation preference.
+- Screen-share quality changes update the active fallback sender as well as
+  the primary and LiveKit 2.23's cached publish/encoding options. The
+  independent H.264 or reduced VP8 ceiling is applied before creation and
+  on resize without mutating the primary's cached encoding; the pinned SDK
+  otherwise uses that cached encoding for screen backups.
 - Live republish compares the primary codec, backup codec and backup policy,
   not just the effective/observed codec. Switching an unavailable HEVC preference
   to explicit H.264 restores VP8/`SIMULCAST` even though both use H.264 locally;

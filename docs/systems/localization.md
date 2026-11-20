@@ -1,5 +1,12 @@
 # Localization
 
+Screen-share controls use `voice:streamSettings.codecOption.auto` and
+`codecOption.recommended` (placeholder `{{codec}}`) in all 25 catalogs.
+Recommended codec copy is distinct from the negotiated live codec in the
+connection inspector and the independent automatic bitrate control.
+`voice:streamSettings.forceSdrReselect` tells the user to reselect an ended
+SDR capture without turning off Force SDR; it is not used for setup failures.
+
 Veyvox 1.17.0 replaces the product proper name in all 25 web/native catalogs,
 including Juno's Automatic labels, without changing keys, plurals, placeholders,
 language selection or Juno's actual media edition. Finnish/Turkish name inflections

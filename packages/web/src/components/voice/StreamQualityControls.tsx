@@ -11,7 +11,7 @@ import i18n from '../../i18n';
 import { formatters } from '../../i18n/formatters';
 import { SYSTEM_AUDIO_NOTE_I18N_KEYS, systemAudioNote, useOwnAudioInSystemAudio } from '../../utils/systemAudioNote';
 import { getSdrCaptureCapability } from '../../utils/sdrScreenCapture';
-import { resolveScreenShareCodec, supportsScreenShareH265 } from '../../utils/screenShareCodec';
+import { AUTO_SCREEN_SHARE_QUALITY, supportsScreenShareH265 } from '../../utils/screenShareCodec';
 
 /**
  * The stream quality controls (resolution, frame rate, content mode, codec,
@@ -108,7 +108,6 @@ export function StreamQualityControls({ capturePending = false }: { capturePendi
   const config = useVoiceStore((s) => s.screenShareConfig);
   const setConfig = useVoiceStore((s) => s.setScreenShareConfig);
   const h265Supported = supportsScreenShareH265();
-  const effectiveCodec = resolveScreenShareCodec(config.codec);
   const h265DescriptionId = React.useId();
   const showH265Help = config.codec === 'h265' || !h265Supported;
   const limits = useSettingsStore(state => state.streamingLimits);
@@ -141,6 +140,7 @@ export function StreamQualityControls({ capturePending = false }: { capturePendi
   }));
 
   const result = buildScreenShareOptions(config);
+  const effectiveCodec = result.publish.videoCodec;
   // What Auto resolves to right now, in kbps; also the slider's starting point when switching to Custom
   const autoKbps = Math.round(result.publish.videoEncoding.maxBitrate / 1000);
 
@@ -208,9 +208,14 @@ export function StreamQualityControls({ capturePending = false }: { capturePendi
         <div className="text-[11px] text-txt-tertiary font-semibold uppercase tracking-wider mb-1.5">
           {t('voice:streamSettings.codec')}
         </div>
-        <div className="flex gap-1.5">
+        <div className="flex flex-wrap gap-1.5">
+          <button type="button" onClick={() => setConfig(AUTO_SCREEN_SHARE_QUALITY)}
+            aria-pressed={config.codec === 'auto'}
+            className={`${pillBase} ${config.codec === 'auto' ? pillSelected : pillUnselected}`}>
+            {t('voice:streamSettings.codecOption.auto')}
+          </button>
           {CODEC_OPTIONS.map((c) => {
-            const isSelected = effectiveCodec === c.value;
+            const isSelected = config.codec !== 'auto' && effectiveCodec === c.value;
             const unavailable = c.value === 'h265' && !h265Supported;
             return (
               <button
@@ -227,6 +232,11 @@ export function StreamQualityControls({ capturePending = false }: { capturePendi
             );
           })}
         </div>
+        {config.codec === 'auto' && (
+          <div className="text-[10px] text-txt-tertiary mt-1.5">
+            {t('voice:streamSettings.codecOption.recommended', { codec: t(CODEC_OPTIONS.find(c => c.value === effectiveCodec)!.labelKey) })}
+          </div>
+        )}
         {showH265Help && (
           <div id={h265DescriptionId} className="text-[10px] text-txt-tertiary mt-1.5">
             {config.codec === 'h265'

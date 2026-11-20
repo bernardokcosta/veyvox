@@ -128,6 +128,21 @@ describe('H.265 quality control', () => {
     render(<StreamQualityControls />);
     expect(screen.getByRole('button', { name: 'H265 (HEVC)' })).toBeDisabled();
   });
+
+  it('selects automatic 1080p60 without clearing Force SDR or system audio, then fits the current host', () => {
+    webRtcCodecs(false);
+    useVoiceStore.getState().setScreenShareConfig({ height: 540, fps: 30, customBitrateKbps: 2100, codec: 'vp9', shareAudio: true, forceSdr: true });
+    render(<StreamQualityControls />);
+    const auto = screen.getByRole('button', { name: 'Automatic quality' });
+    fireEvent.click(auto);
+    expect(auto).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '720p' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '30' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText('Recommended codec: H264')).toBeInTheDocument();
+    expect(useVoiceStore.getState().screenShareConfig).toMatchObject({
+      height: 1080, fps: 60, codec: 'auto', customBitrateKbps: null, shareAudio: true, forceSdr: true,
+    });
+  });
 });
 
 describe('Force SDR quality control', () => {
