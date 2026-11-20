@@ -79,6 +79,9 @@ describe('Juno cosmic interactive match', () => {
     const hidden = screen.getByRole('button', { name: 'Hidden card 1' });
     expect(hidden).toBeEnabled(); expect(hidden).toHaveAttribute('title', 'Hidden card 1');
     expect(container.querySelector('.juno-hand img,.juno-active-color,.juno-card-legal')).toBeNull();
+    const sources = [...container.querySelectorAll('img[src], img[srcset]')]
+      .flatMap(img => [img.getAttribute('src'), img.getAttribute('srcset')]).join(' ');
+    expect(sources).not.toMatch(/\/(?:wild|coral-3|sky-8)\.webp|hidden-[12]/);
     expect(screen.queryByLabelText(/color:/i)).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Draw pile' })).toBeDisabled();
     expect(screen.getByRole('button', { name: /say juno/i })).toBeEnabled();

@@ -396,7 +396,10 @@
       "text": "Teks"
     },
     "codec": "Codec",
+    "forceSdrReselect": "Perekaman SDR berakhir. Pilih ulang sumber untuk melanjutkan berbagi dengan Paksa SDR.",
     "codecOption": {
+      "auto": "Kualitas otomatis",
+      "recommended": "Kodek yang disarankan: {{codec}}",
       "vp9": "VP9",
       "h264": "H264",
       "h265": "H265 (HEVC)"

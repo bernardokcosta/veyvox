@@ -327,8 +327,13 @@ VIEW_CHANNEL-filtered `sendToChannel`. This is a non-secret invalidation, not a
 private hand broadcast. Only clients in that voice session fetch their private
 view; other channel viewers ignore it. Action replies update the actor directly.
 The client rejects old request generations, old revisions and responses for
-previous accounts/rooms. Five-second visible-page refresh and visibility resume
-recover missed invalidations. `ready.supportsJuno` gates support per origin;
+previous accounts/rooms. Visible pages refresh on entry, opening the game,
+presenting the table and becoming visible again. The safety timer waits five
+seconds for a seated player or a presented table, and 30 seconds for a passive
+voice session. An acknowledged read or command reply can satisfy the timer;
+hidden pages do not poll. Invalidation reads remain immediate (subject to
+single-flight and cooldown) so a passive listener can still hear live cues.
+`ready.supportsJuno` gates support per origin;
 reconnect ready invalidates the previous snapshot, including after server restart.
 Logout and voice room changes discard private client state. Ranking reads are
 separately account/origin/space scoped, generation guarded and refreshed on entry
@@ -391,7 +396,13 @@ screen-reader announcements remain. Empty seats use a plus action rather than
 visible placeholder text. Host clicks add/remove computers directly in the lobby.
 The supplied 720:1056 card art maps coral/amber/mint/sky to red/yellow/green/blue
 without changing wire enums or card ids. Opponent fans show only backs (at most
-10 images; the exact count stays visible). The single cosmic background keeps
+10 images; the exact count stays visible). Cards and the flour overlay offer a
+288px WebP candidate for their small rendered slots and keep the original
+720px candidate for high-density/zoomed rendering and as the unsized fallback.
+Only a face already allowed to render gets a candidate URL. The originals,
+animations and music are unchanged; `node scripts/gen-juno-compact.mjs`
+regenerates the candidates and their separate provenance manifest.
+The single cosmic background keeps
 all four colored corners on narrow screens. Localized real buttons retain rounded
 green/cyan gradients, borders and focus/disabled states without depending on
 background artwork loading. The game palette is scoped to Juno, not app chrome.

@@ -396,7 +396,10 @@
       "text": "Metin"
     },
     "codec": "Codec",
+    "forceSdrReselect": "SDR yakalama sona erdi. SDR'ye zorlamayla paylaşmayı sürdürmek için kaynağı yeniden seç.",
     "codecOption": {
+      "auto": "Otomatik kalite",
+      "recommended": "Önerilen codec: {{codec}}",
       "vp9": "VP9",
       "h264": "H264",
       "h265": "H265 (HEVC)"
