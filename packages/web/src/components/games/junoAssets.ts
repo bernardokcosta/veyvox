@@ -25,6 +25,13 @@ export const JUNO_ASSETS = {
   flourParticle: `${ROOT}/ui/flour-particle.webp`, flourImpact: `${ROOT}/ui/flour-impact.webp`,
 };
 
+/** The displayed slot is at most 96 CSS px, including room for its hover effect. */
+export const JUNO_CARD_SIZES = '96px';
+export function junoCardSrcSet(url: string): string | undefined {
+  if (url !== JUNO_ASSETS.flour && !url.startsWith(`${ROOT}/cards/`)) return;
+  return `${ROOT}/compact${url.slice(ROOT.length)} 288w, ${url} 720w`;
+}
+
 /** Opaque runtime ids are never artwork paths; opponents always use the same back. */
 export function junoCardUrl(card?: JunoCard, back = false, dubbing: JunoDubbingLanguage = 'pt-BR'): string {
   if (back || !card) return `${ROOT}/cards/back.webp`;

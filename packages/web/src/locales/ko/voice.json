@@ -393,7 +393,10 @@
       "text": "텍스트"
     },
     "codec": "코덱",
+    "forceSdrReselect": "SDR 캡처가 종료되었습니다. SDR 강제를 유지한 채 공유하려면 소스를 다시 선택하세요.",
     "codecOption": {
+      "auto": "자동 품질",
+      "recommended": "권장 코덱: {{codec}}",
       "vp9": "VP9",
       "h264": "H264",
       "h265": "H265 (HEVC)"

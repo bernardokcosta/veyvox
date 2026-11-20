@@ -396,7 +396,10 @@
       "text": "Text"
     },
     "codec": "Codec",
+    "forceSdrReselect": "SDR-inspelningen avslutades. Välj källan igen för att fortsätta dela med tvingad SDR.",
     "codecOption": {
+      "auto": "Automatisk kvalitet",
+      "recommended": "Rekommenderad kodek: {{codec}}",
       "vp9": "VP9",
       "h264": "H264",
       "h265": "H265 (HEVC)"

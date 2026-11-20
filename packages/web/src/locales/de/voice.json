@@ -396,7 +396,10 @@
       "text": "Text"
     },
     "codec": "Codec",
+    "forceSdrReselect": "Die SDR-Aufnahme wurde beendet. Wähle die Quelle erneut aus, um weiter mit erzwungenem SDR zu teilen.",
     "codecOption": {
+      "auto": "Automatische Qualität",
+      "recommended": "Empfohlener Codec: {{codec}}",
       "vp9": "VP9",
       "h264": "H264",
       "h265": "H265 (HEVC)"
