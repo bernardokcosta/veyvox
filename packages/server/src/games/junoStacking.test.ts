@@ -67,7 +67,7 @@ describe('Juno stacking engine', () => {
   });
   it('freezes lobby options at start and refuses mid-round changes', async () => {
     const { JunoRooms } = await import('./juno.js');
-    let now = 0;
+    const now = 0;
     const rooms = new JunoRooms({ present: () => true, changed: () => {}, now: () => now });
     rooms.command('voice', { userId: 'a', name: 'a' }, { type: 'create' }, true, true, true);
     const lobby = rooms.read('voice', 'a', true, true, true);
