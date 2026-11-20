@@ -1236,7 +1236,8 @@ export function useLiveKit() {
         // System Audio first: a toggle change publishes or withdraws only the
         // audio track, never the video.
         await syncScreenShareAudio(room);
-        const opts = buildScreenShareOptions(screenShareConfig);
+        const opts = buildScreenShareOptions(screenShareConfig, room);
+        if (!opts.canPublish) return;
         // Primary/backup codecs and policy are negotiation-bound, even when
         // local HEVC fallback keeps the same effective H264 primary. Quality
         // changes alone update the senders without republishing the capture.

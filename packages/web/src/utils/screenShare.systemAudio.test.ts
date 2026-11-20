@@ -8,7 +8,7 @@ vi.mock('./hwOverdrive', () => ({ activate: vi.fn(), deactivate: vi.fn() }));
 vi.mock('../audio/AudioManager', () => ({
   AudioManager: { getInstance: () => ({ setInputVolume: vi.fn() }) },
 }));
-vi.mock('./livekitInternals', () => ({ getPublisherPC: vi.fn(), getMediaStreamTrack: vi.fn() }));
+vi.mock('./livekitInternals', async original => ({ ...await original<typeof import('./livekitInternals')>(), getPublisherPC: vi.fn(), getMediaStreamTrack: vi.fn() }));
 
 /**
  * #358: where the desktop app can build the system audio without Backspace's

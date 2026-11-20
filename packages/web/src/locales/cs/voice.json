@@ -402,7 +402,10 @@
       "text": "Text"
     },
     "codec": "Kodek",
+    "forceSdrReselect": "Záznam SDR skončil. Pro další sdílení s vynuceným SDR vyber zdroj znovu.",
     "codecOption": {
+      "auto": "Automatická kvalita",
+      "recommended": "Doporučený kodek: {{codec}}",
       "vp9": "VP9",
       "h264": "H264",
       "h265": "H265 (HEVC)"

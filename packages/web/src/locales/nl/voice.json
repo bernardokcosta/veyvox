@@ -396,7 +396,10 @@
       "text": "Tekst"
     },
     "codec": "Codec",
+    "forceSdrReselect": "De SDR-opname is gestopt. Selecteer de bron opnieuw om te blijven delen met afgedwongen SDR.",
     "codecOption": {
+      "auto": "Automatische kwaliteit",
+      "recommended": "Aanbevolen codec: {{codec}}",
       "vp9": "VP9",
       "h264": "H264",
       "h265": "H265 (HEVC)"

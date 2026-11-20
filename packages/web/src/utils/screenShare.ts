@@ -1,9 +1,11 @@
 import { Room, Track, BackupCodecPolicy, AudioPresets, ConnectionState, LocalVideoTrack } from 'livekit-client';
+import type { VideoCodec } from 'livekit-client';
 import { useVoiceStore } from '../stores/voiceStore';
 import type { ScreenShareConfig, ScreenShareAudioState } from '../stores/voiceStore';
 import { getStreamingLimits } from '../stores/settingsStore';
-import { resolveScreenShareCodec, type ScreenShareCodec } from './screenShareCodec';
-import { getPublisherPC, getMediaStreamTrack, getPublishedMediaStreamTracks, isRtpSenderActive, syncSingleCodecVideoEncodingCeilings } from './livekitInternals';
+import { resolveAdvertisedScreenShareCodec, resolveScreenShareCodec } from './screenShareCodec';
+import { getPublisherPC, getMediaStreamTrack, getPublishedMediaStreamTracks, getBackupMediaStreamTrack,
+  isRtpSenderActive, syncScreenShareVideoEncodingCeilings, type ScreenShareBackupEncoding } from './livekitInternals';
 import { broadcastVoiceStatus } from './voice';
 import { encodeShareSignal, type ShareSignal } from './streamWatchProtocol';
 import { activate as activateHwOverdrive, deactivate as deactivateHwOverdrive } from './hwOverdrive';
@@ -16,7 +18,7 @@ import { acquireSdrScreenCapture, configureSdrScreenCapture, disposeSdrScreenCap
 import type { InstanceStreamingLimits } from '@veyvox/shared';
 import {
   STANDARD_RESOLUTIONS, STANDARD_FRAMERATES, WIDTH_MAP,
-  BITRATE_MATRIX_KBPS,
+  BITRATE_MATRIX_KBPS, H264_BITRATE_MATRIX_KBPS,
   type StandardResolution,
 } from '@veyvox/shared/src/constants';
 
@@ -28,16 +30,17 @@ export interface OverdriveOptions {
   maxBitrate: number;
   maxFramerate: number;
   degradationPreference: RTCDegradationPreference;
-  syncBackupEncodings?: boolean;
+  backup?: ScreenShareBackupEncoding;
 }
 
 export interface ScreenShareBuildResult {
+  canPublish: boolean;
   capture: { width: number; height: number; frameRate: number };
   publish: {
-    videoCodec: ScreenShareCodec;
+    videoCodec: VideoCodec;
     videoEncoding: { maxBitrate: number; maxFramerate: number; priority: RTCPriorityType };
     simulcast: false;
-    backupCodec?: { codec: 'vp8' | 'h264'; encoding: { maxBitrate: number; maxFramerate: number; priority: RTCPriorityType } };
+    backupCodec?: ScreenShareBackupEncoding;
     backupCodecPolicy?: BackupCodecPolicy;
     audioPreset: typeof AudioPresets.musicHighQualityStereo;
     dtx: false;
@@ -76,10 +79,15 @@ export const CAMERA_OVERDRIVE: OverdriveOptions = {
 // Resolve a matrix cell: admin override first, then default (all in kbps)
 // ---------------------------------------------------------------------------
 
-function resolveMatrixKbps(height: number, fps: number, overrides: Record<string, number> | null | undefined): number {
+function resolveMatrixKbps(height: number, fps: number, codec: VideoCodec, overrides: Record<string, number> | null | undefined): number {
   const key = `${height}_${fps}`;
   if (overrides?.[key] != null) return overrides[key]!;
-  return BITRATE_MATRIX_KBPS[height]?.[fps] ?? BITRATE_MATRIX_KBPS[1080]![60]!;
+  const matrix = codec === 'h264' ? H264_BITRATE_MATRIX_KBPS : BITRATE_MATRIX_KBPS;
+  return matrix[height]?.[fps] ?? matrix[1080]![60]!;
+}
+
+function nearestFramerate(fps: number): number {
+  return STANDARD_FRAMERATES.reduce((a, b) => Math.abs(b - fps) < Math.abs(a - fps) ? b : a);
 }
 
 // ---------------------------------------------------------------------------
@@ -90,6 +98,7 @@ function computeNativeBitrate(
   capturedWidth: number,
   capturedHeight: number,
   fps: number,
+  codec: VideoCodec,
   overrides: Record<string, number> | null | undefined,
 ): number {
   const capturedPixels = capturedWidth * capturedHeight;
@@ -104,18 +113,29 @@ function computeNativeBitrate(
   }
 
   // Snap to nearest known framerate
-  let nearestFps = 30;
-  let nearestFpsDist = Infinity;
-  for (const f of STANDARD_FRAMERATES) {
-    const dist = Math.abs(fps - f);
-    if (dist < nearestFpsDist) { nearestFpsDist = dist; nearestFps = f; }
-  }
+  const nearestFps = nearestFramerate(fps);
 
-  const baseKbps = resolveMatrixKbps(nearestHeight, nearestFps, overrides);
+  const baseKbps = resolveMatrixKbps(nearestHeight, nearestFps, codec, overrides);
   const nearestPixels = WIDTH_MAP[nearestHeight] * nearestHeight;
 
   // Scale proportionally by pixel count and framerate — result in kbps
   return Math.round(baseKbps * (capturedPixels / nearestPixels) * (fps / nearestFps));
+}
+
+function screenShareBitrateBps(
+  config: ScreenShareConfig,
+  limits: InstanceStreamingLimits,
+  codec: VideoCodec,
+  source?: { width: number; height: number },
+): number {
+  const { height, fps, customBitrateKbps } = config;
+  const { bitrateMatrixOverrides, minBitrateKbps, maxBitrateKbps } = limits;
+  const kbps = customBitrateKbps ?? (height !== 'native'
+    ? resolveMatrixKbps(height, fps, codec, bitrateMatrixOverrides)
+    : source
+      ? computeNativeBitrate(source.width, source.height, fps, codec, bitrateMatrixOverrides)
+      : resolveMatrixKbps(2160, nearestFramerate(fps), codec, bitrateMatrixOverrides));
+  return Math.min(Math.max(kbps, minBitrateKbps), maxBitrateKbps) * 1000;
 }
 
 // ---------------------------------------------------------------------------
@@ -162,56 +182,40 @@ export function effectiveScreenShareConfig(
   return { ...config, height, fps, customBitrateKbps };
 }
 
-export function buildScreenShareOptions(savedConfig: ScreenShareConfig): ScreenShareBuildResult {
+export function buildScreenShareOptions(savedConfig: ScreenShareConfig, room?: Room): ScreenShareBuildResult {
   const limits = getStreamingLimits();
   const config = effectiveScreenShareConfig(savedConfig, limits);
-  const { height, fps, mode, customBitrateKbps } = config;
+  const { height, fps, mode } = config;
   const isNative = height === 'native';
-  const overrides = limits.bitrateMatrixOverrides;
 
   // Capture dimensions: sentinel 0 for native (caller skips resolution constraint)
   const captureWidth = isNative ? 0 : WIDTH_MAP[height as StandardResolution] ?? 1920;
   const captureHeight = isNative ? 0 : (height as number);
 
-  // Resolve bitrate in kbps: custom (already dropped if not allowed) > override > default > native estimate
-  let rawKbps: number;
-  if (customBitrateKbps != null) {
-    rawKbps = customBitrateKbps;
-  } else if (isNative) {
-    const nearestFps = STANDARD_FRAMERATES.reduce((a, b) =>
-      Math.abs(b - fps) < Math.abs(a - fps) ? b : a
-    );
-    rawKbps = resolveMatrixKbps(2160, nearestFps, overrides);
-  } else {
-    rawKbps = resolveMatrixKbps(height as number, fps, overrides);
-  }
-
-  // Clamp to instance limits (all in kbps)
-  const clampedKbps = Math.min(Math.max(rawKbps, limits.minBitrateKbps), limits.maxBitrateKbps);
-
-  // Convert to bps ONLY at the WebRTC boundary
-  const bps = clampedKbps * 1000;
-  const videoCodec = resolveScreenShareCodec(config.codec);
+  const requested = resolveScreenShareCodec(config.codec);
+  const compatible = room ? resolveAdvertisedScreenShareCodec(room.localParticipant, requested) : requested;
+  const videoCodec = compatible ?? requested;
+  const bps = screenShareBitrateBps(config, limits, videoCodec);
   // HEVC is opt-in with one active codec: the SFU regresses to H264 for an
   // incompatible viewer, rather than running a second encoder in parallel.
   // A saved HEVC choice on an unsupported device also stays H264-only.
-  const singleCodec = config.codec === 'h265';
+  const singleCodec = videoCodec === 'h265' || (config.codec === 'h265' && videoCodec === 'h264');
 
   // Backup encoding: cap at 30fps and proportional bitrate to keep CPU overhead low
   const backupFps = singleCodec ? fps : Math.min(fps, 30);
-  const backupBps = Math.round(bps * (backupFps / fps));
+  const backupBps = singleCodec ? screenShareBitrateBps(config, limits, 'h264') : Math.round(bps * (backupFps / fps));
+  const backup: ScreenShareBackupEncoding | undefined = videoCodec === 'vp8' ? undefined : {
+    codec: singleCodec ? 'h264' : 'vp8', encoding: { maxBitrate: backupBps, maxFramerate: backupFps, priority: VIDEO_PRIORITY },
+  };
 
   return {
+    canPublish: compatible !== null,
     capture: { width: captureWidth, height: captureHeight, frameRate: fps },
     publish: {
       videoCodec,
       videoEncoding: { maxBitrate: bps, maxFramerate: fps, priority: VIDEO_PRIORITY },
       simulcast: false,
-      backupCodec: {
-        codec: singleCodec ? 'h264' : 'vp8',
-        encoding: { maxBitrate: backupBps, maxFramerate: backupFps, priority: VIDEO_PRIORITY },
-      },
-      backupCodecPolicy: singleCodec ? BackupCodecPolicy.REGRESSION : BackupCodecPolicy.SIMULCAST,
+      ...(backup ? { backupCodec: backup, backupCodecPolicy: singleCodec ? BackupCodecPolicy.REGRESSION : BackupCodecPolicy.SIMULCAST } : {}),
       audioPreset: AudioPresets.musicHighQualityStereo,
       dtx: false,
       red: false,
@@ -221,7 +225,7 @@ export function buildScreenShareOptions(savedConfig: ScreenShareConfig): ScreenS
       maxBitrate: bps,
       maxFramerate: fps,
       degradationPreference: mode === 'text' ? 'maintain-resolution' : 'balanced',
-      ...(singleCodec ? { syncBackupEncodings: true } : {}),
+      ...(backup ? { backup } : {}),
     },
     contentHint: mode === 'text' ? 'detail' : 'motion',
   };
@@ -243,13 +247,16 @@ export function resolveNativeOverdrive(
   const settings = mediaTrack.getSettings();
   if (!settings.width || !settings.height) return;
 
-  const nativeKbps = computeNativeBitrate(settings.width, settings.height, config.fps, limits.bitrateMatrixOverrides);
-  const clampedKbps = Math.min(Math.max(nativeKbps, limits.minBitrateKbps), limits.maxBitrateKbps);
-
-  // Convert to bps at the mutation point
-  const bps = clampedKbps * 1000;
+  const source = { width: settings.width, height: settings.height };
+  const bps = screenShareBitrateBps(config, limits, opts.publish.videoCodec, source);
   opts.overdrive.maxBitrate = bps;
   opts.publish.videoEncoding.maxBitrate = bps;
+  const backup = opts.publish.backupCodec;
+  if (backup) {
+    backup.encoding.maxBitrate = backup.codec === 'h264'
+      ? screenShareBitrateBps(config, limits, 'h264', source)
+      : Math.round(bps * (backup.encoding.maxFramerate / config.fps));
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -265,19 +272,20 @@ export async function applyOverdrive(
     const pub = room.localParticipant.getTrackPublications().find(p => p.source === source);
     if (!pub?.track) return false;
 
-    const pc = getPublisherPC(room);
-    if (!pc) return false;
-
-    const syncBackup = options.syncBackupEncodings && source === Track.Source.ScreenShare;
-    if (syncBackup) {
-      syncSingleCodecVideoEncodingCeilings(pub.track, {
+    const isScreenShare = source === Track.Source.ScreenShare;
+    const backup = isScreenShare ? options.backup : undefined;
+    if (isScreenShare) {
+      syncScreenShareVideoEncodingCeilings(pub.track, {
         maxBitrate: options.maxBitrate, maxFramerate: options.maxFramerate, priority: VIDEO_PRIORITY,
-      }, options.degradationPreference);
+      }, options.degradationPreference, backup);
       if (pub.track instanceof LocalVideoTrack) {
         await pub.track.setDegradationPreference(options.degradationPreference);
       }
     }
-    const tracks = syncBackup ? getPublishedMediaStreamTracks(pub.track) : [getMediaStreamTrack(pub.track)];
+    const pc = getPublisherPC(room);
+    if (!pc) return false;
+    const backupTrack = backup ? getBackupMediaStreamTrack(pub.track, backup.codec) : null;
+    const tracks = [getMediaStreamTrack(pub.track), backupTrack];
     const trackIds = new Set(tracks.map((track) => track?.id));
     const senders = pc.getSenders().filter((sender) => sender.track && trackIds.has(sender.track.id));
     if (!senders.length) return false;
@@ -293,8 +301,9 @@ export async function applyOverdrive(
       // Quality ceilings belong to the top layer; sender-wide priority belongs
       // only to encoding zero. Preserve disabled layers and yield video to voice.
       const idx = params.encodings.length - 1;
-      params.encodings[idx]!.maxBitrate = options.maxBitrate;
-      params.encodings[idx]!.maxFramerate = options.maxFramerate;
+      const ceiling = backup && backupTrack && sender.track?.id === backupTrack.id ? backup.encoding : options;
+      params.encodings[idx]!.maxBitrate = ceiling.maxBitrate;
+      params.encodings[idx]!.maxFramerate = ceiling.maxFramerate;
       params.encodings[0]!.priority = VIDEO_PRIORITY;
       params.encodings[0]!.networkPriority = VIDEO_PRIORITY;
       params.degradationPreference = options.degradationPreference;
@@ -393,7 +402,7 @@ export async function stageScreenCapture(options: StageScreenCaptureOptions = {}
       stream = await acquireSdrScreenCapture(stream, opts.capture, options.signal);
       if (stream.getVideoTracks()[0]?.readyState !== 'live') throw new SdrCaptureError('source-ended');
       stream.getVideoTracks()[0]?.addEventListener('ended', () => {
-        useUIStore.getState().addToast(i18n.t('voice:streamSettings.forceSdrFailed'), 'warning', 8000);
+        useUIStore.getState().addToast(i18n.t('voice:streamSettings.forceSdrReselect'), 'warning', 8000);
       }, { once: true });
     }
     const video = stream.getVideoTracks()[0];
@@ -449,11 +458,11 @@ export function stopStagedCapture(stream: MediaStream | null | undefined): void 
 // ---------------------------------------------------------------------------
 
 /** Codec confirmed by outbound WebRTC stats; null until stats expose it. */
-type PublishedScreenShareCodec = ScreenShareCodec | 'vp8';
+type PublishedScreenShareCodec = VideoCodec;
 let _publishedScreenShareCodec: PublishedScreenShareCodec | null = null;
 /** Negotiation intent is separate from both live quality and the observed codec. */
 interface ScreenSharePublicationCodecs {
-  videoCodec: ScreenShareCodec;
+  videoCodec: VideoCodec;
   backupCodec: 'vp8' | 'h264' | undefined;
   backupCodecPolicy: BackupCodecPolicy | undefined;
 }
@@ -465,7 +474,7 @@ export function getPublishedScreenShareCodec(): PublishedScreenShareCodec | null
   return _publishedScreenShareCodec;
 }
 
-export function getRequestedPublishedScreenShareCodec(): ScreenShareCodec | null {
+export function getRequestedPublishedScreenShareCodec(): VideoCodec | null {
   return _publishedScreenShareCodecs?.videoCodec ?? null;
 }
 
@@ -528,10 +537,10 @@ export async function publishScreenShare(
 ): Promise<boolean> {
   const encoderGeneration = ++_encoderInspectionGeneration;
   const config = useVoiceStore.getState().screenShareConfig;
-  const opts = buildScreenShareOptions(config);
+  const opts = buildScreenShareOptions(config, room);
   const needsH264SdpPatch = opts.publish.videoCodec === 'h264';
   const videoTrack = stream.getVideoTracks()[0];
-  if (!videoTrack || videoTrack.readyState !== 'live') { stopStagedCapture(stream); return false; }
+  if (!opts.canPublish || !videoTrack || videoTrack.readyState !== 'live') { stopStagedCapture(stream); return false; }
   const sendsSdr = isSdrScreenCapture(stream);
   const nativeCapture = sendsSdr ? { room, stream } : null;
   // Register before negotiation: room teardown must also retire a capture
@@ -557,8 +566,9 @@ export async function publishScreenShare(
   let videoPublished = false;
   let audioPublished = false;
   try {
+    resolveNativeOverdrive(videoTrack, config, opts);
     videoTrack.contentHint = opts.contentHint;
-    await room.localParticipant.publishTrack(videoTrack, {
+    const publication = await room.localParticipant.publishTrack(videoTrack, {
       source: Track.Source.ScreenShare,
       videoCodec: opts.publish.videoCodec,
       videoEncoding: opts.publish.videoEncoding,
@@ -570,10 +580,14 @@ export async function publishScreenShare(
       ...(opts.publish.backupCodec ? {
         backupCodec: opts.publish.backupCodec,
         backupCodecPolicy: opts.publish.backupCodecPolicy,
-      } : {}),
+      } : { backupCodec: false }),
     });
     videoPublished = true;
     ensureCaptureLive();
+    if (publication?.track) {
+      syncScreenShareVideoEncodingCeilings(publication.track, opts.publish.videoEncoding,
+        opts.overdrive.degradationPreference, opts.overdrive.backup);
+    }
     if (audioToPublish) { await publishScreenShareAudioTrack(room, audioToPublish); audioPublished = true; }
     ensureCaptureLive();
 
@@ -982,7 +996,8 @@ export function scheduleScreenShareOverdrive(room: Room): void {
 
   const apply = async (): Promise<void> => {
     if (!useVoiceStore.getState().isScreenSharing) return;
-    const freshOpts = buildScreenShareOptions(useVoiceStore.getState().screenShareConfig);
+    const freshOpts = buildScreenShareOptions(useVoiceStore.getState().screenShareConfig, room);
+    if (!freshOpts.canPublish) return;
 
     const screenPub = room.localParticipant.getTrackPublications()
       .find(p => p.source === Track.Source.ScreenShare);
@@ -1056,12 +1071,13 @@ function normalizeVideoCodec(value: string | undefined): PublishedScreenShareCod
   if (normalized?.includes('h264')) return 'h264';
   if (normalized?.includes('h265')) return 'h265';
   if (normalized?.includes('vp8')) return 'vp8';
+  if (normalized?.includes('av1')) return 'av1';
   return null;
 }
 
 async function inspectPublishedEncoder(
   room: Room,
-  requestedCodec: ScreenShareCodec,
+  requestedCodec: VideoCodec,
   expectedTrackId: string,
   generation: number,
 ): Promise<boolean> {
@@ -1129,7 +1145,7 @@ const ENCODER_DETECTION_OFFSETS_MS = [0, 1000, 4000, 8000] as const;
 
 function scheduleEncoderDetection(
   room: Room,
-  requestedCodec: ScreenShareCodec,
+  requestedCodec: VideoCodec,
   expectedTrackId: string,
   generation: number,
 ): void {

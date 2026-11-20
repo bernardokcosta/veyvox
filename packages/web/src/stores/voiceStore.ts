@@ -6,7 +6,7 @@ import { useSpaceStore } from './spaceStore';
 import { useAuthStore } from './authStore';
 import { isElectron } from '../platform/platform';
 import { voiceFlagKey } from '../utils/permissionMute';
-import { normalizeScreenShareCodec, type ScreenShareCodec } from '../utils/screenShareCodec';
+import { AUTO_SCREEN_SHARE_QUALITY, normalizeScreenShareCodec, type ScreenShareCodecPreference } from '../utils/screenShareCodec';
 
 export interface ScreenShareConfig {
   height: number | 'native';
@@ -15,7 +15,7 @@ export interface ScreenShareConfig {
   customBitrateKbps: number | null;
   shareAudio: boolean;
   forceSdr: boolean;
-  codec: ScreenShareCodec;
+  codec: ScreenShareCodecPreference;
 }
 
 /** The member's camera quality choice: capture height, framerate and an optional bitrate override. */
@@ -304,7 +304,7 @@ export const useVoiceStore = create<VoiceState>()(
       channelVoiceBitrateKbps: null,
       dmWaitingUntil: new Map(),
       focusedParticipantId: null,
-      screenShareConfig: { height: 720, fps: 60, mode: 'gaming', customBitrateKbps: null, shareAudio: !isElectron(), forceSdr: false, codec: 'vp9' },
+      screenShareConfig: { ...AUTO_SCREEN_SHARE_QUALITY, mode: 'gaming', shareAudio: !isElectron(), forceSdr: false },
       cameraConfig: { height: 720, fps: 30, customBitrateKbps: null },
       lastScreenShareSourceId: null,
       participantVolumes: new Map(),
@@ -868,7 +868,7 @@ export const useVoiceStore = create<VoiceState>()(
     }),
     {
       name: 'backspace-voice-settings',
-      version: 17,
+      version: 18,
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {
           persistedState.streamAttenuationEnabled = false;
@@ -940,7 +940,7 @@ export const useVoiceStore = create<VoiceState>()(
         if (version < 15 && persistedState.screenShareConfig) {
           persistedState.screenShareConfig.forceSdr = persistedState.screenShareConfig.forceSdr === true;
         }
-        if (version < 16 && persistedState.screenShareConfig) {
+        if (version < 16 && persistedState.screenShareConfig?.codec !== undefined) {
           persistedState.screenShareConfig.codec = normalizeScreenShareCodec(persistedState.screenShareConfig.codec);
         }
         if (version < 17) {

@@ -119,4 +119,23 @@ describe('supplied Juno asset inventory', () => {
       if (file.path.endsWith('.svg')) expect(data.toString()).not.toMatch(/<script|\bon\w+\s*=|(?:href|src)=["'](?:https?:|data:|javascript:)/i);
     }
   });
+  it('maps compact WebP files one-to-one to byte-verified original cards and flour', () => {
+    const originals = JSON.parse(readFileSync(path.join(root, 'manifest.json'), 'utf8')) as Manifest;
+    const compact = JSON.parse(readFileSync(path.join(root, 'compact/manifest.json'), 'utf8')) as {
+      width: number; files: { source: string; sourceSha256: string; path: string; bytes: number; sha256: string }[];
+    };
+    const sources = originals.files.filter(file => file.path.startsWith('cards/') || file.path === 'ui/flour.webp');
+    expect(compact.width).toBe(288);
+    expect(compact.files.map(file => file.source).sort()).toEqual(sources.map(file => file.path).sort());
+    for (const item of compact.files) {
+      const original = sources.find(file => file.path === item.source)!;
+      expect(item.path).toBe(`compact/${original.path}`);
+      expect(item.sourceSha256).toBe(original.sha256);
+      const bytes = readFileSync(path.join(root, item.path));
+      expect(bytes.subarray(8, 12).toString()).toBe('WEBP');
+      expect(bytes.length).toBe(item.bytes);
+      expect(item.bytes).toBeLessThan(original.bytes * .8);
+      expect(createHash('sha256').update(bytes).digest('hex')).toBe(item.sha256);
+    }
+  });
 });

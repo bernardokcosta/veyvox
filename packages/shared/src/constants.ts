@@ -39,6 +39,16 @@ export const BITRATE_MATRIX_KBPS: Record<number, Record<number, number>> = {
   2160: { 30: 20000, 45: 24000, 60: 28000, 75: 32000, 90: 38000, 120: 45000 },
 };
 
+// Conservative H.264 screen-share ceilings (kbps). Keep the existing matrix
+// for VP9 and HEVC until received-quality tests justify a lower HEVC ceiling.
+export const H264_BITRATE_MATRIX_KBPS: Record<number, Record<number, number>> = {
+  540:  { 30: 2000, 45: 2500, 60: 3000, 75: 3500, 90: 4000, 120: 5000 },
+  720:  { 30: 3500, 45: 4500, 60: 5000, 75: 5500, 90: 6500, 120: 7500 },
+  1080: { 30: 7500, 45: 9000, 60: 10000, 75: 11500, 90: 12500, 120: 15000 },
+  1440: { 30: 12500, 45: 15000, 60: 18000, 75: 20000, 90: 22500, 120: 27500 },
+  2160: { 30: 25000, 45: 30000, 60: 35000, 75: 40000, 90: 47500, 120: 56000 },
+};
+
 // ─── Channel Constants ───────────────────────────────────────────────────────
 
 export const CHANNEL_NAME_MIN_LENGTH = 1;

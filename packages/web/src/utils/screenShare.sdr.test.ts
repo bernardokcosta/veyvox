@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useVoiceStore } from '../stores/voiceStore';
+import { useUIStore } from '../stores/uiStore';
 import { stageScreenCapture, stopStagedCapture, applyStagedCaptureConfig, publishScreenShare, stopScreenShare,
   disposeActiveScreenShareCapture, handleScreenShareUnpublished, settleScreenShareAfterReconnect } from './screenShare';
 
@@ -11,7 +12,7 @@ vi.mock('./sdrScreenCapture', async (original) => ({ ...await original<typeof im
 vi.mock('./systemAudioSource', () => ({ acquireAppExcludedSystemAudio: vi.fn(async () => null) }));
 vi.mock('./hwOverdrive', () => ({ activate: vi.fn(), deactivate: vi.fn() }));
 vi.mock('./voice', () => ({ broadcastVoiceStatus: vi.fn() }));
-vi.mock('./livekitInternals', () => ({ getPublisherPC: vi.fn(() => null), getMediaStreamTrack: vi.fn() }));
+vi.mock('./livekitInternals', async original => ({ ...await original<typeof import('./livekitInternals')>(), getPublisherPC: vi.fn(() => null), getMediaStreamTrack: vi.fn() }));
 vi.mock('../audio/AudioManager', () => ({ AudioManager: { getInstance: () => ({}) } }));
 
 function stream(kind: 'raw' | 'sdr') {
@@ -76,6 +77,20 @@ describe('Force SDR screen-share lifecycle wiring', () => {
     sdr.acquireSdrScreenCapture.mockRejectedValueOnce(new SdrCaptureError('source-color-unsupported'));
     await expect(stageScreenCapture({ forceSdr: true })).rejects.toThrow();
     expect(raw.video.stop).toHaveBeenCalledOnce(); expect(raw.audio.stop).toHaveBeenCalledOnce();
+  });
+
+  it('asks to reselect the source instead of disabling Force SDR after the corrected track ends', async () => {
+    const toast = vi.spyOn(useUIStore.getState(), 'addToast');
+    await stageScreenCapture({ forceSdr: true });
+    const listener = corrected.video.addEventListener.mock.calls.find(([type]) => type === 'ended');
+    expect(listener?.[2]).toEqual({ once: true });
+    const onEnded = listener?.[1] as (event: Event) => void;
+    onEnded(new Event('ended'));
+    expect(toast).toHaveBeenCalledExactlyOnceWith(
+      'SDR capture ended. Select the source again to keep sharing with Force SDR.', 'warning', 8000,
+    );
+    expect(useVoiceStore.getState().screenShareConfig.forceSdr).toBe(true);
+    expect(getDisplayMedia).toHaveBeenCalledOnce();
   });
 
   it('routes staged settings through the owning native adapter instead of browser constraints', async () => {

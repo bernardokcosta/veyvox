@@ -396,7 +396,10 @@
       "text": "Tekst"
     },
     "codec": "Codec",
+    "forceSdrReselect": "SDR-opptaket ble avsluttet. Velg kilden på nytt for å fortsette delingen med tvungen SDR.",
     "codecOption": {
+      "auto": "Automatisk kvalitet",
+      "recommended": "Anbefalt kodek: {{codec}}",
       "vp9": "VP9",
       "h264": "H264",
       "h265": "H265 (HEVC)"

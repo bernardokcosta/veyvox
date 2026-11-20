@@ -1,5 +1,5 @@
 import type { JunoCard as Card } from '@veyvox/shared/src/juno';
-import { junoCardUrl, resolveJunoDubbing, JUNO_ASSETS } from './junoAssets';
+import { junoCardSrcSet, junoCardUrl, resolveJunoDubbing, JUNO_ASSETS, JUNO_CARD_SIZES } from './junoAssets';
 import { useJunoPreferences } from '../../stores/junoPreferences';
 import { useTranslation } from 'react-i18next';
 export { JUNO_PALETTE } from './junoAssets';
@@ -9,9 +9,11 @@ export function JunoCard({ card, back = false, floured = false }: { card?: Card;
   const dubbing = useJunoPreferences(s => s.dubbingLanguage);
   const { i18n } = useTranslation('voice');
   const marked = card?.floured || floured;
-  const image = <img className={marked ? 'juno-card-face' : 'juno-card-art'} src={junoCardUrl(card, back, resolveJunoDubbing(dubbing, i18n.resolvedLanguage ?? i18n.language))} alt="" aria-hidden="true"
+  const url = junoCardUrl(card, back, resolveJunoDubbing(dubbing, i18n.resolvedLanguage ?? i18n.language));
+  const srcSet = junoCardSrcSet(url);
+  const image = <img className={marked ? 'juno-card-face' : 'juno-card-art'} src={url} srcSet={srcSet} sizes={srcSet && JUNO_CARD_SIZES} alt="" aria-hidden="true"
     width="720" height="1056" draggable={false} decoding="async" />;
   return marked ? <span className="juno-card-art juno-floured-card" aria-hidden="true">{image}
-    <img className="juno-card-flour" src={JUNO_ASSETS.flour} alt="" width="720" height="1056" draggable={false} decoding="async" />
+    <img className="juno-card-flour" src={JUNO_ASSETS.flour} srcSet={junoCardSrcSet(JUNO_ASSETS.flour)} sizes={JUNO_CARD_SIZES} alt="" width="720" height="1056" draggable={false} decoding="async" />
   </span> : image;
 }
