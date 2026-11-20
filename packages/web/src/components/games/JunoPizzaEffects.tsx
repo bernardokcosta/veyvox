@@ -112,7 +112,12 @@ export function JunoPizzaEffects(props: Props) {
       }
       let total = 0;
       const touched = new Set<string>();
-      for (const transfer of pizzaFlights({ players: current.players, direction: current.direction, lastMove: current.move })) {
+      const scheduled = pizzaFlights({ players: current.players, direction: current.direction, lastMove: current.move });
+      // The decorative ghost bound stays at 20 nodes; hands and timers follow the complete schedule.
+      const ghosts = scheduled.length > 20
+        ? scheduled.filter((_, i) => i % Math.ceil(scheduled.length / 20) === 0).slice(0, 20)
+        : scheduled;
+      for (const transfer of ghosts) {
         const from = anchors.get(transfer.fromUserId), to = anchors.get(transfer.toUserId);
         if (!from || !to) continue;
         const ghost = document.createElement('span'); ghost.className = 'juno-pizza-card juno-card-art juno-floured-card';

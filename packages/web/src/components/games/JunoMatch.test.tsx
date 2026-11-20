@@ -104,6 +104,25 @@ describe('Juno cosmic interactive match', () => {
       memoryCurse: { id: 'curse-2', targetUserId: 'a' }, maskedHand: [{ id: 'hidden-1' }] } } }));
     expect(screen.getByRole('button', { name: 'Hidden card 1' })).toBeDisabled();
   });
+  it('renders only occupied extra top seats: four slots with two players, six with six', () => {
+    const two = junoGame('playing');
+    useJunoStore.setState({ snapshot: { revision: 2, game: two } });
+    const { container, unmount } = render(<JunoMatch />);
+    expect(container.querySelectorAll('.juno-seat')).toHaveLength(4);
+    expect(container.querySelector('[data-seat="topLeft"]')).toBeNull();
+    expect(container.querySelector('[data-seat="topRight"]')).toBeNull();
+    unmount();
+    const six = junoGame('playing');
+    for (const [userId, name] of [['c', 'Cy'], ['d', 'Dee'], ['e', 'Eli'], ['f', 'Fay']] as const) {
+      six.players.push({ userId, name, cardCount: 7, announced: false });
+    }
+    useJunoStore.setState({ snapshot: { revision: 3, game: six } });
+    const { container: full } = render(<JunoMatch />);
+    for (const position of ['top', 'topLeft', 'topRight', 'left', 'right', 'bottom']) {
+      expect(full.querySelector(`[data-seat="${position}"]`)).toBeInTheDocument();
+    }
+    expect(full.querySelectorAll('.juno-seat')).toHaveLength(6);
+  });
   it('spreads each lateral back separately while preserving its exact public count', () => {
     const game = junoGame('playing');
     game.players.push({ ...game.players[1]!, userId: 'c', name: 'Eli' }, { ...game.players[1]!, userId: 'd', name: 'Noor' });

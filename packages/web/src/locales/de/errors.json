@@ -4,7 +4,7 @@
   "juno_exists": "In diesem Kanal gibt es bereits einen Juno-Tisch.",
   "juno_capacity": "Diese Instanz hat das Limit aktiver Spiele erreicht.",
   "juno_stale": "Der Tisch hat sich geändert. Prüfe, wer dran ist, und versuche es erneut.",
-  "juno_full": "Alle vier Plätze sind belegt.",
+  "juno_full": "Alle sechs Plätze sind belegt.",
   "juno_in_progress": "Die Runde läuft. Schau zu oder spiele in der nächsten Lobby mit.",
   "juno_player_required": "Nimm zuerst am Tisch Platz.",
   "juno_host_required": "Das kann nur der Gastgeber des Tisches tun.",

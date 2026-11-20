@@ -4,7 +4,7 @@
   "juno_exists": "此频道已有 Juno 牌桌。",
   "juno_capacity": "此实例已达到活跃游戏数量上限。",
   "juno_stale": "牌桌已更新。请确认当前回合后重试。",
-  "juno_full": "四个座位均已被占用。",
+  "juno_full": "六个座位均已被占用。",
   "juno_in_progress": "本轮已开始。你可以观战或加入下一个大厅。",
   "juno_player_required": "请先加入牌桌。",
   "juno_host_required": "只有牌桌房主才能执行此操作。",

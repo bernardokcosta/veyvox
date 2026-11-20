@@ -4,7 +4,7 @@
   "juno_exists": "Există deja o masă Juno în acest canal.",
   "juno_capacity": "Această instanță a atins limita de jocuri active.",
   "juno_stale": "Masa s-a schimbat. Verifică tura curentă și încearcă din nou.",
-  "juno_full": "Toate cele patru locuri sunt ocupate.",
+  "juno_full": "Toate cele șase locuri sunt ocupate.",
   "juno_in_progress": "Această rundă a început. Privește sau alătură-te lobby-ului următor.",
   "juno_player_required": "Alătură-te mai întâi mesei.",
   "juno_host_required": "Doar gazda mesei poate face asta.",

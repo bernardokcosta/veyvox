@@ -5,7 +5,7 @@ import { createJunoPreview } from './junoPreview.js';
 const origin = { origin: 'http://127.0.0.1:5173' };
 afterEach(() => { vi.useRealTimers(); });
 describe('isolated playable pizza preview', () => {
-  it.each([2, 3, 4])('starts a real %i-player practice round with pizza owned by the player, and uses real exchanges', async count => {
+  it.each([2, 3, 4, 5, 6])('starts a real %i-player practice round with pizza owned by the player, and uses real exchanges', async count => {
     const app = createJunoPreview();
     try {
       await app.inject({ method: 'POST', url: '/reset', headers: origin, payload: { players: count } });

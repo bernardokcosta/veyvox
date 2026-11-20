@@ -41,7 +41,7 @@
       "start": {
         "goal": "Bliv først uden kort på hånden.",
         "deal": "Alle starter med syv kort. Der er fire farver; det klassiske sæt har 108 kort. Det første åbne kort er et tal, og spillet går med uret.",
-        "setup": "Juno har to til fire pladser i et rums stemmekanal. Værten opretter bordet og starter runden, når spillerne er med."
+        "setup": "Juno har to til seks pladser i et rums stemmekanal. Værten opretter bordet og starter runden, når spillerne er med."
       },
       "turn": {
         "match": "Match den aktive farve eller det sidste korts nummer eller symbol. En tilladt wild er en anden vej. Alle disse eksempler passer på en blå 5:",
@@ -78,7 +78,7 @@
       "score": {
         "ranking": "Den første tomme hånd vinder. Andre slutplaceringer rangeres efter resterende kort, inklusive eventuel trækstraf for sidste kort.",
         "award": "XP tildelt",
-        "ties": "Delte deler samme plads og XP: to spillere delt nummer to får begge 80 XP, og næste plads er fjerde. Kun afsluttede runder uden bots med vinder tæller; kun vinderen får en sejr. Tidlig afgang giver ingen plads eller XP.",
+        "ties": "Delte deler samme plads og XP: to spillere delt nummer to får begge 80 XP som basis, og næste plads er fjerde. Kun afsluttede runder uden bots med vinder tæller; kun vinderen får en sejr. Tidlig afgang giver ingen plads eller XP.",
         "practice": "En runde startet med en bot forbliver træning, selv hvis botten senere går: ingen XP, sejr eller rankede runder godskrives. XP hører til dette rum og forener dets stemmekanaler, ikke andre rum.",
         "pending": "Mens resultater gemmes, er XP stadig afventende, ikke allerede optjent. Et nyt bord bliver tilgængeligt, når dette resultat er behandlet."
       },
@@ -152,14 +152,14 @@
     "previousPage": "Forrige side",
     "nextPage": "Næste side",
     "scoreHint": "Juno-XP hører til dette rum, på tværs af alle dets stemmekanaler.",
-    "scoreRules": "1.: 120 XP · 2.: 80 XP · 3.: 40 XP · 4.: 20 XP. Delte deler plads og XP. Kun afsluttede runder med vinder tæller; tidlig afgang giver ingen XP.",
+    "scoreRules": "1.: 120 XP · 2.: 80 XP · 3.: 40 XP · 4.: 20 XP · 5.: 10 XP · 6.: 5 XP som basis plus små bonusser. Delte deler plads og XP. Kun afsluttede runder med vinder tæller; tidlig afgang giver ingen XP.",
     "chooseGame": "Vælg et spil at spille med folkene i dit opkald.",
     "name": "Juno",
     "games": "Spil",
     "open": "Åbn Juno",
     "tagline": "Lidt venlig rivalisering",
     "invitation": "Din næste runde starter her",
-    "description": "Match farver, vend bordene og bliv først uden kort på hånden. Et originalt kortspil for 2–4 personer i denne stemmekanal.",
+    "description": "Match farver, vend bordene og bliv først uden kort på hånden. Et originalt kortspil for 2–6 personer i denne stemmekanal.",
     "create": "Opret et bord",
     "lobbyTitle": "Tag plads",
     "lobbyHint": "Alle i opkaldet kan deltage. Værten starter, når bordet er klart.",

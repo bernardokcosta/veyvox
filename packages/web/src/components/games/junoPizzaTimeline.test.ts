@@ -26,6 +26,17 @@ describe('shared pizza departure/arrival timeline', () => {
     after.lastMove!.pizzaTransfers = after.players.map((p, i) => ({ fromUserId: p.userId, toUserId: String((i + 1) % count), amount: 5 }));
     expect(pizzaFlights(after).every(f => Number.isInteger(f.departureMs) && Number.isInteger(f.arrivalMs))).toBe(true);
   });
+  it('schedules the complete six-player exchange with every arrival inside five seconds', () => {
+    const { after } = exchange();
+    after.players = Array.from({ length: 6 }, (_, i) => ({ userId: String(i), name: String(i), cardCount: 7, announced: false }));
+    after.lastMove!.userId = '0';
+    after.lastMove!.pizzaTransfers = after.players.map((p, i) => ({ fromUserId: p.userId, toUserId: String((i + 1) % 6), amount: 5 }));
+    const flights = pizzaFlights(after);
+    expect(flights).toHaveLength(30);
+    expect(flights.every(f => Number.isInteger(f.departureMs) && Number.isInteger(f.arrivalMs))).toBe(true);
+    expect(Math.max(...flights.map(f => f.arrivalMs))).toBeLessThanOrEqual(5_000);
+    expect(flights.filter(f => f.fromUserId === '5').every(f => f.arrivalMs <= 5_000)).toBe(true);
+  });
   it('uses the same author/direction schedule for all viewers and completes flights inside five seconds', () => {
     const { after } = exchange();
     expect(pizzaFlights(after)).toEqual([

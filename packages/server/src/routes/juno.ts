@@ -14,12 +14,13 @@ import { JunoRooms, JunoError } from '../games/juno.js';
 import { hydrateJunoSnapshot, readJunoRanking, settleJunoRound } from '../games/junoProgression.js';
 
 type Params = { channelId: string };
-type JunoQuery = { memory?: string; intoxicated?: string; pizza?: string };
+type JunoQuery = { memory?: string; intoxicated?: string; pizza?: string; six?: string };
 function invalidJunoQuery(query: JunoQuery): boolean {
-  return Object.keys(query).some(key => key !== 'memory' && key !== 'intoxicated' && key !== 'pizza')
+  return Object.keys(query).some(key => key !== 'memory' && key !== 'intoxicated' && key !== 'pizza' && key !== 'six')
     || (query.memory !== undefined && query.memory !== '1')
     || (query.intoxicated !== undefined && (query.intoxicated !== '1' || query.memory !== '1'))
-    || (query.pizza !== undefined && (query.pizza !== '1' || query.memory !== '1' || query.intoxicated !== '1'));
+    || (query.pizza !== undefined && (query.pizza !== '1' || query.memory !== '1' || query.intoxicated !== '1'))
+    || (query.six !== undefined && query.six !== '1');
 }
 function gameError(error: unknown, reply: FastifyReply) {
   if (!(error instanceof JunoError) || !isErrorCode(error.message)) throw error;
@@ -101,14 +102,14 @@ export async function junoRoutes(app: FastifyInstance): Promise<void> {
     },
     // Live updates fan out to every player/spectator, plus fallback polls.
     // Keep this bounded read budget separate from ordinary HTTP and commands.
-    config: { rateLimit: { max: 600, timeWindow: '1 minute' } },
+    config: { rateLimit: { max: 1000, timeWindow: '1 minute' } },
   }, async (request, reply) => {
     if (!gate(request.params.channelId, request.userId, reply)) return;
     const user = getDb().select().from(schema.users).where(eq(schema.users.id, request.userId)).get();
     if (!user || user.isDeleted || user.isBot) return sendError(reply, 403, 'forbidden');
     reply.header('Cache-Control', 'no-store');
     const spaceId = getDb().select().from(schema.channels).where(eq(schema.channels.id, request.params.channelId)).get()!.spaceId;
-    try { return hydrateJunoSnapshot(rooms.read(request.params.channelId, request.userId, request.query.memory === '1', request.query.intoxicated === '1', request.query.pizza === '1'), spaceId); }
+    try { return hydrateJunoSnapshot(rooms.read(request.params.channelId, request.userId, request.query.memory === '1', request.query.intoxicated === '1', request.query.pizza === '1', request.query.six === '1'), spaceId); }
     catch (error) { return gameError(error, reply); }
   });
   app.post<{ Params: Params; Body: JunoCommand; Querystring: JunoQuery }>(root, {
@@ -130,7 +131,7 @@ export async function junoRoutes(app: FastifyInstance): Promise<void> {
     reply.header('Cache-Control', 'no-store');
     try {
       const spaceId = getDb().select().from(schema.channels).where(eq(schema.channels.id, channelId)).get()!.spaceId;
-      return hydrateJunoSnapshot(rooms.command(channelId, { userId: request.userId, name: user.displayName ?? user.username }, request.body, request.query.memory === '1', request.query.intoxicated === '1', request.query.pizza === '1'), spaceId);
+      return hydrateJunoSnapshot(rooms.command(channelId, { userId: request.userId, name: user.displayName ?? user.username }, request.body, request.query.memory === '1', request.query.intoxicated === '1', request.query.pizza === '1', request.query.six === '1'), spaceId);
     } catch (error) {
       return gameError(error, reply);
     }

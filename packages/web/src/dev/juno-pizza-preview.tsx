@@ -59,7 +59,7 @@ function Preview() {
     <header className="flex flex-wrap items-center gap-3">
       <strong>Pizza Maluca — preview local</strong>
       <label>Jogadores <select className="input-standard ml-2" value={players} disabled={resetting} onChange={event => setPlayers(Number(event.target.value))}>
-        {[2, 3, 4].map(n => <option key={n} value={n}>{n}</option>)}
+        {[2, 3, 4, 5, 6].map(n => <option key={n} value={n}>{n}</option>)}
       </select></label>
       <button className="glass rounded-lg px-3 py-2" disabled={resetting} onClick={() => {
         setResetting(true); void reset(players).catch(error => useJunoStore.setState({ error })).finally(() => setResetting(false));

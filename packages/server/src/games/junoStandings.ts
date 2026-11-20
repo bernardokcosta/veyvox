@@ -1,6 +1,5 @@
 import type { JunoPerson, JunoPlace, JunoStanding, JunoView } from '@veyvox/shared/src/juno.js';
-
-const XP_BY_PLACE: Record<JunoPlace, number> = { 1: 120, 2: 80, 3: 40, 4: 20 };
+import { junoDynamicXp } from '@veyvox/shared/src/juno.js';
 
 /** Freeze public counts, never private cards; absent starters abandoned the round. */
 export function buildJunoStandings(
@@ -22,7 +21,9 @@ export function buildJunoStandings(
   for (let i = 0; i < completed.length; i++) {
     const row = completed[i]!; const previous = completed[i - 1];
     row.place = previous && row.cardCount === previous.cardCount ? previous.place : (i + 1) as JunoPlace;
-    row.xp = XP_BY_PLACE[row.place!];
+    const totalCards = completed.reduce((sum, r) => sum + r.cardCount!, 0);
+    const abandoned = rows.length - completed.length;
+    row.xp = junoDynamicXp(row.place!, row.cardCount!, totalCards, completed.length, abandoned);
   }
   return [...completed, ...rows.filter(r => r.outcome !== 'completed')];
 }

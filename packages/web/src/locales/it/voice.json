@@ -41,7 +41,7 @@
       "start": {
         "goal": "Sii il primo giocatore a restare senza carte.",
         "deal": "Ognuno parte con sette carte. I colori sono quattro; il mazzo classico ha 108 carte. La prima carta scoperta è un numero e si gioca in senso orario.",
-        "setup": "Juno ha da due a quattro posti in un canale vocale di uno spazio. L’host crea il tavolo e avvia la manche quando i giocatori sono entrati."
+        "setup": "Juno ha da due a sei posti in un canale vocale di uno spazio. L’host crea il tavolo e avvia la manche quando i giocatori sono entrati."
       },
       "turn": {
         "match": "Abbina il colore attivo oppure il numero o il simbolo dell’ultima carta. Anche un jolly consentito è un modo valido per giocare. Questi esempi sono tutti validi su un 5 blu:",
@@ -78,7 +78,7 @@
       "score": {
         "ranking": "La prima mano vuota vince. Gli altri classificati sono ordinati in base alle carte rimaste, compresa l’eventuale penalità di pesca dell’ultima carta.",
         "award": "XP assegnati",
-        "ties": "I pareggi condividono posizione e XP: due giocatori pari al secondo posto ricevono entrambi 80 XP e il posto successivo è il quarto. Contano solo le manche completate con soli umani e con un vincitore; solo il vincitore ottiene una vittoria. Uscire prima non dà posizione né XP.",
+        "ties": "I pareggi condividono posizione e XP: due giocatori pari al secondo posto ricevono entrambi 80 XP di base e il posto successivo è il quarto. Contano solo le manche completate con soli umani e con un vincitore; solo il vincitore ottiene una vittoria. Uscire prima non dà posizione né XP.",
         "practice": "Una manche iniziata con un bot resta un allenamento, anche se il bot esce in seguito: nessun XP, vittoria o manche classificata. Gli XP appartengono a questo spazio e uniscono i suoi canali vocali, non altri spazi.",
         "pending": "Mentre i risultati vengono salvati, gli XP sono ancora in sospeso, non già guadagnati. Un nuovo tavolo diventa disponibile quando quel risultato è stato risolto."
       },
@@ -154,14 +154,14 @@
     "previousPage": "Pagina precedente",
     "nextPage": "Pagina successiva",
     "scoreHint": "Gli XP di Juno appartengono a questo spazio, in tutti i suoi canali vocali.",
-    "scoreRules": "1º: 120 XP · 2º: 80 XP · 3º: 40 XP · 4º: 20 XP. I pareggi condividono posizione e XP. Contano solo le manche completate con un vincitore; uscire prima non dà XP.",
+    "scoreRules": "1º: 120 XP · 2º: 80 XP · 3º: 40 XP · 4º: 20 XP · 5º: 10 XP · 6º: 5 XP di base più piccoli bonus. I pareggi condividono posizione e XP. Contano solo le manche completate con un vincitore; uscire prima non dà XP.",
     "chooseGame": "Scegli un gioco da fare con le persone in chiamata.",
     "name": "Juno",
     "games": "Giochi",
     "open": "Apri Juno",
     "tagline": "Una piccola rivalità amichevole",
     "invitation": "La tua prossima manche inizia qui",
-    "description": "Abbina i colori, ribalta il tavolo e sii il primo a svuotare la mano. Un gioco di carte originale per 2–4 persone in questo canale vocale.",
+    "description": "Abbina i colori, ribalta il tavolo e sii il primo a svuotare la mano. Un gioco di carte originale per 2–6 persone in questo canale vocale.",
     "create": "Crea un tavolo",
     "lobbyTitle": "Accomodati",
     "lobbyHint": "Chiunque sia in chiamata può entrare. L’host avvia quando il tavolo è pronto.",

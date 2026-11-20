@@ -41,7 +41,7 @@
       "start": {
         "goal": "Be the first player to have no cards left.",
         "deal": "Everyone starts with seven cards. There are four colors; the classic deck has 108 cards. The first face-up card is a number, and play begins clockwise.",
-        "setup": "Juno has two to four seats in a space voice channel. The host creates the table and starts the round once the players have joined."
+        "setup": "Juno has two to six seats in a space voice channel. The host creates the table and starts the round once the players have joined."
       },
       "turn": {
         "match": "Match the active color or the last card's number or symbol. A permitted wild is another way to play. These examples all fit a blue 5:",
@@ -77,8 +77,9 @@
       },
       "score": {
         "ranking": "The first empty hand wins. Other finishers are ranked by their remaining card counts, including any final-card draw penalty.",
-        "award": "XP awarded",
-        "ties": "Ties share the same place and XP: two players tied for second both receive 80 XP, and the next place is fourth. Only completed human-only rounds with a winner count; only the winner gains a win. Leaving early earns no place or XP.",
+        "award": "Base XP",
+        "ties": "Ties share the same place and base award: two players tied for second both start from 80 XP, and the next place is fourth. Only completed human-only rounds with a winner count; only the winner gains a win. Leaving early earns no place or XP.",
+        "dynamic": "Final XP adds small deterministic bonuses to the base award: average opposing hand size (capped), a larger table (four or more finishers) and a round where nobody abandoned. Tied players always keep identical XP, and every finisher earns at least the base award.",
         "practice": "A round started with a bot remains practice, even if the bot later leaves: no XP, wins or ranked rounds are credited. XP belongs to this space and combines its voice channels, not other spaces.",
         "pending": "While results are being saved, XP is still pending, not already earned. A new table becomes available once that result has been resolved."
       },
@@ -152,14 +153,14 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "scoreHint": "Juno XP belongs to this space, across all its voice channels.",
-    "scoreRules": "1st: 120 XP · 2nd: 80 XP · 3rd: 40 XP · 4th: 20 XP. Ties share place and XP. Only completed rounds with a winner count; leaving early earns no XP.",
+    "scoreRules": "1st: 120 XP · 2nd: 80 XP · 3rd: 40 XP · 4th: 20 XP · 5th: 10 XP · 6th: 5 XP base, plus small bonuses for cards, table size and no leavers. Ties share place and XP. Only completed rounds with a winner count; leaving early earns no XP.",
     "chooseGame": "Choose a game to play with the people in your call.",
     "name": "Juno",
     "games": "Games",
     "open": "Open Juno",
     "tagline": "A little friendly rivalry",
     "invitation": "Your next round starts here",
-    "description": "Match colors, turn the tables, and be the first to empty your hand. An original card game for 2–4 people in this voice channel.",
+    "description": "Match colors, turn the tables, and be the first to empty your hand. An original card game for 2–6 people in this voice channel.",
     "create": "Create a table",
     "lobbyTitle": "Pull up a seat",
     "lobbyHint": "Everyone in the call can join. The host starts when the table is ready.",

@@ -41,7 +41,7 @@
       "start": {
         "goal": "Pozbądź się wszystkich kart jako pierwszy.",
         "deal": "Każdy zaczyna z siedmioma kartami. Są cztery kolory; klasyczna talia ma 108 kart. Pierwsza odkryta karta to numer, gra toczy się zgodnie z ruchem wskazówek zegara.",
-        "setup": "Juno ma od dwóch do czterech miejsc w głosowym kanale przestrzeni. Gospodarz tworzy stół i startuje rundę, gdy gracze dołączą."
+        "setup": "Juno ma od dwóch do sześciu miejsc w głosowym kanale przestrzeni. Gospodarz tworzy stół i startuje rundę, gdy gracze dołączą."
       },
       "turn": {
         "match": "Dopasuj aktywny kolor albo numer lub symbol ostatniej karty. Dozwolona dzika to inny sposób gry. Te przykłady pasują do niebieskiej 5:",
@@ -78,7 +78,7 @@
       "score": {
         "ranking": "Pierwsza pusta ręka wygrywa. Pozostali kończący są rankingowani po liczbie kart, wliczając ewentualną karę za dobranie ostatniej karty.",
         "award": "Przyznano XP",
-        "ties": "Remisy dzielą to samo miejsce i XP: dwóch graczy dzielących drugie miejsce dostaje po 80 XP, a następne miejsce to czwarte. Liczą się tylko ukończone rundy bez botów ze zwycięzcą; tylko zwycięzca dostaje wygraną. Wczesne wyjście nie daje miejsca ani XP.",
+        "ties": "Remisy dzielą to samo miejsce i XP: dwóch graczy dzielących drugie miejsce dostaje po 80 XP bazowo, a następne miejsce to czwarte. Liczą się tylko ukończone rundy bez botów ze zwycięzcą; tylko zwycięzca dostaje wygraną. Wczesne wyjście nie daje miejsca ani XP.",
         "practice": "Runda zaczęta z botem pozostaje treningowa, nawet jeśli bot potem wyjdzie: bez XP, wygranych ani rankingowych rund. XP należy do tej przestrzeni i łączy jej kanały głosowe, nie inne przestrzenie.",
         "pending": "Gdy wyniki się zapisują, XP jest jeszcze oczekujący, a nie już zdobyty. Nowy stół będzie dostępny, gdy ten wynik zostanie rozliczony."
       },
@@ -156,14 +156,14 @@
     "previousPage": "Poprzednia strona",
     "nextPage": "Następna strona",
     "scoreHint": "XP Juno należy do tej przestrzeni, we wszystkich jej kanałach głosowych.",
-    "scoreRules": "1.: 120 XP · 2.: 80 XP · 3.: 40 XP · 4.: 20 XP. Remisy dzielą miejsce i XP. Liczą się tylko ukończone rundy ze zwycięzcą; wczesne wyjście nie daje XP.",
+    "scoreRules": "1.: 120 XP · 2.: 80 XP · 3.: 40 XP · 4.: 20 XP · 5.: 10 XP · 6.: 5 XP bazowo plus małe bonusy. Remisy dzielą miejsce i XP. Liczą się tylko ukończone rundy ze zwycięzcą; wczesne wyjście nie daje XP.",
     "chooseGame": "Wybierz grę do grania z ludźmi na Twoim połączeniu.",
     "name": "Juno",
     "games": "Gry",
     "open": "Otwórz Juno",
     "tagline": "Trochę przyjaznej rywalizacji",
     "invitation": "Twoja następna runda zaczyna się tutaj",
-    "description": "Dopasowuj kolory, odwracaj stoły i pozbądź się kart jako pierwszy. Oryginalna gra karciana dla 2–4 osób na tym kanale głosowym.",
+    "description": "Dopasowuj kolory, odwracaj stoły i pozbądź się kart jako pierwszy. Oryginalna gra karciana dla 2–6 osób na tym kanale głosowym.",
     "create": "Utwórz stół",
     "lobbyTitle": "Zajmij miejsce",
     "lobbyHint": "Dołączyć może każdy na połączeniu. Gospodarz startuje, gdy stół jest gotowy.",

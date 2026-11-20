@@ -4,7 +4,7 @@
   "juno_exists": "There’s already a Juno table in this channel.",
   "juno_capacity": "This instance has reached its active game limit.",
   "juno_stale": "The table changed. Check the current turn and try again.",
-  "juno_full": "All four seats are occupied.",
+  "juno_full": "All six seats are occupied.",
   "juno_in_progress": "This round has started. Watch or join the next lobby.",
   "juno_player_required": "Join the table first.",
   "juno_host_required": "Only the table host can do this.",

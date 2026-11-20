@@ -45,8 +45,17 @@ export function settleJunoRound(input: JunoSettlement, database?: DB): JunoScore
     }
     if (!tx.select({ id: schema.spaces.id }).from(schema.spaces).where(eq(schema.spaces.id, input.spaceId)).get()) return unranked(input);
     const winner = input.standings.find(row => row.place === 1 && row.outcome === 'completed');
-    if (!winner || winner.cardCount !== 0 || input.standings.length < 2 || input.standings.length > 4
+    if (!winner || winner.cardCount !== 0 || input.standings.length < 2 || input.standings.length > 6
       || new Set(input.standings.map(row => row.userId)).size !== input.standings.length) throw new Error('Invalid Juno settlement');
+    const completed: number[] = [];
+    for (const row of input.standings) {
+      if (row.outcome === 'abandoned') continue;
+      if (row.cardCount === null || !Number.isInteger(row.cardCount) || row.cardCount < 0) throw new Error('Invalid Juno settlement');
+      completed.push(row.cardCount);
+    }
+    // Conserved decks never exceed 111 cards and exactly one finisher holds zero.
+    if (completed.reduce((sum, count) => sum + count, 0) > JUNO_MAX_DECK_SIZE) throw new Error('Invalid Juno settlement');
+    if (completed.filter(count => count === 0).length !== 1) throw new Error('Invalid Juno settlement');
     const computed = buildJunoStandings(input.standings,
       input.standings.filter(row => row.outcome !== 'abandoned').map(row => ({ userId: row.userId, cardCount: row.cardCount! })),
       winner.userId, input.result);

@@ -1,5 +1,5 @@
 import { randomInt, randomUUID } from 'node:crypto';
-import { JUNO_COLORS, JUNO_TURN_MS, JUNO_REPORT_MS, JUNO_PIZZA_MS, canPlayJuno, type JunoAction, type JunoCard,
+import { JUNO_COLORS, JUNO_MAX_PLAYERS, JUNO_TURN_MS, JUNO_REPORT_MS, JUNO_PIZZA_MS, canPlayJuno, type JunoAction, type JunoCard,
   type JunoColor, type JunoCommand, type JunoMove, type JunoPerson, type JunoSnapshot, type JunoView, type JunoScoreboard } from '@veyvox/shared/src/juno.js';
 import { buildJunoStandings } from './junoStandings.js';
 import type { JunoSettlement } from './junoProgression.js';
@@ -221,6 +221,7 @@ interface Table {
   memoryClients: Set<string>;
   intoxicatedClients: Set<string>;
   pizzaClients: Set<string>;
+  sixClients: Set<string>;
 }
 interface RoomOptions {
   present: (channelId: string, userId: string) => boolean;
@@ -273,6 +274,7 @@ export class JunoRooms {
     table.memoryClients.delete(userId);
     table.intoxicatedClients.delete(userId);
     table.pizzaClients.delete(userId);
+    table.sixClients.delete(userId);
     if (table.round?.memoryCurse?.targetUserId === userId) table.round.memoryCurse = undefined;
     if (table.round?.intoxication?.targetUserId === userId) table.round.intoxication = undefined;
     if (!table.people.some(person => !person.computer)) {
@@ -359,10 +361,19 @@ export class JunoRooms {
   }
   tick(): void { for (const channelId of this.tables.keys()) this.settle(channelId); }
   dispose(): void { this.tables.clear(); }
-  read(channelId: string, userId: string, supportsMemory = false, supportsIntoxicated = false, supportsPizza = false): JunoSnapshot {
+  /** Six-seat tables need every seated human on a six-capable client, including
+   *  finished rounds: places 5-6 stay out of reach for older layouts until rematch. */
+  private sixRequired(table: Table): boolean {
+    return table.people.length > 4 || table.starters.length > 4;
+  }
+  private sixConsent(table: Table, supportsSix: boolean): boolean {
+    return supportsSix && table.people.every(p => p.computer || table.sixClients.has(p.userId));
+  }
+  read(channelId: string, userId: string, supportsMemory = false, supportsIntoxicated = false, supportsPizza = false, supportsSix = false): JunoSnapshot {
     this.settle(channelId);
     const table = this.tables.get(channelId);
-    if (!table) return { revision: this.revision, game: null, supportsMemory: true, supportsIntoxicated: true, supportsPizza: true };
+    if (!table) return { revision: this.revision, game: null, supportsMemory: true, supportsIntoxicated: true, supportsPizza: true, supportsSix: true };
+    if (this.sixRequired(table) && !supportsSix) refuse('juno_update_required');
     const round = table.round;
     if (round?.memoryEnabled && !supportsMemory) refuse('juno_update_required');
     if (round?.intoxicatedEnabled && !supportsIntoxicated) refuse('juno_update_required');
@@ -371,6 +382,7 @@ export class JunoRooms {
       if (supportsMemory) table.memoryClients.add(userId); else table.memoryClients.delete(userId);
       if (supportsIntoxicated) table.intoxicatedClients.add(userId); else table.intoxicatedClients.delete(userId);
       if (supportsPizza) table.pizzaClients.add(userId); else table.pizzaClients.delete(userId);
+      if (supportsSix) table.sixClients.add(userId); else table.sixClients.delete(userId);
     }
     const self = table.people.some(person => person.userId === userId && !person.computer) ? round?.players.find(person => person.userId === userId) : undefined;
     const blind = !!self && round?.memoryCurse?.targetUserId === userId;
@@ -381,7 +393,7 @@ export class JunoRooms {
         ...(publicMove.pizzaTransfers ? { pizzaTransfers: publicMove.pizzaTransfers.map(t => ({ ...t })) } : {}),
         ...(self && !blind && publicMove.userId === userId && misplayedCard ? { misplayedCard: { ...misplayedCard } } : {}) };
     }
-    return { revision: table.revision, supportsMemory: true, supportsIntoxicated: true, supportsPizza: true, game: {
+    return { revision: table.revision, supportsMemory: true, supportsIntoxicated: true, supportsPizza: true, supportsSix: true, game: {
       id: table.id, phase: !round ? 'lobby' : round.result ? 'finished' : 'playing', hostId: table.hostId,
       players: table.people.map(person => {
         const player = round?.players.find(p => p.userId === person.userId);
@@ -408,7 +420,7 @@ export class JunoRooms {
       ...(table.scoreboard ? { scoreboard: { ...table.scoreboard, standings: table.scoreboard.standings.map(p => ({ ...p })) } } : {}),
     } };
   }
-  command(channelId: string, person: JunoPerson, command: JunoCommand, supportsMemory = false, supportsIntoxicated = false, supportsPizza = false): JunoSnapshot {
+  command(channelId: string, person: JunoPerson, command: JunoCommand, supportsMemory = false, supportsIntoxicated = false, supportsPizza = false, supportsSix = false): JunoSnapshot {
     this.settle(channelId);
     let table = this.tables.get(channelId);
     if (person.computer || table?.people.some(p => p.userId === person.userId && p.computer)) refuse('juno_player_required');
@@ -419,26 +431,30 @@ export class JunoRooms {
         revision: 0, createdAt: this.now(), updatedAt: this.now(),
         spaceId: this.options.spaceIdForChannel?.(channelId) ?? null, starters: [], retryAt: 0,
         memoryClients: new Set(supportsMemory ? [person.userId] : []), intoxicatedClients: new Set(supportsIntoxicated ? [person.userId] : []),
-        pizzaClients: new Set(supportsPizza ? [person.userId] : []) };
-      this.tables.set(channelId, table); this.changed(channelId, table); return this.read(channelId, person.userId, supportsMemory, supportsIntoxicated, supportsPizza);
+        pizzaClients: new Set(supportsPizza ? [person.userId] : []), sixClients: new Set(supportsSix ? [person.userId] : []) };
+      this.tables.set(channelId, table); this.changed(channelId, table); return this.read(channelId, person.userId, supportsMemory, supportsIntoxicated, supportsPizza, supportsSix);
     }
     if (table?.round?.memoryEnabled && !supportsMemory && command.type !== 'leave') refuse('juno_update_required');
     if (table?.round?.intoxicatedEnabled && !supportsIntoxicated && command.type !== 'leave') refuse('juno_update_required');
     if (table?.round?.pizzaEnabled && !supportsPizza && command.type !== 'leave') refuse('juno_update_required');
+    if (table && this.sixRequired(table) && !supportsSix && command.type !== 'leave') refuse('juno_update_required');
     if (!table || command.gameId !== table.id || command.revision !== table.revision) refuse('juno_stale');
     const seated = table.people.some(p => p.userId === person.userId);
     if (command.type === 'join') {
       if (table.round) refuse('juno_in_progress');
       if (!seated) {
-        if (table.people.length >= 4) refuse('juno_full');
+        if (table.people.length >= JUNO_MAX_PLAYERS) refuse('juno_full');
+        if (table.people.length >= 4 && !this.sixConsent(table, supportsSix)) refuse('juno_update_required');
+        if (supportsSix) table.sixClients.add(person.userId); else table.sixClients.delete(person.userId);
         table.people.push({ ...person });
       }
     } else if (command.type === 'addBot' || command.type === 'removeBot') {
       if (table.hostId !== person.userId) refuse('juno_host_required');
       if (table.round) refuse('juno_in_progress');
       if (command.type === 'addBot') {
-        if (table.people.length >= 4) refuse('juno_full');
-        const computer = ([1, 2, 3] as const).find(n => !table!.people.some(p => p.computer === n))!;
+        if (table.people.length >= JUNO_MAX_PLAYERS) refuse('juno_full');
+        if (table.people.length >= 4 && !this.sixConsent(table, supportsSix)) refuse('juno_update_required');
+        const computer = ([1, 2, 3, 4, 5] as const).find(n => !table!.people.some(p => p.computer === n))!;
         table.people.push({ userId: `juno-bot:${randomUUID()}`, name: `Juno Bot ${computer}`, computer });
       } else if (command.type === 'removeBot') {
         const botId = command.botId;
@@ -449,7 +465,8 @@ export class JunoRooms {
       if (!seated) refuse('juno_player_required');
       this.remove(channelId, table, person.userId);
       return (!supportsMemory && table.round?.memoryEnabled) || (!supportsIntoxicated && table.round?.intoxicatedEnabled) || (!supportsPizza && table.round?.pizzaEnabled)
-        ? { revision: this.revision, game: null, supportsMemory: true, supportsIntoxicated: true, supportsPizza: true } : this.read(channelId, person.userId, supportsMemory, supportsIntoxicated, supportsPizza);
+        || (!supportsSix && this.sixRequired(table))
+        ? { revision: this.revision, game: null, supportsMemory: true, supportsIntoxicated: true, supportsPizza: true, supportsSix: true } : this.read(channelId, person.userId, supportsMemory, supportsIntoxicated, supportsPizza, supportsSix);
     } else {
       if (!seated) refuse('juno_player_required');
       if (command.type === 'start' || command.type === 'rematch') {
@@ -461,11 +478,13 @@ export class JunoRooms {
           table.memoryClients = new Set(supportsMemory ? [person.userId] : []);
           table.intoxicatedClients = new Set(supportsIntoxicated ? [person.userId] : []);
           table.pizzaClients = new Set(supportsPizza ? [person.userId] : []);
+          table.sixClients = new Set(supportsSix ? [person.userId] : []);
         } else {
           if (table.round || table.people.length < 2) refuse('juno_need_players');
           if (supportsMemory) table.memoryClients.add(person.userId); else table.memoryClients.delete(person.userId);
           if (supportsIntoxicated) table.intoxicatedClients.add(person.userId); else table.intoxicatedClients.delete(person.userId);
           if (supportsPizza) table.pizzaClients.add(person.userId); else table.pizzaClients.delete(person.userId);
+          if (supportsSix) table.sixClients.add(person.userId); else table.sixClients.delete(person.userId);
           const memory = table.people.every(p => p.computer || table!.memoryClients.has(p.userId));
           const intoxicated = memory && table.people.every(p => p.computer || table!.intoxicatedClients.has(p.userId));
           const pizza = intoxicated && table.people.every(p => p.computer || table!.pizzaClients.has(p.userId));
@@ -478,6 +497,6 @@ export class JunoRooms {
       }
     }
     this.complete(channelId, table);
-    this.changed(channelId, table); return this.read(channelId, person.userId, supportsMemory, supportsIntoxicated, supportsPizza);
+    this.changed(channelId, table); return this.read(channelId, person.userId, supportsMemory, supportsIntoxicated, supportsPizza, supportsSix);
   }
 }

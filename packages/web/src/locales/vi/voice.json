@@ -41,7 +41,7 @@
       "start": {
         "goal": "Hết bài trước tiên.",
         "deal": "Mỗi người bắt đầu với bảy bài. Có bốn màu; bộ cổ điển có 108 bài. Bài ngửa đầu là số, chơi theo chiều kim đồng hồ.",
-        "setup": "Juno có hai tới bốn ghế trong kênh voice của không gian. Chủ tạo bàn và bắt đầu vòng khi người chơi đã tham gia."
+        "setup": "Juno có hai tới sáu ghế trong kênh voice của không gian. Chủ tạo bàn và bắt đầu vòng khi người chơi đã tham gia."
       },
       "turn": {
         "match": "Khớp màu hiện tại hay số hoặc ký hiệu của bài cuối. Lá đổi màu hợp lệ là cách khác. Mọi ví dụ này đều hợp với 5 xanh dương:",
@@ -78,7 +78,7 @@
       "score": {
         "ranking": "Tay trống đầu thắng. Người về sau xếp theo bài còn lại, gồm phạt rút bài cuối nếu có.",
         "award": "Đã trao XP",
-        "ties": "Hòa chia cùng hạng và XP: hai người đồng nhì cùng nhận 80 XP, và hạng tiếp là tư. Chỉ vòng hoàn thành không bot có người thắng được tính; chỉ người thắng có chiến thắng. Rời sớm không có hạng hay XP.",
+        "ties": "Hòa chia cùng hạng và XP: hai người đồng nhì cùng nhận 80 XP cơ bản, và hạng tiếp là tư. Chỉ vòng hoàn thành không bot có người thắng được tính; chỉ người thắng có chiến thắng. Rời sớm không có hạng hay XP.",
         "practice": "Vòng bắt đầu với bot vẫn là luyện tập, dù bot sau rời: không XP, thắng hay vòng xếp hạng. XP thuộc không gian này và gộp kênh voice của nó, không phải không gian khác.",
         "pending": "Khi kết quả đang lưu, XP vẫn chờ, chưa kiếm được. Bàn mới khả dụng khi kết quả này được xử lý."
       },
@@ -152,14 +152,14 @@
     "previousPage": "Trang trước",
     "nextPage": "Trang tiếp",
     "scoreHint": "XP Juno thuộc không gian này, trên mọi kênh voice của nó.",
-    "scoreRules": "1: 120 XP · 2: 80 XP · 3: 40 XP · 4: 20 XP. Hòa chia hạng và XP. Chỉ vòng hoàn thành có người thắng được tính; rời sớm không cho XP.",
+    "scoreRules": "1: 120 XP · 2: 80 XP · 3: 40 XP · 4: 20 XP · 5: 10 XP · 6: 5 XP cơ bản cộng thưởng nhỏ. Hòa chia hạng và XP. Chỉ vòng hoàn thành có người thắng được tính; rời sớm không cho XP.",
     "chooseGame": "Chọn game để chơi với người trong cuộc gọi của bạn.",
     "name": "Juno",
     "games": "Game",
     "open": "Mở Juno",
     "tagline": "Chút ganh đua thân thiện",
     "invitation": "Vòng tiếp của bạn bắt đầu ở đây",
-    "description": "Khớp màu, lật bàn và hết tay trước tiên. Game bài gốc cho 2–4 người trong kênh voice này.",
+    "description": "Khớp màu, lật bàn và hết tay trước tiên. Game bài gốc cho 2–6 người trong kênh voice này.",
     "create": "Tạo bàn",
     "lobbyTitle": "Ngồi vào",
     "lobbyHint": "Mọi người trong cuộc gọi đều tham gia được. Chủ bắt đầu khi bàn sẵn sàng.",

@@ -17,9 +17,9 @@ export function pizzaFlights(game: Pick<JunoView, 'players' | 'direction' | 'las
     if (source < 0 || transfer.fromUserId === transfer.toUserId || !game.players.some(p => p.userId === transfer.toUserId)
       || !Number.isInteger(transfer.amount) || transfer.amount < 1) continue;
     const sourceIndex = (game.direction * (source - author) + game.players.length) % game.players.length;
-    for (let i = 0; i < transfer.amount && (sent.get(transfer.fromUserId) ?? 0) < 5 && flights.length < 20; i++) {
+    for (let i = 0; i < transfer.amount && (sent.get(transfer.fromUserId) ?? 0) < 5; i++) {
       const index = sent.get(transfer.fromUserId) ?? 0;
-      const departureMs = Math.ceil(sourceIndex / game.players.length * JUNO_PIZZA_MS) + 100 + index * 45;
+      const departureMs = Math.min(Math.ceil(sourceIndex / game.players.length * JUNO_PIZZA_MS) + 100 + index * 45, JUNO_PIZZA_MS - 700);
       flights.push({ fromUserId: transfer.fromUserId, toUserId: transfer.toUserId, departureMs, arrivalMs: departureMs + 700 });
       sent.set(transfer.fromUserId, index + 1);
     }

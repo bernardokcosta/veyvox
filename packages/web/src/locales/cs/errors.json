@@ -4,7 +4,7 @@
   "juno_exists": "V tomto kanálu už je stůl Juno.",
   "juno_capacity": "Tato instance dosáhla limitu aktivních her.",
   "juno_stale": "Stůl se změnil. Zkontroluj aktuální tah a zkus to znovu.",
-  "juno_full": "Všechna čtyři místa jsou obsazená.",
+  "juno_full": "Všechna šest míst jsou obsazená.",
   "juno_in_progress": "Toto kolo už začalo. Sleduj je, nebo se přidej do dalšího lobby.",
   "juno_player_required": "Nejprve se přidej ke stolu.",
   "juno_host_required": "To smí jen hostitel stolu.",

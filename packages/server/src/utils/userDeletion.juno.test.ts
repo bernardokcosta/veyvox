@@ -16,7 +16,7 @@ describe('Juno account erasure', () => {
     expect(fixture.db.select().from(schema.junoRoundParticipants).where(eq(schema.junoRoundParticipants.userId, 'b')).all()).toEqual([]);
     expect(fixture.db.select().from(schema.junoRoundResults).all()).toHaveLength(1);
     settleJunoRound(junoTestSettlement());
-    expect(fixture.db.select().from(schema.junoPlayerStats).where(eq(schema.junoPlayerStats.userId, 'a')).get()?.totalXp).toBe(120);
+    expect(fixture.db.select().from(schema.junoPlayerStats).where(eq(schema.junoPlayerStats.userId, 'a')).get()?.totalXp).toBe(133);
   });
   it('does not revive an erased account from a delayed frozen settlement', () => {
     const pending = junoTestSettlement(); tombstoneUser('b', { purgeContent: false });

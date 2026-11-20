@@ -88,7 +88,7 @@ export function JunoMatch() {
     <JunoPizzaEffects move={game.lastMove} players={game.players} direction={game.direction} viewerId={selfId} resolution={game.pizzaResolution} active={connected && !stale} startedAt={presentation.startedAt} onStop={presentation.onStop} />
     <div className="juno-arena">
       <img className="juno-orbit" src={JUNO_ASSETS.orbit} alt="" aria-hidden="true" />
-      {seat('top')}{seat('left')}{seat('right')}
+      {seat('top')}{seats.topLeft && seat('topLeft')}{seats.topRight && seat('topRight')}{seat('left')}{seat('right')}
       <div className="juno-center"><div className="juno-piles">
         <div className="juno-pile"><div className={`juno-discard${blind ? ' juno-memory-pile' : ''}`} aria-label={blind ? t('juno.memory.hiddenPile') : game.topCard ? cardLabel(game.topCard) : undefined}>
           {blind ? <span className="juno-hidden-face" aria-hidden="true" /> : <JunoCard card={game.topCard ?? undefined} />}

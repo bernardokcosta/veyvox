@@ -41,7 +41,7 @@
       "start": {
         "goal": "Jadi pertama yang tidak punya kartu tersisa.",
         "deal": "Semua mulai dengan tujuh kartu. Ada empat warna; dek klasik punya 108 kartu. Kartu terbuka pertama adalah angka, dan main searah jarum jam.",
-        "setup": "Juno punya dua hingga empat kursi di kanal voice ruang. Host membuat meja dan memulai ronde setelah pemain bergabung."
+        "setup": "Juno punya dua hingga enam kursi di kanal voice ruang. Host membuat meja dan memulai ronde setelah pemain bergabung."
       },
       "turn": {
         "match": "Cocokkan warna aktif atau angka atau simbol kartu terakhir. Wild yang diizinkan adalah cara lain. Semua contoh ini cocok untuk 5 biru:",
@@ -78,7 +78,7 @@
       "score": {
         "ranking": "Tangan kosong pertama menang. Finisher lain dirangking berdasar sisa kartu, termasuk penalti ambil kartu terakhir.",
         "award": "XP diberikan",
-        "ties": "Seri berbagi tempat dan XP sama: dua pemain seri kedua sama-sama dapat 80 XP, dan tempat berikut keempat. Hanya ronde selesai tanpa bot dengan pemenang dihitung; hanya pemenang mendapat kemenangan. Pergi awal tak memberi tempat atau XP.",
+        "ties": "Seri berbagi tempat dan XP sama: dua pemain seri kedua sama-sama dapat 80 XP dasar, dan tempat berikut keempat. Hanya ronde selesai tanpa bot dengan pemenang dihitung; hanya pemenang mendapat kemenangan. Pergi awal tak memberi tempat atau XP.",
         "practice": "Ronde yang dimulai dengan bot tetap latihan, meski bot kemudian pergi: tanpa XP, kemenangan, atau ronde berperingkat. XP milik ruang ini dan menggabungkan kanal voicenya, bukan ruang lain.",
         "pending": "Saat hasil disimpan, XP masih tertunda, belum diperoleh. Meja baru tersedia setelah hasil ini diproses."
       },
@@ -152,14 +152,14 @@
     "previousPage": "Halaman sebelumnya",
     "nextPage": "Halaman berikut",
     "scoreHint": "XP Juno milik ruang ini, di semua kanal voicenya.",
-    "scoreRules": "1: 120 XP · 2: 80 XP · 3: 40 XP · 4: 20 XP. Seri berbagi tempat dan XP. Hanya ronde selesai dengan pemenang dihitung; pergi awal tak memberi XP.",
+    "scoreRules": "1: 120 XP · 2: 80 XP · 3: 40 XP · 4: 20 XP · 5: 10 XP · 6: 5 XP dasar plus bonus kecil. Seri berbagi tempat dan XP. Hanya ronde selesai dengan pemenang dihitung; pergi awal tak memberi XP.",
     "chooseGame": "Pilih game untuk dimainkan dengan orang di panggilan Anda.",
     "name": "Juno",
     "games": "Game",
     "open": "Buka Juno",
     "tagline": "Sedikit persaingan bersahabat",
     "invitation": "Ronde berikut Anda mulai di sini",
-    "description": "Cocokkan warna, balik meja, dan jadi pertama mengosongkan tangan. Game kartu orisinal untuk 2–4 orang di kanal voice ini.",
+    "description": "Cocokkan warna, balik meja, dan jadi pertama mengosongkan tangan. Game kartu orisinal untuk 2–6 orang di kanal voice ini.",
     "create": "Buat meja",
     "lobbyTitle": "Duduklah",
     "lobbyHint": "Semua di panggilan dapat gabung. Host memulai saat meja siap.",

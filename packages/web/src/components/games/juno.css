@@ -97,6 +97,7 @@
 .juno-main-logo { width: min(36cqw, 46cqh, 330px); height: min(22cqh, 170px); object-fit: contain; }
 .juno-lobby h2, .juno-result h2, .juno-ranking h2 { font-size: clamp(18px, 4cqh, 32px); font-weight: 800; letter-spacing: -.035em; line-height: 1.15; }
 .juno-lobby-players { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: min(540px, 94%); gap: 8px; }
+.juno-lobby-players:has(> :nth-child(5)) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .juno-lobby-seat { position: relative; min-width: 0; }
 .juno-lobby-seat:has(.juno-remove-bot) .juno-player-badge { padding-right: 34px; }
 .juno-remove-bot { position: absolute; right: 3px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid #7f97bf; border-radius: 50%; color: #f5f8ff; background: #101a35f5; font-size: 23px; line-height: 1; }
@@ -125,6 +126,7 @@ button.juno-seat-empty:hover:not(:disabled) { border-color: #27ef7d; color: #27e
 .juno-player-controls > .juno-player-badge { width: 100%; }
 .juno-reports .juno-arena { grid-template-rows: minmax(106px,31%) minmax(0,1fr); }
 .juno-reports .juno-seat-top { padding-top: var(--juno-hammer-height); }
+.juno-reports .juno-seat-topLeft, .juno-reports .juno-seat-topRight { padding-top: var(--juno-hammer-height); }
 .juno-report-anchor { position: absolute; bottom: calc(100% + var(--juno-hammer-gap)); left: calc(50% - var(--juno-hammer-width) * 119 / 360); width: var(--juno-hammer-width); height: var(--juno-hammer-height); pointer-events: none; z-index: 3; }
 .juno-report { display: block; width: 100%; height: 100%; min-height: 0; padding: 0; border: 0; border-radius: 9px; background: none; box-shadow: none; color: inherit; pointer-events: auto; transform-origin: 33.055556% 79%; }
 .juno-report img { display: block; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 2px 6px #000b); }
@@ -132,6 +134,10 @@ button.juno-seat-empty:hover:not(:disabled) { border-color: #27ef7d; color: #27e
 .juno-table .juno-report:focus-visible { outline: 2px solid #ffce29; outline-offset: 2px; }
 .juno-table .juno-report:disabled { opacity: .32; }
 .juno-seat-top { grid-column: 2; grid-row: 1; }
+.juno-seat-topLeft { grid-column: 1; grid-row: 1; }
+.juno-seat-topRight { grid-column: 3; grid-row: 1; }
+/* The top row pins badges to the same horizontal line; fans and report hammers hang below/above. */
+.juno-seat-top, .juno-seat-topLeft, .juno-seat-topRight { align-self: start; justify-content: flex-start; }
 .juno-seat-left { grid-column: 1; grid-row: 2; }
 .juno-seat-right { grid-column: 3; grid-row: 2; }
 .juno-empty-position { width: 38px; height: 38px; border: 1px dashed #647ca333; border-radius: 50%; }
@@ -351,6 +357,7 @@ button.juno-seat-empty:hover:not(:disabled) { border-color: #27ef7d; color: #27e
   .juno-seat-left .juno-player-copy > span, .juno-seat-right .juno-player-copy > span { font-size: 12px; }
   .juno-next-marker { position: absolute; top: 0; right: 4px; font-size: 20px; }
   .juno-seat-top .juno-opponent-cards { display: none; }
+  .juno-seat-topLeft .juno-opponent-cards, .juno-seat-topRight .juno-opponent-cards { display: none; }
   .juno-side-hand { width: 60px; padding-left: 2px; padding-right: 2px; }
   .juno-score-row { grid-template-columns: 30px minmax(0, 1fr) auto; gap: 4px; padding-right: 8px; }
   .juno-earned { font-size: 11px; max-width: 11ch; }
@@ -374,7 +381,7 @@ button.juno-seat-empty:hover:not(:disabled) { border-color: #27ef7d; color: #27e
   .juno-reports .juno-seat { padding-top: var(--juno-hammer-height); }
   .juno-reports .juno-local-player .juno-seat { padding-top: 0; }
   .juno-main-logo { display: none; }
-  .juno-lobby { gap: 4px; }
+  .juno-lobby { gap: 4px; justify-content: flex-start; overflow: auto; }
   .juno-seat-empty { min-height: 44px; }
   .juno-header { min-height: 30px; }
   .juno-header-logo { height: 25px; }
@@ -391,6 +398,12 @@ button.juno-seat-empty:hover:not(:disabled) { border-color: #27ef7d; color: #27e
   .juno-seat-left { grid-column: 1; grid-row: 1; }
   .juno-seat-top { grid-column: 2; grid-row: 1; }
   .juno-seat-right { grid-column: 3; grid-row: 1; }
+  .juno-arena:has(.juno-seat-topLeft) { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .juno-arena:has(.juno-seat-topLeft) .juno-seat-left { grid-column: 1; }
+  .juno-arena:has(.juno-seat-topLeft) .juno-seat-topLeft { grid-column: 2; }
+  .juno-arena:has(.juno-seat-topLeft) .juno-seat-top { grid-column: 3; }
+  .juno-arena:has(.juno-seat-topLeft) .juno-seat-topRight { grid-column: 4; }
+  .juno-arena:has(.juno-seat-topLeft) .juno-seat-right { grid-column: 5; }
   .juno-seat .juno-player-controls > .juno-player-badge { width: 100%; min-height: 32px; flex-direction: row; padding: 2px 4px; gap: 4px; }
   .juno-seat-left .juno-player-copy, .juno-seat-right .juno-player-copy { text-align: left; width: auto; }
   .juno-seat-left .juno-player-copy > span, .juno-seat-right .juno-player-copy > span { font-size: 10px; }
@@ -413,6 +426,7 @@ button.juno-seat-empty:hover:not(:disabled) { border-color: #27ef7d; color: #27e
   .juno-color-picker { bottom: 68px; }
   .juno-crown { display: none; }
   .juno-result { display: grid; grid-template-columns: 1fr 1fr; align-content: center; gap: 2px; }
+  .juno-result .juno-score-list { min-height: 0; overflow: auto; }
   .juno-result h2 { text-align: left; font-size: 17px; }
   .juno-result > p { text-align: right; font-size: 11px; }
   .juno-result .juno-score-list, .juno-result-actions { grid-column: 1 / -1; }

@@ -41,7 +41,7 @@
       "start": {
         "goal": "Seja a primeira pessoa a ficar sem cartas.",
         "deal": "Cada pessoa começa com sete cartas. São quatro cores; o baralho clássico tem 108 cartas. A primeira carta aberta é um número e o jogo começa no sentido horário.",
-        "setup": "O Juno tem de dois a quatro lugares em um canal de voz do espaço. O anfitrião cria a mesa e inicia a rodada depois que os jogadores entram."
+        "setup": "O Juno tem de dois a seis lugares em um canal de voz do espaço. O anfitrião cria a mesa e inicia a rodada depois que os jogadores entram."
       },
       "turn": {
         "match": "Combine a cor ativa ou o número ou símbolo da última carta. Um coringa permitido também pode ser jogado. Todos estes exemplos combinam com um 5 azul:",
@@ -77,8 +77,9 @@
       },
       "score": {
         "ranking": "A primeira mão vazia vence. As demais posições seguem a quantidade de cartas restantes, incluindo qualquer compra causada pela última carta.",
-        "award": "XP recebido",
-        "ties": "Empates compartilham posição e XP: duas pessoas empatadas em segundo recebem 80 XP cada, e a posição seguinte é a quarta. Só contam rodadas concluídas apenas por humanos e com vencedor; só o vencedor ganha uma vitória. Sair antes não dá posição nem XP.",
+        "award": "XP de base",
+        "ties": "Empates compartilham posição e prêmio base: duas pessoas empatadas em segundo partem de 80 XP cada, e a posição seguinte é a quarta. Só contam rodadas concluídas apenas por humanos e com vencedor; só o vencedor ganha uma vitória. Sair antes não dá posição nem XP.",
+        "dynamic": "O XP final soma bônus pequenos e determinísticos ao prêmio base: média das mãos adversárias (com teto), mesa maior (quatro ou mais finalistas) e rodada sem desistências. Empatados mantêm sempre o mesmo XP, e todo finalista recebe pelo menos o prêmio base.",
         "practice": "Uma rodada iniciada com bot continua sendo treino, mesmo que ele saia depois: não dá XP, vitórias ou rodadas no ranking. O XP pertence a este espaço e soma seus canais de voz, não outros espaços.",
         "pending": "Enquanto o resultado está sendo salvo, o XP está pendente, ainda não foi recebido. Uma nova mesa fica disponível depois que esse resultado é resolvido."
       },
@@ -154,14 +155,14 @@
     "previousPage": "Página anterior",
     "nextPage": "Próxima página",
     "scoreHint": "O XP do Juno pertence a este espaço e soma todos os seus canais de voz.",
-    "scoreRules": "1º: 120 XP · 2º: 80 XP · 3º: 40 XP · 4º: 20 XP. Empates compartilham posição e XP. Só contam rodadas concluídas com vencedor; sair antes não rende XP.",
+    "scoreRules": "1º: 120 XP · 2º: 80 XP · 3º: 40 XP · 4º: 20 XP · 5º: 10 XP · 6º: 5 XP de base, mais bônus pequenos por cartas, tamanho da mesa e ausência de desistências. Empates compartilham posição e XP. Só contam rodadas concluídas com vencedor; sair antes não rende XP.",
     "chooseGame": "Escolha um jogo para jogar com quem está na chamada.",
     "name": "Juno",
     "games": "Jogos",
     "open": "Abrir Juno",
     "tagline": "Uma boa rivalidade entre amigos",
     "invitation": "A próxima rodada começa aqui",
-    "description": "Combine cores, vire o jogo e seja o primeiro a ficar sem cartas. Um jogo original para 2 a 4 pessoas neste canal de voz.",
+    "description": "Combine cores, vire o jogo e seja o primeiro a ficar sem cartas. Um jogo original para 2 a 6 pessoas neste canal de voz.",
     "create": "Criar uma mesa",
     "lobbyTitle": "Puxe uma cadeira",
     "lobbyHint": "Quem está na chamada pode entrar. O anfitrião começa quando a mesa estiver pronta.",

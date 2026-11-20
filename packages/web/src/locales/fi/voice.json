@@ -41,7 +41,7 @@
       "start": {
         "goal": "Pääse ensimmäisenä eroon korteistasi.",
         "deal": "Jokainen aloittaa seitsemällä kortilla. Värejä on neljä; klassisessa pakassa on 108 korttia. Ensimmäinen avoin kortti on numero, ja peli etenee myötäpäivään.",
-        "setup": "Junossa on kahdesta neljään paikkaa tilan äänikanavalla. Isäntä luo pöydän ja aloittaa kierroksen kun pelaajat ovat liittyneet."
+        "setup": "Junossa on kahdesta kuuteen paikkaa tilan äänikanavalla. Isäntä luo pöydän ja aloittaa kierroksen kun pelaajat ovat liittyneet."
       },
       "turn": {
         "match": "Vastaa aktiivista väriä tai viimeisen kortin numeroa tai symbolia. Sallittu villi on toinen tapa. Kaikki nämä esimerkit sopivat siniseen 5:een:",
@@ -78,7 +78,7 @@
       "score": {
         "ranking": "Ensimmäinen tyhjä käsi voittaa. Muut sijoittuvat jäljellä olevien korttien mukaan, mukaan lukien mahdollinen viimeisen kortin nostorangaistus.",
         "award": "XP myönnetty",
-        "ties": "Tasapelit jakavat saman sijan ja XP:n: kaksi jaetulla toisella sijalla olevaa saavat molemmat 80 XP, ja seuraava sija on neljäs. Vain suoritetut kierrokset ilman botteja voittajalla lasketaan; vain voittaja saa voiton. Aikainen poistuminen ei anna sijaa eikä XP:tä.",
+        "ties": "Tasapelit jakavat saman sijan ja XP:n: kaksi jaetulla toisella sijalla olevaa saavat molemmat 80 XP pohjana, ja seuraava sija on neljäs. Vain suoritetut kierrokset ilman botteja voittajalla lasketaan; vain voittaja saa voiton. Aikainen poistuminen ei anna sijaa eikä XP:tä.",
         "practice": "Botilla aloitettu kierros pysyy harjoituksena, vaikka botti myöhemmin poistuu: ei XP:tä, voittoja eikä rankattuja kierroksia. XP kuuluu tälle tilalle ja yhdistää sen äänikanavat, ei muita tiloja.",
         "pending": "Kun tuloksia tallennetaan, XP on yhä odottava, ei jo ansaittu. Uusi pöytä tulee saataville kun tämä tulos on käsitelty."
       },
@@ -152,14 +152,14 @@
     "previousPage": "Edellinen sivu",
     "nextPage": "Seuraava sivu",
     "scoreHint": "Juno-XP kuuluu tälle tilalle, kaikissa sen äänikanavissa.",
-    "scoreRules": "1.: 120 XP · 2.: 80 XP · 3.: 40 XP · 4.: 20 XP. Tasapelit jakavat sijan ja XP:n. Vain suoritetut kierrokset voittajalla lasketaan; aikainen poistuminen ei anna XP:tä.",
+    "scoreRules": "1.: 120 XP · 2.: 80 XP · 3.: 40 XP · 4.: 20 XP · 5.: 10 XP · 6.: 5 XP pohjana plus pieniä bonuksia. Tasapelit jakavat sijan ja XP:n. Vain suoritetut kierrokset voittajalla lasketaan; aikainen poistuminen ei anna XP:tä.",
     "chooseGame": "Valitse peli pelattavaksi puhelussa olevien kanssa.",
     "name": "Juno",
     "games": "Pelit",
     "open": "Avaa Juno",
     "tagline": "Vähän ystävällistä kilpailua",
     "invitation": "Seuraava kierroksesi alkaa tästä",
-    "description": "Vastaa värejä, käännä pöytiä ja pääse ensimmäisenä eroon kädestäsi. Alkuperäinen korttipeli 2–4 ihmiselle tällä äänikanavalla.",
+    "description": "Vastaa värejä, käännä pöytiä ja pääse ensimmäisenä eroon kädestäsi. Alkuperäinen korttipeli 2–6 ihmiselle tällä äänikanavalla.",
     "create": "Luo pöytä",
     "lobbyTitle": "Istu alas",
     "lobbyHint": "Jokainen puhelussa voi liittyä. Isäntä aloittaa kun pöytä on valmis.",

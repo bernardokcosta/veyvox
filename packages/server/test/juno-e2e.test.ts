@@ -20,12 +20,12 @@ async function call(user: TestUser, method: string, url: string, body?: unknown)
     ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) }, body: body === undefined ? undefined : JSON.stringify(body) });
 }
 async function read(user: TestUser): Promise<JunoSnapshot> {
-  const res = await call(user, 'GET', `/api/channels/${channelId}/juno`); expect(res.status).toBe(200); return res.json() as Promise<JunoSnapshot>;
+  const res = await call(user, 'GET', `/api/channels/${channelId}/juno?six=1`); expect(res.status).toBe(200); return res.json() as Promise<JunoSnapshot>;
 }
 async function act(user: TestUser, action: JunoAction | { type: 'create' }): Promise<JunoSnapshot> {
   const previous = await read(user);
   const body = action.type === 'create' ? action : { ...action, gameId: previous.game!.id, revision: previous.revision };
-  const res = await call(user, 'POST', `/api/channels/${channelId}/juno`, body);
+  const res = await call(user, 'POST', `/api/channels/${channelId}/juno?six=1`, body);
   expect(res.status, await res.clone().text()).toBe(200); return res.json() as Promise<JunoSnapshot>;
 }
 async function finishRound(snapshot: JunoSnapshot, testReport = false): Promise<JunoSnapshot> {
@@ -64,7 +64,7 @@ beforeAll(async () => {
   const uploads = path.join(directory, 'uploads'); await mkdir(uploads);
   instance = await spawnInstance({ domain: 'juno.test.local', dbPath: path.join(directory, 'test.db'), storagePath: uploads,
     jwtSecret: randomBytes(32).toString('hex'), logPath: path.join(directory, 'server.log'), environment: { PASSWORD_HASH_COST: '4' } });
-  for (const name of ['ada', 'bo', 'clem', 'dee', 'watcher']) users.push(await registerLocal(instance, name));
+  for (const name of ['ada', 'bo', 'clem', 'dee', 'watcher', 'fay', 'gus']) users.push(await registerLocal(instance, name));
   const owner = users[0]!;
   const response = await call(owner, 'POST', '/api/spaces', { name: 'Juno acceptance' }); expect(response.status).toBe(201);
   const space = await response.json() as { id: string; inviteCode: string };
@@ -108,6 +108,55 @@ describe('real Juno server with four independently authenticated voice sockets',
     for (const row of board.standings) expect(ranking.entries.find(r => r.user.id === row.userId)?.totalXp).toBe(row.xp);
     for (let i = 0; i < 10; i++) expect((await read(users[0]!)).game!.scoreboard).toEqual(board);
   });
+  it('plays a complete six-player round with dynamic places 1-6 and a spectator', async () => {
+    const seated = [users[0]!, users[1]!, users[2]!, users[3]!, users[5]!, users[6]!];
+    await act(users[0]!, { type: 'rematch' });
+    for (const user of seated.slice(1)) await act(user, { type: 'join' });
+    await act(users[0]!, { type: 'start' });
+    const views = await Promise.all(users.map(read));
+    expect(views[4]!.game!.hand).toEqual([]);
+    for (let i = 0; i < 7; i++) {
+      if (i === 4) continue;
+      expect(views[i]!.game!.hand).toHaveLength(7);
+    }
+    const snapshot = await finishRound(views[0]!, false);
+    expect(snapshot.game!.phase).toBe('finished'); expect(snapshot.game!.winnerId).toBeTruthy();
+    expect(snapshot.game!.scoreboard?.status).toBe('credited');
+    const board = snapshot.game!.scoreboard!;
+    expect(board.standings).toHaveLength(6);
+    expect(board.standings.every(s => s.outcome === 'completed')).toBe(true);
+    // Returned order is winner-first, then ascending remaining cards.
+    expect(board.standings[0]!.userId).toBe(snapshot.game!.winnerId);
+    expect(board.standings[0]).toMatchObject({ place: 1, cardCount: 0 });
+    const counts = board.standings.map(s => s.cardCount!);
+    expect(counts).toEqual([...counts].sort((a, b) => a - b));
+    // Dynamic XP without calling the implementation: base awards from the
+    // documented table, bounded bonuses, ties sharing XP, winner strictly first.
+    const base = [120, 80, 40, 20, 10, 5];
+    for (const row of board.standings) {
+      expect(row.xp).toBeGreaterThanOrEqual(base[row.place! - 1]!);
+      expect(row.xp).toBeLessThanOrEqual(base[row.place! - 1]! + 20 + 10 + 5);
+    }
+    for (const row of board.standings.slice(1)) expect(row.xp).toBeLessThan(board.standings[0]!.xp);
+    for (let i = 1; i < board.standings.length; i++) {
+      if (board.standings[i]!.cardCount === board.standings[i - 1]!.cardCount) {
+        expect(board.standings[i]!.xp).toBe(board.standings[i - 1]!.xp);
+        expect(board.standings[i]!.place).toBe(board.standings[i - 1]!.place);
+      }
+    }
+    const total = counts.reduce((sum, count) => sum + count, 0);
+    expect(total).toBeGreaterThan(0); expect(total).toBeLessThanOrEqual(111);
+    // Private-hand isolation across all six hands.
+    const finals = await Promise.all(seated.map(read));
+    for (const [index, view] of finals.entries()) {
+      const self = seated[index]!;
+      expect(view.game!.hand).toHaveLength(view.game!.players.find(p => p.userId === self.id)!.cardCount);
+      for (const other of finals) {
+        if (other === view) continue;
+        for (const card of view.game!.hand) expect(JSON.stringify(other.game)).not.toContain(`"${card.id}"`);
+      }
+    }
+  });
   it('adds a private-hand computer through HTTP, observes a paced server move and leaves rankings unchanged', async () => {
     const owner = users[0]!;
     const rankingUrl = `/api/spaces/${spaceId}/juno/ranking`;
@@ -139,7 +188,7 @@ describe('real Juno server with four independently authenticated voice sockets',
     await act(users[0]!, { type: 'create' }); await act(users[1]!, { type: 'join' });
     expect((await finishRound(await act(users[0]!, { type: 'start' }))).game!.scoreboard?.status).toBe('credited');
     const before = await (await call(users[0]!, 'GET', `/api/spaces/${spaceId}/juno/ranking`)).json() as JunoRankingPage;
-    expect(before.me.completedRounds).toBe(2);
+    expect(before.me.completedRounds).toBe(3);
     for (const ws of sockets) ws.close();
     await stopInstance(instance);
     instance = await spawnInstance({ domain: instance.domain, dbPath: instance.dbPath, storagePath: instance.storagePath,

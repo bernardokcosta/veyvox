@@ -4,7 +4,7 @@
   "juno_exists": "Il y a déjà une table de Juno dans ce canal.",
   "juno_capacity": "Cette instance a atteint sa limite de parties actives.",
   "juno_stale": "La table a changé. Vérifie à qui est le tour, puis réessaie.",
-  "juno_full": "Les quatre places sont occupées.",
+  "juno_full": "Les six places sont occupées.",
   "juno_in_progress": "Cette manche a commencé. Tu peux regarder ou rejoindre la prochaine salle.",
   "juno_player_required": "Rejoins d’abord la table.",
   "juno_host_required": "Seul l’hôte de la table peut faire cela.",

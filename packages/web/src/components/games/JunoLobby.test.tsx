@@ -20,6 +20,16 @@ describe('Juno cosmic lobby', () => {
     expect(command).not.toHaveBeenCalled();
     await userEvent.click(screen.getByRole('button', { name: 'Create a table' })); expect(command).toHaveBeenCalledWith({ type: 'create' });
   });
+  it('caps an old-host table at four seats but offers six once six support is confirmed', () => {
+    const game = junoGame(); game.players = game.players.slice(0, 1);
+    useJunoStore.setState({ snapshot: { revision: 2, game }, target: { userId: 'b', origin: window.location.origin, channelId: 'voice' } });
+    const view = render(<JunoLobby onRanking={() => {}} />);
+    expect(screen.getAllByLabelText('Seat available')).toHaveLength(3);
+    expect(screen.getByRole('button', { name: 'Join the table' })).toBeEnabled();
+    act(() => useJunoStore.setState({ snapshot: { revision: 3, supportsSix: true, game: { ...game, players: [game.players[0]!, game.players[0]!, game.players[0]!, game.players[0]!] } } }));
+    expect(screen.getAllByLabelText('Seat available')).toHaveLength(2);
+    view.unmount();
+  });
   it('keeps explicit joins/start and the two-player minimum', () => {
     const game = junoGame(); game.players = game.players.slice(0, 1);
     useJunoStore.setState({ snapshot: { revision: 2, game } }); render(<JunoLobby onRanking={() => {}} />);

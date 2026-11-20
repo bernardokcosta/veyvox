@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { JUNO_TURN_MS, type JunoCard as Card, type JunoView } from '@veyvox/shared/src/juno';
+import { JUNO_BASE_XP, JUNO_TURN_MS, type JunoCard as Card, type JunoView } from '@veyvox/shared/src/juno';
 import { useFormatters } from '../../i18n/formatters';
 import { JunoCard } from './JunoCard';
 import { JUNO_ASSETS } from './junoAssets';
@@ -134,8 +134,8 @@ export function JunoRules({ game, supportsMemory, supportsIntoxicated, supportsP
           </section>}
           <section aria-labelledby={`${id}-score`}>{heading('score')}<p>{t('juno.guide.score.ranking')}</p>
             <table className="juno-guide-xp"><thead><tr><th scope="col">{t('juno.rank')}</th><th scope="col">{t('juno.guide.score.award')}</th></tr></thead>
-              <tbody>{[120, 80, 40, 20].map((xp, index) => <tr key={xp}><th scope="row">{formatNumber(index + 1)}</th><td>{t('juno.xpEarned', { xp: formatNumber(xp) })}</td></tr>)}</tbody>
-            </table><p>{t('juno.guide.score.ties')}</p><p>{t('juno.guide.score.practice')}</p><p>{t('juno.guide.score.pending')}</p>
+              <tbody>{Object.values(JUNO_BASE_XP).map((xp, index) => <tr key={xp}><th scope="row">{formatNumber(index + 1)}</th><td>{t('juno.xpEarned', { xp: formatNumber(xp) })}</td></tr>)}</tbody>
+            </table><p>{t('juno.guide.score.ties')}</p><p>{t('juno.guide.score.dynamic')}</p><p>{t('juno.guide.score.practice')}</p><p>{t('juno.guide.score.pending')}</p>
           </section>
           <section aria-labelledby={`${id}-table`}>{heading('table')}
             <p>{t('juno.guide.table.seats')}</p><p>{t('juno.guide.table.leave')}</p><p>{t('juno.guide.table.deck')}</p><p>{t('juno.guide.table.connection')}</p><p>{t('juno.guide.table.expiry')}</p>

@@ -40,9 +40,9 @@ it('advertises negotiated rare-card support on the selected origin only', async 
   const client = createApiClient('https://remote.test', () => 'remote-token');
   await client.juno.get('remote voice');
   vi.mocked(globalThis.fetch).mockResolvedValueOnce(new Response(JSON.stringify({ revision: 2, game: null }), { status: 200 }));
-  await client.juno.command('remote voice', { type: 'create' }, true, true);
-  expect(globalThis.fetch).toHaveBeenNthCalledWith(1, 'https://remote.test/api/channels/remote%20voice/juno?memory=1&intoxicated=1&pizza=1', expect.objectContaining({ method: 'GET' }));
-  expect(globalThis.fetch).toHaveBeenNthCalledWith(2, 'https://remote.test/api/channels/remote%20voice/juno?memory=1&intoxicated=1&pizza=1', expect.objectContaining({ method: 'POST', body: JSON.stringify({ type: 'create' }) }));
+  await client.juno.command('remote voice', { type: 'create' }, true, true, true);
+  expect(globalThis.fetch).toHaveBeenNthCalledWith(1, 'https://remote.test/api/channels/remote%20voice/juno?memory=1&intoxicated=1&pizza=1&six=1', expect.objectContaining({ method: 'GET' }));
+  expect(globalThis.fetch).toHaveBeenNthCalledWith(2, 'https://remote.test/api/channels/remote%20voice/juno?memory=1&intoxicated=1&pizza=1&six=1', expect.objectContaining({ method: 'POST', body: JSON.stringify({ type: 'create' }) }));
 });
 
 it('falls back only an unsupported GET query, while negotiated old-host reads and commands stay memory-only', async () => {
@@ -52,22 +52,24 @@ it('falls back only an unsupported GET query, while negotiated old-host reads an
   const client = createApiClient('https://host.test', () => 'token');
   expect(await client.juno.get('voice')).toMatchObject({ revision: 1 });
   expect(vi.mocked(globalThis.fetch).mock.calls.map(c => c[0])).toEqual([
-    'https://host.test/api/channels/voice/juno?memory=1&intoxicated=1&pizza=1', 'https://host.test/api/channels/voice/juno?memory=1&intoxicated=1',
+    'https://host.test/api/channels/voice/juno?memory=1&intoxicated=1&pizza=1&six=1', 'https://host.test/api/channels/voice/juno?memory=1&intoxicated=1&pizza=1',
   ]);
   await client.juno.get('voice', false); await client.juno.command('voice', { type: 'create' }, false);
   expect(vi.mocked(globalThis.fetch).mock.calls.slice(2).map(c => c[0])).toEqual([
-    'https://host.test/api/channels/voice/juno?memory=1', 'https://host.test/api/channels/voice/juno?memory=1',
+    'https://host.test/api/channels/voice/juno?memory=1&six=1', 'https://host.test/api/channels/voice/juno?memory=1',
   ]);
 });
 
-it('bounds read-only pizza negotiation to two downgrade probes', async () => {
+it('bounds read-only pizza negotiation to three downgrade probes', async () => {
   globalThis.fetch = vi.fn()
+    .mockResolvedValueOnce(new Response(JSON.stringify({ code: 'invalid_body' }), { status: 400 }))
     .mockResolvedValueOnce(new Response(JSON.stringify({ code: 'invalid_body' }), { status: 400 }))
     .mockResolvedValueOnce(new Response(JSON.stringify({ code: 'invalid_body' }), { status: 400 }))
     .mockResolvedValueOnce(new Response(JSON.stringify({ revision: 1, game: null })));
   const client = createApiClient('https://host.test', () => 'token');
   await expect(client.juno.get('voice')).resolves.toMatchObject({ revision: 1 });
   expect(vi.mocked(globalThis.fetch).mock.calls.map(c => c[0])).toEqual([
+    'https://host.test/api/channels/voice/juno?memory=1&intoxicated=1&pizza=1&six=1',
     'https://host.test/api/channels/voice/juno?memory=1&intoxicated=1&pizza=1',
     'https://host.test/api/channels/voice/juno?memory=1&intoxicated=1',
     'https://host.test/api/channels/voice/juno?memory=1',

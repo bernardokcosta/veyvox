@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { JUNO_MAX_PLAYERS } from '@veyvox/shared/src/juno';
 import { useJunoStore } from '../../stores/junoStore';
 import { useSpaceStore } from '../../stores/spaceStore';
 import { useAuthStore } from '../../stores/authStore';
@@ -14,6 +15,8 @@ export function JunoLobby({ onRanking }: { onRanking: () => void }) {
   const game = snapshot?.game;
   const isPlayer = !!game?.players.some(p => p.userId === target?.userId);
   const disabled = !connected || pending || stale || !snapshot;
+  // Older hosts never advertise six seats; until a snapshot says otherwise, offer the full table.
+  const maxSeats = !game || snapshot?.supportsSix === true ? JUNO_MAX_PLAYERS : 4;
   return <div className="juno-lobby">
     {!game && self && <div className="juno-lobby-identity"><JunoPlayerBadge person={{ userId: self.id, name: self.displayName ?? self.username,
       user: self }} spaceId={spaceId} self /></div>}
@@ -28,7 +31,7 @@ export function JunoLobby({ onRanking }: { onRanking: () => void }) {
           aria-label={t('juno.removeBot', { name: t('juno.botName', { number: player.computer }) })} disabled={disabled}
           onClick={() => void command({ type: 'removeBot', botId: player.userId })}>×</button>}
       </div>)}
-      {Array.from({ length: Math.max(0, 4 - game.players.length) }, (_, i) => game.supportsBots && target?.userId === game.hostId
+      {Array.from({ length: Math.max(0, maxSeats - game.players.length) }, (_, i) => game.supportsBots && target?.userId === game.hostId
         ? <button type="button" className="juno-seat-empty" key={i} aria-label={t('juno.addBot')} title={t('juno.addBot')}
           disabled={disabled} onClick={() => void command({ type: 'addBot' })}><span aria-hidden="true">＋</span></button>
         : <div className="juno-seat-empty" key={i} aria-label={t('juno.emptySeat')}><span aria-hidden="true">＋</span></div>)}
@@ -37,11 +40,11 @@ export function JunoLobby({ onRanking }: { onRanking: () => void }) {
       {!game ? loading && !snapshot ? <p role="status">{t('common:states.loading')}</p>
         : <button type="button" className="juno-primary" disabled={disabled} onClick={() => void command({ type: 'create' })}>{t('juno.create')}</button>
         : target?.userId === game.hostId ? <button type="button" className="juno-primary" disabled={disabled || game.players.length < 2} onClick={() => void command({ type: 'start' })}>{t('juno.start')}</button>
-          : !isPlayer ? <button type="button" className="juno-primary" disabled={disabled || game.players.length >= 4} onClick={() => void command({ type: 'join' })}>{game.players.length >= 4 ? t('juno.full') : t('juno.join')}</button>
+          : !isPlayer ? <button type="button" className="juno-primary" disabled={disabled || game.players.length >= maxSeats} onClick={() => void command({ type: 'join' })}>{game.players.length >= maxSeats ? t('juno.full') : t('juno.join')}</button>
             : <p role="status">{t('juno.waitingHost')}</p>}
       <button type="button" className="juno-secondary" onClick={onRanking}>{t('juno.rankingTitle')}</button>
     </div>
-    {game && <p className="sr-only">{t('juno.seats', { occupied: game.players.length, max: 4 })}</p>}
+    {game && <p className="sr-only">{t('juno.seats', { occupied: game.players.length, max: maxSeats })}</p>}
     <div className="juno-lobby-cards" aria-hidden="true"><JunoCard card={{ id: 'decoration', color: 'coral', face: '5' }} />
       <JunoCard card={{ id: 'decoration', color: 'mint', face: '2' }} /><JunoCard card={{ id: 'decoration', color: 'sky', face: '4' }} />
       <JunoCard card={{ id: 'decoration', color: null, face: 'draw4' }} /></div>

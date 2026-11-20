@@ -59,7 +59,7 @@ describe('illustrated Juno rules', () => {
     }
     expect(guide.querySelectorAll('button img')).toHaveLength(0);
     expect(within(guide).getByRole('table')).toHaveTextContent('120');
-    for (const value of ['80', '40', '20']) expect(within(guide).getByRole('table')).toHaveTextContent(value);
+    for (const value of ['80', '40', '20', '10', '5']) expect(within(guide).getByRole('table')).toHaveTextContent(value);
     expect(guide).toHaveTextContent(/no stacking/i); expect(guide).toHaveTextContent(/clears the curse/i);
     expect(guide).toHaveTextContent(/two hours/i); expect(guide).toHaveTextContent(/remains practice/i);
   });

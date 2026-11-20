@@ -13,7 +13,7 @@ socket in that space channel. Commands are `create`, `join`, `leave`, `start`,
 non-create commands name the table and expected
 revision (409 `juno_stale` on conflict). No opponent hands or draw order leave
 the server. Five creates and 60 commands/minute/account, plus the existing HTTP
-limit. State GETs have a separate bounded 600/minute/address route budget for
+limit. State GETs have a separate bounded 1000/minute/address route budget for
 live-update fanout and fallback polling; this does not relax POST, account, auth,
 voice or permission gates. Full rules, payloads and lifetime limits: [juno.md](juno.md).
 
@@ -68,7 +68,7 @@ equal total XP before pagination; own summary is returned even off-page. All Jun
 reads are no-store, contain no opponent faces or historical channel details.
 `addBot`/`removeBot` are host-only lobby actions for ephemeral computer opponents,
 not account/voice bots. Optional `supportsBots`/`supportsAnnounce` advertise these
-actions; absent on older hosts. Computer participants carry `computer: 1|2|3`
+actions; absent on older hosts. Computer participants carry `computer: 1|2|3|4|5`
 without a user profile. `practice` freezes true for computer rounds: zero XP,
 wins or completed-round increments for everyone. A private computer hand is never
 returned even when its id is used as viewer. `announce` confirms a two-card JUNO

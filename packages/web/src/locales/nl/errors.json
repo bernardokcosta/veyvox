@@ -4,7 +4,7 @@
   "juno_exists": "Er is al een Juno-tafel in dit kanaal.",
   "juno_capacity": "Deze instantie heeft de limiet voor actieve spellen bereikt.",
   "juno_stale": "De tafel is veranderd. Controleer de huidige beurt en probeer opnieuw.",
-  "juno_full": "Alle vier de plaatsen zijn bezet.",
+  "juno_full": "Alle zes de plaatsen zijn bezet.",
   "juno_in_progress": "Deze ronde is al begonnen. Kijk mee of doe mee met de volgende lobby.",
   "juno_player_required": "Ga eerst aan tafel.",
   "juno_host_required": "Alleen de tafelleider kan dit doen.",

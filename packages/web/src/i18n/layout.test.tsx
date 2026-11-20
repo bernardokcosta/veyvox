@@ -200,6 +200,26 @@ describe('bidi isolation for user content', () => {
     }
   });
 
+  it('pins the three top seats to one horizontal badge line', () => {
+    const style = document.createElement('style');
+    style.textContent = junoStyles;
+    document.head.append(style);
+    try {
+      const { container } = render(
+        <div className="juno-arena">
+          <div className="juno-seat juno-seat-topLeft" />
+          <div className="juno-seat juno-seat-top" />
+          <div className="juno-seat juno-seat-topRight" />
+        </div>,
+      );
+      for (const seat of container.querySelectorAll('.juno-seat')) {
+        expect(getComputedStyle(seat).alignSelf).toBe('start');
+      }
+    } finally {
+      style.remove();
+    }
+  });
+
   it('marks the composer textarea and its mirror with automatic direction', () => {
     const textareaRef = createRef<HTMLTextAreaElement>();
     const mentionAnchorRef = createRef<HTMLSpanElement>();

@@ -22,23 +22,27 @@ describe('fair Juno computers', () => {
     let now = 0; const present = new Set(['a', 'b']); const settle = vi.fn();
     const rooms = new JunoRooms({ now: () => now, present: (_channel, id) => present.has(id), changed: () => {}, settle, spaceIdForChannel: () => 'space' });
     rooms.command('voice', { userId: 'a', name: 'A' }, { type: 'create' });
-    const send = (id: string, action: JunoAction) => {
-      const view = rooms.read('voice', id);
-      return rooms.command('voice', { userId: id, name: id }, { ...action, gameId: view.game!.id, revision: view.revision });
+    const send = (id: string, action: JunoAction, six = false) => {
+      const view = rooms.read('voice', id, false, false, false, six);
+      return rooms.command('voice', { userId: id, name: id }, { ...action, gameId: view.game!.id, revision: view.revision }, false, false, false, six);
     };
     return { rooms, present, settle, send, advance: () => { now += 1000; rooms.tick(); } };
   }
   it('restricts computer management to the lobby host and leaves human seats alone', () => {
-    const { rooms, send } = setup(); send('b', { type: 'join' });
+    const { rooms, send } = setup(); send('b', { type: 'join' }, true);
     expect(() => send('b', { type: 'addBot' })).toThrow('juno_host_required');
     expect(() => send('a', { type: 'removeBot', botId: 'b' })).toThrow('juno_invalid_move');
     const old = send('a', { type: 'addBot' }); const cpu = old.game!.players.find(p => p.computer)!;
     expect(cpu.computer).toBe(1); expect(old.game!.practice).toBe(true);
     expect(() => rooms.command('voice', { userId: 'a', name: 'A' }, { type: 'addBot', gameId: old.game!.id, revision: old.revision - 1 })).toThrow('juno_stale');
-    send('a', { type: 'addBot' }); expect(() => send('a', { type: 'addBot' })).toThrow('juno_full');
-    send('a', { type: 'removeBot', botId: cpu.userId });
-    send('a', { type: 'start' }); expect(() => send('a', { type: 'addBot' })).toThrow('juno_in_progress');
-    expect(rooms.read('voice', 'watcher').game!.hand).toEqual([]);
+    rooms.read('voice', 'b', false, false, false, true);
+    send('a', { type: 'addBot' }, true); send('a', { type: 'addBot' }, true); send('a', { type: 'addBot' }, true);
+    expect(rooms.read('voice', 'a', false, false, false, true).game!.players).toHaveLength(6);
+    expect(() => send('a', { type: 'addBot' }, true)).toThrow('juno_full');
+    expect(() => send('a', { type: 'addBot' })).toThrow('juno_update_required');
+    send('a', { type: 'removeBot', botId: cpu.userId }, true);
+    send('a', { type: 'start' }, true); expect(() => send('a', { type: 'addBot' }, true)).toThrow('juno_in_progress');
+    expect(rooms.read('voice', 'watcher', false, false, false, true).game!.hand).toEqual([]);
   });
   it('never gives a guessed computer id a hand or a turn command, or lets it inherit hosting', () => {
     const { rooms, send, present } = setup(); send('a', { type: 'addBot' }); send('b', { type: 'join' });

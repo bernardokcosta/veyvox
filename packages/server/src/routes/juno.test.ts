@@ -99,21 +99,21 @@ describe('Juno authorized transport', () => {
       expect((await app.inject({ method: 'GET', url: url + query, headers })).statusCode).toBe(400);
     }
   });
-  it('supports four players and four spectators sharing an IP without spending the ordinary HTTP budget', async () => {
+  it('supports six players and six spectators sharing an IP without spending the ordinary HTTP budget', async () => {
     await app.close(); app = Fastify();
     await app.register(rateLimit, { max: 200, timeWindow: '1 minute', keyGenerator: request => request.ip,
       allowList: () => false });
     app.get('/ordinary-request', async () => ({ ok: true }));
     await app.register(junoRoutes);
-    // 60 public moves + 12 fallback polls per viewer in one minute = 576 reads.
-    for (let viewer = 0; viewer < 8; viewer++) {
+    // 60 public moves + 12 fallback polls per viewer in one minute = 864 reads.
+    for (let viewer = 0; viewer < 12; viewer++) {
       for (let read = 0; read < 72; read++) {
         const reply = await app.inject({ method: 'GET', url: url + (read % 2 ? '?memory=1' : ''), headers: { authorization: `viewer-${viewer}` } });
         expect(reply.statusCode).toBe(200);
       }
     }
     expect((await app.inject({ method: 'GET', url: '/ordinary-request' })).statusCode).toBe(200);
-    for (let read = 576; read < 600; read++) expect((await app.inject({ method: 'GET', url, headers })).statusCode).toBe(200);
+    for (let read = 864; read < 1000; read++) expect((await app.inject({ method: 'GET', url, headers })).statusCode).toBe(200);
     expect((await app.inject({ method: 'GET', url, headers })).statusCode).toBe(429);
     // Authentication and command budgets are not relaxed with the read budget.
     expect((await create()).statusCode).toBe(200);
@@ -176,7 +176,7 @@ describe('Juno authorized transport', () => {
     try {
       const payload = { type: 'report', gameId: snapshot.game!.id, revision: snapshot.revision, targetUserId: 'opponent', opportunityId: 'miss-1' };
       expect((await app.inject({ method: 'POST', url, headers, payload })).statusCode).toBe(200);
-      expect(command).toHaveBeenCalledWith('voice', { userId: 'remote-row', name: 'Alice' }, payload, false, false, false);
+      expect(command).toHaveBeenCalledWith('voice', { userId: 'remote-row', name: 'Alice' }, payload, false, false, false, false);
       state.room = 'other'; expect((await app.inject({ method: 'POST', url, headers, payload })).statusCode).toBe(403);
       expect(command).toHaveBeenCalledTimes(1);
     } finally { command.mockRestore(); }
