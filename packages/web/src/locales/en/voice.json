@@ -396,7 +396,10 @@
       "text": "Text"
     },
     "codec": "Codec",
+    "forceSdrReselect": "SDR capture ended. Select the source again to keep sharing with Force SDR.",
     "codecOption": {
+      "auto": "Automatic quality",
+      "recommended": "Recommended codec: {{codec}}",
       "vp9": "VP9",
       "h264": "H264",
       "h265": "H265 (HEVC)"

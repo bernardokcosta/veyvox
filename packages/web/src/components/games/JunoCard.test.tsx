@@ -24,10 +24,20 @@ describe('Juno supplied card artwork', () => {
     expect(image).toHaveAttribute('src', '/games/juno/cards/mint-2.webp');
     expect(image).toHaveAttribute('alt', ''); expect(image).toHaveAttribute('width', '720');
     expect(image).toHaveAttribute('height', '1056'); expect(container.innerHTML).not.toContain('secret-id');
+    expect(image).toHaveAttribute('srcset', '/games/juno/compact/cards/mint-2.webp 288w, /games/juno/cards/mint-2.webp 720w');
+    expect(image).toHaveAttribute('sizes', '96px');
   });
   it('renders only the original back even if supplied with a private card', () => {
     const { container } = render(<JunoCard back card={{ id: 'hidden-id', color: 'coral', face: '9' }} />);
     expect(container.querySelector('img')).toHaveAttribute('src', '/games/juno/cards/back.webp');
+    expect(container.querySelector('img')).toHaveAttribute('srcset', '/games/juno/compact/cards/back.webp 288w, /games/juno/cards/back.webp 720w');
     expect(container.innerHTML).not.toMatch(/hidden-id|coral|face=/);
+  });
+  it('keeps the full original flour while offering a compact version at the same displayed size', () => {
+    const { container } = render(<JunoCard back floured />);
+    const flour = container.querySelector('.juno-card-flour');
+    expect(flour).toHaveAttribute('src', '/games/juno/ui/flour.webp');
+    expect(flour).toHaveAttribute('srcset', '/games/juno/compact/ui/flour.webp 288w, /games/juno/ui/flour.webp 720w');
+    expect(flour).toHaveAttribute('sizes', '96px');
   });
 });

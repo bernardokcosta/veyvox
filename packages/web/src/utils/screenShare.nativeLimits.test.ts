@@ -6,7 +6,7 @@ import type { InstanceStreamingLimits } from '@veyvox/shared';
 vi.mock('./voice', () => ({ broadcastVoiceStatus: vi.fn() }));
 vi.mock('../audio/AudioManager', () => ({ AudioManager: { getInstance: () => ({}) } }));
 vi.mock('../hooks/useWebSocket', () => ({ wsSend: vi.fn() }));
-vi.mock('./livekitInternals', () => ({ getPublisherPC: vi.fn(), getMediaStreamTrack: vi.fn() }));
+vi.mock('./livekitInternals', async original => ({ ...await original<typeof import('./livekitInternals')>(), getPublisherPC: vi.fn(), getMediaStreamTrack: vi.fn() }));
 vi.mock('./hwOverdrive', () => ({ activate: vi.fn(), deactivate: vi.fn() }));
 vi.mock('../stores/screenShareSetupStore', () => ({ openScreenShareSetup: vi.fn() }));
 
