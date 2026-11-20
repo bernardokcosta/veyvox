@@ -101,6 +101,24 @@ describe('supplied Juno asset inventory', () => {
     for (const face of ['wild', 'draw4', 'memory', 'intoxicated', 'pizza'] as const) expect(existsSync(path.join(root, junoCardUrl({ id: 'opaque', color: null, face }).replace('/games/juno/', '')))).toBe(true);
     expect(junoCardUrl()).toBe('/games/juno/cards/back.webp');
   });
+  it('ships the approved neon stacking digits with recorded 362px crops', () => {
+    const manifest = JSON.parse(readFileSync(path.join(root, 'manifest.json'), 'utf8')) as Manifest;
+    const names = [...Array.from({ length: 10 }, (_, i) => `stack-${i}`), 'stack-plus'];
+    expect(Object.keys(JUNO_ASSETS.stack)).toEqual([...Array.from({ length: 10 }, (_, i) => String(i)), 'plus']);
+    expect(names).toHaveLength(11);
+    for (const name of names) {
+      const url = name === 'stack-plus' ? JUNO_ASSETS.stack.plus : JUNO_ASSETS.stack[name.slice('stack-'.length) as '0'];
+      expect(url).toBe(`/games/juno/ui/${name}.webp`);
+      const entry = manifest.files.find(f => f.path === `ui/${name}.webp`);
+      expect(entry).toMatchObject({
+        sourceFile: 'Imagem do ChatGPT 20 de nov. de 2026, 19_45_58-1.png',
+        sourceSha256: '9c9c22f974aced67481966c11e93ec4e0d6f72c6c0a10193cd5bef6b7e0271ad',
+      });
+      expect(entry!.crop).toMatchObject({ width: 362, height: 362 });
+      const data = readFileSync(path.join(root, `ui/${name}.webp`));
+      expect(data.length).toBe(entry!.bytes); expect(createHash('sha256').update(data).digest('hex')).toBe(entry!.sha256);
+    }
+  });
   it('ships the approved original hammer and its separate resting crop', () => {
     const original = readFileSync(path.join(root, JUNO_ASSETS.hammer.replace('/games/juno/', '')));
     expect(createHash('sha256').update(original).digest('hex')).toBe('782e92bc0e255568f8001b0af6eb6f542a7d849d4390ea117daeacd3e4f25db2');

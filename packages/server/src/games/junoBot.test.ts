@@ -9,6 +9,13 @@ describe('fair Juno computers', () => {
     const rare: JunoCard = { id: 'rare', color: null, face: 'intoxicated' };
     expect(chooseJunoBotAction([rare], red, 'coral', null)).toEqual({ type: 'play', cardId: 'rare', announce: true });
   });
+  it('stacks a draw card onto a pending stack and takes the pile without one', () => {
+    const draw2: JunoCard = { id: 'two', color: 'sky', face: 'draw2' };
+    expect(chooseJunoBotAction([draw2, red], red, 'coral', null, 4)).toMatchObject({ type: 'play', cardId: 'two', announce: true });
+    expect(chooseJunoBotAction([red], red, 'coral', null, 4)).toEqual({ type: 'draw' });
+    const draw4: JunoCard = { id: 'four', color: null, face: 'draw4' };
+    expect(chooseJunoBotAction([draw4, red], red, 'coral', null, 2)).toMatchObject({ type: 'play', cardId: 'four', announce: true });
+  });
   it('chooses from only its own hand, respects drawn-only play and selects a legal wild color', () => {
     const wild: JunoCard = { id: 'wild', color: null, face: 'wild' };
     const blue: JunoCard = { id: 'blue', color: 'sky', face: '8' };

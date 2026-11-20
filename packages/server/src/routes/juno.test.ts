@@ -64,6 +64,23 @@ describe('Juno authorized transport', () => {
     expect(left.statusCode).toBe(200); expect(left.json().game).toBeNull();
   });
 
+  it('lets only the host set lobby options, freezes them at start and advertises option support', async () => {
+    let view = (await app.inject({ method: 'POST', url, headers, payload: { type: 'create' } })).json<JunoSnapshot>();
+    expect(view.supportsOptions).toBe(true);
+    expect(view.game!.options).toEqual({ specials: true, stacking: false });
+    const options = async (payload: object, who = 'remote-row') => app.inject({ method: 'POST', url, headers: { authorization: who },
+      payload: { ...payload, gameId: view.game!.id, revision: view.revision } });
+    expect((await options({ type: 'options', stacking: true }, 'guest')).statusCode).toBe(400);
+    expect((await options({ type: 'options' })).statusCode).toBe(400);
+    view = (await options({ type: 'options', stacking: true, specials: false })).json<JunoSnapshot>();
+    expect(view.game!.options).toEqual({ specials: false, stacking: true });
+    view = (await app.inject({ method: 'POST', url, headers, payload: { type: 'join', gameId: view.game!.id, revision: view.revision } })).json<JunoSnapshot>();
+    view = (await app.inject({ method: 'POST', url, headers, payload: { type: 'start', gameId: view.game!.id, revision: view.revision } })).json<JunoSnapshot>();
+    expect(view.game!.options).toEqual({ specials: false, stacking: true });
+    const started = (await app.inject({ method: 'POST', url, headers,
+      payload: { type: 'options', stacking: false, gameId: view.game!.id, revision: view.revision } }));
+    expect(started.statusCode).toBe(400); expect(started.json().code).toBe('juno_in_progress');
+  });
   it('rejects malformed intoxication declarations and never enables it for a memory-only cohort', async () => {
     for (const query of ['?intoxicated=1', '?memory=1&intoxicated=0', '?memory=1&intoxicated=1&intoxicated=1', '?memory=1&intoxicated=true']) {
       expect((await app.inject({ method: 'GET', url: url + query, headers })).statusCode).toBe(400);

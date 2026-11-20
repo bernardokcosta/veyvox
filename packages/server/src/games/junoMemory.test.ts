@@ -11,7 +11,7 @@ function round(): JunoRound {
     { userId: 'c', name: 'C', hand: [card('c-other', '8', 'coral')], announced: false },
   ], drawPile: Array.from({ length: 20 }, (_, i) => card(`draw-${i}`, '9', 'amber')),
   discard: [card('top', '3')], color: 'mint', direction: 1, turn: 0, drawnCardId: null,
-  deadline: 45_000, winnerId: null, result: null, lastMove: null, blockedTurns: 0, reportWindows: [], memoryEnabled: true };
+  deadline: 45_000, winnerId: null, result: null, lastMove: null, blockedTurns: 0, reportWindows: [], memoryEnabled: true, specials: true, stacking: false, stackDraw: 0 };
 }
 function curse(state = round()): JunoRound {
   actInRound(state, 'a', { type: 'play', cardId: 'memory', color: 'coral' }, 1); return state;

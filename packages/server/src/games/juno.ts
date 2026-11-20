@@ -13,7 +13,7 @@ function shuffle<T>(cards: T[]): void {
     const j = randomInt(i + 1); [cards[i], cards[j]] = [cards[j]!, cards[i]!];
   }
 }
-export function createJunoDeck(memory = false, intoxicated = false, pizza = false): JunoCard[] {
+export function createJunoDeck(memory = false, intoxicated = false, pizza = false, specials = true): JunoCard[] {
   const cards: JunoCard[] = [];
   const add = (color: JunoColor | null, face: JunoCard['face']) => cards.push({ id: randomUUID(), color, face });
   for (const color of JUNO_COLORS) {
@@ -23,6 +23,7 @@ export function createJunoDeck(memory = false, intoxicated = false, pizza = fals
     }
   }
   for (let i = 0; i < 4; i++) { add(null, 'wild'); add(null, 'draw4'); }
+  if (!specials) return cards;
   if (memory) add(null, 'memory');
   if (intoxicated) add(null, 'intoxicated');
   if (pizza) add(null, 'pizza');
@@ -49,15 +50,19 @@ export interface JunoRound {
   intoxication?: { id: string; targetUserId: string };
   pizzaEnabled?: boolean;
   pizzaResolution?: { id: string; startedAt: number; endsAt: number };
+  specials: boolean;
+  stacking: boolean;
+  stackDraw: number;
 }
-export function startRound(people: JunoPerson[], now: number, memory = false, intoxicated = false, pizza = false): JunoRound {
-  const deck = createJunoDeck(memory, intoxicated, pizza); shuffle(deck);
+export function startRound(people: JunoPerson[], now: number, memory = false, intoxicated = false, pizza = false, specials = true, stacking = false): JunoRound {
+  const deck = createJunoDeck(memory, intoxicated, pizza, specials); shuffle(deck);
   const players = people.map(person => ({ ...person, hand: deck.splice(0, 7), announced: false }));
   const first = deck.findIndex(card => /^\d$/.test(card.face));
   const top = deck.splice(first, 1)[0]!;
   return { players, drawPile: deck, discard: [top], color: top.color!, direction: 1, turn: 0,
     drawnCardId: null, deadline: now + JUNO_TURN_MS, winnerId: null, result: null,
-    lastMove: { type: 'start', userId: players[0]!.userId }, blockedTurns: 0, reportWindows: [], memoryEnabled: memory, intoxicatedEnabled: intoxicated, pizzaEnabled: pizza };
+    lastMove: { type: 'start', userId: players[0]!.userId }, blockedTurns: 0, reportWindows: [], memoryEnabled: memory, intoxicatedEnabled: intoxicated, pizzaEnabled: pizza,
+    specials, stacking, stackDraw: 0 };
 }
 function pruneReports(round: JunoRound, now: number): boolean {
   const before = round.reportWindows.length;
@@ -129,6 +134,40 @@ export function actInRound(round: JunoRound, userId: string, action: JunoAction,
   const top = round.discard[round.discard.length - 1]!;
   const blind = round.memoryCurse?.targetUserId === userId;
   if (blind && (action.type === 'draw' || action.type === 'pass')) refuse('juno_invalid_move');
+  if (round.stacking && round.stackDraw > 0) {
+    if (action.type === 'draw') {
+      const amount = drawCards(round, player, round.stackDraw).length;
+      round.stackDraw = 0;
+      round.lastMove = { type: 'draw', userId, amount };
+      advance(round, now); pruneReports(round, now); return;
+    }
+    if (action.type === 'play') {
+      const index = player.hand.findIndex(card => card.id === action.cardId);
+      const card = player.hand[index];
+      const stacked = card?.face === 'draw2' ? 2 : card?.face === 'draw4' ? 4 : 0;
+      if (!card || !stacked) refuse('juno_invalid_move');
+      if (blind && !canPlayJuno(card, player.hand, top, round.color)) {
+        const amount = drawCards(round, player, round.stackDraw).length;
+        round.memoryCurse = undefined; round.stackDraw = 0;
+        round.lastMove = { type: 'memory_miss', userId, amount };
+        advance(round, now); pruneReports(round, now); return;
+      }
+      if (blind) round.memoryCurse = undefined;
+      player.hand.splice(index, 1); round.discard.push(card);
+      if (card.face === 'draw4' && action.color && JUNO_COLORS.includes(action.color)) round.color = action.color;
+      round.blockedTurns = 0;
+      player.announced = player.hand.length === 1 && (action.announce === true || player.announced);
+      round.reportWindows = round.reportWindows.filter(w => w.targetUserId !== userId);
+      if (player.hand.length === 1 && !player.announced) {
+        round.reportWindows.push({ id: randomUUID(), targetUserId: userId, deadline: now + JUNO_REPORT_MS });
+      }
+      round.stackDraw += stacked;
+      round.lastMove = { type: 'play', userId, card: { ...card }, announced: player.announced };
+      if (player.hand.length === 0) { round.winnerId = userId; round.result = 'emptyHand'; round.stackDraw = 0; }
+      advance(round, now); pruneReports(round, now); return;
+    }
+    refuse('juno_invalid_move');
+  }
   if (action.type === 'draw') {
     if (round.drawnCardId) refuse('juno_invalid_move');
     const drawn = drawCards(round, player, 1)[0];
@@ -179,7 +218,9 @@ export function actInRound(round: JunoRound, userId: string, action: JunoAction,
   if (card.face === 'reverse') { round.direction = round.direction === 1 ? -1 : 1; if (round.players.length === 2) steps = 2; }
   if (card.face === 'skip') steps = 2;
   if (card.face === 'draw2' || card.face === 'draw4') {
-    drawCards(round, round.players[nextIndex(round)]!, card.face === 'draw2' ? 2 : 4); steps = 2;
+    const amount = card.face === 'draw2' ? 2 : 4;
+    if (round.stacking) round.stackDraw += amount;
+    else { drawCards(round, round.players[nextIndex(round)]!, amount); steps = 2; }
   }
   round.lastMove = { type: 'play', userId, card: { ...card }, announced: player.announced, ...(intoxicatedColor ? { intoxicatedColor: true } : {}) };
   if (player.hand.length === 0) { round.winnerId = userId; round.result = 'emptyHand'; }
@@ -214,6 +255,7 @@ export function actInRound(round: JunoRound, userId: string, action: JunoAction,
 
 interface Table {
   id: string; hostId: string; people: JunoPerson[]; round: JunoRound | null;
+  options: { specials: boolean; stacking: boolean };
   revision: number; createdAt: number; updatedAt: number;
   spaceId: string | null; starters: JunoPerson[];
   settlement?: JunoSettlement; scoreboard?: JunoScoreboard; retryAt: number;
@@ -331,7 +373,12 @@ export class JunoRooms {
     }
     if (now >= round.deadline) {
       const player = round.players[round.turn]!;
-      if (round.memoryCurse?.targetUserId === player.userId) {
+      if (round.stacking && round.stackDraw > 0) {
+        const amount = drawCards(round, player, round.stackDraw).length;
+        round.memoryCurse = undefined; round.stackDraw = 0;
+        round.lastMove = { type: 'timeout', userId: player.userId, amount };
+        advance(round, now);
+      } else if (round.memoryCurse?.targetUserId === player.userId) {
         missSpecialTurn(round, player, now, 'timeout');
       } else {
         const drawn = round.drawnCardId ? [] : drawCards(round, player, 1);
@@ -355,7 +402,7 @@ export class JunoRooms {
     table.botTurn = undefined;
     const action = round.memoryCurse?.targetUserId === player.userId
       ? { type: 'play' as const, cardId: chooseJunoBlindCard(player.hand.map(card => card.id)), announce: true }
-      : chooseJunoBotAction(player.hand, round.discard.at(-1)!, round.color, round.drawnCardId);
+      : chooseJunoBotAction(player.hand, round.discard.at(-1)!, round.color, round.drawnCardId, round.stacking ? round.stackDraw : 0);
     actInRound(round, player.userId, action, now);
     this.complete(channelId, table); this.changed(channelId, table);
   }
@@ -372,7 +419,7 @@ export class JunoRooms {
   read(channelId: string, userId: string, supportsMemory = false, supportsIntoxicated = false, supportsPizza = false, supportsSix = false): JunoSnapshot {
     this.settle(channelId);
     const table = this.tables.get(channelId);
-    if (!table) return { revision: this.revision, game: null, supportsMemory: true, supportsIntoxicated: true, supportsPizza: true, supportsSix: true };
+    if (!table) return { revision: this.revision, game: null, supportsMemory: true, supportsIntoxicated: true, supportsPizza: true, supportsSix: true, supportsOptions: true };
     if (this.sixRequired(table) && !supportsSix) refuse('juno_update_required');
     const round = table.round;
     if (round?.memoryEnabled && !supportsMemory) refuse('juno_update_required');
@@ -393,8 +440,9 @@ export class JunoRooms {
         ...(publicMove.pizzaTransfers ? { pizzaTransfers: publicMove.pizzaTransfers.map(t => ({ ...t })) } : {}),
         ...(self && !blind && publicMove.userId === userId && misplayedCard ? { misplayedCard: { ...misplayedCard } } : {}) };
     }
-    return { revision: table.revision, supportsMemory: true, supportsIntoxicated: true, supportsPizza: true, supportsSix: true, game: {
+    return { revision: table.revision, supportsMemory: true, supportsIntoxicated: true, supportsPizza: true, supportsSix: true, supportsOptions: true, game: {
       id: table.id, phase: !round ? 'lobby' : round.result ? 'finished' : 'playing', hostId: table.hostId,
+      options: { ...table.options },
       players: table.people.map(person => {
         const player = round?.players.find(p => p.userId === person.userId);
         return { ...person, cardCount: player?.hand.length ?? 0, announced: player?.announced ?? false,
@@ -405,6 +453,7 @@ export class JunoRooms {
       color: blind ? null : round?.color ?? null, direction: round?.direction ?? 1,
       currentPlayerId: round && !round.result ? round.players[round.turn]!.userId : null,
       drawnCardId: self && !blind && round?.players[round.turn]?.userId === userId ? round.drawnCardId : null,
+      stackDraw: round?.stackDraw ?? 0,
       remainingMs: round && !round.result ? Math.min(JUNO_TURN_MS, Math.max(0, round.deadline - this.now())) : 0,
       winnerId: round?.winnerId ?? null, result: round?.result ?? null,
       lastMove,
@@ -428,6 +477,7 @@ export class JunoRooms {
       if (table) refuse('juno_exists');
       if (this.tables.size >= 1_000) refuse('juno_capacity');
       table = { id: randomUUID(), hostId: person.userId, people: [{ ...person }], round: null,
+        options: { specials: true, stacking: false },
         revision: 0, createdAt: this.now(), updatedAt: this.now(),
         spaceId: this.options.spaceIdForChannel?.(channelId) ?? null, starters: [], retryAt: 0,
         memoryClients: new Set(supportsMemory ? [person.userId] : []), intoxicatedClients: new Set(supportsIntoxicated ? [person.userId] : []),
@@ -461,12 +511,18 @@ export class JunoRooms {
         if (!table.people.some(p => p.userId === botId && p.computer)) refuse('juno_invalid_move');
         table.people = table.people.filter(p => p.userId !== botId);
       }
+    } else if (command.type === 'options') {
+      if (table.hostId !== person.userId) refuse('juno_host_required');
+      if (table.round) refuse('juno_in_progress');
+      if (command.specials === undefined && command.stacking === undefined) refuse('juno_invalid_move');
+      if (command.specials !== undefined) table.options.specials = command.specials;
+      if (command.stacking !== undefined) table.options.stacking = command.stacking;
     } else if (command.type === 'leave') {
       if (!seated) refuse('juno_player_required');
       this.remove(channelId, table, person.userId);
       return (!supportsMemory && table.round?.memoryEnabled) || (!supportsIntoxicated && table.round?.intoxicatedEnabled) || (!supportsPizza && table.round?.pizzaEnabled)
         || (!supportsSix && this.sixRequired(table))
-        ? { revision: this.revision, game: null, supportsMemory: true, supportsIntoxicated: true, supportsPizza: true, supportsSix: true } : this.read(channelId, person.userId, supportsMemory, supportsIntoxicated, supportsPizza, supportsSix);
+        ? { revision: this.revision, game: null, supportsMemory: true, supportsIntoxicated: true, supportsPizza: true, supportsSix: true, supportsOptions: true } : this.read(channelId, person.userId, supportsMemory, supportsIntoxicated, supportsPizza, supportsSix);
     } else {
       if (!seated) refuse('juno_player_required');
       if (command.type === 'start' || command.type === 'rematch') {
@@ -488,7 +544,8 @@ export class JunoRooms {
           const memory = table.people.every(p => p.computer || table!.memoryClients.has(p.userId));
           const intoxicated = memory && table.people.every(p => p.computer || table!.intoxicatedClients.has(p.userId));
           const pizza = intoxicated && table.people.every(p => p.computer || table!.pizzaClients.has(p.userId));
-          table.round = startRound(table.people, this.now(), memory, intoxicated, pizza); table.createdAt = this.now();
+          const specials = table.options.specials;
+          table.round = startRound(table.people, this.now(), memory && specials, intoxicated && specials, pizza && specials, specials, table.options.stacking); table.createdAt = this.now();
           table.starters = table.people.map(p => ({ userId: p.userId, name: p.name, ...(p.computer ? { computer: p.computer } : {}) }));
         }
       } else {

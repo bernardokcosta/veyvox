@@ -60,6 +60,7 @@ export interface JunoRankingPage {
 }
 export type JunoAction = { type: 'join' | 'leave' | 'start' | 'rematch' | 'draw' | 'pass' | 'announce' | 'addBot' }
   | { type: 'removeBot'; botId: string }
+  | { type: 'options'; specials?: boolean; stacking?: boolean }
   | { type: 'report'; targetUserId: string; opportunityId: string }
   | { type: 'play'; cardId: string; color?: JunoColor; announce?: boolean };
 export type JunoCommand = { type: 'create' } | (JunoAction & { gameId: string; revision: number });
@@ -82,6 +83,7 @@ export interface JunoView {
   id: string;
   phase: 'lobby' | 'playing' | 'finished';
   hostId: string;
+  options: { specials: boolean; stacking: boolean };
   players: (JunoPerson & { cardCount: number; announced: boolean; flouredCardCount?: number })[];
   hand: JunoCard[];
   topCard: JunoCard | null;
@@ -89,6 +91,7 @@ export interface JunoView {
   direction: 1 | -1;
   currentPlayerId: string | null;
   drawnCardId: string | null;
+  stackDraw: number;
   remainingMs: number;
   winnerId: string | null;
   result: 'emptyHand' | 'playersLeft' | 'stalemate' | 'expired' | null;
@@ -108,13 +111,14 @@ export interface JunoView {
   /** A cursed viewer receives opaque owned slots, never the concealed faces. */
   maskedHand?: { id: string }[];
 }
-export interface JunoSnapshot { revision: number; game: JunoView | null; supportsMemory?: boolean; supportsIntoxicated?: boolean; supportsPizza?: boolean; supportsSix?: boolean }
+export interface JunoSnapshot { revision: number; game: JunoView | null; supportsMemory?: boolean; supportsIntoxicated?: boolean; supportsPizza?: boolean; supportsSix?: boolean; supportsOptions?: boolean }
 export const JUNO_TURN_MS = 45_000;
 export const JUNO_REPORT_MS = 10_000;
 export interface JunoReportOpportunity { id: string; targetUserId: string; remainingMs: number }
 
 /** Presentation may highlight legal cards; the server rechecks every play. */
-export function canPlayJuno(card: JunoCard, hand: readonly JunoCard[], top: JunoCard, color: JunoColor): boolean {
+export function canPlayJuno(card: JunoCard, hand: readonly JunoCard[], top: JunoCard, color: JunoColor, stackDraw = 0): boolean {
+  if (stackDraw > 0) return card.face === 'draw2' || card.face === 'draw4';
   if (card.face === 'draw4') return !hand.some(other => other.color === color);
   return card.face === 'memory' || card.face === 'intoxicated' || card.face === 'pizza' || card.face === 'wild' || card.color === color || card.face === top.face;
 }

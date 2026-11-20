@@ -42,10 +42,10 @@ function gate(channelId: string, userId: string, reply: FastifyReply): boolean {
 const commandSchema = {
   type: 'object', required: ['type'], additionalProperties: false,
   properties: {
-    type: { type: 'string', enum: ['create', 'join', 'leave', 'start', 'rematch', 'draw', 'pass', 'play', 'announce', 'addBot', 'removeBot', 'report'] },
+    type: { type: 'string', enum: ['create', 'join', 'leave', 'start', 'rematch', 'draw', 'pass', 'play', 'announce', 'addBot', 'removeBot', 'report', 'options'] },
     gameId: { type: 'string', minLength: 1, maxLength: 64 }, revision: { type: 'integer', minimum: 0, maximum: Number.MAX_SAFE_INTEGER },
     cardId: { type: 'string', minLength: 1, maxLength: 64 }, color: { type: 'string', enum: ['coral', 'amber', 'mint', 'sky'] },
-    announce: { type: 'boolean' },
+    announce: { type: 'boolean' }, specials: { type: 'boolean' }, stacking: { type: 'boolean' },
     botId: { type: 'string', minLength: 1, maxLength: 64 },
     targetUserId: { type: 'string', minLength: 1, maxLength: 64 },
     opportunityId: { type: 'string', minLength: 1, maxLength: 64 },
@@ -55,6 +55,7 @@ const commandSchema = {
     { if: { properties: { type: { const: 'play' } } }, then: { required: ['cardId'] } },
     { if: { properties: { type: { const: 'removeBot' } } }, then: { required: ['botId'] } },
     { if: { properties: { type: { const: 'report' } } }, then: { required: ['targetUserId', 'opportunityId'] } },
+    { if: { properties: { type: { const: 'options' } } }, then: { anyOf: [{ required: ['specials'] }, { required: ['stacking'] }] } },
   ],
 };
 
