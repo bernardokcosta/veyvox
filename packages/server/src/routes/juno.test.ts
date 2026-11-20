@@ -74,7 +74,9 @@ describe('Juno authorized transport', () => {
     expect((await options({ type: 'options' })).statusCode).toBe(400);
     view = (await options({ type: 'options', stacking: true, specials: false })).json<JunoSnapshot>();
     expect(view.game!.options).toEqual({ specials: false, stacking: true });
-    view = (await app.inject({ method: 'POST', url, headers, payload: { type: 'join', gameId: view.game!.id, revision: view.revision } })).json<JunoSnapshot>();
+    const joined = await app.inject({ method: 'POST', url, headers: { authorization: 'guest' },
+      payload: { type: 'join', gameId: view.game!.id, revision: view.revision } });
+    expect(joined.statusCode).toBe(200); view = joined.json<JunoSnapshot>();
     view = (await app.inject({ method: 'POST', url, headers, payload: { type: 'start', gameId: view.game!.id, revision: view.revision } })).json<JunoSnapshot>();
     expect(view.game!.options).toEqual({ specials: false, stacking: true });
     const started = (await app.inject({ method: 'POST', url, headers,
