@@ -7,6 +7,7 @@ import { JUNO_ASSETS } from './junoAssets';
 
 const SECTIONS = {
   start: 'juno.guide.sections.start', turn: 'juno.guide.sections.turn', special: 'juno.guide.sections.special',
+  stacking: 'juno.guide.sections.stacking',
   juno: 'juno.guide.sections.juno', memory: 'juno.guide.sections.memory', score: 'juno.guide.sections.score', table: 'juno.guide.sections.table',
 } as const;
 type Section = keyof typeof SECTIONS;
@@ -23,7 +24,7 @@ function RuleCard({ face, color = null }: { face: Card['face']; color?: Card['co
   return <JunoCard card={{ id: `guide-${color ?? 'wild'}-${face}`, face, color }} />;
 }
 interface Props {
-  game: Pick<JunoView, 'phase' | 'supportsReports' | 'memoryEnabled' | 'supportsBots' | 'intoxicatedEnabled' | 'pizzaEnabled'> | null;
+  game: Pick<JunoView, 'phase' | 'supportsReports' | 'memoryEnabled' | 'supportsBots' | 'intoxicatedEnabled' | 'pizzaEnabled' | 'options'> | null;
   supportsMemory?: boolean;
   supportsIntoxicated?: boolean;
   supportsPizza?: boolean;
@@ -40,19 +41,21 @@ export function JunoRules({ game, supportsMemory, supportsIntoxicated, supportsP
   const intoxicated = game?.intoxicatedEnabled === true || supportsIntoxicated === true && (!game || game.phase === 'lobby');
   const pizza = game?.pizzaEnabled === true || supportsPizza === true && (!game || game.phase === 'lobby');
   const specialCards = memory || intoxicated || pizza;
-  const sections = SECTION_ORDER.filter(section => section !== 'memory' || specialCards);
+  const stacking = game?.options?.stacking === true;
+  const sections = SECTION_ORDER.filter(section => (section !== 'memory' || specialCards) && (section !== 'stacking' || stacking));
   const updateCurrentSection = useCallback(() => {
     const scroller = scroll.current;
     if (!scroller?.clientHeight) return;
     let current: Section = 'start';
     for (const section of SECTION_ORDER) {
       if (section === 'memory' && !specialCards) continue;
+      if (section === 'stacking' && !stacking) continue;
       const title = headings.current[section];
       if (title && title.offsetTop <= scroller.scrollTop + 24) current = section;
     }
     if (scroller.scrollTop > 0 && scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1) current = 'table';
     setActiveSection(current);
-  }, [specialCards]);
+  }, [specialCards, stacking]);
   useEffect(() => {
     const scroller = scroll.current;
     if (!open || !scroller) return;
@@ -112,6 +115,15 @@ export function JunoRules({ game, supportsMemory, supportsIntoxicated, supportsP
               <RuleCard face={card.face} color={card.color} /><figcaption><h4>{t(card.name)}</h4><p>{t(card.effect)}</p></figcaption>
             </figure>)}</div><p className="juno-guide-note">{t('juno.guide.effects.limits')}</p>
           </section>
+          {stacking && <section aria-labelledby={`${id}-stacking`}>{heading('stacking')}
+            <div className="juno-guide-matches">
+              <figure><RuleCard face="draw2" color="amber" /><figcaption>{t('juno.faces.draw2')}</figcaption></figure>
+              <svg className="juno-guide-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M3 12h18m-7-7 7 7-7 7" /></svg>
+              <figure><RuleCard face="draw2" color="sky" /><figcaption>{t('juno.guide.stacking.plus', { amount: formatNumber(4) })}</figcaption></figure>
+              <figure><RuleCard face="draw4" /><figcaption>{t('juno.guide.stacking.plus', { amount: formatNumber(8) })}</figcaption></figure>
+            </div>
+            <p>{t('juno.guide.stacking.rules')}</p><p className="juno-guide-note">{t('juno.guide.stacking.limits')}</p>
+          </section>}
           <section aria-labelledby={`${id}-juno`}>{heading('juno')}
             <div className="juno-guide-call"><img src={JUNO_ASSETS.logo} alt="" aria-hidden="true" /><p>{t('juno.guide.announce')}</p></div>
             {!game && <p className="juno-guide-note">{t('juno.guide.reporting.unknown')}</p>}

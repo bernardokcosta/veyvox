@@ -36,7 +36,8 @@
         "juno": "Call JUNO",
         "memory": "Special cards",
         "score": "Results and XP",
-        "table": "Around the table"
+        "table": "Around the table",
+        "stacking": "Stacking"
       },
       "start": {
         "goal": "Be the first player to have no cards left.",
@@ -89,6 +90,11 @@
         "deck": "When the draw pile runs out, discards are shuffled back in, except the top card. A penalty draws only the cards available if the full amount cannot be supplied. If a full cycle has neither an available draw nor a legal play, the round ends in a draw, without XP.",
         "connection": "A brief voice reconnection keeps your seat only while the existing reconnection grace remains valid. Live tables are temporary: restarting the server ends them.",
         "expiry": "A round also expires after two hours, without a winner or XP. Rounds ending because players left or no moves remain do not award XP either."
+      },
+      "stacking": {
+        "rules": "With stacking on, a +2 or +4 answers any pending pile, no matter the color. Each answer adds its cards to the pile and passes it on; stacking +2 onto +4 (and back) is allowed. The last card still wins at once.",
+        "limits": "No matching draw card in hand? Draw the entire pile and lose the turn. Passing, playing other cards and color changes wait until the pile is taken. Timeouts draw the pile too.",
+        "plus": "+{{amount}}"
       }
     },
     "settings": {
@@ -225,7 +231,15 @@
     },
     "rules": "How to play",
     "rulesText": "Each player gets 7 cards. Match the last card’s color or symbol, or play a wild and choose a color. Empty your hand to win.\nSkip skips the next player; reverse changes direction (with two players, it skips). +2 and +4 immediately draw cards for the next player and skip their turn. No stacking. +4 is only allowed when you have no card of the active color; no challenges.\nDraw one: play only that new card if it matches, or pass. An unplayable draw passes automatically.\nYou have 45 seconds per turn. Time running out draws one and passes; after drawing it just passes. If someone leaves, their cards return to the deck; fewer than two players ends the round without a winner. A short voice reconnect keeps your seat. Restarting the server ends games.",
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "options": {
+      "title": "Match options",
+      "specials": "Special cards",
+      "specialsHint": "Memory, Intoxicated and Crazy Pizza. Off means a classic 108-card deck.",
+      "stacking": "Allow stacking",
+      "stackingHint": "+2 and +4 pile onto each other. No match? Draw the whole pile."
+    },
+    "stackPending": "+{{amount}} to draw"
   },
   "soundboard": {
     "title": "Soundboard",

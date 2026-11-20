@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { JunoView } from '@veyvox/shared/src/juno';
@@ -24,6 +24,15 @@ function geometry(guide: HTMLElement) {
 }
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 describe('illustrated Juno rules', () => {
+  it('teaches stacking only for tables playing with it enabled', async () => {
+    const stacked = { ...game, options: { specials: true, stacking: true } };
+    const first = await open({ game: stacked, supportsMemory: true });
+    expect(within(first.guide).getByRole('heading', { name: 'Stacking', level: 3 })).toBeInTheDocument();
+    expect(first.guide).toHaveTextContent(/pile/i);
+    first.unmount(); cleanup();
+    const { guide: plain } = await open({ game, supportsMemory: true });
+    expect(within(plain).queryByRole('heading', { name: 'Stacking', level: 3 })).toBeNull();
+  });
   it('teaches pizza and its persistent flour only in supported lobbies or enabled frozen rounds', async () => {
     const { guide, rerender } = await open({ game: { ...game, pizzaEnabled: true }, supportsPizza: true });
     expect(guide.querySelector('img[src="/games/juno/cards/pizza.webp"]')).toBeInTheDocument();

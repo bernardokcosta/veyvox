@@ -28,6 +28,20 @@ describe('isolated playable pizza preview', () => {
       expect(spectator.game!.players).toEqual(after.game!.players);
     } finally { await app.close(); }
   });
+  it('starts a stacking practice round on request and keeps classic rules otherwise', async () => {
+    const app = createJunoPreview();
+    try {
+      const classic = await app.inject({ method: 'POST', url: '/reset', headers: origin, payload: { players: 2 } });
+      expect(classic.json<JunoSnapshot>().game!.options).toMatchObject({ specials: true, stacking: false });
+      const stacked = await app.inject({ method: 'POST', url: '/reset', headers: origin, payload: { players: 3, stacking: true } });
+      expect(stacked.statusCode).toBe(200);
+      const game = stacked.json<JunoSnapshot>().game!;
+      expect(game.players).toHaveLength(3);
+      expect(game.options).toMatchObject({ specials: true, stacking: true });
+      expect((await app.inject({ method: 'POST', url: '/reset', headers: origin, payload: { players: 8 } })).statusCode).toBe(400);
+      expect((await app.inject({ method: 'POST', url: '/reset', headers: origin, payload: { players: 2, stacking: 'yes' } })).statusCode).toBe(400);
+    } finally { await app.close(); }
+  });
   it('rejects cross-site mutations, invalid seats and malformed commands without changing the table', async () => {
     const app = createJunoPreview();
     try {

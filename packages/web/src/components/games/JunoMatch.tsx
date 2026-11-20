@@ -10,6 +10,7 @@ import { JunoPlayerBadge } from './JunoPlayerBadge';
 import { JUNO_ASSETS } from './junoAssets';
 import { junoSeats } from './junoSeats';
 import { JunoEffects } from './JunoEffects';
+import { JunoStackOverlay } from './JunoStackOverlay';
 import { JunoPizzaEffects } from './JunoPizzaEffects';
 import { useJunoPizzaPresentation } from './useJunoPizzaPresentation';
 
@@ -45,7 +46,7 @@ export function JunoMatch() {
   const faceLabel = (card: Card) => /^\d$/.test(card.face) ? formatNumber(Number(card.face)) : t(FACE_KEYS[card.face as keyof typeof FACE_KEYS]);
   const cardLabel = (card: Card) => `${t('juno.card', { color: card.color ? t(COLOR_KEYS[card.color]) : '', face: faceLabel(card) })}${card.floured ? `, ${t('juno.pizza.floured')}` : ''}`;
   const canPlay = (card: Card) => myTurn && !!game.topCard && !!game.color
-    && (!game.drawnCardId || game.drawnCardId === card.id) && canPlayJuno(card, game.hand, game.topCard, game.color);
+    && (!game.drawnCardId || game.drawnCardId === card.id) && canPlayJuno(card, game.hand, game.topCard, game.color, game.stackDraw);
   const play = (card: Card, color?: JunoColor) => {
     void command({ type: 'play', cardId: card.id, ...(color ? { color } : {}), announce: sayJuno }); setColorChoice(null);
   };
@@ -83,8 +84,9 @@ export function JunoMatch() {
   const moveTarget = game.players.find(p => p.userId === game.lastMove?.targetUserId);
   const effectPlayer = game.lastMove?.type === 'report' ? moveTarget : movePlayer;
   const movePosition = Object.entries(seats).find(([, person]) => person?.userId === effectPlayer?.userId)?.[0] ?? 'top';
-  return <div className={`juno-match${game.supportsReports ? ' juno-reports' : ''}${myTurn ? ' juno-my-turn' : ''}${blind ? ' juno-memory-active' : ''}${intoxicated ? ' juno-intoxicated-active' : ''}`}>
+  return <div className={`juno-match${game.supportsReports ? ' juno-reports' : ''}${myTurn ? ' juno-my-turn' : ''}${blind ? ' juno-memory-active' : ''}${intoxicated ? ' juno-intoxicated-active' : ''}${game.stackDraw > 0 ? ' juno-stack-active' : ''}`}>
     <JunoEffects move={game.lastMove} position={movePosition} name={playerName(effectPlayer)} viewerId={selfId} />
+    {game.stackDraw > 0 && <JunoStackOverlay amount={game.stackDraw} />}
     <JunoPizzaEffects move={game.lastMove} players={game.players} direction={game.direction} viewerId={selfId} resolution={game.pizzaResolution} active={connected && !stale} startedAt={presentation.startedAt} onStop={presentation.onStop} />
     <div className="juno-arena">
       <img className="juno-orbit" src={JUNO_ASSETS.orbit} alt="" aria-hidden="true" />

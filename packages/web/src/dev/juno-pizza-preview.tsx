@@ -47,22 +47,23 @@ async function command(action: JunoAction | { type: 'create' }) {
   } catch (error) { if (run === generation) { useJunoStore.setState({ error }); await read(); } }
   finally { if (run === generation) useJunoStore.setState({ pending: false }); }
 }
-async function reset(players: number) {
+async function reset(players: number, stacking = false) {
   generation++;
-  const view = await request('/reset', { players });
+  const view = await request('/reset', { players, ...(stacking ? { stacking: true } : {}) });
   useJunoStore.setState({ snapshot: null, pending: false });
   if (spectator) await read(); else accept(view);
 }
 function Preview() {
-  const [players, setPlayers] = useState(4), [resetting, setResetting] = useState(false);
+  const [players, setPlayers] = useState(4), [stacking, setStacking] = useState(false), [resetting, setResetting] = useState(false);
   return <main className="mx-auto flex h-dvh max-w-[1200px] flex-col gap-3 p-3">
     <header className="flex flex-wrap items-center gap-3">
       <strong>Pizza Maluca — preview local</strong>
       <label>Jogadores <select className="input-standard ml-2" value={players} disabled={resetting} onChange={event => setPlayers(Number(event.target.value))}>
         {[2, 3, 4, 5, 6].map(n => <option key={n} value={n}>{n}</option>)}
       </select></label>
+      <label className="flex items-center gap-2"><input type="checkbox" checked={stacking} disabled={resetting} onChange={event => setStacking(event.target.checked)} />Empilhar +2/+4</label>
       <button className="glass rounded-lg px-3 py-2" disabled={resetting} onClick={() => {
-        setResetting(true); void reset(players).catch(error => useJunoStore.setState({ error })).finally(() => setResetting(false));
+        setResetting(true); void reset(players, stacking).catch(error => useJunoStore.setState({ error })).finally(() => setResetting(false));
       }}>Recomeçar com Pizza</button>
       <a className="text-accent-primary underline" href={spectator ? '/dev-juno-pizza.html' : '/dev-juno-pizza.html?spectator=1'} target="_blank" rel="noreferrer">
         {spectator ? 'Abrir jogador' : 'Abrir visão de espectador'}

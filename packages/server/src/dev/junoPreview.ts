@@ -11,10 +11,14 @@ export function createJunoPreview() {
   const app = Fastify({ bodyLimit: 4096 });
   let clock = Date.now(), lastTick = clock, started = false;
   const rooms = new JunoRooms({ present: () => true, changed: () => {}, now: () => clock });
-  function reset(count: number) {
+  function reset(count: number, stacking = false) {
     clock = Date.now(); lastTick = clock; started = false;
     rooms.dispose();
     let view = rooms.command('preview', player, { type: 'create' }, true, true, true, true);
+    if (stacking) {
+      view = rooms.command('preview', player,
+        { type: 'options', stacking: true, gameId: view.game!.id, revision: view.revision }, true, true, true, true);
+    }
     for (let i = 1; i < count; i++) view = rooms.command('preview', player,
       { type: 'addBot', gameId: view.game!.id, revision: view.revision }, true, true, true, true);
     view = rooms.command('preview', player, { type: 'start', gameId: view.game!.id, revision: view.revision }, true, true, true, true);
@@ -43,9 +47,9 @@ export function createJunoPreview() {
   app.get<{ Querystring: { viewer?: 'player' | 'spectator' } }>('/snapshot', {
     schema: { querystring: { type: 'object', additionalProperties: false, properties: { viewer: { type: 'string', enum: ['player', 'spectator'] } } } },
   }, request => rooms.read('preview', request.query.viewer === 'spectator' ? 'preview-spectator' : player.userId, true, true, true, true));
-  app.post<{ Body: { players: number } }>('/reset', {
-    schema: { body: { type: 'object', required: ['players'], additionalProperties: false, properties: { players: { type: 'integer', minimum: 2, maximum: 6 } } } },
-  }, request => reset(request.body.players));
+  app.post<{ Body: { players: number; stacking?: boolean } }>('/reset', {
+    schema: { body: { type: 'object', required: ['players'], additionalProperties: false, properties: { players: { type: 'integer', minimum: 2, maximum: 6 }, stacking: { type: 'boolean' } } } },
+  }, request => reset(request.body.players, request.body.stacking ?? false));
   app.post<{ Body: JunoCommand }>('/action', {
     schema: { body: {
       type: 'object', required: ['type', 'gameId', 'revision'], additionalProperties: false,

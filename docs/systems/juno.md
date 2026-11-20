@@ -32,14 +32,16 @@ new dependency is used.
 
 The 108-card deck has four colors, one zero and two of each 1–9, skip, reverse
 and +2 per color, plus four wilds and four wild +4s (six seats still deal from
-the same 108/109/110/111-card decks; the discard pile recycles as before). The server shuffles with
+the same 108/109/110/111-card decks; the discard pile recycles as before). With
+the specials option off the deck is always this classic 108. The server shuffles with
 `crypto.randomInt`, deals seven, and starts on a numeric discard. Match the
 active color or face; a wild chooses the next color. A +4 is legal only if the
-hand has no card of the active color. No stacking or +4 challenges.
+hand has no card of the active color. Without the stacking option there is no
+stacking or +4 challenge.
 
 Skip skips the next turn. Reverse changes direction and skips the opponent in
-a two-player game. +2/+4 immediately draw for the next player, who loses their
-turn; final-card penalties still apply before recording victory. A voluntary
+a two-player game. Without stacking, +2/+4 immediately draw for the next player,
+who loses their turn; final-card penalties still apply before recording victory. A voluntary
 draw offers only that drawn card if legal, otherwise passes immediately. There
 is no draw-until-playable. A player may pass after drawing a playable card.
 
@@ -335,6 +337,32 @@ Any computer starter freezes `practice: true`. Results keep placements/counts bu
 zero XP and unranked status for everybody, without invoking persistence or adding
 wins/completed-round counters. Human-only progression is unchanged. The separate
 settlement boundary also refuses to credit computer proposals defensively.
+
+### Match options
+
+The lobby carries `{specials: true, stacking: false}` by default. Only the host
+may change it, only in the lobby, through a host-only `options` command naming
+at least one of `specials`/`stacking`; the snapshot advertises root
+`supportsOptions: true` and every game view carries the frozen `options`.
+New `supportsOptions`-less hosts never see the controls and keep classic
+behavior. A rematch keeps the lobby choice; starting freezes a copy into the
+round, so mid-round `options` are refused and later declarations cannot change
+an active deck.
+
+With `specials` off the round always uses the classic 108-card deck, regardless
+of client support; the rare memory/intoxicated/pizza cards never appear.
+
+With `stacking` on, a played +2/+4 adds its amount to the pending `stackDraw`
+instead of drawing for the next player, who keeps the turn order. While a stack
+is pending, only +2/+4 continuations (any color, no +4 restriction) or the full
+take-draw are legal; passing, ordinary plays, color picks and pizza plays are
+refused, while JUNO calls stay available. A player without +2/+4 draws the total
+and loses the turn with no drawn-card continuation. Emptying the hand on a
+stacking play wins immediately and clears the stack. Timeouts draw the pending
+total for the victim instead of a single card. Computers stack when able and
+take the pile otherwise. The public view exposes only the integer `stackDraw`;
+the client highlights just +2/+4 and renders a pulsing neon "+N" overlay with
+`mix-blend-mode: screen` supplier digits, static under reduced motion.
 
 After changes, `juno_updated {channelId}` travels through existing
 VIEW_CHANNEL-filtered `sendToChannel`. This is a non-secret invalidation, not a

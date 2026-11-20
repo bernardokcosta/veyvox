@@ -36,6 +36,13 @@ export function JunoLobby({ onRanking }: { onRanking: () => void }) {
           disabled={disabled} onClick={() => void command({ type: 'addBot' })}><span aria-hidden="true">＋</span></button>
         : <div className="juno-seat-empty" key={i} aria-label={t('juno.emptySeat')}><span aria-hidden="true">＋</span></div>)}
     </div>}
+    {game && game.phase === 'lobby' && snapshot?.supportsOptions === true && <fieldset className="juno-options" disabled={disabled || target?.userId !== game.hostId}>
+      <legend>{t('juno.options.title')}</legend>
+      <label><input type="checkbox" checked={game.options.specials} onChange={event => void command({ type: 'options', specials: event.target.checked })} />{t('juno.options.specials')}</label>
+      <p>{t('juno.options.specialsHint')}</p>
+      <label><input type="checkbox" checked={game.options.stacking} onChange={event => void command({ type: 'options', stacking: event.target.checked })} />{t('juno.options.stacking')}</label>
+      <p>{t('juno.options.stackingHint')}</p>
+    </fieldset>}
     <div className="juno-menu-actions">
       {!game ? loading && !snapshot ? <p role="status">{t('common:states.loading')}</p>
         : <button type="button" className="juno-primary" disabled={disabled} onClick={() => void command({ type: 'create' })}>{t('juno.create')}</button>

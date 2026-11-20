@@ -9,7 +9,8 @@ GET/POST `/channels/:channelId/juno` return a private `JunoSnapshot`. They requi
 an authenticated human member with VIEW_CHANNEL + CONNECT and a live voice-owning
 socket in that space channel. Commands are `create`, `join`, `leave`, `start`,
 `rematch`, `draw`, `pass`, `play`, `announce`, `addBot`, `removeBot` (`botId` required),
-`report` (`targetUserId`, `opportunityId` required);
+`report` (`targetUserId`, `opportunityId` required), `options` (`specials`/`stacking`
+booleans, at least one, host-only, lobby-only);
 non-create commands name the table and expected
 revision (409 `juno_stale` on conflict). No opponent hands or draw order leave
 the server. Five creates and 60 commands/minute/account, plus the existing HTTP

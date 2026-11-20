@@ -123,6 +123,21 @@ describe('Juno cosmic interactive match', () => {
     }
     expect(full.querySelectorAll('.juno-seat')).toHaveLength(6);
   });
+  it('shows the neon stack total and only allows stacking cards or the take-draw', async () => {
+    const game = junoGame('playing');
+    game.stackDraw = 4;
+    game.hand = [{ id: 'two', face: 'draw2', color: 'coral' }, { id: 'plain', face: '5', color: 'coral' }];
+    game.players[1]!.cardCount = 3;
+    useJunoStore.setState({ snapshot: { revision: 2, game } });
+    const { container } = render(<JunoMatch />);
+    expect(container.querySelector('.juno-stack-overlay')).toBeInTheDocument();
+    expect(screen.getByRole('status', { name: '+4 to draw' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /play.*draw two/i })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /play.*5/i })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Draw pile' })).toBeEnabled();
+    await userEvent.click(screen.getByRole('button', { name: /play.*draw two/i }));
+    expect(command).toHaveBeenCalledWith({ type: 'play', cardId: 'two', announce: false });
+  });
   it('spreads each lateral back separately while preserving its exact public count', () => {
     const game = junoGame('playing');
     game.players.push({ ...game.players[1]!, userId: 'c', name: 'Eli' }, { ...game.players[1]!, userId: 'd', name: 'Noor' });

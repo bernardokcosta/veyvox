@@ -36,7 +36,8 @@
         "juno": "Diga JUNO",
         "memory": "Cartas especiais",
         "score": "Resultado e XP",
-        "table": "Ao redor da mesa"
+        "table": "Ao redor da mesa",
+        "stacking": "Empilhar"
       },
       "start": {
         "goal": "Seja a primeira pessoa a ficar sem cartas.",
@@ -89,6 +90,11 @@
         "deck": "Quando o monte de compra acaba, os descartes são embaralhados de novo, exceto a última carta aberta. Uma penalidade compra só as cartas disponíveis se não houver a quantidade completa. Se um ciclo inteiro não tiver compra disponível nem jogada válida, a rodada empata, sem XP.",
         "connection": "Uma reconexão breve da voz mantém seu lugar só enquanto o período de tolerância existente for válido. Mesas em andamento são temporárias: reiniciar o servidor encerra os jogos.",
         "expiry": "A rodada também expira depois de duas horas, sem vencedor nem XP. Rodadas encerradas por saída de jogadores ou falta de jogadas também não dão XP."
+      },
+      "stacking": {
+        "rules": "Com empilhar ativado, +2 ou +4 responde qualquer pilha pendente, independente da cor. Cada resposta soma as cartas à pilha e passa adiante; empilhar +2 sobre +4 (e vice-versa) vale. A última carta ainda vence na hora.",
+        "limits": "Sem +2/+4 na mão? Compre a pilha inteira e passe a vez. Passar, jogar outras cartas e trocar de cor esperam a pilha ser comprada. O tempo esgotado também compra a pilha.",
+        "plus": "+{{amount}}"
       }
     },
     "settings": {
@@ -228,7 +234,15 @@
     },
     "rules": "Como jogar",
     "rulesText": "Cada jogador recebe 7 cartas. Combine a cor ou o símbolo da última carta, ou jogue um coringa e escolha a cor. Fique sem cartas para vencer.\nBloqueio pula o próximo jogador; inverter muda o sentido (com dois jogadores, pula o adversário). +2 e +4 fazem o próximo comprar e perder a vez. Não acumulam. +4 só pode ser jogado sem nenhuma carta da cor ativa; não há desafios.\nCompre uma: só pode jogar essa nova carta, se combinar, ou passar. Se ela não combinar, a vez passa automaticamente.\nSão 45 segundos por turno. Ao acabar o tempo, compre uma e passe; se já comprou, apenas passe. Ao sair, suas cartas voltam ao baralho; com menos de dois jogadores a rodada termina sem vencedor. Uma reconexão rápida da voz mantém seu lugar. Reiniciar o servidor encerra os jogos.",
-    "comingSoon": "Em breve"
+    "comingSoon": "Em breve",
+    "options": {
+      "title": "Opções da partida",
+      "specials": "Cartas especiais",
+      "specialsHint": "Memória, Entorpecido e Pizza Maluca. Desligado: baralho clássico de 108 cartas.",
+      "stacking": "Permitir empilhar",
+      "stackingHint": "+2 e +4 empilham uns sobre os outros. Sem carta para responder? Compre a pilha toda."
+    },
+    "stackPending": "+{{amount}} para comprar"
   },
   "soundboard": {
     "title": "Painel de áudios",

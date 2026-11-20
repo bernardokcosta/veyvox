@@ -90,6 +90,53 @@ describe('Juno stacking engine', () => {
       { type: 'options', gameId: started.id, revision: rooms.read('voice', 'b', true, true, true).revision, stacking: false }, true, true, true))
       .toThrow('juno_host_required');
   });
+  it('plays a complete scripted stacking round: +2, +2, take four, then a winner', async () => {
+    const { JunoRooms } = await import('./juno.js');
+    let now = 0;
+    const rooms = new JunoRooms({ present: () => true, changed: () => {}, now: () => now });
+    rooms.command('voice', { userId: 'a', name: 'a' }, { type: 'create' }, true, true, true, true);
+    const tables = rooms as unknown as { tables: Map<string, { round: JunoRound | null }> };
+    const play = (id: string, action: { type: 'join' } | { type: 'start' } | { type: 'options'; stacking?: boolean }) => {
+      const view = rooms.read('voice', id, true, true, true, true);
+      return rooms.command('voice', { userId: id, name: id }, { ...action, gameId: view.game!.id, revision: view.revision }, true, true, true, true);
+    };
+    play('a', { type: 'options', stacking: true });
+    play('b', { type: 'join' });
+    play('c', { type: 'join' });
+    play('a', { type: 'start' });
+    const round = tables.tables.get('voice')!.round!;
+    round.players[0]!.hand = [card('a-draw2', 'draw2', 'coral'), card('a-filler', '5', 'mint')];
+    round.players[1]!.hand = [card('b-draw2', 'draw2', 'sky'), card('b-filler', '6', 'amber')];
+    round.players[2]!.hand = [card('c1', '1', 'coral'), card('c2', '2', 'sky')];
+    round.discard = [card('top', '4', 'coral')]; round.color = 'coral';
+    const log: string[] = [];
+    const act = (id: string, action: { type: 'play'; cardId: string } | { type: 'draw' }) => {
+      const view = rooms.read('voice', id, true, true, true, true);
+      rooms.command('voice', { userId: id, name: id }, { ...action, gameId: view.game!.id, revision: view.revision }, true, true, true, true);
+      log.push(`${id} ${action.type} ${action.type === 'play' ? action.cardId : ''}→ stack ${tables.tables.get('voice')!.round?.stackDraw ?? 'done'}`);
+    };
+    act('a', { type: 'play', cardId: 'a-draw2' });
+    act('b', { type: 'play', cardId: 'b-draw2' });
+    act('c', { type: 'draw' });
+    expect(log).toEqual(['a play a-draw2→ stack 2', 'b play b-draw2→ stack 4', 'c draw → stack 0']);
+    expect(tables.tables.get('voice')!.round!.players[2]!.hand).toHaveLength(6);
+    for (let i = 0; i < 5_000 && !tables.tables.get('voice')!.round!.result; i++) {
+      const state = tables.tables.get('voice')!.round!;
+      const player = state.players[state.turn]!;
+      const view = rooms.read('voice', player.userId, true, true, true, true).game!;
+      const playable = view.hand.find(c => (!view.drawnCardId || c.id === view.drawnCardId)
+        && canPlayJuno(c, view.hand, view.topCard!, view.color!, view.stackDraw ?? 0));
+      const current = rooms.read('voice', player.userId, true, true, true, true);
+      const action = playable
+        ? { type: 'play' as const, cardId: playable.id, color: 'mint' as const, announce: true, gameId: current.game!.id, revision: current.revision }
+        : view.drawnCardId
+          ? { type: 'pass' as const, gameId: current.game!.id, revision: current.revision }
+          : { type: 'draw' as const, gameId: current.game!.id, revision: current.revision };
+      rooms.command('voice', { userId: player.userId, name: player.userId }, action, true, true, true, true);
+      now += 1_000; rooms.tick();
+    }
+    expect(tables.tables.get('voice')!.round!.result).toBeTruthy();
+  });
   it('draws the pending total on timeout instead of a single card', async () => {
     const { JunoRooms } = await import('./juno.js');
     let now = 0;
