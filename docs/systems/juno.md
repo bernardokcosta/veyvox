@@ -266,9 +266,9 @@ draw order nor opponent hands are serialized. Cards use opaque random ids.
 
 State/command clients declare `?memory=1`, optionally with `intoxicated=1` (which
 requires memory) and `pizza=1` (which requires both), plus independent `?six=1`
-for six-seat tables. All accept only exact `1`;
+for six-seat tables and `?stacking=1` for stack-capable UI. All accept only exact `1`;
 duplicates/unknown keys are invalid. Snapshots advertise root
-`supportsMemory`/`supportsIntoxicated`/`supportsPizza`/`supportsSix: true`.
+`supportsMemory`/`supportsIntoxicated`/`supportsPizza`/`supportsSix`/`supportsStacking: true`.
 Seated humans refresh their declarations in the lobby;
 at start every human must support it to freeze `memoryEnabled: true`. Computers
 support them internally. `intoxicatedEnabled` additionally requires every human
@@ -287,8 +287,8 @@ computer hands are never returned. Client update-required errors clear cached
 private state, and old unmasked reads cannot replace a newer masked revision.
 The rule does not erase previously seen cards or prevent memory/collusion.
 
-The new client probes GET with all four flags and may fall back to pizza,
-then intoxicated, then memory-only, at most three times on exact 400 `invalid_body`
+The new client probes GET with all five flags and may fall back to stacking,
+then six, then pizza, then intoxicated, then memory-only, at most four times on exact 400 `invalid_body`
 from an old host, within the same auth/session boundary. A table with more than
 four seats answers 409 `juno_update_required` to readers and mutators that did
 not declare `six=1`, so an older layout never silently omits two opponents.
@@ -356,11 +356,16 @@ With `stacking` on, a played +2/+4 adds its amount to the pending `stackDraw`
 instead of drawing for the next player, who keeps the turn order. While a stack
 is pending, only +2/+4 continuations (any color, no +4 restriction) or the full
 take-draw are legal; passing, ordinary plays, color picks and pizza plays are
-refused, while JUNO calls stay available. A player without +2/+4 draws the total
+refused, while JUNO calls stay available. A stacking +2 sets the active color
+to its own; a stacking +4 keeps the current color unless a new one is named.
+A player without +2/+4 draws the total
 and loses the turn with no drawn-card continuation. Emptying the hand on a
 stacking play wins immediately and clears the stack. Timeouts draw the pending
 total for the victim instead of a single card. Computers stack when able and
-take the pile otherwise. The public view exposes only the integer `stackDraw`;
+take the pile otherwise. Mixed cohorts play classic: starting requires every
+seated human on a stacking-capable client, otherwise the round freezes without
+it. Stacking rounds answer readers and mutators without that support with 409
+`juno_update_required`. The public view exposes only the integer `stackDraw`;
 the client highlights just +2/+4 and renders a pulsing neon "+N" overlay with
 `mix-blend-mode: screen` supplier digits, static under reduced motion.
 

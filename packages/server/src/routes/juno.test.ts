@@ -65,21 +65,22 @@ describe('Juno authorized transport', () => {
   });
 
   it('lets only the host set lobby options, freezes them at start and advertises option support', async () => {
-    let view = (await app.inject({ method: 'POST', url, headers, payload: { type: 'create' } })).json<JunoSnapshot>();
+    const stacked = `${url}?stacking=1`;
+    let view = (await app.inject({ method: 'POST', url: stacked, headers, payload: { type: 'create' } })).json<JunoSnapshot>();
     expect(view.supportsOptions).toBe(true);
     expect(view.game!.options).toEqual({ specials: true, stacking: false });
-    const options = async (payload: object, who = 'remote-row') => app.inject({ method: 'POST', url, headers: { authorization: who },
+    const options = async (payload: object, who = 'remote-row') => app.inject({ method: 'POST', url: stacked, headers: { authorization: who },
       payload: { ...payload, gameId: view.game!.id, revision: view.revision } });
     expect((await options({ type: 'options', stacking: true }, 'guest')).statusCode).toBe(400);
     expect((await options({ type: 'options' })).statusCode).toBe(400);
     view = (await options({ type: 'options', stacking: true, specials: false })).json<JunoSnapshot>();
     expect(view.game!.options).toEqual({ specials: false, stacking: true });
-    const joined = await app.inject({ method: 'POST', url, headers: { authorization: 'guest' },
+    const joined = await app.inject({ method: 'POST', url: stacked, headers: { authorization: 'guest' },
       payload: { type: 'join', gameId: view.game!.id, revision: view.revision } });
     expect(joined.statusCode).toBe(200); view = joined.json<JunoSnapshot>();
-    view = (await app.inject({ method: 'POST', url, headers, payload: { type: 'start', gameId: view.game!.id, revision: view.revision } })).json<JunoSnapshot>();
+    view = (await app.inject({ method: 'POST', url: stacked, headers, payload: { type: 'start', gameId: view.game!.id, revision: view.revision } })).json<JunoSnapshot>();
     expect(view.game!.options).toEqual({ specials: false, stacking: true });
-    const started = (await app.inject({ method: 'POST', url, headers,
+    const started = (await app.inject({ method: 'POST', url: stacked, headers,
       payload: { type: 'options', stacking: false, gameId: view.game!.id, revision: view.revision } }));
     expect(started.statusCode).toBe(400); expect(started.json().code).toBe('juno_in_progress');
   });
@@ -195,7 +196,7 @@ describe('Juno authorized transport', () => {
     try {
       const payload = { type: 'report', gameId: snapshot.game!.id, revision: snapshot.revision, targetUserId: 'opponent', opportunityId: 'miss-1' };
       expect((await app.inject({ method: 'POST', url, headers, payload })).statusCode).toBe(200);
-      expect(command).toHaveBeenCalledWith('voice', { userId: 'remote-row', name: 'Alice' }, payload, false, false, false, false);
+      expect(command).toHaveBeenCalledWith('voice', { userId: 'remote-row', name: 'Alice' }, payload, false, false, false, false, false);
       state.room = 'other'; expect((await app.inject({ method: 'POST', url, headers, payload })).statusCode).toBe(403);
       expect(command).toHaveBeenCalledTimes(1);
     } finally { command.mockRestore(); }

@@ -42,20 +42,22 @@ export function JunoRules({ game, supportsMemory, supportsIntoxicated, supportsP
   const pizza = game?.pizzaEnabled === true || supportsPizza === true && (!game || game.phase === 'lobby');
   const specialCards = memory || intoxicated || pizza;
   const stacking = game?.options?.stacking === true;
-  const sections = SECTION_ORDER.filter(section => (section !== 'memory' || specialCards) && (section !== 'stacking' || stacking));
+  const specialsOff = game?.options !== undefined && !game.options.specials;
+  const showMemory = (specialCards && !specialsOff) || specialsOff;
+  const sections = SECTION_ORDER.filter(section => (section !== 'memory' || showMemory) && (section !== 'stacking' || stacking));
   const updateCurrentSection = useCallback(() => {
     const scroller = scroll.current;
     if (!scroller?.clientHeight) return;
     let current: Section = 'start';
     for (const section of SECTION_ORDER) {
-      if (section === 'memory' && !specialCards) continue;
+      if (section === 'memory' && !showMemory) continue;
       if (section === 'stacking' && !stacking) continue;
       const title = headings.current[section];
       if (title && title.offsetTop <= scroller.scrollTop + 24) current = section;
     }
     if (scroller.scrollTop > 0 && scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1) current = 'table';
     setActiveSection(current);
-  }, [specialCards, stacking]);
+  }, [specialCards, stacking, showMemory]);
   useEffect(() => {
     const scroller = scroll.current;
     if (!open || !scroller) return;
@@ -109,11 +111,14 @@ export function JunoRules({ game, supportsMemory, supportsIntoxicated, supportsP
               <figure><RuleCard face="wild" /><figcaption>{t('juno.guide.examples.wild')}</figcaption></figure>
             </div>
             <p>{t('juno.guide.turn.draw')}</p><p>{t('juno.guide.turn.clock', { seconds: formatNumber(JUNO_TURN_MS / 1000) })}</p>
+            {stacking && <p className="juno-guide-note">{t('juno.guide.stacking.take')}</p>}
           </section>
           <section aria-labelledby={`${id}-special`}>{heading('special')}
             <div className="juno-guide-specials">{SPECIALS.map(card => <figure key={card.face}>
               <RuleCard face={card.face} color={card.color} /><figcaption><h4>{t(card.name)}</h4><p>{t(card.effect)}</p></figcaption>
-            </figure>)}</div><p className="juno-guide-note">{t('juno.guide.effects.limits')}</p>
+            </figure>)}</div>{stacking
+              ? <p className="juno-guide-note">{t('juno.guide.effects.stackingNote')}</p>
+              : <p className="juno-guide-note">{t('juno.guide.effects.limits')}</p>}
           </section>
           {stacking && <section aria-labelledby={`${id}-stacking`}>{heading('stacking')}
             <div className="juno-guide-matches">
@@ -130,24 +135,27 @@ export function JunoRules({ game, supportsMemory, supportsIntoxicated, supportsP
             {(game?.supportsReports || !game) && <div className="juno-guide-call"><img src={JUNO_ASSETS.hammerStill} alt="" aria-hidden="true" /><div><p>{t('juno.reportRules')}</p><p>{t('juno.guide.reporting.detail')}</p></div></div>}
             {(!game || !game.supportsReports) && <p>{t('juno.legacyJunoRules')}</p>}
           </section>
-          {specialCards && <section aria-labelledby={`${id}-memory`}>{heading('memory')}
-            {memory && <>
-              {game && game.phase !== 'lobby' && !game.memoryEnabled && <p className="juno-guide-note">{t('juno.guide.memory.inactive')}</p>}
-              <figure className="juno-guide-memory"><RuleCard face="memory" /><figcaption><h4>{t('juno.faces.memory')}</h4><p>{t('juno.guide.memory.intro')}</p></figcaption></figure>
-              {(!game || game.phase === 'lobby') && <p className="juno-guide-note">{t('juno.guide.memory.lobby')}</p>}
-              <p>{t('juno.guide.memory.play')}</p><p>{t('juno.guide.memory.miss')}</p><p>{t('juno.guide.memory.limits')}</p>
-            </>}
-            {intoxicated && <figure className="juno-guide-memory">
-              <RuleCard face="intoxicated" /><figcaption><h4>{t('juno.intoxicated.title')}</h4><p>{t('juno.intoxicated.rules')}</p></figcaption>
-            </figure>}
-            {pizza && <figure className="juno-guide-memory">
-              <RuleCard face="pizza" /><figcaption><h4>{t('juno.pizza.title')}</h4><p>{t('juno.pizza.rules')}</p></figcaption>
-            </figure>}
+          {showMemory && <section aria-labelledby={`${id}-memory`}>{heading('memory')}
+            {specialCards && !specialsOff ? <>
+              {memory && <>
+                {game && game.phase !== 'lobby' && !game.memoryEnabled && <p className="juno-guide-note">{t('juno.guide.memory.inactive')}</p>}
+                <figure className="juno-guide-memory"><RuleCard face="memory" /><figcaption><h4>{t('juno.faces.memory')}</h4><p>{t('juno.guide.memory.intro')}</p></figcaption></figure>
+                {(!game || game.phase === 'lobby') && <p className="juno-guide-note">{t('juno.guide.memory.lobby')}</p>}
+                <p>{t('juno.guide.memory.play')}</p><p>{t('juno.guide.memory.miss')}</p><p>{t('juno.guide.memory.limits')}</p>
+              </>}
+              {intoxicated && <figure className="juno-guide-memory">
+                <RuleCard face="intoxicated" /><figcaption><h4>{t('juno.intoxicated.title')}</h4><p>{t('juno.intoxicated.rules')}</p></figcaption>
+              </figure>}
+              {pizza && <figure className="juno-guide-memory">
+                <RuleCard face="pizza" /><figcaption><h4>{t('juno.pizza.title')}</h4><p>{t('juno.pizza.rules')}</p></figcaption>
+              </figure>}
+            </> : <p className="juno-guide-note">{t('juno.guide.memory.disabled')}</p>}
           </section>}
           <section aria-labelledby={`${id}-score`}>{heading('score')}<p>{t('juno.guide.score.ranking')}</p>
             <table className="juno-guide-xp"><thead><tr><th scope="col">{t('juno.rank')}</th><th scope="col">{t('juno.guide.score.award')}</th></tr></thead>
               <tbody>{Object.values(JUNO_BASE_XP).map((xp, index) => <tr key={xp}><th scope="row">{formatNumber(index + 1)}</th><td>{t('juno.xpEarned', { xp: formatNumber(xp) })}</td></tr>)}</tbody>
-            </table><p>{t('juno.guide.score.ties')}</p><p>{t('juno.guide.score.dynamic')}</p><p>{t('juno.guide.score.practice')}</p><p>{t('juno.guide.score.pending')}</p>
+            </table><p>{t('juno.guide.score.ties')}</p><p>{t('juno.guide.score.dynamic')}</p>
+            {stacking && <p className="juno-guide-note">{t('juno.guide.score.stackingWin')}</p>}<p>{t('juno.guide.score.practice')}</p><p>{t('juno.guide.score.pending')}</p>
           </section>
           <section aria-labelledby={`${id}-table`}>{heading('table')}
             <p>{t('juno.guide.table.seats')}</p><p>{t('juno.guide.table.leave')}</p><p>{t('juno.guide.table.deck')}</p><p>{t('juno.guide.table.connection')}</p><p>{t('juno.guide.table.expiry')}</p>

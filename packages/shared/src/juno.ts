@@ -111,7 +111,7 @@ export interface JunoView {
   /** A cursed viewer receives opaque owned slots, never the concealed faces. */
   maskedHand?: { id: string }[];
 }
-export interface JunoSnapshot { revision: number; game: JunoView | null; supportsMemory?: boolean; supportsIntoxicated?: boolean; supportsPizza?: boolean; supportsSix?: boolean; supportsOptions?: boolean }
+export interface JunoSnapshot { revision: number; game: JunoView | null; supportsMemory?: boolean; supportsIntoxicated?: boolean; supportsPizza?: boolean; supportsSix?: boolean; supportsOptions?: boolean; supportsStacking?: boolean }
 export const JUNO_TURN_MS = 45_000;
 export const JUNO_REPORT_MS = 10_000;
 export interface JunoReportOpportunity { id: string; targetUserId: string; remainingMs: number }

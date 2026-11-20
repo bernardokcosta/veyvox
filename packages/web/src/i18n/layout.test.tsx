@@ -220,6 +220,18 @@ describe('bidi isolation for user content', () => {
     }
   });
 
+  it('keeps stacking digits left-to-right in any game language', () => {
+    const style = document.createElement('style');
+    style.textContent = junoStyles;
+    document.head.append(style);
+    try {
+      const { container } = render(<div className="juno-stack-overlay" dir="rtl" />);
+      expect(getComputedStyle(container.querySelector('.juno-stack-overlay')!)).toHaveProperty('direction', 'ltr');
+    } finally {
+      style.remove();
+    }
+  });
+
   it('marks the composer textarea and its mirror with automatic direction', () => {
     const textareaRef = createRef<HTMLTextAreaElement>();
     const mentionAnchorRef = createRef<HTMLSpanElement>();

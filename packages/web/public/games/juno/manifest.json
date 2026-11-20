@@ -878,7 +878,7 @@
         362,
         362
       ],
-      "fit": "exact 362x362 tile, opaque supplier background blended out at render with mix-blend-mode: screen",
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
       "bytes": 43148,
       "sha256": "87e0803917e6fa8fbda9b6de2cb3cf35abfbae2345896dd8d8df29e93c550c80"
     },
@@ -896,7 +896,7 @@
         362,
         362
       ],
-      "fit": "exact 362x362 tile, opaque supplier background blended out at render with mix-blend-mode: screen",
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
       "bytes": 51254,
       "sha256": "412ade64b75e2b022b2888ad203bee6ad8da4530c2503742eae2fdae97ed2b57"
     },
@@ -914,7 +914,7 @@
         362,
         362
       ],
-      "fit": "exact 362x362 tile, opaque supplier background blended out at render with mix-blend-mode: screen",
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
       "bytes": 50798,
       "sha256": "577f88f71ebab10a28a8e38980b27798ac3efa12c3c8416ab977c8af27e3321d"
     },
@@ -932,7 +932,7 @@
         362,
         362
       ],
-      "fit": "exact 362x362 tile, opaque supplier background blended out at render with mix-blend-mode: screen",
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
       "bytes": 47628,
       "sha256": "d364459ddc0bbc71666118bea026452f997466b196473218be5359e7b2585741"
     },
@@ -950,7 +950,7 @@
         362,
         362
       ],
-      "fit": "exact 362x362 tile, opaque supplier background blended out at render with mix-blend-mode: screen",
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
       "bytes": 45510,
       "sha256": "095e83724d561360d41092e4b54ad24215a93a0a95e9708eee4135e59f76a5e3"
     },
@@ -968,7 +968,7 @@
         362,
         362
       ],
-      "fit": "exact 362x362 tile, opaque supplier background blended out at render with mix-blend-mode: screen",
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
       "bytes": 51184,
       "sha256": "da088be51fa965d228df465fc6381894e39239710ba503f8e7f1038c40b38656"
     },
@@ -986,7 +986,7 @@
         362,
         362
       ],
-      "fit": "exact 362x362 tile, opaque supplier background blended out at render with mix-blend-mode: screen",
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
       "bytes": 50498,
       "sha256": "c5bbde10804399b4d076fd16f108177f51352ba9500b3d5970f7870a343eb13b"
     },
@@ -1004,7 +1004,7 @@
         362,
         362
       ],
-      "fit": "exact 362x362 tile, opaque supplier background blended out at render with mix-blend-mode: screen",
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
       "bytes": 47992,
       "sha256": "4383dc1c360010e659628458eac2834f828ad6f12f818ee48df71c0ead23612a"
     },
@@ -1022,7 +1022,7 @@
         362,
         362
       ],
-      "fit": "exact 362x362 tile, opaque supplier background blended out at render with mix-blend-mode: screen",
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
       "bytes": 46284,
       "sha256": "dd1b308dbe7fe4119d367a4aece28d5c35ea0c99b9cc1f89d4cc2e256bfdb22a"
     },
@@ -1040,7 +1040,7 @@
         362,
         362
       ],
-      "fit": "exact 362x362 tile, opaque supplier background blended out at render with mix-blend-mode: screen",
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
       "bytes": 51466,
       "sha256": "ea5d9390e36b69980561d0ee3d665e05d46e4939b2fe1a6444ca12724a641978"
     },
@@ -1058,7 +1058,7 @@
         362,
         362
       ],
-      "fit": "exact 362x362 tile, opaque supplier background blended out at render with mix-blend-mode: screen",
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
       "bytes": 47932,
       "sha256": "5424a4adb20a328feef37ef5e3b7d44b600d5b88e41b9b2c2347b690b261a959"
     }

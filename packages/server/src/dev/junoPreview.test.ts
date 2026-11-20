@@ -38,6 +38,9 @@ describe('isolated playable pizza preview', () => {
       const game = stacked.json<JunoSnapshot>().game!;
       expect(game.players).toHaveLength(3);
       expect(game.options).toMatchObject({ specials: true, stacking: true });
+      const opener = game.hand.find(c => c.face === 'draw2' && c.color === game.color);
+      expect(opener).toBeDefined();
+      expect((await app.inject('/snapshot?viewer=spectator')).json<JunoSnapshot>().game!.players.every(p => p.cardCount === 7)).toBe(true);
       expect((await app.inject({ method: 'POST', url: '/reset', headers: origin, payload: { players: 8 } })).statusCode).toBe(400);
       expect((await app.inject({ method: 'POST', url: '/reset', headers: origin, payload: { players: 2, stacking: 'yes' } })).statusCode).toBe(400);
     } finally { await app.close(); }

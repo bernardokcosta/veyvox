@@ -10,6 +10,8 @@
 
 **Spec:** User decisions 2026-11-20 (chat): specials = rare trio (memory/intoxicated/pizza), default ON, off = classic 108; stacking default OFF, +2/+4 freely interchangeable while a stack is pending, victim without one draws the total, empty-hand mid-stack wins immediately; neon digit art supplied (`Imagem do ChatGPT 20 de nov. de 2026, 19_45_58-1.png`, 1448×1086, 362px tiles) with pulsing overlay; demo in the preview workbench.
 
+**Status (2026-11-21):** implementado e verificado — build 0, typecheck 0 erros, lint OK, i18n sem findings, server completo 211 arquivos/2407 testes verdes, web completa 437 arquivos/4336 verdes (inclui e2e Juno). Pronto para revisão final.
+
 ## Global Constraints
 
 - TypeScript strict, no `any`; complete implementations only, no TODO/stubs.

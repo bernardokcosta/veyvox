@@ -20,12 +20,16 @@ voice or permission gates. Full rules, payloads and lifetime limits: [juno.md](j
 
 Optional `?memory=1` declares memory support; `intoxicated=1` additionally declares
 Entorpecido support and requires `memory=1`; `pizza=1` requires both preceding
-flags. Root `supportsMemory`, `supportsIntoxicated` and `supportsPizza` advertise
-host support. Only exact `1` is valid;
+flags. Independent `?six=1` declares six-seat layout support and `?stacking=1`
+stacking UI support. Root `supportsMemory`, `supportsIntoxicated`, `supportsPizza`,
+`supportsSix`, `supportsOptions` and `supportsStacking` advertise host support. Only exact `1` is valid;
 unknown/duplicate query keys are refused and GET variants share one read budget.
 The lobby freezes 108 classic cards, 109 with memory, 110 with Entorpecido, or
 111 with Pizza Maluca, according to all seated humans' declarations
-(`memoryEnabled`/`intoxicatedEnabled`/`pizzaEnabled`).
+(`memoryEnabled`/`intoxicatedEnabled`/`pizzaEnabled`); a stacking round freezes
+`stacking` the same way, and mixed cohorts play classic. Lobby `options`
+choose specials (default on) and stacking (default off); `supportsOptions`
+advertises the command on new hosts.
 Unsupported enhanced-round reads/commands return 409
 `juno_update_required` without a snapshot (existing `leave` is still allowed).
 During `memoryCurse: {id,targetUserId}`, only the victim receives `hand: []`,

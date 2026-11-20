@@ -32,11 +32,14 @@ describe('Juno stacking engine', () => {
   it('stacks an off-color +2 onto a pending +2 instead of drawing', () => {
     const state = stackingRound();
     actInRound(state, 'a', { type: 'play', cardId: 'a-draw2' }, 0);
-    expect(state.stackDraw).toBe(2); expect(state.turn).toBe(1);
+    expect(state.stackDraw).toBe(2); expect(state.turn).toBe(1); expect(state.color).toBe('coral');
     // b's +2 is sky on a coral top: illegal without the stack, legal as a continuation.
     expect(canPlayJuno(card('b-draw2', 'draw2', 'sky'), [{ id: 'x', face: '3', color: 'coral' }], card('top', '4', 'coral'), 'coral')).toBe(false);
     actInRound(state, 'b', { type: 'play', cardId: 'b-draw2' }, 1);
     expect(state.stackDraw).toBe(4); expect(state.turn).toBe(2);
+    // The stacked card sets the active color for the next play.
+    expect(state.color).toBe('sky');
+    expect(canPlayJuno(card('next', '5', 'sky'), state.players[2]!.hand, card('top', 'draw2', 'sky'), state.color)).toBe(true);
   });
   it('lets a +4 join any pending stack and makes the victim take the exact total', () => {
     const state = stackingRound();
@@ -63,56 +66,61 @@ describe('Juno stacking engine', () => {
     state.players[0]!.hand = [card('a-draw2', 'draw2', 'coral')];
     actInRound(state, 'a', { type: 'play', cardId: 'a-draw2' }, 0);
     expect(state.winnerId).toBe('a'); expect(state.result).toBe('emptyHand');
+    expect(state.stackDraw).toBe(0);
     expect(state.players[1]!.hand).toHaveLength(2);
   });
   it('freezes lobby options at start and refuses mid-round changes', async () => {
     const { JunoRooms } = await import('./juno.js');
     const now = 0;
     const rooms = new JunoRooms({ present: () => true, changed: () => {}, now: () => now });
-    rooms.command('voice', { userId: 'a', name: 'a' }, { type: 'create' }, true, true, true);
-    const lobby = rooms.read('voice', 'a', true, true, true);
+    rooms.command('voice', { userId: 'a', name: 'a' }, { type: 'create' }, true, true, true, true, true);
+    const lobby = rooms.read('voice', 'a', true, true, true, true, true);
     expect(lobby.game!.options).toMatchObject({ specials: true, stacking: false });
     rooms.command('voice', { userId: 'a', name: 'a' },
-      { type: 'options', gameId: lobby.game!.id, revision: lobby.revision, stacking: true }, true, true, true);
+      { type: 'options', gameId: lobby.game!.id, revision: lobby.revision, stacking: true }, true, true, true, true, true);
     const send = (id: string, action: { type: 'join' } | { type: 'start' }) => {
-      const view = rooms.read('voice', id, true, true, true);
-      return rooms.command('voice', { userId: id, name: id }, { ...action, gameId: view.game!.id, revision: view.revision }, true, true, true);
+      const view = rooms.read('voice', id, true, true, true, true, true);
+      return rooms.command('voice', { userId: id, name: id }, { ...action, gameId: view.game!.id, revision: view.revision }, true, true, true, true, true);
     };
     send('b', { type: 'join' });
     send('a', { type: 'start' });
-    const started = rooms.read('voice', 'a', true, true, true).game!;
+    const started = rooms.read('voice', 'a', true, true, true, true, true).game!;
     expect(started.options).toMatchObject({ specials: true, stacking: true });
-    const mid = rooms.read('voice', 'a', true, true, true);
+    const mid = rooms.read('voice', 'a', true, true, true, true, true);
     expect(() => rooms.command('voice', { userId: 'a', name: 'a' },
-      { type: 'options', gameId: mid.game!.id, revision: mid.revision, stacking: false }, true, true, true))
+      { type: 'options', gameId: mid.game!.id, revision: mid.revision, stacking: false }, true, true, true, true, true))
       .toThrow('juno_in_progress');
     expect(() => rooms.command('voice', { userId: 'b', name: 'b' },
-      { type: 'options', gameId: started.id, revision: rooms.read('voice', 'b', true, true, true).revision, stacking: false }, true, true, true))
+      { type: 'options', gameId: started.id, revision: rooms.read('voice', 'b', true, true, true, true, true).revision, stacking: false }, true, true, true, true, true))
       .toThrow('juno_host_required');
   });
   it('plays a complete scripted stacking round: +2, +2, take four, then a winner', async () => {
     const { JunoRooms } = await import('./juno.js');
     let now = 0;
     const rooms = new JunoRooms({ present: () => true, changed: () => {}, now: () => now });
-    rooms.command('voice', { userId: 'a', name: 'a' }, { type: 'create' }, true, true, true, true);
+    rooms.command('voice', { userId: 'a', name: 'a' }, { type: 'create' }, true, true, true, true, true);
     const tables = rooms as unknown as { tables: Map<string, { round: JunoRound | null }> };
     const play = (id: string, action: { type: 'join' } | { type: 'start' } | { type: 'options'; stacking?: boolean }) => {
-      const view = rooms.read('voice', id, true, true, true, true);
-      return rooms.command('voice', { userId: id, name: id }, { ...action, gameId: view.game!.id, revision: view.revision }, true, true, true, true);
+      const view = rooms.read('voice', id, true, true, true, true, true);
+      return rooms.command('voice', { userId: id, name: id }, { ...action, gameId: view.game!.id, revision: view.revision }, true, true, true, true, true);
     };
     play('a', { type: 'options', stacking: true });
     play('b', { type: 'join' });
     play('c', { type: 'join' });
     play('a', { type: 'start' });
     const round = tables.tables.get('voice')!.round!;
+    // Fully rigged deck: no rare faces, so no curse, intoxication or pizza pause can hijack the script.
+    const safe = (id: string, face: JunoCard['face'], color: JunoCard['color']): JunoCard => ({ id, face, color });
+    const colors = ['coral', 'amber', 'sky', 'mint'] as const;
+    round.drawPile = Array.from({ length: 60 }, (_, i) => safe(`deck${i}`, String(i % 10) as JunoCard['face'], colors[i % 4]!));
     round.players[0]!.hand = [card('a-draw2', 'draw2', 'coral'), card('a-filler', '5', 'mint')];
     round.players[1]!.hand = [card('b-draw2', 'draw2', 'sky'), card('b-filler', '6', 'amber')];
     round.players[2]!.hand = [card('c1', '1', 'coral'), card('c2', '2', 'sky')];
     round.discard = [card('top', '4', 'coral')]; round.color = 'coral';
     const log: string[] = [];
     const act = (id: string, action: { type: 'play'; cardId: string } | { type: 'draw' }) => {
-      const view = rooms.read('voice', id, true, true, true, true);
-      rooms.command('voice', { userId: id, name: id }, { ...action, gameId: view.game!.id, revision: view.revision }, true, true, true, true);
+      const view = rooms.read('voice', id, true, true, true, true, true);
+      rooms.command('voice', { userId: id, name: id }, { ...action, gameId: view.game!.id, revision: view.revision }, true, true, true, true, true);
       log.push(`${id} ${action.type} ${action.type === 'play' ? action.cardId : ''}→ stack ${tables.tables.get('voice')!.round?.stackDraw ?? 'done'}`);
     };
     act('a', { type: 'play', cardId: 'a-draw2' });
@@ -123,29 +131,71 @@ describe('Juno stacking engine', () => {
     for (let i = 0; i < 5_000 && !tables.tables.get('voice')!.round!.result; i++) {
       const state = tables.tables.get('voice')!.round!;
       const player = state.players[state.turn]!;
-      const view = rooms.read('voice', player.userId, true, true, true, true).game!;
+      const view = rooms.read('voice', player.userId, true, true, true, true, true).game!;
       const playable = view.hand.find(c => (!view.drawnCardId || c.id === view.drawnCardId)
         && canPlayJuno(c, view.hand, view.topCard!, view.color!, view.stackDraw ?? 0));
-      const current = rooms.read('voice', player.userId, true, true, true, true);
+      const current = rooms.read('voice', player.userId, true, true, true, true, true);
       const action = playable
         ? { type: 'play' as const, cardId: playable.id, color: 'mint' as const, announce: true, gameId: current.game!.id, revision: current.revision }
         : view.drawnCardId
           ? { type: 'pass' as const, gameId: current.game!.id, revision: current.revision }
           : { type: 'draw' as const, gameId: current.game!.id, revision: current.revision };
-      rooms.command('voice', { userId: player.userId, name: player.userId }, action, true, true, true, true);
+      rooms.command('voice', { userId: player.userId, name: player.userId }, action, true, true, true, true, true);
       now += 1_000; rooms.tick();
     }
     expect(tables.tables.get('voice')!.round!.result).toBeTruthy();
+    const final = rooms.read('voice', 'a', true, true, true, true, true).game!;
+    expect(final.result).toBeTruthy(); expect(final.stackDraw).toBe(0);
+  });
+  it('downgrades to classic when a seated human predates stacking support, and refuses stacking views to them', async () => {
+    const { JunoRooms } = await import('./juno.js');
+    let now = 0;
+    const rooms = new JunoRooms({ present: () => true, changed: () => {}, now: () => now });
+    const full = [true, true, true, true, true] as const;
+    const old = [true, true, true, true, false] as const;
+    rooms.command('voice', { userId: 'a', name: 'a' }, { type: 'create' }, ...full);
+    const lobby = rooms.read('voice', 'a', ...full);
+    rooms.command('voice', { userId: 'a', name: 'a' },
+      { type: 'options', stacking: true, gameId: lobby.game!.id, revision: lobby.revision }, ...full);
+    const seen = rooms.read('voice', 'b', ...old);
+    rooms.command('voice', { userId: 'b', name: 'b' },
+      { type: 'join', gameId: seen.game!.id, revision: seen.revision }, ...old);
+    const started = rooms.read('voice', 'a', ...full);
+    rooms.command('voice', { userId: 'a', name: 'a' },
+      { type: 'start', gameId: started.game!.id, revision: started.revision }, ...full);
+    const classic = rooms.read('voice', 'a', ...full).game!;
+    expect(classic.options).toMatchObject({ specials: true, stacking: false });
+    expect(classic.stackDraw).toBe(0);
+    expect(() => rooms.read('voice', 'b', ...old)).not.toThrow();
+  });
+  it('keeps stacking rounds and their takes out of reach for spectators without stacking support', async () => {
+    const { JunoRooms } = await import('./juno.js');
+    const now = 0;
+    const rooms = new JunoRooms({ present: () => true, changed: () => {}, now: () => now });
+    const full = [true, true, true, true, true] as const;
+    rooms.command('voice', { userId: 'a', name: 'a' }, { type: 'create' }, ...full);
+    const lobby = rooms.read('voice', 'a', ...full);
+    rooms.command('voice', { userId: 'a', name: 'a' },
+      { type: 'options', stacking: true, gameId: lobby.game!.id, revision: lobby.revision }, ...full);
+    const seen = rooms.read('voice', 'b', ...full);
+    rooms.command('voice', { userId: 'b', name: 'b' },
+      { type: 'join', gameId: seen.game!.id, revision: seen.revision }, ...full);
+    const started = rooms.read('voice', 'a', ...full);
+    rooms.command('voice', { userId: 'a', name: 'a' },
+      { type: 'start', gameId: started.game!.id, revision: started.revision }, ...full);
+    expect(rooms.read('voice', 'a', ...full).game!.options).toMatchObject({ stacking: true });
+    expect(() => rooms.read('voice', 'watcher')).toThrow('juno_update_required');
+    expect(rooms.read('voice', 'watcher', ...full).game!.hand).toEqual([]);
   });
   it('draws the pending total on timeout instead of a single card', async () => {
     const { JunoRooms } = await import('./juno.js');
     let now = 0;
     const rooms = new JunoRooms({ present: () => true, changed: () => {}, now: () => now });
-    rooms.command('voice', { userId: 'a', name: 'a' }, { type: 'create' }, true, true, true);
+    rooms.command('voice', { userId: 'a', name: 'a' }, { type: 'create' }, true, true, true, true, true);
     const tables = rooms as unknown as { tables: Map<string, { round: JunoRound | null }> };
     const play = (id: string, action: { type: 'join' } | { type: 'start' } | { type: 'options'; stacking: boolean }) => {
-      const view = rooms.read('voice', id, true, true, true);
-      return rooms.command('voice', { userId: id, name: id }, { ...action, gameId: view.game!.id, revision: view.revision }, true, true, true);
+      const view = rooms.read('voice', id, true, true, true, true, true);
+      return rooms.command('voice', { userId: id, name: id }, { ...action, gameId: view.game!.id, revision: view.revision }, true, true, true, true, true);
     };
     play('a', { type: 'options', stacking: true });
     play('b', { type: 'join' });
@@ -154,9 +204,9 @@ describe('Juno stacking engine', () => {
     round.players[0]!.hand = [card('a-draw2', 'draw2', 'coral'), card('a-filler', '5', 'mint')];
     round.players[1]!.hand = [card('b1', '1', 'sky'), card('b2', '2', 'amber')];
     round.discard = [card('top', '4', 'coral')]; round.color = 'coral';
-    const dealt = rooms.read('voice', 'a', true, true, true);
+    const dealt = rooms.read('voice', 'a', true, true, true, true, true);
     rooms.command('voice', { userId: 'a', name: 'a' },
-      { type: 'play', cardId: 'a-draw2', gameId: dealt.game!.id, revision: dealt.revision }, true, true, true);
+      { type: 'play', cardId: 'a-draw2', gameId: dealt.game!.id, revision: dealt.revision }, true, true, true, true, true);
     expect(tables.tables.get('voice')!.round!.stackDraw).toBe(2);
     now += 45_001; rooms.tick();
     const done = tables.tables.get('voice')!.round!;

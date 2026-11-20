@@ -464,8 +464,8 @@ export class VeyvoxApiClient {
   };
 
   juno: {
-    get: (channelId: string, supportsIntoxicated?: boolean, supportsPizza?: boolean, supportsSix?: boolean) => Promise<JunoSnapshot>;
-    command: (channelId: string, command: JunoCommand, supportsIntoxicated?: boolean, supportsPizza?: boolean, supportsSix?: boolean) => Promise<JunoSnapshot>;
+    get: (channelId: string, supportsIntoxicated?: boolean, supportsPizza?: boolean, supportsSix?: boolean, supportsStacking?: boolean) => Promise<JunoSnapshot>;
+    command: (channelId: string, command: JunoCommand, supportsIntoxicated?: boolean, supportsPizza?: boolean, supportsSix?: boolean, supportsStacking?: boolean) => Promise<JunoSnapshot>;
     ranking: (spaceId: string, query?: { limit?: number; offset?: number }) => Promise<JunoRankingPage>;
   };
   soundboard: {
@@ -619,24 +619,25 @@ export class VeyvoxApiClient {
       }), signal));
     }
     this.juno = {
-      get: async (channelId, supportsIntoxicated = true, supportsPizza = supportsIntoxicated, supportsSix = true) => {
+      get: async (channelId, supportsIntoxicated = true, supportsPizza = supportsIntoxicated, supportsSix = true, supportsStacking = true) => {
         const route = `/channels/${encodeURIComponent(channelId)}/juno?memory=1`;
         const generation = sessionGeneration, token = getToken();
-        let intoxicated = supportsIntoxicated, pizza = supportsPizza && intoxicated, six = supportsSix;
+        let intoxicated = supportsIntoxicated, pizza = supportsPizza && intoxicated, six = supportsSix, stacking = supportsStacking;
         for (;;) {
-          try { return await request<JunoSnapshot>('GET', route + (intoxicated ? '&intoxicated=1' : '') + (pizza ? '&pizza=1' : '') + (six ? '&six=1' : '')); }
+          try { return await request<JunoSnapshot>('GET', route + (intoxicated ? '&intoxicated=1' : '') + (pizza ? '&pizza=1' : '') + (six ? '&six=1' : '') + (stacking ? '&stacking=1' : '')); }
           catch (error) {
-            // Only read-only probes downgrade, at most three times in this session.
-            if ((!pizza && !intoxicated && !six) || !(error instanceof HttpError) || error.status !== 400 || error.code !== 'invalid_body'
+            // Only read-only probes downgrade, at most four times in this session.
+            if ((!pizza && !intoxicated && !six && !stacking) || !(error instanceof HttpError) || error.status !== 400 || error.code !== 'invalid_body'
               || generation !== sessionGeneration || getToken() !== token) throw error;
-            if (six) six = false;
+            if (stacking) stacking = false;
+            else if (six) six = false;
             else if (pizza) pizza = false;
             else intoxicated = false;
           }
         }
       },
-      command: (channelId, command, supportsIntoxicated = false, supportsPizza = false, supportsSix = false) => request<JunoSnapshot>('POST',
-        `/channels/${encodeURIComponent(channelId)}/juno?memory=1${supportsIntoxicated ? '&intoxicated=1' : ''}${supportsIntoxicated && supportsPizza ? '&pizza=1' : ''}${supportsSix ? '&six=1' : ''}`, command),
+      command: (channelId, command, supportsIntoxicated = false, supportsPizza = false, supportsSix = false, supportsStacking = false) => request<JunoSnapshot>('POST',
+        `/channels/${encodeURIComponent(channelId)}/juno?memory=1${supportsIntoxicated ? '&intoxicated=1' : ''}${supportsIntoxicated && supportsPizza ? '&pizza=1' : ''}${supportsSix ? '&six=1' : ''}${supportsStacking ? '&stacking=1' : ''}`, command),
       ranking: (spaceId, query = {}) => {
         const params = new URLSearchParams();
         if (query.limit !== undefined) params.set('limit', String(query.limit));

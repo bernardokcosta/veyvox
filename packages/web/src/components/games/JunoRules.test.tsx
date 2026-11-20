@@ -29,9 +29,18 @@ describe('illustrated Juno rules', () => {
     const first = await open({ game: stacked, supportsMemory: true });
     expect(within(first.guide).getByRole('heading', { name: 'Stacking', level: 3 })).toBeInTheDocument();
     expect(first.guide).toHaveTextContent(/pile/i);
+    expect(first.guide).toHaveTextContent(/no color match/i);
+    expect(first.guide).toHaveTextContent(/wins at once/i);
     first.unmount(); cleanup();
     const { guide: plain } = await open({ game, supportsMemory: true });
     expect(within(plain).queryByRole('heading', { name: 'Stacking', level: 3 })).toBeNull();
+    expect(plain).toHaveTextContent(/no stacking/i);
+  });
+  it('explains disabled specials instead of the support requirement', async () => {
+    const classic = { ...game, phase: 'lobby' as const, options: { specials: false, stacking: false } };
+    const { guide } = await open({ game: classic, supportsMemory: true });
+    expect(guide).toHaveTextContent(/classic 108/i);
+    expect(guide).not.toHaveTextContent(/only when all human players/i);
   });
   it('teaches pizza and its persistent flour only in supported lobbies or enabled frozen rounds', async () => {
     const { guide, rerender } = await open({ game: { ...game, pizzaEnabled: true }, supportsPizza: true });

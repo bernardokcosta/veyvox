@@ -61,7 +61,8 @@
         "draw2": "The next player draws two cards and loses their turn. They cannot answer with another draw card.",
         "wild": "Play over any color or symbol and choose the next active color.",
         "draw4": "Choose a color; the next player draws four and loses their turn. You may play this only if you have no card of the active color, even if a different-colored number or symbol would fit.",
-        "limits": "No stacking and no +4 challenges. If your final card is +2 or +4, the draw penalty still applies before the final standings are calculated."
+        "limits": "No stacking and no +4 challenges. If your final card is +2 or +4, the draw penalty still applies before the final standings are calculated.",
+        "stackingNote": "With stacking on, +2 and +4 chain onto each other with no color match and no +4 restriction. A +4 answer may name the next color."
       },
       "announce": "With two cards, press the JUNO logo before playing down to one. This is a button, not voice recognition. A late call does not fix a missed announcement, and gaining cards clears your previous call.",
       "reporting": {
@@ -74,7 +75,8 @@
         "miss": "A wrong choice keeps the attempted card hidden in your hand, draws two, clears the curse and passes once. Running out of time also draws two, clears the curse and passes.",
         "limits": "You cannot draw or pass to avoid the blind attempt. Reports do not cure the curse. If the memory card is your last card, you win without leaving another player cursed.",
         "inactive": "Not active in this round: its classic deck does not contain the rare memory card.",
-        "lobby": "The rare card is enabled only when all human players' clients support it. A mixed-version table may use the classic deck; its deck stays fixed for that round."
+        "lobby": "The rare card is enabled only when all human players' clients support it. A mixed-version table may use the classic deck; its deck stays fixed for that round.",
+        "disabled": "Special cards are off at this table: the deck is the classic 108."
       },
       "score": {
         "ranking": "The first empty hand wins. Other finishers are ranked by their remaining card counts, including any final-card draw penalty.",
@@ -82,7 +84,8 @@
         "ties": "Ties share the same place and base award: two players tied for second both start from 80 XP, and the next place is fourth. Only completed human-only rounds with a winner count; only the winner gains a win. Leaving early earns no place or XP.",
         "dynamic": "Final XP adds small deterministic bonuses to the base award: average opposing hand size (capped), a larger table (four or more finishers) and a round where nobody abandoned. Tied players always keep identical XP, and every finisher earns at least the base award.",
         "practice": "A round started with a bot remains practice, even if the bot later leaves: no XP, wins or ranked rounds are credited. XP belongs to this space and combines its voice channels, not other spaces.",
-        "pending": "While results are being saved, XP is still pending, not already earned. A new table becomes available once that result has been resolved."
+        "pending": "While results are being saved, XP is still pending, not already earned. A new table becomes available once that result has been resolved.",
+        "stackingWin": "With stacking on, a final +2/+4 wins at once: the pile dies with the round and nobody draws it."
       },
       "table": {
         "seats": "A running round can be watched, but new players cannot take a seat midway. After the result, the host opens a fresh lobby; everyone else joins that new table explicitly.",
@@ -92,9 +95,10 @@
         "expiry": "A round also expires after two hours, without a winner or XP. Rounds ending because players left or no moves remain do not award XP either."
       },
       "stacking": {
-        "rules": "With stacking on, a +2 or +4 answers any pending pile, no matter the color. Each answer adds its cards to the pile and passes it on; stacking +2 onto +4 (and back) is allowed. The last card still wins at once.",
+        "rules": "With stacking on, a +2 or +4 answers any pending pile, no matter the color. Each answer adds its cards to the pile and passes it on; stacking +2 onto +4 (and back) is allowed. A stacking +2 sets the active color to its own; a stacking +4 keeps the current color unless a new one is named. The last card still wins at once.",
         "limits": "No matching draw card in hand? Draw the entire pile and lose the turn. Passing, playing other cards and color changes wait until the pile is taken. Timeouts draw the pile too.",
-        "plus": "+{{amount}}"
+        "plus": "+{{amount}}",
+        "take": "With a pending pile, drawing means taking the whole pile and losing the turn; running out of time does the same."
       }
     },
     "settings": {
