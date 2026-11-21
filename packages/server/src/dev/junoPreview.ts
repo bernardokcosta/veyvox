@@ -6,6 +6,38 @@ import { JunoError, JunoRooms, type JunoRound } from '../games/juno.js';
 const player = { userId: 'preview-player', name: 'Você' };
 const origins = ['http://127.0.0.1:5173', 'http://localhost:5173'];
 
+/**
+ * Reproducible stacking opening for the workbench demo: the player holds a
+ * legal +2 of the active color and the next bot holds an answering +2.
+ * Swaps preserve every hand size and never overwrite a pizza seat. The bot
+ * draws from the pile and other bots first, so it cannot steal the player's
+ * only staged card; the player swaps last and may reuse its own hand.
+ * Throws JunoError when the table cannot stage the opening.
+ */
+export function ensureStackingOpening(round: JunoRound): void {
+  const player = round.players[0], next = round.players[1];
+  if (!player || !next || round.players.length < 2) throw new JunoError('preview_invalid_request');
+  const pizzaSafeSlot = (hand: JunoCard[]): number => hand.findIndex(c => c.face !== 'pizza');
+  const findSwap = (skipHands: JunoCard[][], color?: JunoCard['color']) => {
+    const preferred = [round.drawPile, ...round.players.flatMap(p => skipHands.includes(p.hand) ? [] : [p.hand])];
+    const fallback = [round.drawPile, ...round.players.map(p => p.hand)].filter(h => !preferred.includes(h));
+    for (const source of [...preferred, ...fallback]) {
+      const index = source.findIndex(c => c.face === 'draw2' && (!color || c.color === color));
+      if (index >= 0) return { source, index };
+    }
+    return undefined;
+  };
+  const doSwap = (hand: JunoCard[], color: JunoCard['color'] | undefined, skipPlayer: boolean) => {
+    const slot = pizzaSafeSlot(hand);
+    if (slot < 0) throw new JunoError('preview_invalid_request');
+    const found = findSwap(skipPlayer ? [player.hand] : [], color);
+    if (!found) throw new JunoError('preview_invalid_request');
+    [hand[slot], found.source[found.index]] = [found.source[found.index]!, hand[slot]!];
+  };
+  doSwap(next.hand, undefined, true);
+  doSwap(player.hand, round.color, false);
+}
+
 /** Separate in-memory workbench. Never registered on the production API. */
 export function createJunoPreview() {
   const app = Fastify({ bodyLimit: 4096 });
@@ -30,17 +62,7 @@ export function createJunoPreview() {
       const index = source.findIndex(c => c.face === 'pizza');
       [hand[0], source[index]] = [source[index]!, hand[0]!];
     }
-    if (stacking && count > 1) {
-      // Reproducible opening: the player owns a legal +2 and the next bot answers with one.
-      const pools = [round.drawPile, ...round.players.slice(1).map(p => p.hand)];
-      const swapInto = (hand: JunoCard[], slot: number, color?: JunoCard['color']) => {
-        const source = pools.find(cards => cards.some(c => c.face === 'draw2' && (!color || c.color === color)))!;
-        const index = source.findIndex(c => c.face === 'draw2' && (!color || c.color === color));
-        [hand[slot], source[index]] = [source[index]!, hand[slot]!];
-      };
-      swapInto(hand, 1, round.color);
-      swapInto(round.players[1]!.hand, 0);
-    }
+    if (stacking && count > 1) ensureStackingOpening(round);
     return rooms.read('preview', player.userId, true, true, true, true, true);
   }
   reset(4);

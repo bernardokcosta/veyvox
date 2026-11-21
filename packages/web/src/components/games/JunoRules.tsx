@@ -15,9 +15,9 @@ const SECTION_ORDER = Object.keys(SECTIONS) as Section[];
 const SPECIALS = [
   { face: 'skip', color: 'sky', name: 'juno.faces.skip', effect: 'juno.guide.effects.skip' },
   { face: 'reverse', color: 'mint', name: 'juno.faces.reverse', effect: 'juno.guide.effects.reverse' },
-  { face: 'draw2', color: 'amber', name: 'juno.faces.draw2', effect: 'juno.guide.effects.draw2' },
+  { face: 'draw2', color: 'amber', name: 'juno.faces.draw2', effect: 'juno.guide.effects.draw2', stackingEffect: 'juno.guide.effects.draw2Stacking' },
   { face: 'wild', color: null, name: 'juno.faces.wild', effect: 'juno.guide.effects.wild' },
-  { face: 'draw4', color: null, name: 'juno.faces.draw4', effect: 'juno.guide.effects.draw4' },
+  { face: 'draw4', color: null, name: 'juno.faces.draw4', effect: 'juno.guide.effects.draw4', stackingEffect: 'juno.guide.effects.draw4Stacking' },
 ] as const;
 const DEALT = [['coral', '5'], ['amber', '3'], ['mint', '8'], ['sky', '9'], ['coral', '2'], ['mint', 'skip'], [null, 'wild']] as const;
 function RuleCard({ face, color = null }: { face: Card['face']; color?: Card['color'] }) {
@@ -110,12 +110,15 @@ export function JunoRules({ game, supportsMemory, supportsIntoxicated, supportsP
               <figure><RuleCard face="5" color="coral" /><figcaption>{t('juno.guide.examples.number')}</figcaption></figure>
               <figure><RuleCard face="wild" /><figcaption>{t('juno.guide.examples.wild')}</figcaption></figure>
             </div>
-            <p>{t('juno.guide.turn.draw')}</p><p>{t('juno.guide.turn.clock', { seconds: formatNumber(JUNO_TURN_MS / 1000) })}</p>
+            <p>{t('juno.guide.turn.draw')}</p>
+            {stacking
+              ? <p>{t('juno.guide.turn.clockStacking')}</p>
+              : <p>{t('juno.guide.turn.clock', { seconds: formatNumber(JUNO_TURN_MS / 1000) })}</p>}
             {stacking && <p className="juno-guide-note">{t('juno.guide.stacking.take')}</p>}
           </section>
           <section aria-labelledby={`${id}-special`}>{heading('special')}
             <div className="juno-guide-specials">{SPECIALS.map(card => <figure key={card.face}>
-              <RuleCard face={card.face} color={card.color} /><figcaption><h4>{t(card.name)}</h4><p>{t(card.effect)}</p></figcaption>
+              <RuleCard face={card.face} color={card.color} /><figcaption><h4>{t(card.name)}</h4><p>{t(stacking && 'stackingEffect' in card ? card.stackingEffect : card.effect)}</p></figcaption>
             </figure>)}</div>{stacking
               ? <p className="juno-guide-note">{t('juno.guide.effects.stackingNote')}</p>
               : <p className="juno-guide-note">{t('juno.guide.effects.limits')}</p>}
@@ -151,7 +154,7 @@ export function JunoRules({ game, supportsMemory, supportsIntoxicated, supportsP
               </figure>}
             </> : <p className="juno-guide-note">{t('juno.guide.memory.disabled')}</p>}
           </section>}
-          <section aria-labelledby={`${id}-score`}>{heading('score')}<p>{t('juno.guide.score.ranking')}</p>
+          <section aria-labelledby={`${id}-score`}>{heading('score')}<p>{t(stacking ? 'juno.guide.score.rankingStacking' : 'juno.guide.score.ranking')}</p>
             <table className="juno-guide-xp"><thead><tr><th scope="col">{t('juno.rank')}</th><th scope="col">{t('juno.guide.score.award')}</th></tr></thead>
               <tbody>{Object.values(JUNO_BASE_XP).map((xp, index) => <tr key={xp}><th scope="row">{formatNumber(index + 1)}</th><td>{t('juno.xpEarned', { xp: formatNumber(xp) })}</td></tr>)}</tbody>
             </table><p>{t('juno.guide.score.ties')}</p><p>{t('juno.guide.score.dynamic')}</p>

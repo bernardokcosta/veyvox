@@ -47,7 +47,8 @@
       "turn": {
         "match": "Match the active color or the last card's number or symbol. A permitted wild is another way to play. These examples all fit a blue 5:",
         "draw": "You may draw one card, not keep drawing until something fits. If the new card is playable, play that card or pass; you cannot play another card from your hand after drawing. If it does not fit, your turn ends automatically. You cannot simply pass before drawing a playable card.",
-        "clock": "You have {{seconds}} seconds for the whole turn, including the choice after a draw. When time runs out, draw one and pass; if you already drew, only pass. Calling JUNO does not restart the clock. The memory curse has a different timeout penalty."
+        "clock": "You have {{seconds}} seconds for the whole turn, including the choice after a draw. When time runs out, draw one and pass; if you already drew, only pass. Calling JUNO does not restart the clock. The memory curse has a different timeout penalty.",
+        "clockStacking": "With a pending pile the same seconds apply, but running out of time draws the entire pile and passes the turn."
       },
       "examples": {
         "top": "Blue 5 · last card",
@@ -62,7 +63,9 @@
         "wild": "Play over any color or symbol and choose the next active color.",
         "draw4": "Choose a color; the next player draws four and loses their turn. You may play this only if you have no card of the active color, even if a different-colored number or symbol would fit.",
         "limits": "No stacking and no +4 challenges. If your final card is +2 or +4, the draw penalty still applies before the final standings are calculated.",
-        "stackingNote": "With stacking on, +2 and +4 chain onto each other with no color match and no +4 restriction. A +4 answer may name the next color."
+        "stackingNote": "With stacking on, +2 and +4 chain onto each other with no color match and no +4 restriction. A +4 answer may name the next color.",
+        "draw2Stacking": "With stacking: adds 2 to the pile for the next player to answer or take. Without a pile: they draw two and lose the turn.",
+        "draw4Stacking": "With stacking: adds 4 to the pile for the next player to answer or take, and may name the next color. Without a pile: they draw four and lose the turn, only if you hold no card of the active color."
       },
       "announce": "With two cards, press the JUNO logo before playing down to one. This is a button, not voice recognition. A late call does not fix a missed announcement, and gaining cards clears your previous call.",
       "reporting": {
@@ -85,7 +88,8 @@
         "dynamic": "Final XP adds small deterministic bonuses to the base award: average opposing hand size (capped), a larger table (four or more finishers) and a round where nobody abandoned. Tied players always keep identical XP, and every finisher earns at least the base award.",
         "practice": "A round started with a bot remains practice, even if the bot later leaves: no XP, wins or ranked rounds are credited. XP belongs to this space and combines its voice channels, not other spaces.",
         "pending": "While results are being saved, XP is still pending, not already earned. A new table becomes available once that result has been resolved.",
-        "stackingWin": "With stacking on, a final +2/+4 wins at once: the pile dies with the round and nobody draws it."
+        "stackingWin": "With stacking on, a final +2/+4 wins at once: the pile dies with the round and nobody draws it.",
+        "rankingStacking": "The first empty hand wins at once — a final +2/+4 never draws for anyone. Other finishers are ranked by their remaining card counts."
       },
       "table": {
         "seats": "A running round can be watched, but new players cannot take a seat midway. After the result, the host opens a fresh lobby; everyone else joins that new table explicitly.",

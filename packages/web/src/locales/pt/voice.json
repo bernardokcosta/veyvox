@@ -47,7 +47,8 @@
       "turn": {
         "match": "Combine a cor ativa ou o número ou símbolo da última carta. Um coringa permitido também pode ser jogado. Todos estes exemplos combinam com um 5 azul:",
         "draw": "Você pode comprar uma carta, não continuar comprando até encontrar uma que sirva. Se a nova carta puder ser jogada, jogue essa carta ou passe; depois de comprar, não pode jogar outra carta da mão. Se ela não combinar, sua vez termina automaticamente. Não é possível simplesmente passar antes de comprar uma carta jogável.",
-        "clock": "São {{seconds}} segundos para o turno inteiro, incluindo a decisão depois de comprar. Se o tempo acabar, compre uma e passe; se já comprou, apenas passe. Dizer JUNO não reinicia o relógio. A maldição da memória tem outra penalidade por tempo esgotado."
+        "clock": "São {{seconds}} segundos para o turno inteiro, incluindo a decisão depois de comprar. Se o tempo acabar, compre uma e passe; se já comprou, apenas passe. Dizer JUNO não reinicia o relógio. A maldição da memória tem outra penalidade por tempo esgotado.",
+        "clockStacking": "Com pilha pendente valem os mesmos segundos, mas o tempo esgotado compra a pilha inteira e passa a vez."
       },
       "examples": {
         "top": "5 azul · última carta",
@@ -62,7 +63,9 @@
         "wild": "Pode ser jogado sobre qualquer cor ou símbolo e permite escolher a próxima cor ativa.",
         "draw4": "Escolha uma cor; o próximo jogador compra quatro e perde a vez. Só pode ser jogado se você não tiver nenhuma carta da cor ativa, mesmo que um número ou símbolo de outra cor combine.",
         "limits": "Não há acúmulo de compras nem desafio do +4. Se sua última carta for +2 ou +4, a compra ainda é aplicada antes de calcular as posições finais.",
-        "stackingNote": "Com empilhar ativado, +2 e +4 encadeiam sem combinar cor e sem restrição do +4. Um +4 de resposta pode nomear a próxima cor."
+        "stackingNote": "Com empilhar ativado, +2 e +4 encadeiam sem combinar cor e sem restrição do +4. Um +4 de resposta pode nomear a próxima cor.",
+        "draw2Stacking": "Com empilhar: soma 2 à pilha para o próximo responder ou comprar. Sem pilha: ele compra duas e passa a vez.",
+        "draw4Stacking": "Com empilhar: soma 4 à pilha para o próximo responder ou comprar, e pode nomear a próxima cor. Sem pilha: ele compra quatro e passa a vez, só se você não tiver carta da cor ativa."
       },
       "announce": "Com duas cartas, aperte o logo JUNO antes de jogar e ficar com uma. É um botão, não reconhecimento de voz. Dizer depois não corrige o esquecimento; ganhar cartas também apaga seu anúncio anterior.",
       "reporting": {
@@ -85,7 +88,8 @@
         "dynamic": "O XP final soma bônus pequenos e determinísticos ao prêmio base: média das mãos adversárias (com teto), mesa maior (quatro ou mais finalistas) e rodada sem desistências. Empatados mantêm sempre o mesmo XP, e todo finalista recebe pelo menos o prêmio base.",
         "practice": "Uma rodada iniciada com bot continua sendo treino, mesmo que ele saia depois: não dá XP, vitórias ou rodadas no ranking. O XP pertence a este espaço e soma seus canais de voz, não outros espaços.",
         "pending": "Enquanto o resultado está sendo salvo, o XP está pendente, ainda não foi recebido. Uma nova mesa fica disponível depois que esse resultado é resolvido.",
-        "stackingWin": "Com empilhar ativado, um +2/+4 final vence na hora: a pilha morre com a rodada e ninguém a compra."
+        "stackingWin": "Com empilhar ativado, um +2/+4 final vence na hora: a pilha morre com a rodada e ninguém a compra.",
+        "rankingStacking": "A primeira mão vazia vence na hora — um +2/+4 final nunca compra para ninguém. As demais posições seguem a quantidade de cartas restantes."
       },
       "table": {
         "seats": "Você pode assistir a uma rodada em andamento, mas novos jogadores não entram no meio dela. Depois do resultado, o anfitrião abre um novo lobby; as outras pessoas entram nessa nova mesa explicitamente.",

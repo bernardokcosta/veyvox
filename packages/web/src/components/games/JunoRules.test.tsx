@@ -31,6 +31,9 @@ describe('illustrated Juno rules', () => {
     expect(first.guide).toHaveTextContent(/pile/i);
     expect(first.guide).toHaveTextContent(/no color match/i);
     expect(first.guide).toHaveTextContent(/wins at once/i);
+    expect(first.guide).not.toHaveTextContent(/cannot answer with another draw card/i);
+    expect(first.guide).not.toHaveTextContent(/When time runs out, draw one and pass/i);
+    expect(first.guide).not.toHaveTextContent(/final-card draw penalty/i);
     first.unmount(); cleanup();
     const { guide: plain } = await open({ game, supportsMemory: true });
     expect(within(plain).queryByRole('heading', { name: 'Stacking', level: 3 })).toBeNull();

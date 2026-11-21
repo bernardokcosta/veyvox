@@ -184,7 +184,7 @@ describe('Juno stacking engine', () => {
     rooms.command('voice', { userId: 'a', name: 'a' },
       { type: 'start', gameId: started.game!.id, revision: started.revision }, ...full);
     expect(rooms.read('voice', 'a', ...full).game!.options).toMatchObject({ stacking: true });
-    expect(() => rooms.read('voice', 'watcher')).toThrow('juno_update_required');
+    expect(() => rooms.read('voice', 'watcher', true, true, true, true, false)).toThrow('juno_update_required');
     expect(rooms.read('voice', 'watcher', ...full).game!.hand).toEqual([]);
   });
   it('draws the pending total on timeout instead of a single card', async () => {
