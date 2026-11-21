@@ -358,8 +358,8 @@ is pending, only +2/+4 continuations (any color, no +4 restriction) or the full
 take-draw are legal; passing, ordinary plays, color picks and pizza plays are
 refused, while JUNO calls stay available. A stacking +2 sets the active color
 to its own; a stacking +4 keeps the current color unless a new one is named.
-A player without +2/+4 draws the total
-and loses the turn with no drawn-card continuation. Emptying the hand on a
+A player without +2/+4 takes the pile at once, with no draw to fish for an answer
+and no drawn-card continuation: only cards already in hand can answer a pile. Emptying the hand on a
 stacking play wins immediately and clears the stack. Timeouts draw the pending
 total for the victim instead of a single card. Computers stack when able and
 take the pile otherwise. Mixed cohorts play classic: starting requires every

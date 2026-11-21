@@ -31,6 +31,7 @@ describe('Juno stacking engine', () => {
   });
   it('stacks an off-color +2 onto a pending +2 instead of drawing', () => {
     const state = stackingRound();
+    state.players[2]!.hand = [card('c-draw2', 'draw2', 'amber'), card('c2', '2', 'sky')];
     actInRound(state, 'a', { type: 'play', cardId: 'a-draw2' }, 0);
     expect(state.stackDraw).toBe(2); expect(state.turn).toBe(1); expect(state.color).toBe('coral');
     // b's +2 is sky on a coral top: illegal without the stack, legal as a continuation.
@@ -41,31 +42,30 @@ describe('Juno stacking engine', () => {
     expect(state.color).toBe('sky');
     expect(canPlayJuno(card('next', '5', 'sky'), state.players[2]!.hand, card('top', 'draw2', 'sky'), state.color)).toBe(true);
   });
-  it('lets a +4 join any pending stack and makes the victim take the exact total', () => {
+  it('lets a +4 join any pending stack and makes a cardless victim take the exact total at once', () => {
     const state = stackingRound();
     state.players[1]!.hand = [card('b-draw4', 'draw4', null), card('b-other', '7', 'amber')];
     actInRound(state, 'a', { type: 'play', cardId: 'a-draw2' }, 0);
+    expect(state.stackDraw).toBe(2); expect(state.turn).toBe(1);
+    // c holds no stack card: b's answer resolves the take immediately.
     actInRound(state, 'b', { type: 'play', cardId: 'b-draw4', color: 'mint' }, 1);
-    expect(state.stackDraw).toBe(6); expect(state.turn).toBe(2);
-    const before = state.players[2]!.hand.length;
-    actInRound(state, 'c', { type: 'draw' }, 2);
-    expect(state.players[2]!.hand.length).toBe(before + 6);
-    expect(state.stackDraw).toBe(0); expect(state.turn).toBe(0);
+    expect(state.color).toBe('mint');
+    expect(state.stackDraw).toBe(0);
+    expect(state.players[2]!.hand).toHaveLength(2 + 6);
+    expect(state.turn).toBe(0);
     expect(state.lastMove).toMatchObject({ type: 'draw', userId: 'c', amount: 6 });
   });
   it('takes the whole pile at once with no fishing draw when the victim holds no stack card', () => {
     const state = stackingRound();
     actInRound(state, 'a', { type: 'play', cardId: 'a-draw2' }, 0);
-    // 'c' holds no +2/+4: drawing takes the entire pile and ends the turn, with no playable-draw continuation.
+    // 'c' holds no +2/+4: b's stacking play resolves the take immediately.
     const before = state.players[2]!.hand.length;
     actInRound(state, 'b', { type: 'play', cardId: 'b-draw2' }, 1);
-    actInRound(state, 'c', { type: 'draw' }, 2);
     expect(state.players[2]!.hand.length).toBe(before + 4);
     expect(state.stackDraw).toBe(0);
     expect(state.drawnCardId).toBeNull();
     expect(state.turn).toBe(0);
-    expect(() => actInRound(state, 'c', { type: 'play', cardId: state.players[2]!.hand[0]!.id }, 3)).toThrow('juno_not_your_turn');
-    expect(() => actInRound(state, 'c', { type: 'draw' }, 3)).toThrow('juno_not_your_turn');
+    expect(state.lastMove).toMatchObject({ type: 'draw', userId: 'c', amount: 4 });
   });
   it('refuses passes and ordinary plays while a stack is pending, but allows JUNO calls', () => {
     const state = stackingRound();
@@ -139,9 +139,10 @@ describe('Juno stacking engine', () => {
     };
     act('a', { type: 'play', cardId: 'a-draw2' });
     act('b', { type: 'play', cardId: 'b-draw2' });
-    act('c', { type: 'draw' });
-    expect(log).toEqual(['a play a-draw2→ stack 2', 'b play b-draw2→ stack 4', 'c draw → stack 0']);
-    expect(tables.tables.get('voice')!.round!.players[2]!.hand).toHaveLength(6);
+    // c holds no +2/+4, so b's answer resolves the take at once: no manual draw.
+    expect(log).toEqual(['a play a-draw2→ stack 2', 'b play b-draw2→ stack 0']);
+    expect(tables.tables.get('voice')!.round!.players[2]!.hand).toHaveLength(2 + 4);
+    expect(tables.tables.get('voice')!.round!.turn).toBe(0);
     for (let i = 0; i < 5_000 && !tables.tables.get('voice')!.round!.result; i++) {
       const state = tables.tables.get('voice')!.round!;
       const player = state.players[state.turn]!;
@@ -216,7 +217,7 @@ describe('Juno stacking engine', () => {
     play('a', { type: 'start' });
     const round = tables.tables.get('voice')!.round!;
     round.players[0]!.hand = [card('a-draw2', 'draw2', 'coral'), card('a-filler', '5', 'mint')];
-    round.players[1]!.hand = [card('b1', '1', 'sky'), card('b2', '2', 'amber')];
+    round.players[1]!.hand = [card('b-draw2', 'draw2', 'amber'), card('b-filler', '6', 'mint')];
     round.discard = [card('top', '4', 'coral')]; round.color = 'coral';
     const dealt = rooms.read('voice', 'a', true, true, true, true, true);
     rooms.command('voice', { userId: 'a', name: 'a' },

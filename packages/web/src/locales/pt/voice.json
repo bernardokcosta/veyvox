@@ -100,7 +100,7 @@
       },
       "stacking": {
         "rules": "Com empilhar ativado, +2 ou +4 responde qualquer pilha pendente, independente da cor. Cada resposta soma as cartas à pilha e passa adiante; empilhar +2 sobre +4 (e vice-versa) vale. Um +2 empilhado define a cor ativa como a sua; um +4 empilhado mantém a cor atual, a menos que uma nova seja nomeada. A última carta ainda vence na hora.",
-        "limits": "Sem +2/+4 na mão? Compre a pilha inteira e passe a vez. Passar, jogar outras cartas e trocar de cor esperam a pilha ser comprada. O tempo esgotado também compra a pilha.",
+        "limits": "Sem +2/+4 na mão, a pilha inteira é comprada na hora: nenhuma compra pode pescar uma resposta, e a vez passa. Tendo uma, você pode responder ou comprar a pilha toda. O tempo esgotado também compra a pilha.",
         "plus": "+{{amount}}",
         "take": "Com pilha pendente, comprar é levar a pilha toda e passar a vez; o tempo esgotado faz o mesmo."
       }

@@ -37,9 +37,11 @@ describe('Juno cosmic lobby', () => {
     expect(screen.queryByText('Seat available')).not.toBeInTheDocument();
     expect(screen.getAllByLabelText('Seat available')).toHaveLength(3);
   });
-  it('lets the host toggle match options, shows them read-only to others and hides them on old hosts', async () => {
+  it('lets the host toggle match options in a modal, shows them read-only to others and hides them on old hosts', async () => {
     const game = junoGame(); game.supportsBots = true;
     useJunoStore.setState({ snapshot: { revision: 2, supportsOptions: true, game } }); render(<JunoLobby onRanking={() => {}} />);
+    expect(screen.queryByRole('checkbox', { name: 'Special cards' })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Match options' }));
     const specials = screen.getByRole('checkbox', { name: 'Special cards' });
     const stacking = screen.getByRole('checkbox', { name: 'Allow stacking' });
     expect(specials).toBeChecked(); expect(stacking).not.toBeChecked();
@@ -47,10 +49,13 @@ describe('Juno cosmic lobby', () => {
     expect(command).toHaveBeenCalledWith({ type: 'options', stacking: true });
     await userEvent.click(specials);
     expect(command).toHaveBeenCalledWith({ type: 'options', specials: false });
+    await userEvent.keyboard('{Escape}');
     act(() => useJunoStore.setState({ target: { userId: 'b', origin: window.location.origin, channelId: 'voice' } }));
+    await userEvent.click(screen.getByRole('button', { name: 'Match options' }));
     expect(screen.getByRole('checkbox', { name: 'Special cards' })).toBeDisabled();
+    await userEvent.keyboard('{Escape}');
     act(() => useJunoStore.setState({ snapshot: { revision: 3, game: { ...game } } }));
-    expect(screen.queryByRole('checkbox', { name: 'Allow stacking' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Match options' })).not.toBeInTheDocument();
   });
   it('lets only the capable host add/remove a computer from a real lobby seat', async () => {
     const game = junoGame(); game.supportsBots = true;

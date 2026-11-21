@@ -98,16 +98,17 @@
 .juno-lobby h2, .juno-result h2, .juno-ranking h2 { font-size: clamp(18px, 4cqh, 32px); font-weight: 800; letter-spacing: -.035em; line-height: 1.15; }
 .juno-lobby-players { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: min(540px, 94%); gap: 8px; }
 .juno-lobby-players:has(> :nth-child(5)) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.juno-options { width: min(540px, 94%); margin: 0; padding: 10px 14px; border: 1px solid #7f97bf70; border-radius: 18px; background: #090f2966; text-align: left; }
-.juno-options legend { padding: 0 8px; font-size: 12px; font-weight: 700; color: #b9c8e7; }
-.juno-options label { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.juno-options-toggle { width: min(540px, 94%); }
+.juno-options { color: #eee9ff; }
+.juno-options h2 { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+.juno-options label { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; cursor: pointer; }
 .juno-options input[type="checkbox"] { width: 18px; height: 18px; accent-color: #27ef7d; cursor: pointer; }
-.juno-options p { margin: 2px 0 8px 26px; font-size: 11px; color: var(--juno-muted); }
+.juno-options p { margin: 2px 0 10px 26px; font-size: 12px; color: var(--juno-muted); }
 .juno-options p:last-child { margin-bottom: 0; }
-.juno-options:disabled label, .juno-options input[type="checkbox"]:disabled { cursor: default; }
+.juno-options label:has(input[type="checkbox"]:disabled), .juno-options input[type="checkbox"]:disabled { cursor: default; }
 .juno-lobby-seat { position: relative; min-width: 0; }
-.juno-lobby-seat:has(.juno-remove-bot) .juno-player-badge { padding-right: 34px; }
-.juno-remove-bot { position: absolute; right: 3px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid #7f97bf; border-radius: 50%; color: #f5f8ff; background: #101a35f5; font-size: 23px; line-height: 1; }
+.juno-lobby-seat:has(.juno-remove-bot) .juno-player-badge { padding-right: 38px; }
+.juno-remove-bot { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0 0 2px; border: 1px solid #7f97bf; border-radius: 50%; color: #f5f8ff; background: #101a35f5; font-size: 20px; line-height: 1; }
 .juno-remove-bot:hover:not(:disabled) { color: #fff; background: #59233d; border-color: #ff9cba; }
 .juno-seat-empty { display: grid; place-items: center; min-height: 48px; border: 1px dashed #647ca366; border-radius: 18px; background: #090f2966; font-size: 25px; color: var(--juno-muted); }
 button.juno-seat-empty:hover:not(:disabled) { border-color: #27ef7d; color: #27ef7d; background: #27ef7d15; }

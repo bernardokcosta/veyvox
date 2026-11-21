@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { JUNO_MAX_PLAYERS } from '@veyvox/shared/src/juno';
 import { useJunoStore } from '../../stores/junoStore';
@@ -6,10 +7,12 @@ import { useAuthStore } from '../../stores/authStore';
 import { JunoPlayerBadge } from './JunoPlayerBadge';
 import { JunoCard } from './JunoCard';
 import { JUNO_ASSETS } from './junoAssets';
+import { Modal } from '../ui/Modal';
 
 export function JunoLobby({ onRanking }: { onRanking: () => void }) {
   const { t } = useTranslation(['voice', 'common']);
   const { snapshot, target, connected, pending, stale, loading, command } = useJunoStore();
+  const [optionsOpen, setOptionsOpen] = useState(false);
   const self = useAuthStore(s => s.user);
   const spaceId = useSpaceStore(s => target ? s.spaceChannelIndex.get(target.channelId)?.spaceId ?? '' : '');
   const game = snapshot?.game;
@@ -36,13 +39,18 @@ export function JunoLobby({ onRanking }: { onRanking: () => void }) {
           disabled={disabled} onClick={() => void command({ type: 'addBot' })}><span aria-hidden="true">＋</span></button>
         : <div className="juno-seat-empty" key={i} aria-label={t('juno.emptySeat')}><span aria-hidden="true">＋</span></div>)}
     </div>}
-    {game && game.phase === 'lobby' && snapshot?.supportsOptions === true && <fieldset className="juno-options" disabled={disabled || target?.userId !== game.hostId}>
-      <legend>{t('juno.options.title')}</legend>
-      <label><input type="checkbox" checked={game.options.specials} onChange={event => void command({ type: 'options', specials: event.target.checked })} />{t('juno.options.specials')}</label>
-      <p>{t('juno.options.specialsHint')}</p>
-      <label><input type="checkbox" checked={game.options.stacking} onChange={event => void command({ type: 'options', stacking: event.target.checked })} />{t('juno.options.stacking')}</label>
-      <p>{t('juno.options.stackingHint')}</p>
-    </fieldset>}
+    {game && game.phase === 'lobby' && snapshot?.supportsOptions === true && <>
+      <button type="button" className="juno-secondary juno-options-toggle" disabled={disabled} onClick={() => setOptionsOpen(true)}>{t('juno.options.title')}</button>
+      <Modal isOpen={optionsOpen} onClose={() => setOptionsOpen(false)} maxWidth="max-w-md" mobileStyle="sheet">
+        <div className="juno-options" role="dialog" aria-modal="true" aria-label={t('juno.options.title')}>
+          <h2>{t('juno.options.title')}</h2>
+          <label><input type="checkbox" checked={game.options.specials} disabled={disabled || target?.userId !== game.hostId} onChange={event => void command({ type: 'options', specials: event.target.checked })} />{t('juno.options.specials')}</label>
+          <p>{t('juno.options.specialsHint')}</p>
+          <label><input type="checkbox" checked={game.options.stacking} disabled={disabled || target?.userId !== game.hostId} onChange={event => void command({ type: 'options', stacking: event.target.checked })} />{t('juno.options.stacking')}</label>
+          <p>{t('juno.options.stackingHint')}</p>
+        </div>
+      </Modal>
+    </>}
     <div className="juno-menu-actions">
       {!game ? loading && !snapshot ? <p role="status">{t('common:states.loading')}</p>
         : <button type="button" className="juno-primary" disabled={disabled} onClick={() => void command({ type: 'create' })}>{t('juno.create')}</button>

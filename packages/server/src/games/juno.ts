@@ -73,6 +73,17 @@ function pruneReports(round: JunoRound, now: number): boolean {
 function nextIndex(round: JunoRound, steps = 1): number {
   return ((round.turn + round.direction * steps) % round.players.length + round.players.length) % round.players.length;
 }
+/** A stacking victim without +2/+4 takes the pile at once: stacking is answered
+ *  only with cards already in hand, never by fishing. Returns true when it took. */
+function takeStack(round: JunoRound, now: number): boolean {
+  const victim = round.players[nextIndex(round)]!;
+  if (victim.hand.some(card => card.face === 'draw2' || card.face === 'draw4')) return false;
+  const amount = drawCards(round, victim, round.stackDraw).length;
+  round.stackDraw = 0;
+  round.lastMove = { type: 'draw', userId: victim.userId, amount };
+  advance(round, now, 2); pruneReports(round, now);
+  return true;
+}
 function advance(round: JunoRound, now: number, steps = 1): void {
   if (round.intoxication?.targetUserId === round.players[round.turn]?.userId) round.intoxication = undefined;
   round.turn = nextIndex(round, steps); round.drawnCardId = null; round.deadline = now + JUNO_TURN_MS;
@@ -164,6 +175,7 @@ export function actInRound(round: JunoRound, userId: string, action: JunoAction,
       round.stackDraw += stacked;
       round.lastMove = { type: 'play', userId, card: { ...card }, announced: player.announced };
       if (player.hand.length === 0) { round.winnerId = userId; round.result = 'emptyHand'; round.stackDraw = 0; }
+      else if (takeStack(round, now)) return;
       advance(round, now); pruneReports(round, now); return;
     }
     refuse('juno_invalid_move');
@@ -224,6 +236,7 @@ export function actInRound(round: JunoRound, userId: string, action: JunoAction,
   }
   round.lastMove = { type: 'play', userId, card: { ...card }, announced: player.announced, ...(intoxicatedColor ? { intoxicatedColor: true } : {}) };
   if (player.hand.length === 0) { round.winnerId = userId; round.result = 'emptyHand'; round.stackDraw = 0; }
+  else if (round.stacking && (card.face === 'draw2' || card.face === 'draw4') && takeStack(round, now)) return;
   if (card.face === 'pizza' && !round.result) {
     pruneReports(round, now);
     const pizzaTransfers = redistributeJunoPizza(round.players);

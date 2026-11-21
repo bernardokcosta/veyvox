@@ -100,7 +100,7 @@
       },
       "stacking": {
         "rules": "With stacking on, a +2 or +4 answers any pending pile, no matter the color. Each answer adds its cards to the pile and passes it on; stacking +2 onto +4 (and back) is allowed. A stacking +2 sets the active color to its own; a stacking +4 keeps the current color unless a new one is named. The last card still wins at once.",
-        "limits": "No matching draw card in hand? Draw the entire pile and lose the turn. Passing, playing other cards and color changes wait until the pile is taken. Timeouts draw the pile too.",
+        "limits": "Without a matching draw card in hand, the whole pile is taken at once: no draw can fish for an answer, and the turn passes. Holding one, you may answer or take the pile with a draw. Timeouts draw the pile too.",
         "plus": "+{{amount}}",
         "take": "With a pending pile, drawing means taking the whole pile and losing the turn; running out of time does the same."
       }

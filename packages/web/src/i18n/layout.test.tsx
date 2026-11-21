@@ -232,6 +232,23 @@ describe('bidi isolation for user content', () => {
     }
   });
 
+  it('centers the remove-bot cross inside its circle with breathing room from the seat edge', () => {
+    const style = document.createElement('style');
+    style.textContent = junoStyles;
+    document.head.append(style);
+    try {
+      const { container } = render(
+        <div className="juno-lobby-seat"><div className="juno-player-badge" /><button className="juno-remove-bot" type="button">×</button></div>,
+      );
+      const cross = getComputedStyle(container.querySelector('.juno-remove-bot')!);
+      expect(cross.justifyContent).toBe('center');
+      expect(cross.alignItems).toBe('center');
+      expect(cross.right).not.toBe('3px');
+    } finally {
+      style.remove();
+    }
+  });
+
   it('marks the composer textarea and its mirror with automatic direction', () => {
     const textareaRef = createRef<HTMLTextAreaElement>();
     const mentionAnchorRef = createRef<HTMLSpanElement>();
