@@ -45,7 +45,7 @@ describe('isolated playable pizza preview', () => {
         discard: [card('top', '4', topColor)], color: topColor, direction: 1 as const, turn: 0, drawnCardId: null,
         deadline: 45_000, winnerId: null, result: null, lastMove: null, blockedTurns: 0, reportWindows: [],
         memoryEnabled: true, intoxicatedEnabled: false, pizzaEnabled: false,
-        specials: true, stacking: true, stackDraw: 0,
+        specials: true, stacking: true, stackDraw: 0, duos: false, teams: null,
       };
     }
     // Both +2 of the active color already in hand: nothing is taken away.

@@ -46,14 +46,14 @@ export function createJunoPreview() {
   function reset(count: number, stacking = false) {
     clock = Date.now(); lastTick = clock; started = false;
     rooms.dispose();
-    let view = rooms.command('preview', player, { type: 'create' }, true, true, true, true, true);
+    let view = rooms.command('preview', player, { type: 'create' }, true, true, true, true, true, true);
     if (stacking) {
       view = rooms.command('preview', player,
-        { type: 'options', stacking: true, gameId: view.game!.id, revision: view.revision }, true, true, true, true, true);
+        { type: 'options', stacking: true, gameId: view.game!.id, revision: view.revision }, true, true, true, true, true, true);
     }
     for (let i = 1; i < count; i++) view = rooms.command('preview', player,
-      { type: 'addBot', gameId: view.game!.id, revision: view.revision }, true, true, true, true, true);
-    view = rooms.command('preview', player, { type: 'start', gameId: view.game!.id, revision: view.revision }, true, true, true, true, true);
+      { type: 'addBot', gameId: view.game!.id, revision: view.revision }, true, true, true, true, true, true);
+    view = rooms.command('preview', player, { type: 'start', gameId: view.game!.id, revision: view.revision }, true, true, true, true, true, true);
     // Fixture-only swap, preserving the real deck's identities and all normal rules.
     const round = (rooms as unknown as { tables: Map<string, { round: JunoRound }> }).tables.get('preview')!.round;
     const hand = round.players[0]!.hand;
@@ -63,7 +63,7 @@ export function createJunoPreview() {
       [hand[0], source[index]] = [source[index]!, hand[0]!];
     }
     if (stacking && count > 1) ensureStackingOpening(round);
-    return rooms.read('preview', player.userId, true, true, true, true, true);
+    return rooms.read('preview', player.userId, true, true, true, true, true, true);
   }
   reset(4);
   void app.register(cors, { origin: origins });
@@ -79,7 +79,7 @@ export function createJunoPreview() {
   });
   app.get<{ Querystring: { viewer?: 'player' | 'spectator' } }>('/snapshot', {
     schema: { querystring: { type: 'object', additionalProperties: false, properties: { viewer: { type: 'string', enum: ['player', 'spectator'] } } } },
-  }, request => rooms.read('preview', request.query.viewer === 'spectator' ? 'preview-spectator' : player.userId, true, true, true, true, true));
+  }, request => rooms.read('preview', request.query.viewer === 'spectator' ? 'preview-spectator' : player.userId, true, true, true, true, true, true));
   app.post<{ Body: { players: number; stacking?: boolean } }>('/reset', {
     schema: { body: { type: 'object', required: ['players'], additionalProperties: false, properties: { players: { type: 'integer', minimum: 2, maximum: 6 }, stacking: { type: 'boolean' } } } },
   }, request => reset(request.body.players, request.body.stacking ?? false));
@@ -99,7 +99,7 @@ export function createJunoPreview() {
     } },
   }, request => {
     if (!started) { started = true; lastTick = Date.now(); }
-    return rooms.command('preview', player, request.body, true, true, true, true, true);
+    return rooms.command('preview', player, request.body, true, true, true, true, true, true);
   });
   const timer = setInterval(() => {
     const now = Date.now();

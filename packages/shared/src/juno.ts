@@ -11,8 +11,10 @@ export interface JunoCard { id: string; color: JunoColor | null; face: JunoFace;
 export interface JunoPizzaTransfer { fromUserId: string; toUserId: string; amount: number }
 export interface JunoPerson { userId: string; name: string; user?: User; nickname?: string | null; computer?: 1 | 2 | 3 | 4 | 5 }
 export type JunoPlace = 1 | 2 | 3 | 4 | 5 | 6;
+export type JunoMode = 'single' | 'duo';
 export const JUNO_MIN_PLAYERS = 2;
 export const JUNO_MAX_PLAYERS = 6;
+export const JUNO_MAX_DUO_PLAYERS = 4;
 export const JUNO_BASE_XP: Record<JunoPlace, number> = { 1: 120, 2: 80, 3: 40, 4: 20, 5: 10, 6: 5 };
 
 /**
@@ -36,6 +38,7 @@ export interface JunoStanding extends JunoPerson {
   cardCount: number | null;
   xp: number;
   outcome: 'completed' | 'abandoned' | 'unranked';
+  team?: 1 | 2 | null;
 }
 export interface JunoScoreboard {
   roundId: string;
@@ -60,7 +63,7 @@ export interface JunoRankingPage {
 }
 export type JunoAction = { type: 'join' | 'leave' | 'start' | 'rematch' | 'draw' | 'pass' | 'announce' | 'addBot' }
   | { type: 'removeBot'; botId: string }
-  | { type: 'options'; specials?: boolean; stacking?: boolean }
+  | { type: 'options'; specials?: boolean; stacking?: boolean; mode?: JunoMode }
   | { type: 'report'; targetUserId: string; opportunityId: string }
   | { type: 'play'; cardId: string; color?: JunoColor; announce?: boolean };
 export type JunoCommand = { type: 'create' } | (JunoAction & { gameId: string; revision: number });
@@ -83,9 +86,12 @@ export interface JunoView {
   id: string;
   phase: 'lobby' | 'playing' | 'finished';
   hostId: string;
-  options: { specials: boolean; stacking: boolean };
+  options: { specials: boolean; stacking: boolean; mode: JunoMode };
+  mode: JunoMode;
+  teams: { a: string[]; b: string[] } | null;
   players: (JunoPerson & { cardCount: number; announced: boolean; flouredCardCount?: number })[];
   hand: JunoCard[];
+  partnerHand: JunoCard[];
   topCard: JunoCard | null;
   color: JunoColor | null;
   direction: 1 | -1;
@@ -111,7 +117,7 @@ export interface JunoView {
   /** A cursed viewer receives opaque owned slots, never the concealed faces. */
   maskedHand?: { id: string }[];
 }
-export interface JunoSnapshot { revision: number; game: JunoView | null; supportsMemory?: boolean; supportsIntoxicated?: boolean; supportsPizza?: boolean; supportsSix?: boolean; supportsOptions?: boolean; supportsStacking?: boolean }
+export interface JunoSnapshot { revision: number; game: JunoView | null; supportsMemory?: boolean; supportsIntoxicated?: boolean; supportsPizza?: boolean; supportsSix?: boolean; supportsOptions?: boolean; supportsStacking?: boolean; supportsDuos?: boolean }
 export const JUNO_TURN_MS = 45_000;
 export const JUNO_REPORT_MS = 10_000;
 export interface JunoReportOpportunity { id: string; targetUserId: string; remainingMs: number }

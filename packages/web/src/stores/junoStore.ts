@@ -139,7 +139,7 @@ export const useJunoStore = create<JunoState>((set, get) => ({
       try {
         const snapshot = await api.juno.get(target.channelId, snapshotAtStart ? snapshotAtStart.supportsIntoxicated === true : true,
           snapshotAtStart ? snapshotAtStart.supportsPizza === true : true, snapshotAtStart ? snapshotAtStart.supportsSix === true : true,
-          snapshotAtStart ? snapshotAtStart.supportsStacking === true : true);
+          snapshotAtStart ? snapshotAtStart.supportsStacking === true : true, snapshotAtStart ? snapshotAtStart.supportsDuos === true : true);
         if (epoch !== currentEpoch || run !== readRun) return;
         if (snapshot.revision >= (get().snapshot?.revision ?? -1)) set({ snapshot, observedAt: Date.now() });
         const coolingDown = Date.now() < retryAt;
@@ -172,7 +172,7 @@ export const useJunoStore = create<JunoState>((set, get) => ({
     const currentEpoch = epoch;
     set({ pending: true, error: null });
     try {
-      const next = await api.juno.command(target.channelId, command, snapshot?.supportsIntoxicated === true, snapshot?.supportsPizza === true, snapshot?.supportsSix === true, snapshot?.supportsStacking === true);
+      const next = await api.juno.command(target.channelId, command, snapshot?.supportsIntoxicated === true, snapshot?.supportsPizza === true, snapshot?.supportsSix === true, snapshot?.supportsStacking === true, snapshot?.supportsDuos === true);
       if (epoch !== currentEpoch) return;
       if (next.revision >= (get().snapshot?.revision ?? -1)) set({ snapshot: next, observedAt: Date.now() });
     } catch (error) {

@@ -14,15 +14,15 @@ describe('durable Juno progression', () => {
   it('accepts the expanded rare-card deck with dynamic XP and still refuses impossible hand counts', () => {
     const two = [{ userId: 'a', name: 'a' }, { userId: 'b', name: 'b' }];
     const duo = buildJunoStandings(two, [{ userId: 'a', cardCount: 0 }, { userId: 'b', cardCount: 109 }], 'a', 'emptyHand');
-    const input = { roundId: 'duo', spaceId: 'space', channelId: 'voice', finishedAt: 100, scoringVersion: 1 as const, result: 'emptyHand' as const, standings: duo };
+    const input = { roundId: 'duo', spaceId: 'space', channelId: 'voice', finishedAt: 100, scoringVersion: 1 as const, result: 'emptyHand' as const, standings: duo, duos: null };
     expect(settleJunoRound(input, fixture.db).standings[1]).toMatchObject({ place: 2, xp: 85, cardCount: 109 });
     // A coherent proposal above the 111-card deck is still structurally impossible.
     const over = buildJunoStandings(two, [{ userId: 'a', cardCount: 0 }, { userId: 'b', cardCount: 112 }], 'a', 'emptyHand');
-    expect(() => settleJunoRound({ roundId: 'over', spaceId: 'space', channelId: 'voice', finishedAt: 100, scoringVersion: 1, result: 'emptyHand', standings: over }, fixture.db))
+    expect(() => settleJunoRound({ roundId: 'over', spaceId: 'space', channelId: 'voice', finishedAt: 100, scoringVersion: 1, result: 'emptyHand', standings: over, duos: null }, fixture.db))
       .toThrow('Invalid Juno settlement');
     // Two zero-card finishers would record two winners.
     const double = buildJunoStandings(two, [{ userId: 'a', cardCount: 0 }, { userId: 'b', cardCount: 0 }], 'a', 'emptyHand');
-    expect(() => settleJunoRound({ roundId: 'double', spaceId: 'space', channelId: 'voice', finishedAt: 100, scoringVersion: 1, result: 'emptyHand', standings: double }, fixture.db))
+    expect(() => settleJunoRound({ roundId: 'double', spaceId: 'space', channelId: 'voice', finishedAt: 100, scoringVersion: 1, result: 'emptyHand', standings: double, duos: null }, fixture.db))
       .toThrow('Invalid Juno settlement');
     const invalid = settlement('invalid'); invalid.standings[1]!.cardCount = 111;
     expect(() => settleJunoRound(invalid, fixture.db)).toThrow('Invalid Juno settlement');
@@ -52,7 +52,7 @@ describe('durable Juno progression', () => {
   it('keeps abandoned starters after ranked finishers without awarding counters', () => {
     const starters = ['a', 'b', 'c', 'd'].map(userId => ({ userId, name: userId }));
     const rows = buildJunoStandings(starters, [{ userId: 'a', cardCount: 0 }, { userId: 'b', cardCount: 2 }, { userId: 'd', cardCount: 7 }], 'a', 'emptyHand');
-    const input = { roundId: 'abandoned', spaceId: 'space', channelId: 'voice', finishedAt: 100, scoringVersion: 1 as const, result: 'emptyHand' as const, standings: rows };
+    const input = { roundId: 'abandoned', spaceId: 'space', channelId: 'voice', finishedAt: 100, scoringVersion: 1 as const, result: 'emptyHand' as const, standings: rows, duos: null };
     const result = settleJunoRound(input, fixture.db);
     expect(result.standings.map(row => row.userId)).toEqual(['a', 'b', 'd', 'c']);
     expect(fixture.db.select().from(schema.junoPlayerStats).where(eq(schema.junoPlayerStats.userId, 'c')).all()).toEqual([]);
@@ -80,13 +80,13 @@ describe('durable Juno progression', () => {
     }
     const people = ['a', 'b', 'c', 'd', 'e', 'f'].map(userId => ({ userId, name: userId }));
     const standings = buildJunoStandings(people, [0, 1, 3, 5, 9, 12].map((cardCount, i) => ({ userId: people[i]!.userId, cardCount })), 'a', 'emptyHand');
-    const result = settleJunoRound({ roundId: 'six', spaceId: 'space', channelId: 'voice', finishedAt: 100, scoringVersion: 1, result: 'emptyHand', standings }, fixture.db);
+    const result = settleJunoRound({ roundId: 'six', spaceId: 'space', channelId: 'voice', finishedAt: 100, scoringVersion: 1, result: 'emptyHand', standings, duos: null }, fixture.db);
     expect(result).toMatchObject({ status: 'credited' });
     expect(result.standings.map(r => r.place)).toEqual([1, 2, 3, 4, 5, 6]);
     expect(result.standings.map(r => r.xp)).toEqual([141, 100, 60, 40, 29, 23]);
     expect(fixture.db.select().from(schema.junoPlayerStats).where(eq(schema.junoPlayerStats.userId, 'f')).get()).toMatchObject({ totalXp: 23, completedRounds: 1 });
     const seventh = [...standings, { userId: 'watcher', name: 'watcher', place: 6 as const, cardCount: 20, xp: 5, outcome: 'completed' as const }];
-    expect(() => settleJunoRound({ roundId: 'seven', spaceId: 'space', channelId: 'voice', finishedAt: 100, scoringVersion: 1, result: 'emptyHand', standings: seventh }, fixture.db)).toThrow('Invalid Juno settlement');
+    expect(() => settleJunoRound({ roundId: 'seven', spaceId: 'space', channelId: 'voice', finishedAt: 100, scoringVersion: 1, result: 'emptyHand', standings: seventh, duos: null }, fixture.db)).toThrow('Invalid Juno settlement');
   });
   it('rolls the whole settlement back on a real SQLite failure, then retries once', () => {
     fixture.sqlite.exec("CREATE TRIGGER fail_juno BEFORE INSERT ON juno_round_participants WHEN NEW.user_id = 'b' BEGIN SELECT RAISE(ABORT, 'injected failure'); END;");

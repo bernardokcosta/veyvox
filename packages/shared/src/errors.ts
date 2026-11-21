@@ -22,6 +22,7 @@ export const ERROR_CODES = [
   'juno_capacity',
   'juno_stale',
   'juno_full',
+  'juno_table_full',
   'juno_in_progress',
   'juno_player_required',
   'juno_host_required',

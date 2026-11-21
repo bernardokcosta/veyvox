@@ -1,7 +1,7 @@
 import { and, asc, desc, eq, gt, inArray, notExists, sql } from 'drizzle-orm';
 import { JUNO_MAX_DECK_SIZE, type JunoPerson, type JunoRankingPage, type JunoScoreboard, type JunoSnapshot, type JunoStanding, type JunoView } from '@veyvox/shared/src/juno.js';
 import { getDb, schema, type DB, type DBHandle } from '../db/index.js';
-import { buildJunoStandings } from './junoStandings.js';
+import { buildJunoStandings, applyDuoResults } from './junoStandings.js';
 import { sanitizeUser } from '../utils/sanitize.js';
 
 export interface JunoSettlement {
@@ -12,6 +12,7 @@ export interface JunoSettlement {
   scoringVersion: 1;
   result: NonNullable<JunoView['result']>;
   standings: JunoStanding[];
+  duos: { a: string[]; b: string[] } | null;
 }
 
 function unranked(input: JunoSettlement): JunoScoreboard {
@@ -28,7 +29,7 @@ function storedScoreboard(db: DBHandle, roundId: string): JunoScoreboard {
     .orderBy(sql`${schema.junoRoundParticipants.place} IS NULL`, asc(schema.junoRoundParticipants.place), asc(schema.junoRoundParticipants.userId)).all();
   return { roundId, status: 'credited', standings: rows.map(({ award, user }) => ({
     userId: user.id, name: user.displayName ?? user.username, place: award.place,
-    cardCount: award.cardCount, xp: award.xp, outcome: award.outcome,
+    cardCount: award.cardCount, xp: award.xp, outcome: award.outcome, team: award.team ?? null,
   })) };
 }
 
@@ -44,8 +45,8 @@ export function settleJunoRound(input: JunoSettlement, database?: DB): JunoScore
       return storedScoreboard(tx, input.roundId);
     }
     if (!tx.select({ id: schema.spaces.id }).from(schema.spaces).where(eq(schema.spaces.id, input.spaceId)).get()) return unranked(input);
-    const winner = input.standings.find(row => row.place === 1 && row.outcome === 'completed');
-    if (!winner || winner.cardCount !== 0 || input.standings.length < 2 || input.standings.length > 6
+    const winner = input.standings.find(row => row.place === 1 && row.outcome === 'completed' && row.cardCount === 0);
+    if (!winner || input.standings.length < 2 || input.standings.length > 6
       || new Set(input.standings.map(row => row.userId)).size !== input.standings.length) throw new Error('Invalid Juno settlement');
     const completed: number[] = [];
     for (const row of input.standings) {
@@ -56,24 +57,34 @@ export function settleJunoRound(input: JunoSettlement, database?: DB): JunoScore
     // Conserved decks never exceed 111 cards and exactly one finisher holds zero.
     if (completed.reduce((sum, count) => sum + count, 0) > JUNO_MAX_DECK_SIZE) throw new Error('Invalid Juno settlement');
     if (completed.filter(count => count === 0).length !== 1) throw new Error('Invalid Juno settlement');
+    if (input.duos) {
+      const roster = [...input.duos.a, ...input.duos.b].sort();
+      const seated = input.standings.map(row => row.userId).sort();
+      if (roster.length !== seated.length || roster.some((id, i) => id !== seated[i])) throw new Error('Invalid Juno settlement');
+      for (const row of input.standings) {
+        const team = input.duos.a.includes(row.userId) ? 1 : input.duos.b.includes(row.userId) ? 2 : null;
+        if (row.team !== team) throw new Error('Invalid Juno settlement');
+      }
+    } else if (input.standings.some(row => row.team)) throw new Error('Invalid Juno settlement');
     const computed = buildJunoStandings(input.standings,
       input.standings.filter(row => row.outcome !== 'abandoned').map(row => ({ userId: row.userId, cardCount: row.cardCount! })),
       winner.userId, input.result);
-    for (const row of computed) {
+    const settled = input.duos ? applyDuoResults(computed, winner.userId, input.duos) : computed;
+    for (const row of settled) {
       const proposed = input.standings.find(p => p.userId === row.userId)!;
-      if (row.place !== proposed.place || row.xp !== proposed.xp || row.outcome !== proposed.outcome
+      if (row.place !== proposed.place || row.xp !== proposed.xp || row.outcome !== proposed.outcome || (row.team ?? null) !== (proposed.team ?? null)
         || row.cardCount !== null && (!Number.isInteger(row.cardCount) || row.cardCount < 0 || row.cardCount > JUNO_MAX_DECK_SIZE)) throw new Error('Invalid Juno award');
     }
     const channel = input.channelId ? tx.select().from(schema.channels).where(eq(schema.channels.id, input.channelId)).get() : undefined;
     if (channel && channel.spaceId !== input.spaceId) throw new Error('Juno channel belongs to another space');
     tx.insert(schema.junoRoundResults).values({ roundId: input.roundId, spaceId: input.spaceId,
       channelId: channel?.id ?? null, finishedAt: input.finishedAt, scoringVersion: input.scoringVersion }).run();
-    for (const row of computed) {
+    for (const row of settled) {
       const user = tx.select().from(schema.users).where(eq(schema.users.id, row.userId)).get();
       // A delayed settlement may outlive account erasure. Never recreate its data.
       if (!user || user.isDeleted || user.isBot) continue;
       tx.insert(schema.junoRoundParticipants).values({ roundId: input.roundId, userId: row.userId,
-        place: row.place, cardCount: row.cardCount, xp: row.xp, outcome: row.outcome }).run();
+        place: row.place, cardCount: row.cardCount, xp: row.xp, outcome: row.outcome, team: row.team ?? null }).run();
       if (row.outcome !== 'completed') continue;
       const wins = row.place === 1 ? 1 : 0;
       tx.insert(schema.junoPlayerStats).values({ spaceId: input.spaceId, userId: row.userId,

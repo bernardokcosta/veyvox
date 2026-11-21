@@ -131,6 +131,7 @@ export const junoRoundParticipants = sqliteTable('juno_round_participants', {
   roundId: text('round_id').notNull().references(() => junoRoundResults.roundId, { onDelete: 'cascade' }),
   userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   place: integer('place').$type<1 | 2 | 3 | 4 | 5 | 6>(),
+  team: integer('team').$type<1 | 2 | null>(),
   cardCount: integer('card_count'),
   xp: integer('xp').notNull(),
   outcome: text('outcome', { enum: ['completed', 'abandoned', 'unranked'] }).notNull(),

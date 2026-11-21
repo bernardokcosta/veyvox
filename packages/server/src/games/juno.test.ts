@@ -10,7 +10,7 @@ function round(count = 3): JunoRound {
     drawPile: Array.from({ length: 30 }, (_, i) => card(`d${i}`, '9', 'amber')),
     discard: [card('top')], color: 'coral', direction: 1, turn: 0, drawnCardId: null,
     deadline: 45_000, winnerId: null, result: null, lastMove: null, blockedTurns: 0, reportWindows: [],
-    specials: true, stacking: false, stackDraw: 0,
+    specials: true, stacking: false, stackDraw: 0, duos: false, teams: null,
   };
 }
 describe('Juno authoritative rules', () => {

@@ -13,7 +13,7 @@ function stackingRound(): JunoRound {
     drawPile: Array.from({ length: 40 }, (_, i) => card(`d${i}`, '9', 'amber')),
     discard: [card('top', '4', 'coral')], color: 'coral', direction: 1, turn: 0, drawnCardId: null,
     deadline: 45_000, winnerId: null, result: null, lastMove: null, blockedTurns: 0, reportWindows: [],
-    specials: true, stacking: true, stackDraw: 0,
+    specials: true, stacking: true, stackDraw: 0, duos: false, teams: null,
   };
 }
 describe('Juno stacking engine', () => {

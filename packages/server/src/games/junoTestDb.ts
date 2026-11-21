@@ -8,7 +8,7 @@ import { buildJunoStandings } from './junoStandings.js';
 import type { JunoSettlement } from './junoProgression.js';
 
 export function junoTestSettlement(roundId = 'round', spaceId = 'space'): JunoSettlement {
-  return { roundId, spaceId, channelId: spaceId === 'space' ? 'voice' : null, finishedAt: 100, scoringVersion: 1, result: 'emptyHand',
+  return { roundId, spaceId, channelId: spaceId === 'space' ? 'voice' : null, finishedAt: 100, scoringVersion: 1, result: 'emptyHand', duos: null,
     standings: buildJunoStandings(['a', 'b', 'c', 'd'].map(userId => ({ userId, name: userId })),
       [0, 2, 2, 7].map((cardCount, i) => ({ userId: ['a', 'b', 'c', 'd'][i]!, cardCount })), 'a', 'emptyHand') };
 }
