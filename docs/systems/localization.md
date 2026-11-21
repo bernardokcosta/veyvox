@@ -49,6 +49,12 @@ only in capable lobbies or enabled frozen rounds. Flour markers never reveal
 masked card descriptions. Removing the Games picker's bottom description does
 not delete its shared catalog key, which remains the lobby's accessible copy.
 
+Juno's duos guide and team labels use the English and Brazilian Portuguese
+catalogs, with English fallback elsewhere. The duo scoring section explains
+shared first place and equal XP without reusing the singles-only win copy.
+Juno's resolved stack cue uses `voice:juno.stackTaken` with the player name
+and actual draw count, also with English fallback.
+
 Juno now has a game-local locale boundary (`JunoLocale`), sharing the existing
 catalog loader/resources but not the app's selected language. Device preference
 `language: auto` follows current/later Veyvox language; an explicit existing

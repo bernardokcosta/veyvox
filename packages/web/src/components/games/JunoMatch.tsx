@@ -8,9 +8,8 @@ import { useFormatters } from '../../i18n/formatters';
 import { JunoCard, JUNO_PALETTE } from './JunoCard';
 import { JunoPlayerBadge } from './JunoPlayerBadge';
 import { JUNO_ASSETS } from './junoAssets';
-import { junoSeats } from './junoSeats';
+import { junoPartnerId, junoSeats } from './junoSeats';
 import { JunoEffects } from './JunoEffects';
-import { JunoStackOverlay } from './JunoStackOverlay';
 import { JunoPizzaEffects } from './JunoPizzaEffects';
 import { useJunoPizzaPresentation } from './useJunoPizzaPresentation';
 
@@ -52,11 +51,14 @@ export function JunoMatch() {
   };
   const cancelColor = () => { setColorChoice(null); colorTrigger.current?.focus(); };
   const playerName = (person: JunoPerson | undefined) => person?.computer ? t('juno.botName', { number: person.computer }) : person?.nickname ?? person?.name ?? '';
+  const teams = game.mode === 'duo' ? game.teams : null;
   const teamOf = (userId: string | undefined): 1 | 2 | undefined =>
-    !userId || !game.teams ? undefined : game.teams.a.includes(userId) ? 1 : game.teams.b.includes(userId) ? 2 : undefined;
+    !userId || !teams ? undefined : teams.a.includes(userId) ? 1 : teams.b.includes(userId) ? 2 : undefined;
+  const partnerId = junoPartnerId(game, selfId);
   const seat = (position: keyof typeof seats) => {
     const person = seats[position];
     const side = position === 'left' || position === 'right';
+    const showPartnerHand = !!person && person.userId === partnerId && game.partnerHand.length > 0;
     const visibleCards = Math.min(10, person?.cardCount ?? 0);
     const opportunity = game.supportsReports && isPlayer && person?.userId !== selfId && person?.cardCount === 1 && !person.announced
       ? game.reportOpportunities?.find(window => window.targetUserId === person?.userId) : undefined;
@@ -66,14 +68,19 @@ export function JunoMatch() {
       onClick={() => { if (!disabled && opportunity.remainingMs > Math.max(0, Date.now() - observedAt - resolutionMs)) void command({ type: 'report', targetUserId: opportunity.targetUserId, opportunityId: opportunity.id }); }}>
       <img src={JUNO_ASSETS.hammerStill} alt="" aria-hidden="true" draggable={false} />
     </button><span id={`${reportDescriptionId}-${position}`} className="sr-only">{t('juno.reportTime', { seconds: formatNumber(reportSeconds) })}</span></>}</div>;
-    return <div key={position} data-seat={position} className={`juno-seat juno-seat-${position}${person && game.memoryCurse?.targetUserId === person.userId ? ' juno-seat-memory' : ''}${person && game.intoxication?.targetUserId === person.userId ? ' juno-seat-intoxicated' : ''}`}>
+    return <div key={position} data-seat={position} className={`juno-seat juno-seat-${position}${showPartnerHand ? ' juno-seat-partner' : ''}${person && game.memoryCurse?.targetUserId === person.userId ? ' juno-seat-memory' : ''}${person && game.intoxication?.targetUserId === person.userId ? ' juno-seat-intoxicated' : ''}`}>
       {person ? <>
         {game.memoryCurse?.targetUserId === person.userId && <span className="sr-only">{t('juno.memory.affected', { name: playerName(person) })}</span>}
         {game.intoxication?.targetUserId === person.userId && <span className="sr-only">{t('juno.intoxicated.affected', { name: playerName(person) })}</span>}
         <div className="juno-player-controls"><JunoPlayerBadge person={person} spaceId={spaceId} self={person.userId === selfId}
           active={person.userId === game.currentPlayerId} next={person.userId === next?.userId} detail={t('juno.cardCount', { count: person.cardCount })} reportControl={reportControl} team={teamOf(person.userId)} />
         </div>
-        {person.userId !== selfId && <div className={`juno-opponent-cards${side ? ' juno-side-hand' : ''}`} aria-hidden="true">
+        {showPartnerHand ? <div className="juno-partner-hand" role="group" aria-label={t('juno.partnerHand')} tabIndex={0}>
+          {game.partnerHand.map(card => {
+            const label = cardLabel(card);
+            return <span key={card.id} className="juno-partner-card" role="img" aria-label={label} title={label}><JunoCard card={card} /></span>;
+          })}
+        </div> : person.userId !== selfId && <div className={`juno-opponent-cards${side ? ' juno-side-hand' : ''}`} aria-hidden="true">
           {Array.from({ length: visibleCards }, (_, i) => side
             ? <span key={i} className="juno-side-card" style={{ '--juno-card-tilt': `${(i - 3) * 3}deg` } as CSSProperties}><JunoCard back floured={i < (person?.flouredCardCount ?? 0)} /></span>
             : <JunoCard back key={i} floured={i < (person?.flouredCardCount ?? 0)} />)}
@@ -87,10 +94,9 @@ export function JunoMatch() {
   const effectPlayer = game.lastMove?.type === 'report' ? moveTarget : movePlayer;
   const movePosition = Object.entries(seats).find(([, person]) => person?.userId === effectPlayer?.userId)?.[0] ?? 'top';
   return <div className={`juno-match${game.supportsReports ? ' juno-reports' : ''}${myTurn ? ' juno-my-turn' : ''}${blind ? ' juno-memory-active' : ''}${intoxicated ? ' juno-intoxicated-active' : ''}${game.stackDraw > 0 ? ' juno-stack-active' : ''}`}>
-    <JunoEffects move={game.lastMove} position={movePosition} name={playerName(effectPlayer)} viewerId={selfId} />
-    {game.stackDraw > 0 && <JunoStackOverlay amount={game.stackDraw} />}
+    <JunoEffects move={game.lastMove} position={movePosition} name={playerName(effectPlayer)} viewerId={selfId} stackDraw={game.stackDraw} topCardFace={game.topCard?.face} />
     <JunoPizzaEffects move={game.lastMove} players={game.players} direction={game.direction} viewerId={selfId} resolution={game.pizzaResolution} active={connected && !stale} startedAt={presentation.startedAt} onStop={presentation.onStop} />
-    <div className="juno-arena">
+    <div className={`juno-arena${teams ? ' juno-arena-duo' : ''}`}>
       <img className="juno-orbit" src={JUNO_ASSETS.orbit} alt="" aria-hidden="true" />
       {seat('top')}{seats.topLeft && seat('topLeft')}{seats.topRight && seat('topRight')}{seat('left')}{seat('right')}
       <div className="juno-center"><div className="juno-piles">
@@ -111,12 +117,6 @@ export function JunoMatch() {
     </div>
     {!resolving && <div className="sr-only" role="status" aria-live="polite">{myTurn ? t('juno.yourTurn') : t('juno.theirTurn', { name: current?.name ?? '' })}</div>}
     {isPlayer ? <>
-      {game.mode === 'duo' && game.partnerHand.length > 0 && <div className="juno-partner-hand" role="group" aria-label={t('juno.partnerHand')}>
-        <span className="juno-partner-label">{t('juno.partnerHand')}</span>
-        <div className="juno-partner-cards">
-          {game.partnerHand.map(card => <span key={card.id} className="juno-hand-card juno-partner-card" role="img" aria-label={cardLabel(card)} title={cardLabel(card)}><JunoCard card={card} /></span>)}
-        </div>
-      </div>}
       <div className="juno-hand" role="group" aria-label={t('juno.yourHand')} aria-describedby={blind ? `${reportDescriptionId}-memory` : intoxicated ? `${reportDescriptionId}-intoxicated` : undefined}>
         {blind ? (game.maskedHand ?? []).map((slot, index) => <button key={slot.id} type="button" className="juno-hand-card juno-hidden-card"
           disabled={disabled || !myTurn} aria-label={t('juno.memory.hiddenCard', { number: formatNumber(index + 1) })} title={t('juno.memory.hiddenCard', { number: formatNumber(index + 1) })}

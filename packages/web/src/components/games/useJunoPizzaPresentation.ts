@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { JUNO_PIZZA_MS, type JunoView } from '@veyvox/shared/src/juno';
+import { JUNO_PIZZA_MS, type JunoCard, type JunoView } from '@veyvox/shared/src/juno';
 import { pizzaFlights, projectPizzaHands, type PizzaFlight } from './junoPizzaTimeline';
+import { junoPartnerId } from './junoSeats';
 
 interface Presentation { before: JunoView; id: string; startedAt: number; flights: PizzaFlight[] }
 const roster = (game: JunoView) => JSON.stringify([game.id, game.direction, game.players.map(p => p.userId)]);
@@ -29,12 +30,15 @@ export function useJunoPizzaPresentation(game: JunoView | null, viewerId: string
         - flights.filter(f => f.fromUserId === person.userId).length
         + flights.filter(f => f.toUserId === person.userId).length !== after.cardCount;
     })) return null;
-    if (viewerId && !before.maskedHand && !game.maskedHand) {
-      const original = before.hand.filter(c => c.id !== move.card?.id);
-      const oldIds = new Set(original.map(c => c.id)), newIds = new Set(game.hand.map(c => c.id));
-      if (original.filter(c => !newIds.has(c.id)).length !== flights.filter(f => f.fromUserId === viewerId).length
-        || game.hand.filter(c => !oldIds.has(c.id)).length !== flights.filter(f => f.toUserId === viewerId).length) return null;
-    }
+    const matches = (userId: string, previousHand: JunoCard[], currentHand: JunoCard[]) => {
+      const original = previousHand.filter(c => c.id !== move.card?.id);
+      const oldIds = new Set(original.map(c => c.id)), newIds = new Set(currentHand.map(c => c.id));
+      return original.filter(c => !newIds.has(c.id)).length === flights.filter(f => f.fromUserId === userId).length
+        && currentHand.filter(c => !oldIds.has(c.id)).length === flights.filter(f => f.toUserId === userId).length;
+    };
+    if (viewerId && !before.maskedHand && !game.maskedHand && !matches(viewerId, before.hand, game.hand)) return null;
+    const partnerId = junoPartnerId(game, viewerId);
+    if (partnerId && !matches(partnerId, before.partnerHand, game.partnerHand)) return null;
     return { before, id: move.id, flights, startedAt: observedAt - (JUNO_PIZZA_MS - resolution.remainingMs) };
   }, [game, viewerId, observedAt, active, cancelledId]);
   useLayoutEffect(() => { previous.current = { game, viewerId }; held.current = presentation; }, [game, viewerId, presentation]);

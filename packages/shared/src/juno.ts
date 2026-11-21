@@ -61,7 +61,8 @@ export interface JunoRankingPage {
   entries: (JunoRankingMember & { rank: number })[];
   me: JunoRankingMember;
 }
-export type JunoAction = { type: 'join' | 'leave' | 'start' | 'rematch' | 'draw' | 'pass' | 'announce' | 'addBot' }
+export type JunoAction = { type: 'join' | 'start' | 'rematch' | 'draw' | 'pass' | 'announce' | 'addBot' }
+  | { type: 'leave' }
   | { type: 'removeBot'; botId: string }
   | { type: 'options'; specials?: boolean; stacking?: boolean; mode?: JunoMode }
   | { type: 'report'; targetUserId: string; opportunityId: string }

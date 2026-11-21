@@ -2,10 +2,10 @@
 import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { MemoryRouter } from 'react-router-dom';
-import type { JunoAction, JunoSnapshot } from '@veyvox/shared/src/juno';
+import type { JunoSnapshot } from '@veyvox/shared/src/juno';
 import { JunoTable } from '../components/games/JunoTable';
 import { JunoSounds } from '../components/games/JunoSounds';
-import { useJunoStore } from '../stores/junoStore';
+import { useJunoStore, type JunoStoreAction } from '../stores/junoStore';
 import { useSpaceStore } from '../stores/spaceStore';
 import { useVoiceStore } from '../stores/voiceStore';
 import { initI18n } from '../i18n';
@@ -34,15 +34,17 @@ async function read() {
   catch (error) { if (run === generation) useJunoStore.setState({ error, stale: true }); }
   finally { reading = false; }
 }
-async function command(action: JunoAction | { type: 'create' }) {
+async function command(action: JunoStoreAction) {
   const state = useJunoStore.getState();
   const run = generation;
   if (spectator || state.pending || !state.snapshot?.game) return;
   if (action.type === 'create' || action.type === 'rematch' || action.type === 'start' || action.type === 'addBot' || action.type === 'removeBot') return;
+  if (action.type === 'leave' && action.gameId !== state.snapshot.game.id) return;
   state.playFeedback?.('select');
   useJunoStore.setState({ pending: true, error: null });
   try {
-    const view = await request('/action', { ...action, gameId: state.snapshot.game.id, revision: state.snapshot.revision });
+    const view = await request('/action', action.type === 'leave' ? action
+      : { ...action, gameId: state.snapshot.game.id, revision: state.snapshot.revision });
     if (run === generation) accept(view);
   } catch (error) { if (run === generation) { useJunoStore.setState({ error }); await read(); } }
   finally { if (run === generation) useJunoStore.setState({ pending: false }); }

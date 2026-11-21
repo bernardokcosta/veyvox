@@ -10,9 +10,13 @@ an authenticated human member with VIEW_CHANNEL + CONNECT and a live voice-ownin
 socket in that space channel. Commands are `create`, `join`, `leave`, `start`,
 `rematch`, `draw`, `pass`, `play`, `announce`, `addBot`, `removeBot` (`botId` required),
 `report` (`targetUserId`, `opportunityId` required), `options` (`specials`/`stacking`
-booleans or `mode: 'single'|'duo'`, at least one, host-only, lobby-only);
-non-create commands name the table and expected
-revision (409 `juno_stale` on conflict). No opponent hands or draw order leave
+booleans or `mode: 'single'|'duo'`, at least one, host-only, lobby-only).
+Non-create commands name the table and expected revision (409 `juno_stale`
+on conflict). `leave` is independent of turn: for the same game ID it accepts
+a revision from the caller's current seat through the current table revision.
+This avoids racing fast turns without allowing a delayed request to release a
+new seat. It does not relax authentication, voice, or permission gates.
+No opponent hands or draw order leave
 the server. Five creates and 60 commands/minute/account, plus the existing HTTP
 limit. State GETs have a separate bounded 1000/minute/address route budget for
 live-update fanout and fallback polling; this does not relax POST, account, auth,

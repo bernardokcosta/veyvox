@@ -18,8 +18,14 @@ export function JunoResult() {
   const winnerTeam: 1 | 2 | undefined = game.teams && game.winnerId != null
     ? game.teams.a.includes(game.winnerId) ? 1 : game.teams.b.includes(game.winnerId) ? 2 : undefined
     : undefined;
-  const won = !!game.winnerId && (game.winnerId === target?.userId
-    || (winnerTeam !== undefined && !!target?.userId && (winnerTeam === 1 ? game.teams!.a : game.teams!.b).includes(target.userId)));
+  const viewerId = target?.userId;
+  const viewerStanding = board?.standings.find(row => row.userId === viewerId);
+  const winningTeam = winnerTeam === 1 ? game.teams?.a : winnerTeam === 2 ? game.teams?.b : undefined;
+  const won = !!viewerId && (winningTeam
+    ? winningTeam.includes(viewerId) && (viewerStanding
+      ? viewerStanding.outcome === 'completed' && viewerStanding.place === 1
+      : game.players.some(player => player.userId === viewerId))
+    : game.winnerId === viewerId);
   const winnerName = winner ? winner.computer ? t('juno.botName', { number: winner.computer }) : winner.name : '';
   return <div className="juno-result">
     {game.winnerId && <img className="juno-crown" src={JUNO_ASSETS.crown} alt="" aria-hidden="true" />}

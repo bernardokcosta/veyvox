@@ -1,9 +1,16 @@
-import type { JunoPerson } from '@veyvox/shared/src/juno';
+import type { JunoPerson, JunoView } from '@veyvox/shared/src/juno';
 
 export type JunoSeatPosition = 'top' | 'topLeft' | 'topRight' | 'left' | 'right' | 'bottom';
 export type JunoSeats<T> = Record<JunoSeatPosition, T | null>;
 
 const EMPTY: JunoSeats<never> = { top: null, topLeft: null, topRight: null, left: null, right: null, bottom: null };
+
+export function junoPartnerId(game: JunoView, viewerId?: string): string | undefined {
+  if (game.mode !== 'duo' || !game.teams || !viewerId || !game.players.some(player => player.userId === viewerId)) return;
+  const { a, b } = game.teams;
+  const team = a.includes(viewerId) ? a : b.includes(viewerId) ? b : undefined;
+  return team?.find(id => id !== viewerId && game.players.some(player => player.userId === id));
+}
 
 /** Fixed relative layout: the viewer stays below; with five seats the top row
  *  splits in two, with six the top row holds three. */

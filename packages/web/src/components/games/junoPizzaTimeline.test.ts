@@ -74,4 +74,19 @@ describe('shared pizza departure/arrival timeline', () => {
     expect(view.players.map(p => p.flouredCardCount)).toEqual([1, 0]);
     expect(projectPizzaHands(before, after, pizzaFlights(after), 'a', 800).players[1]!.flouredCardCount).toBe(1);
   });
+  it('keeps every visible partner face in sync with their animated count', () => {
+    const { before, after } = exchange();
+    before.mode = after.mode = 'duo';
+    before.teams = after.teams = { a: ['a', 'b'], b: ['c', 'd'] };
+    before.partnerHand = Array.from({ length: 7 }, (_, i) => ({ id: `partner-${i}`, color: 'mint', face: '2' }));
+    const received = { ...before.hand[1]!, floured: true };
+    after.partnerHand = [...before.partnerHand.slice(1), received];
+    const at = (elapsed: number) => projectPizzaHands(before, after, pizzaFlights(after), 'a', elapsed);
+    expect(at(0).partnerHand).toEqual(before.partnerHand);
+    expect(at(799).partnerHand).toHaveLength(7);
+    expect(at(800).partnerHand).toEqual([...before.partnerHand, received]);
+    expect(at(800).players[1]!.cardCount).toBe(8);
+    expect(at(2600).partnerHand).toEqual(after.partnerHand);
+    expect(at(5000)).toBe(after);
+  });
 });

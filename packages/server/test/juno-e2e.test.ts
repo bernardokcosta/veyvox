@@ -186,7 +186,7 @@ describe('real Juno server with four independently authenticated voice sockets',
     expect(winners).toHaveLength(2);
     expect(winners[0]!.xp).toBe(winners[1]!.xp);
     expect(new Set(winners.map(w => w.userId))).toEqual(new Set(done.game!.teams![done.game!.teams!.a.includes(done.game!.winnerId!) ? 'a' : 'b']));
-    for (const row of board.standings) expect([1, 3, 4]).toContain(row.place);
+    expect(board.standings.map(row => row.place)).toEqual([1, 1, 2, 2]);
     const ranking = await (await call(users[0]!, 'GET', `/api/spaces/${spaceId}/juno/ranking`)).json() as JunoRankingPage;
     for (const w of winners) {
       const entry = ranking.entries.find(r => r.user.id === w.userId)!;

@@ -193,6 +193,31 @@ describe('Juno rooms, privacy and lifecycle', () => {
     const old = rooms.read('voice', 'a'); send('a', { type: 'start' });
     expect(() => rooms.command('voice', { userId: 'a', name: 'a' }, { type: 'start', gameId: old.game!.id, revision: old.revision })).toThrow('juno_stale');
   });
+  it('lets a seated player leave outside their turn with a revision from before the turn changed', () => {
+    const { rooms, send, setTime } = setup();
+    send('b', { type: 'join' }); send('c', { type: 'join' }); send('a', { type: 'start' });
+    const old = rooms.read('voice', 'c');
+    setTime(JUNO_TURN_MS);
+    const current = rooms.read('voice', 'c');
+    expect(current.revision).toBeGreaterThan(old.revision);
+    expect(current.game!.currentPlayerId).toBe('b');
+    const left = rooms.command('voice', { userId: 'c', name: 'c' },
+      { type: 'leave', gameId: old.game!.id, revision: old.revision });
+    expect(left.game!.players.map(p => p.userId)).toEqual(['a', 'b']);
+    expect(left.game!.currentPlayerId).toBe('b');
+  });
+  it('rejects a stale leave from a previous seat, another game, or a future revision', () => {
+    const { rooms, send } = setup();
+    send('b', { type: 'join' });
+    const old = rooms.read('voice', 'b');
+    send('b', { type: 'leave' }); send('b', { type: 'join' });
+    const current = rooms.read('voice', 'b');
+    const leave = (gameId: string, revision: number) => rooms.command('voice', { userId: 'b', name: 'b' }, { type: 'leave', gameId, revision });
+    expect(() => leave(old.game!.id, old.revision)).toThrow('juno_stale');
+    expect(() => leave('other-game', current.revision)).toThrow('juno_stale');
+    expect(() => leave(current.game!.id, current.revision + 1)).toThrow('juno_stale');
+    expect(rooms.read('voice', 'b').game!.players).toHaveLength(2);
+  });
   it('automatically draws/passes expired turns and removes departed players', () => {
     const { rooms, send, setTime, seated } = setup(); send('b', { type: 'join' }); send('c', { type: 'join' }); send('a', { type: 'start' });
     setTime(JUNO_TURN_MS); rooms.tick(); expect(rooms.read('voice', 'b').game!.currentPlayerId).toBe('b');

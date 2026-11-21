@@ -106,8 +106,10 @@
         "take": "Com pilha pendente, comprar é levar a pilha toda e passar a vez; o tempo esgotado faz o mesmo."
       },
       "duos": {
-        "rules": "Dois jogadores por time, sentados 1-2 contra 3-4. Você vê a mão inteira do parceiro, mas joga só com as suas cartas.",
-        "limits": "Só +2/+4 responde ou compra a pilha inteira enquanto houver pendência, igual no individual. Se o parceiro sair, você termina a rodada sozinho."
+        "rules": "Dois jogadores por dupla, com os assentos 1–2 contra 3–4. Você vê a mão inteira no assento do parceiro, mas joga só com as suas cartas.",
+        "limits": "Se o parceiro sair, você termina a rodada sozinho.",
+        "winner": "Quem fica sem cartas primeiro vence pela dupla. Quem terminou na dupla vencedora divide o primeiro lugar e, em rodadas válidas para o ranking, recebe o mesmo XP e uma vitória por jogador.",
+        "ranking": "Quem terminou na outra dupla fica em segundo lugar, com o bônus de XP pelas cartas restantes calculado para cada jogador. Sair antes do fim não dá posição nem XP."
       }
     },
     "settings": {
@@ -260,6 +262,7 @@
       "duosHint": "Dois times de dois. Você vê a mão do parceiro; a dupla vence junta."
     },
     "stackPending": "+{{amount}} para comprar",
+    "stackTaken": "{{name}} comprou {{amount}} cartas da pilha",
     "teamA": "Dupla A",
     "teamB": "Dupla B",
     "partnerHand": "Mão da dupla"

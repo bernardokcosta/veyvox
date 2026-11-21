@@ -106,8 +106,10 @@
         "take": "With a pending pile, drawing means taking the whole pile and losing the turn; running out of time does the same."
       },
       "duos": {
-        "rules": "Two players per team, seated 1-2 against 3-4. You see your partner’s whole hand but play only your own cards.",
-        "limits": "Only +2/+4 answers and full takes are allowed while a pile is pending, same as singles. If your partner leaves, you finish the round alone."
+        "rules": "Two players per team, seated 1-2 against 3-4. You see your partner’s whole hand at their seat, but play only your own cards.",
+        "limits": "If your partner leaves, you finish the round alone.",
+        "winner": "The first empty hand wins the round for their team. Teammates who finish share first place and earn the same XP and one win each in a ranked round.",
+        "ranking": "The other team’s finishers both take second place, with the normal remaining-card XP bonus for each player. Leaving early earns no place or XP."
       }
     },
     "settings": {
@@ -257,6 +259,7 @@
       "duosHint": "Two teams of two. You see your partner’s hand; the team wins together."
     },
     "stackPending": "+{{amount}} to draw",
+    "stackTaken": "{{name}} drew {{amount}} cards from the pile",
     "teamA": "Team A",
     "teamB": "Team B",
     "partnerHand": "Partner’s hand"

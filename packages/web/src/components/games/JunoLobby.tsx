@@ -16,11 +16,14 @@ export function JunoLobby({ onRanking }: { onRanking: () => void }) {
   const self = useAuthStore(s => s.user);
   const spaceId = useSpaceStore(s => target ? s.spaceChannelIndex.get(target.channelId)?.spaceId ?? '' : '');
   const game = snapshot?.game;
+  const options = game?.options;
+  const supportsDuos = snapshot?.supportsDuos === true;
+  const isDuo = supportsDuos && options?.mode === 'duo';
   const isPlayer = !!game?.players.some(p => p.userId === target?.userId);
   const disabled = !connected || pending || stale || !snapshot;
   // Older hosts never advertise six seats; until a snapshot says otherwise, offer the full table.
   // Duos lobbies cap at four seats for two fixed pairs.
-  const maxSeats = !game ? JUNO_MAX_PLAYERS : game.options.mode === 'duo' ? JUNO_MAX_DUO_PLAYERS
+  const maxSeats = !game ? JUNO_MAX_PLAYERS : isDuo ? JUNO_MAX_DUO_PLAYERS
     : snapshot?.supportsSix === true ? JUNO_MAX_PLAYERS : 4;
   return <div className="juno-lobby">
     {!game && self && <div className="juno-lobby-identity"><JunoPlayerBadge person={{ userId: self.id, name: self.displayName ?? self.username,
@@ -41,24 +44,26 @@ export function JunoLobby({ onRanking }: { onRanking: () => void }) {
           disabled={disabled} onClick={() => void command({ type: 'addBot' })}><span aria-hidden="true">＋</span></button>
         : <div className="juno-seat-empty" key={i} aria-label={t('juno.emptySeat')}><span aria-hidden="true">＋</span></div>)}
     </div>}
-    {game && game.phase === 'lobby' && snapshot?.supportsOptions === true && <>
+    {game && options && game.phase === 'lobby' && snapshot?.supportsOptions === true && <>
       <button type="button" className="juno-secondary juno-options-toggle" disabled={disabled} onClick={() => setOptionsOpen(true)}>{t('juno.options.title')}</button>
       <Modal isOpen={optionsOpen} onClose={() => setOptionsOpen(false)} maxWidth="max-w-md" mobileStyle="sheet">
         <div className="juno-options" role="dialog" aria-modal="true" aria-label={t('juno.options.title')}>
           <h2>{t('juno.options.title')}</h2>
-          <fieldset className="juno-options-mode" disabled={disabled || target?.userId !== game.hostId}>
-            <legend>{t('juno.options.mode')}</legend>
-            <label><input type="radio" name="juno-mode" checked={game.options.mode === 'single'} onChange={() => void command({ type: 'options', mode: 'single' })} />{t('juno.options.single')}</label>
-            <label><input type="radio" name="juno-mode" checked={game.options.mode === 'duo'} onChange={() => void command({ type: 'options', mode: 'duo' })} />{t('juno.options.duos')}</label>
-          </fieldset>
-          <p>{t('juno.options.duosHint')}</p>
-        {game.options.mode === 'duo' && game.players.length >= 2 && <p className="juno-options-teams">
-          {t('juno.teamA')}: {game.players.slice(0, 2).map(p => p.computer ? t('juno.botName', { number: p.computer }) : p.nickname ?? p.name).join(' · ')}
-          {' — '}{t('juno.teamB')}: {(game.players.slice(2, 4).map(p => p.computer ? t('juno.botName', { number: p.computer }) : p.nickname ?? p.name).join(' · ') || '…')}
-        </p>}
-          <label><input type="checkbox" checked={game.options.specials} disabled={disabled || target?.userId !== game.hostId} onChange={event => void command({ type: 'options', specials: event.target.checked })} />{t('juno.options.specials')}</label>
+          {supportsDuos && <>
+            <fieldset className="juno-options-mode" disabled={disabled || target?.userId !== game.hostId}>
+              <legend>{t('juno.options.mode')}</legend>
+              <label><input type="radio" name="juno-mode" checked={!isDuo} onChange={() => void command({ type: 'options', mode: 'single' })} />{t('juno.options.single')}</label>
+              <label><input type="radio" name="juno-mode" checked={isDuo} onChange={() => void command({ type: 'options', mode: 'duo' })} />{t('juno.options.duos')}</label>
+            </fieldset>
+            <p>{t('juno.options.duosHint')}</p>
+            {isDuo && game.players.length >= 2 && <p className="juno-options-teams">
+              {t('juno.teamA')}: {game.players.slice(0, 2).map(p => p.computer ? t('juno.botName', { number: p.computer }) : p.nickname ?? p.name).join(' · ')}
+              {' — '}{t('juno.teamB')}: {(game.players.slice(2, 4).map(p => p.computer ? t('juno.botName', { number: p.computer }) : p.nickname ?? p.name).join(' · ') || '…')}
+            </p>}
+          </>}
+          <label><input type="checkbox" checked={options.specials} disabled={disabled || target?.userId !== game.hostId} onChange={event => void command({ type: 'options', specials: event.target.checked })} />{t('juno.options.specials')}</label>
           <p>{t('juno.options.specialsHint')}</p>
-          <label><input type="checkbox" checked={game.options.stacking} disabled={disabled || target?.userId !== game.hostId} onChange={event => void command({ type: 'options', stacking: event.target.checked })} />{t('juno.options.stacking')}</label>
+          <label><input type="checkbox" checked={options.stacking} disabled={disabled || target?.userId !== game.hostId} onChange={event => void command({ type: 'options', stacking: event.target.checked })} />{t('juno.options.stacking')}</label>
           <p>{t('juno.options.stackingHint')}</p>
         </div>
       </Modal>
@@ -66,7 +71,7 @@ export function JunoLobby({ onRanking }: { onRanking: () => void }) {
     <div className="juno-menu-actions">
       {!game ? loading && !snapshot ? <p role="status">{t('common:states.loading')}</p>
         : <button type="button" className="juno-primary" disabled={disabled} onClick={() => void command({ type: 'create' })}>{t('juno.create')}</button>
-        : target?.userId === game.hostId ? <button type="button" className="juno-primary" disabled={disabled || game.players.length < 2 || (game.options.mode === 'duo' && game.players.length !== JUNO_MAX_DUO_PLAYERS)} onClick={() => void command({ type: 'start' })}>{t('juno.start')}</button>
+        : target?.userId === game.hostId ? <button type="button" className="juno-primary" disabled={disabled || game.players.length < 2 || (isDuo && game.players.length !== JUNO_MAX_DUO_PLAYERS)} onClick={() => void command({ type: 'start' })}>{t('juno.start')}</button>
           : !isPlayer ? <button type="button" className="juno-primary" disabled={disabled || game.players.length >= maxSeats} onClick={() => void command({ type: 'join' })}>{game.players.length >= maxSeats ? t('juno.full') : t('juno.join')}</button>
             : <p role="status">{t('juno.waitingHost')}</p>}
       <button type="button" className="juno-secondary" onClick={onRanking}>{t('juno.rankingTitle')}</button>

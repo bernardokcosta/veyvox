@@ -1,10 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { JunoAction } from '@veyvox/shared/src/juno.js';
 import { JunoRooms } from './juno.js';
 
-function setup() {
+function setup(options: Partial<ConstructorParameters<typeof JunoRooms>[0]> = {}) {
   let now = 0;
-  const rooms = new JunoRooms({ present: () => true, changed: () => {}, now: () => now });
+  const rooms = new JunoRooms({ present: () => true, changed: () => {}, now: () => now, ...options });
   const send = (id: string, action: JunoAction, ...flags: [boolean, boolean, boolean, boolean, boolean, boolean]) => {
     const view = rooms.read('voice', id, ...flags);
     return rooms.command('voice', { userId: id, name: id }, { ...action, gameId: view.game!.id, revision: view.revision }, ...flags);
@@ -33,8 +33,8 @@ describe('Juno duos partnerships', () => {
     const { rooms, send, full } = setup();
     for (const id of ['b', 'c', 'd', 'e', 'f']) send(id, { type: 'join' }, ...full);
     const before = rooms.read('voice', 'a', ...full);
-    expect(() => send('a', { type: 'options', mode: 'duo' }, ...full)).toThrow('juno_invalid_move');
-    expect(rooms.read('voice', 'a', ...full).game!.options).toMatchObject({ mode: 'single' });
+    expect(() => send('a', { type: 'options', mode: 'duo', specials: false, stacking: true }, ...full)).toThrow('juno_invalid_move');
+    expect(rooms.read('voice', 'a', ...full).game!.options).toEqual(before.game!.options);
     expect(rooms.read('voice', 'a', ...full).revision).toBe(before.revision);
   });
   it('requires exactly four seated players to start a duo round', () => {
@@ -91,7 +91,7 @@ describe('Juno duos partnerships', () => {
     expect(game.partnerHand).toEqual([]);
     expect(() => rooms.read('voice', 'c', ...old)).not.toThrow();
   });
-  it('credits both teammates with the winner place and identical XP, losers 3/4', async () => {
+  it('shares first place and winner XP, and awards both opponents second place despite different hand counts', async () => {
     const { buildJunoStandings } = await import('./junoStandings.js');
     const { applyDuoResults } = await import('./junoStandings.js');
     const starters = ['a', 'b', 'c', 'd'].map(userId => ({ userId, name: userId }));
@@ -101,7 +101,7 @@ describe('Juno duos partnerships', () => {
     const teams = { a: ['a', 'b'], b: ['c', 'd'] };
     const rows = applyDuoResults(base, 'a', teams);
     expect(rows.filter(r => r.team === 1).map(r => [r.userId, r.place, r.xp])).toEqual([['a', 1, rows[0]!.xp], ['b', 1, rows[0]!.xp]]);
-    expect(rows.filter(r => r.team === 2).map(r => [r.userId, r.place])).toEqual([['c', 3], ['d', 4]]);
+    expect(rows.filter(r => r.team === 2).map(r => [r.userId, r.place])).toEqual([['c', 2], ['d', 2]]);
     expect(rows.find(r => r.userId === 'c')!.xp).toBeGreaterThan(rows.find(r => r.userId === 'd')!.xp!);
   });
   it('recycles a leaver hand and lets the partner continue solo in turn order', () => {
@@ -116,6 +116,22 @@ describe('Juno duos partnerships', () => {
     expect(after.players.map(p => p.userId)).toEqual(['a', 'c', 'd']);
     expect(after.phase).toBe('playing');
     expect(after.teams).toEqual({ a: ['a', 'b'], b: ['c', 'd'] });
+  });
+  it('shows shared first place with a teammate bot but never settles practice XP', () => {
+    const settle = vi.fn(() => { throw new Error('practice must not settle'); });
+    const { rooms, send, full } = setup({ spaceIdForChannel: () => 'space', settle });
+    send('a', { type: 'options', mode: 'duo' }, ...full);
+    send('a', { type: 'addBot' }, ...full);
+    for (const id of ['c', 'd']) send(id, { type: 'join' }, ...full);
+    send('a', { type: 'start' }, ...full);
+    const tables = rooms as unknown as { tables: Map<string, { round: import('./juno.js').JunoRound | null }> };
+    const round = tables.tables.get('voice')!.round!;
+    round.turn = 0;
+    round.players[0]!.hand = [{ ...round.discard.at(-1)!, id: 'winner' }];
+    const result = send('a', { type: 'play', cardId: 'winner' }, ...full).game!.scoreboard!;
+    expect(result.status).toBe('unranked');
+    expect(result.standings.map(row => [row.team, row.place, row.xp])).toEqual([[1, 1, 0], [1, 1, 0], [2, 2, 0], [2, 2, 0]]);
+    expect(settle).not.toHaveBeenCalled();
   });
   it('keeps duos mode across rematch with a fresh solo lobby', async () => {
     const { rooms, send, full } = setup();

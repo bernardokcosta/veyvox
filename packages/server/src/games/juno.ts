@@ -274,6 +274,7 @@ export function actInRound(round: JunoRound, userId: string, action: JunoAction,
 
 interface Table {
   id: string; hostId: string; people: JunoPerson[]; round: JunoRound | null;
+  humanSeatRevisions: Map<string, number>;
   options: { specials: boolean; stacking: boolean; mode: JunoMode };
   revision: number; createdAt: number; updatedAt: number;
   spaceId: string | null; starters: JunoPerson[];
@@ -309,38 +310,39 @@ export class JunoRooms {
   }
   private complete(channelId: string, table: Table): void {
     const round = table.round;
-    if (round?.result) { round.reportWindows = []; round.memoryCurse = undefined; round.intoxication = undefined; round.pizzaResolution = undefined; round.stackDraw = 0; }
-    if (round?.result && table.starters.some(p => p.computer)) {
-      if (!table.scoreboard) table.scoreboard = { roundId: table.id, status: 'unranked',
-        standings: buildJunoStandings(table.starters, round.players.map(p => ({ userId: p.userId, cardCount: p.hand.length })), round.winnerId, round.result)
-          .map(p => ({ ...p, xp: 0 })) };
-      return;
-    }
-    if (!round?.result || !this.options.settle || !table.spaceId) return;
+    const result = round?.result;
+    if (!result) return;
+    round.reportWindows = []; round.memoryCurse = undefined; round.intoxication = undefined; round.pizzaResolution = undefined; round.stackDraw = 0;
+    const practice = table.starters.some(p => p.computer);
+    if (practice ? !!table.scoreboard : !this.options.settle || !table.spaceId) return;
+    const teams = round.duos ? round.teams : null;
     if (!table.settlement) {
       const base = buildJunoStandings(table.starters,
-        round.players.map(p => ({ userId: p.userId, cardCount: p.hand.length })), round.winnerId, round.result);
-      if (round.duos && round.teams) {
-        for (const row of base) row.team = round.teams.a.includes(row.userId) ? 1 : round.teams.b.includes(row.userId) ? 2 : null;
+        round.players.map(p => ({ userId: p.userId, cardCount: p.hand.length })), round.winnerId, result);
+      const standings = teams ? applyDuoResults(base, result === 'emptyHand' ? round.winnerId : null, teams) : base;
+      if (practice) {
+        table.scoreboard = { roundId: table.id, status: 'unranked', standings: standings.map(p => ({ ...p, xp: 0 })) };
+        return;
       }
-      const standings = round.duos && round.teams && round.result === 'emptyHand' && round.winnerId
-        ? applyDuoResults(base, round.winnerId, round.teams)
-        : base;
+      if (!table.spaceId) return;
       table.settlement = { roundId: table.id, spaceId: table.spaceId, channelId, finishedAt: this.now(),
-        scoringVersion: 1, result: round.result, duos: round.duos ? round.teams : null, standings: standings };
-      table.scoreboard = { roundId: table.id, status: round.result === 'emptyHand' ? 'pending' : 'unranked',
-        standings: table.settlement.standings.map(p => ({ ...p })) };
+        scoringVersion: 1, result, duos: teams ? { ...teams, starterIds: table.starters.map(p => p.userId) } : null, standings };
+      table.scoreboard = { roundId: table.id, status: result === 'emptyHand' ? 'pending' : 'unranked',
+        standings: standings.map(p => ({ ...p })) };
     }
-    if (table.scoreboard?.status !== 'pending' || this.now() < table.retryAt) return;
+    if (!this.options.settle || table.scoreboard?.status !== 'pending' || this.now() < table.retryAt) return;
     table.retryAt = this.now() + 1000;
     try {
       // The integration cannot mutate the frozen proposal kept for a retry.
-      table.scoreboard = this.options.settle({ ...table.settlement, standings: table.settlement.standings.map(p => ({ ...p })) });
+      const { duos, standings } = table.settlement;
+      table.scoreboard = this.options.settle({ ...table.settlement, standings: standings.map(p => ({ ...p })),
+        duos: duos ? { a: [...duos.a], b: [...duos.b], starterIds: [...duos.starterIds] } : null });
       if (table.scoreboard.status !== 'pending') this.changed(channelId, table);
     } catch { /* The integration reports failures; keep the same pending result for the next pass. */ }
   }
   private remove(channelId: string, table: Table, userId: string): void {
     table.people = table.people.filter(person => person.userId !== userId);
+    table.humanSeatRevisions.delete(userId);
     table.memoryClients.delete(userId);
     table.intoxicatedClients.delete(userId);
     table.pizzaClients.delete(userId);
@@ -518,6 +520,7 @@ export class JunoRooms {
       if (table) refuse('juno_exists');
       if (this.tables.size >= 1_000) refuse('juno_capacity');
       table = { id: randomUUID(), hostId: person.userId, people: [{ ...person }], round: null,
+        humanSeatRevisions: new Map([[person.userId, this.revision + 1]]),
         options: { specials: true, stacking: false, mode: 'single' },
         revision: 0, createdAt: this.now(), updatedAt: this.now(),
         spaceId: this.options.spaceIdForChannel?.(channelId) ?? null, starters: [], retryAt: 0,
@@ -532,7 +535,7 @@ export class JunoRooms {
     if (table?.round?.stacking && !supportsStacking && command.type !== 'leave') refuse('juno_update_required');
     if (table?.round?.duos && !supportsDuos && command.type !== 'leave') refuse('juno_update_required');
     if (table && this.sixRequired(table) && !supportsSix && command.type !== 'leave') refuse('juno_update_required');
-    if (!table || command.gameId !== table.id || command.revision !== table.revision) refuse('juno_stale');
+    if (!table || command.gameId !== table.id || (command.type !== 'leave' && command.revision !== table.revision)) refuse('juno_stale');
     const seated = table.people.some(p => p.userId === person.userId);
     const seatCap = table.options.mode === 'duo' ? JUNO_MAX_DUO_PLAYERS : JUNO_MAX_PLAYERS;
     const seatFull = table.options.mode === 'duo' ? 'juno_table_full' : 'juno_full';
@@ -543,6 +546,7 @@ export class JunoRooms {
         if (table.people.length >= 4 && !this.sixConsent(table, supportsSix)) refuse('juno_update_required');
         if (supportsSix) table.sixClients.add(person.userId); else table.sixClients.delete(person.userId);
         table.people.push({ ...person });
+        table.humanSeatRevisions.set(person.userId, this.revision + 1);
       }
     } else if (command.type === 'addBot' || command.type === 'removeBot') {
       if (table.hostId !== person.userId) refuse('juno_host_required');
@@ -561,14 +565,15 @@ export class JunoRooms {
       if (table.hostId !== person.userId) refuse('juno_host_required');
       if (table.round) refuse('juno_in_progress');
       if (command.specials === undefined && command.stacking === undefined && command.mode === undefined) refuse('juno_invalid_move');
+      if (command.mode === 'duo' && table.people.length > JUNO_MAX_DUO_PLAYERS) refuse('juno_invalid_move');
       if (command.specials !== undefined) table.options.specials = command.specials;
       if (command.stacking !== undefined) table.options.stacking = command.stacking;
-      if (command.mode !== undefined) {
-        if (command.mode === 'duo' && table.people.length > JUNO_MAX_DUO_PLAYERS) refuse('juno_invalid_move');
-        table.options.mode = command.mode;
-      }
+      if (command.mode !== undefined) table.options.mode = command.mode;
     } else if (command.type === 'leave') {
-      if (!seated) refuse('juno_player_required');
+      const joinedAtRevision = table.humanSeatRevisions.get(person.userId);
+      if (joinedAtRevision === undefined) refuse('juno_player_required');
+      // A turn change does not invalidate the caller's seat; a new seat does.
+      if (command.revision < joinedAtRevision || command.revision > table.revision) refuse('juno_stale');
       this.remove(channelId, table, person.userId);
       return (!supportsMemory && table.round?.memoryEnabled) || (!supportsIntoxicated && table.round?.intoxicatedEnabled) || (!supportsPizza && table.round?.pizzaEnabled)
         || (!supportsSix && this.sixRequired(table)) || (!supportsStacking && !!table.round?.stacking) || (!supportsDuos && !!table.round?.duos)
@@ -580,6 +585,7 @@ export class JunoRooms {
         if (command.type === 'rematch') {
           if (!table.round?.result || table.scoreboard?.status === 'pending') refuse('juno_invalid_move');
           table.id = randomUUID(); table.round = null; table.people = [{ ...person }]; table.createdAt = this.now();
+          table.humanSeatRevisions = new Map([[person.userId, this.revision + 1]]);
           table.starters = []; table.settlement = undefined; table.scoreboard = undefined; table.retryAt = 0; table.botTurn = undefined;
           table.memoryClients = new Set(supportsMemory ? [person.userId] : []);
           table.intoxicatedClients = new Set(supportsIntoxicated ? [person.userId] : []);

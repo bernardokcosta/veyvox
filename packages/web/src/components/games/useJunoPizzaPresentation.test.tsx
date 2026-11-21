@@ -73,6 +73,26 @@ describe('match-local pizza presentation lifecycle', () => {
     expect(result.current.game!.hand).toEqual(after.hand);
     unmount(); expect(vi.getTimerCount()).toBe(0);
   });
+  it('stages the partner’s known hand and falls back to the committed view if it missed a change', () => {
+    const { before, after } = views();
+    before.mode = after.mode = 'duo';
+    before.teams = after.teams = { a: ['a', 'b'], b: ['c', 'd'] };
+    before.partnerHand = [after.hand[1]!, ...Array.from({ length: 6 }, (_, i) => ({ id: `partner-${i}`, color: 'mint', face: '2' } as const))];
+    after.partnerHand = [...before.partnerHand.slice(1), { ...before.hand[1]!, floured: true }];
+    const mounted = renderHook(({ game }) => useJunoPizzaPresentation(game, 'a', 10_000, true), { initialProps: { game: before } });
+    mounted.rerender({ game: after });
+    expect(mounted.result.current.game!.partnerHand).toEqual(before.partnerHand);
+    act(() => vi.advanceTimersByTime(800));
+    expect(mounted.result.current.game!.partnerHand).toHaveLength(8);
+    act(() => vi.advanceTimersByTime(1800));
+    expect(mounted.result.current.game!.partnerHand).toEqual(after.partnerHand);
+    mounted.unmount();
+    vi.setSystemTime(10_000);
+    const missed = { ...before, partnerHand: before.partnerHand.map(card => ({ ...card, id: `stale-${card.id}` })) };
+    const second = renderHook(({ game }) => useJunoPizzaPresentation(game, 'a', 10_000, true), { initialProps: { game: missed } });
+    second.rerender({ game: after });
+    expect(second.result.current.game!.partnerHand).toEqual(after.partnerHand);
+  });
   it.each(['initial', 'reduced', 'stale', 'viewer', 'roster', 'cancel', 'completed'] as const)('shows the committed state without stale private cards on %s', mode => {
     const { before, after } = views();
     if (mode === 'reduced') vi.mocked(window.matchMedia).mockReturnValue({ matches: true } as MediaQueryList);

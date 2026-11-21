@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { JunoView } from '@veyvox/shared/src/juno';
 import { useJunoStore } from '../../stores/junoStore';
@@ -54,6 +54,37 @@ describe('Juno native table', () => {
     await userEvent.keyboard('{Escape}');
     expect(screen.queryByRole('group', { name: /leave this game/i })).not.toBeInTheDocument();
     expect(command).not.toHaveBeenCalled(); expect(leave).toHaveFocus();
+  });
+  it('keeps the leave bar through another player’s turn and a failed attempt, until the seat is gone', async () => {
+    const current = game('playing');
+    useJunoStore.setState({ snapshot: { revision: 2, game: current } });
+    render(<JunoTable />);
+    await userEvent.click(screen.getByRole('button', { name: 'Leave game' }));
+    act(() => useJunoStore.setState({ snapshot: { revision: 3, game: { ...current, currentPlayerId: 'b' } } }));
+    const bar = screen.getByRole('group', { name: /leave this game/i });
+    await userEvent.click(within(bar).getByRole('button', { name: 'Leave game' }));
+    expect(command).toHaveBeenCalledExactlyOnceWith({ type: 'leave', gameId: current.id, revision: 2 });
+    expect(bar).toBeInTheDocument();
+    act(() => useJunoStore.setState({ snapshot: { revision: 4, game: { ...current, players: current.players.slice(1) } } }));
+    expect(bar).not.toBeInTheDocument();
+    act(() => useJunoStore.setState({ snapshot: { revision: 5, game: current } }));
+    expect(screen.queryByRole('group', { name: /leave this game/i })).not.toBeInTheDocument();
+  });
+  it('does not carry a leave confirmation into a different game', async () => {
+    render(<JunoTable />);
+    await userEvent.click(screen.getByRole('button', { name: 'Leave game' }));
+    expect(screen.getByRole('group', { name: /leave this game/i })).toBeInTheDocument();
+    act(() => useJunoStore.setState({ snapshot: { revision: 2, game: { ...game(), id: 'replacement' } } }));
+    expect(screen.queryByRole('group', { name: /leave this game/i })).not.toBeInTheDocument();
+    expect(command).not.toHaveBeenCalled();
+  });
+  it('does not rebase a confirmation when it missed a leave and rejoin in the same lobby', async () => {
+    render(<JunoTable />);
+    await userEvent.click(screen.getByRole('button', { name: 'Leave game' }));
+    act(() => useJunoStore.setState({ snapshot: { revision: 4, game: game() } }));
+    const bar = screen.getByRole('group', { name: /leave this game/i });
+    await userEvent.click(within(bar).getByRole('button', { name: 'Leave game' }));
+    expect(command).toHaveBeenCalledExactlyOnceWith({ type: 'leave', gameId: 'game', revision: 1 });
   });
   it('navigates to the ranking and back without losing a private hand or sending commands', async () => {
     useJunoStore.setState({ snapshot: { revision: 1, game: game('playing') } }); render(<JunoTable />);

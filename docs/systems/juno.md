@@ -310,7 +310,11 @@ retried automatically. Confirmed `lastMove.type: 'report'` names reporter `userI
 accused `targetUserId` and actual drawn `amount` (existing deck scarcity rules
 apply). Schemas bound ids, revisions, colors and
 payload size (2 KiB). All state changes are synchronous; stale commands get 409
-`juno_stale`, never an automatic mutation retry. Only the host starts/rematches;
+`juno_stale`, never an automatic mutation retry. `leave` is not turn-bound:
+the confirmation stays open across moves and submits the revision when it
+opened. The matching game accepts any revision between the caller taking their
+current seat and the latest state. An old game or seat cannot be left by a delayed click.
+Only the host starts/rematches;
 a new lobby keeps only that host, requiring everyone else to join explicitly.
 Late joiners can spectate a running/finished round but cannot take a seat.
 
@@ -322,7 +326,7 @@ not platform accounts, voice seats or external AI. Only the human host may add/
 remove them, only in the lobby; capacity remains six (up to five `computer: 1–5`
 bots with one human host). An absent capability on an
 old host hides bot management; the JUNO button uses legacy play.announce there.
-Current human auth/voice/permissions and revision gates are unchanged.
+Current human auth/voice/permissions gates are unchanged.
 On older hosts without `supportsReports`, clients hide reporting and show that
 host's legacy automatic-penalty rule. Reports do not change computer decisions,
 private-hand projection, practice eligibility or settlement.
@@ -369,27 +373,36 @@ it. Stacking rounds answer readers and mutators without that support with 409
 `juno_update_required`. The public view exposes only the integer `stackDraw`;
 the client highlights just +2/+4 and renders a pulsing neon "+N" overlay with
 `mix-blend-mode: screen` supplier digits, static under reduced motion.
+When a confirmed stack take draws multiple cards, the client briefly
+pulses the number actually drawn with the player's name, even if `stackDraw`
+was cleared in the same snapshot. A timeout needs a +2/+4 on top of the discard
+to distinguish it from a Memory penalty. This uses the existing view and does
+not delay play.
 
 ### Duos mode
 
 With `mode: 'duo'` the lobby caps at four seats and the round plays 2v2:
 seating order fixes the teams ([0,1] vs [2,3]), shown as Dupla A/B badges in
 the lobby, on seats and in results. Each player sees the partner's whole hand
-face-up in a read-only strip (`partnerHand`); nothing else about privacy
+face-up at the partner's seat (`partnerHand`), with read-only horizontal scrolling
+for large hands. Pizza uses the same departure/arrival timing for both visible
+hands; nothing else about privacy
 changes — opponents still see backs, masked/cursed views keep opaque slots,
 and bots never report. A duo round needs exactly four seated players to start;
 leaving mid-round keeps the team playing solo and abandons the leaver as usual.
 
 The round ends on the first empty hand like always, but the win belongs to the
 team: both teammates are credited place 1 with the winner's full dynamic XP
-(incrementing wins and completed rounds for both), while the other team takes
-competition places 3/4. Abandoned starters keep their frozen team label but no
+(incrementing wins and completed rounds for both), while the other team's
+finishers both take place 2, with their usual individual XP bonus.
+Abandoned starters keep their frozen team label but no
 place or XP. Mixed cohorts play single: starting requires every seated human on
 a duos-capable client (`?duos=1`, six negotiations and under), otherwise the
 round freezes as classic single. Duo rounds answer readers and mutators without
 that support with 409 `juno_update_required`. The `juno_round_participants`
 row stores the frozen `team` (1|2|null) next to place/XP so credited standings
-survive restarts; practice computer tables stay unranked as before.
+survive restarts. Settlement validates the proposal against the original
+four-seat order. Practice tables show team places but award no XP or wins.
 
 After changes, `juno_updated {channelId}` travels through existing
 VIEW_CHANNEL-filtered `sendToChannel`. This is a non-secret invalidation, not a

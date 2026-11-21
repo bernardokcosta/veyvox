@@ -1,5 +1,5 @@
 import { and, asc, desc, eq, gt, inArray, notExists, sql } from 'drizzle-orm';
-import { JUNO_MAX_DECK_SIZE, type JunoPerson, type JunoRankingPage, type JunoScoreboard, type JunoSnapshot, type JunoStanding, type JunoView } from '@veyvox/shared/src/juno.js';
+import { JUNO_MAX_DECK_SIZE, JUNO_MAX_DUO_PLAYERS, type JunoPerson, type JunoRankingPage, type JunoScoreboard, type JunoSnapshot, type JunoStanding, type JunoView } from '@veyvox/shared/src/juno.js';
 import { getDb, schema, type DB, type DBHandle } from '../db/index.js';
 import { buildJunoStandings, applyDuoResults } from './junoStandings.js';
 import { sanitizeUser } from '../utils/sanitize.js';
@@ -12,13 +12,14 @@ export interface JunoSettlement {
   scoringVersion: 1;
   result: NonNullable<JunoView['result']>;
   standings: JunoStanding[];
-  duos: { a: string[]; b: string[] } | null;
+  duos: (NonNullable<JunoView['teams']> & { starterIds: string[] }) | null;
 }
 
 function unranked(input: JunoSettlement): JunoScoreboard {
   return { roundId: input.roundId, status: 'unranked', standings: input.standings.map(row => ({
     userId: row.userId, name: row.name, place: null, xp: 0, cardCount: row.cardCount,
     outcome: row.outcome === 'abandoned' ? 'abandoned' : 'unranked',
+    ...(row.team != null ? { team: row.team } : {}),
   })) };
 }
 
@@ -58,12 +59,13 @@ export function settleJunoRound(input: JunoSettlement, database?: DB): JunoScore
     if (completed.reduce((sum, count) => sum + count, 0) > JUNO_MAX_DECK_SIZE) throw new Error('Invalid Juno settlement');
     if (completed.filter(count => count === 0).length !== 1) throw new Error('Invalid Juno settlement');
     if (input.duos) {
-      const roster = [...input.duos.a, ...input.duos.b].sort();
-      const seated = input.standings.map(row => row.userId).sort();
-      if (roster.length !== seated.length || roster.some((id, i) => id !== seated[i])) throw new Error('Invalid Juno settlement');
+      const { a, b, starterIds } = input.duos;
+      if (a.length !== 2 || b.length !== 2 || starterIds.length !== JUNO_MAX_DUO_PLAYERS
+        || input.standings.length !== starterIds.length || new Set(starterIds).size !== starterIds.length
+        || [...a, ...b].some((id, i) => id !== starterIds[i])) throw new Error('Invalid Juno settlement');
       for (const row of input.standings) {
-        const team = input.duos.a.includes(row.userId) ? 1 : input.duos.b.includes(row.userId) ? 2 : null;
-        if (row.team !== team) throw new Error('Invalid Juno settlement');
+        const team = a.includes(row.userId) ? 1 : b.includes(row.userId) ? 2 : null;
+        if (team === null || row.team !== team) throw new Error('Invalid Juno settlement');
       }
     } else if (input.standings.some(row => row.team)) throw new Error('Invalid Juno settlement');
     const computed = buildJunoStandings(input.standings,

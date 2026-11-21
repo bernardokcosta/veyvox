@@ -159,10 +159,10 @@ export function JunoRules({ game, supportsMemory, supportsIntoxicated, supportsP
               </figure>}
             </> : <p className="juno-guide-note">{t('juno.guide.memory.disabled')}</p>}
           </section>}
-          <section aria-labelledby={`${id}-score`}>{heading('score')}<p>{t(stacking ? 'juno.guide.score.rankingStacking' : 'juno.guide.score.ranking')}</p>
-            <table className="juno-guide-xp"><thead><tr><th scope="col">{t('juno.rank')}</th><th scope="col">{t('juno.guide.score.award')}</th></tr></thead>
-              <tbody>{Object.values(JUNO_BASE_XP).map((xp, index) => <tr key={xp}><th scope="row">{formatNumber(index + 1)}</th><td>{t('juno.xpEarned', { xp: formatNumber(xp) })}</td></tr>)}</tbody>
-            </table><p>{t('juno.guide.score.ties')}</p><p>{t('juno.guide.score.dynamic')}</p>
+           <section aria-labelledby={`${id}-score`}>{heading('score')}<p>{t(duos ? 'juno.guide.duos.winner' : stacking ? 'juno.guide.score.rankingStacking' : 'juno.guide.score.ranking')}</p>
+             <table className="juno-guide-xp"><thead><tr><th scope="col">{t('juno.rank')}</th><th scope="col">{t('juno.guide.score.award')}</th></tr></thead>
+               <tbody>{(duos ? [1, 2] as const : [1, 2, 3, 4, 5, 6] as const).map(place => <tr key={place}><th scope="row">{formatNumber(place)}</th><td>{t('juno.xpEarned', { xp: formatNumber(JUNO_BASE_XP[place]) })}</td></tr>)}</tbody>
+             </table><p>{t(duos ? 'juno.guide.duos.ranking' : 'juno.guide.score.ties')}</p>{!duos && <p>{t('juno.guide.score.dynamic')}</p>}
             {stacking && <p className="juno-guide-note">{t('juno.guide.score.stackingWin')}</p>}<p>{t('juno.guide.score.practice')}</p><p>{t('juno.guide.score.pending')}</p>
           </section>
           <section aria-labelledby={`${id}-table`}>{heading('table')}

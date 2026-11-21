@@ -4,7 +4,7 @@ import { mkdtempSync } from 'node:fs';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { createJunoTestDb, seedJunoTestDb, junoTestSettlement as settlement } from './junoTestDb.js';
-import { buildJunoStandings } from './junoStandings.js';
+import { applyDuoResults, buildJunoStandings } from './junoStandings.js';
 import * as schema from '../db/schema.js';
 import { settleJunoRound } from './junoProgression.js';
 let fixture: ReturnType<typeof createJunoTestDb>;
@@ -73,21 +73,36 @@ describe('durable Juno progression', () => {
     expect(rows.map(r => [r.spaceId, r.totalXp]).sort()).toEqual([['other', 133], ['space', 266]]);
     expect(() => settleJunoRound(settlement('one', 'other'), fixture.db)).toThrow();
   });
-  it('credits both teammates with the winner award and persists their teams', async () => {
-    const { applyDuoResults } = await import('./junoStandings.js');
+  it('credits both teammates with the winner award and persists their teams once across retries', () => {
     const teams = { a: ['a', 'b'], b: ['c', 'd'] };
     const base = buildJunoStandings(['a', 'b', 'c', 'd'].map(userId => ({ userId, name: userId })),
       [{ userId: 'a', cardCount: 0 }, { userId: 'b', cardCount: 3 }, { userId: 'c', cardCount: 1 }, { userId: 'd', cardCount: 4 }], 'a', 'emptyHand');
     for (const row of base) row.team = teams.a.includes(row.userId) ? 1 : 2;
     const standings = applyDuoResults(base, 'a', teams);
-    const result = settleJunoRound({ roundId: 'duo', spaceId: 'space', channelId: 'voice', finishedAt: 100, scoringVersion: 1, result: 'emptyHand', standings, duos: teams }, fixture.db);
+    const input = { ...settlement('duo'), standings, duos: { ...teams, starterIds: ['a', 'b', 'c', 'd'] } };
+    const result = settleJunoRound(input, fixture.db);
     expect(result).toMatchObject({ status: 'credited' });
+    expect(settleJunoRound(input, fixture.db)).toEqual(result);
     const winners = result.standings.filter(r => r.place === 1);
     expect(winners.map(r => r.userId).sort()).toEqual(['a', 'b']);
     expect(winners[0]!.xp).toBe(winners[1]!.xp);
+    expect(result.standings.filter(r => r.team === 2).map(r => [r.userId, r.place])).toEqual([['c', 2], ['d', 2]]);
     expect(fixture.db.select().from(schema.junoPlayerStats).where(eq(schema.junoPlayerStats.userId, 'b')).get()).toMatchObject({ wins: 1, completedRounds: 1, totalXp: winners[0]!.xp });
     const stored = fixture.db.select().from(schema.junoRoundParticipants).where(eq(schema.junoRoundParticipants.roundId, 'duo')).all();
     expect(stored.map(r => [r.userId, r.team]).sort()).toEqual([['a', 1], ['b', 1], ['c', 2], ['d', 2]]);
+    expect(stored.map(r => [r.userId, r.place]).sort()).toEqual([['a', 1], ['b', 1], ['c', 2], ['d', 2]]);
+  });
+  it.each([
+    { a: ['a', 'b', 'c'], b: ['d'] },
+    { a: ['a', 'c'], b: ['b', 'd'] },
+  ])('refuses impossible duo splits without writing results: $a vs $b', teams => {
+    const input = settlement('invalid-duo');
+    const standings = applyDuoResults(input.standings, 'a', teams);
+    const proposal = { ...input, standings, duos: { ...teams, starterIds: ['a', 'b', 'c', 'd'] } };
+    expect(() => settleJunoRound(proposal, fixture.db)).toThrow('Invalid Juno settlement');
+    expect(fixture.db.select().from(schema.junoRoundResults).all()).toEqual([]);
+    expect(fixture.db.select().from(schema.junoRoundParticipants).all()).toEqual([]);
+    expect(fixture.db.select().from(schema.junoPlayerStats).all()).toEqual([]);
   });
   it('credits a six-player round with places 1-6 and refuses a seventh starter', () => {
     for (const id of ['e', 'f']) {

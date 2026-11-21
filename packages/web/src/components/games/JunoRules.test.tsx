@@ -29,9 +29,15 @@ describe('illustrated Juno rules', () => {
     const { guide, unmount } = await open({ game: duos, supportsMemory: true });
     expect(within(guide).getByRole('heading', { name: 'Duos', level: 3 })).toBeInTheDocument();
     expect(guide).toHaveTextContent(/whole hand/i);
+    expect(guide).toHaveTextContent(/share first place and earn the same XP/i);
+    expect(guide).toHaveTextContent(/both take second place/i);
+    expect(within(within(guide).getByRole('table')).getAllByRole('rowheader').map(row => row.textContent)).toEqual(['1', '2']);
+    expect(guide).toHaveTextContent(/leaving early earns no place or XP/i);
+    expect(guide).not.toHaveTextContent(/only the winner gains a win/i);
     unmount(); cleanup();
     const { guide: plain } = await open({ game, supportsMemory: true });
     expect(within(plain).queryByRole('heading', { name: 'Duos', level: 3 })).toBeNull();
+    expect(plain).toHaveTextContent(/only the winner gains a win/i);
   });
   it('teaches stacking only for tables playing with it enabled', async () => {
     const stacked = { ...game, options: { specials: true, stacking: true } };

@@ -39,8 +39,8 @@ describe('Juno authoritative result view', () => {
     game.scoreboard = { roundId: game.id, status: 'credited', standings: [
       { userId: 'a', name: 'Ada', user: junoUser('a'), cardCount: 0, xp: 137, place: 1, outcome: 'completed', team: 1 },
       { userId: 'b', name: 'Bo', user: junoUser('b'), cardCount: 5, xp: 137, place: 1, outcome: 'completed', team: 1 },
-      { userId: 'c', name: 'Cy', user: junoUser('c'), cardCount: 4, xp: 35, place: 3, outcome: 'completed', team: 2 },
-      { userId: 'd', name: 'Dee', user: junoUser('d'), cardCount: 9, xp: 25, place: 4, outcome: 'completed', team: 2 },
+      { userId: 'c', name: 'Cy', user: junoUser('c'), cardCount: 4, xp: 94, place: 2, outcome: 'completed', team: 2 },
+      { userId: 'd', name: 'Dee', user: junoUser('d'), cardCount: 9, xp: 93, place: 2, outcome: 'completed', team: 2 },
     ] };
     useJunoStore.setState({ snapshot: { revision: 2, game } });
     const { container } = render(<JunoResult />);
@@ -48,8 +48,17 @@ describe('Juno authoritative result view', () => {
     expect(screen.getByText('Team A wins!')).toBeInTheDocument();
     expect(container.querySelectorAll('.juno-team-a')).toHaveLength(2);
     expect(container.querySelectorAll('.juno-team-b')).toHaveLength(2);
+    expect(screen.getAllByLabelText('Position').map(position => position.textContent)).toEqual(['1', '1', '2', '2']);
     act(() => useJunoStore.setState({ target: { userId: 'b', origin: window.location.origin, channelId: 'voice' } }));
     expect(screen.getByRole('heading', { name: 'Victory!' })).toBeInTheDocument();
+    act(() => useJunoStore.setState({ snapshot: { revision: 3, game: { ...game,
+      players: game.players.filter(p => p.userId !== 'b'),
+      scoreboard: { ...game.scoreboard!, standings: game.scoreboard!.standings.map(row => row.userId === 'b'
+        ? { ...row, place: null, xp: 0, cardCount: null, outcome: 'abandoned' }
+        : row) },
+    } } }));
+    expect(screen.getByRole('heading', { name: 'Round results' })).toBeInTheDocument();
+    expect(screen.getByText('Team A wins!')).toBeInTheDocument();
   });
   it('does not claim personal victory for a loser or allow their rematch', () => {
     useJunoStore.setState({ target: { userId: 'b', origin: window.location.origin, channelId: 'voice' } });

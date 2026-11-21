@@ -1,4 +1,5 @@
-import { JUNO_PIZZA_MS, type JunoView } from '@veyvox/shared/src/juno';
+import { JUNO_PIZZA_MS, type JunoCard, type JunoView } from '@veyvox/shared/src/juno';
+import { junoPartnerId } from './junoSeats';
 
 export interface PizzaFlight {
   fromUserId: string;
@@ -42,13 +43,22 @@ export function projectPizzaHands(before: JunoView, after: JunoView, flights: re
       cardCount: previous.cardCount - (person.userId === after.lastMove?.userId ? 1 : 0) - departed + arrived,
       flouredCardCount: Math.max(0, (previous.flouredCardCount ?? 0) - Math.min(departed, oldFlourSent) + arrived) };
   });
-  if (!viewerId || before.maskedHand || after.maskedHand) return { ...after, players };
-  const finalIds = new Set(after.hand.map(c => c.id)), oldIds = new Set(before.hand.map(c => c.id));
-  const original = before.hand.filter(c => c.id !== after.lastMove?.card?.id);
+  const partnerId = junoPartnerId(after, viewerId);
+  const playedId = after.lastMove?.card?.id;
+  const partnerHand = partnerId ? projectKnownHand(before.partnerHand, after.partnerHand, playedId, flights, partnerId, elapsed) : after.partnerHand;
+  const hand = viewerId && !before.maskedHand && !after.maskedHand
+    ? projectKnownHand(before.hand, after.hand, playedId, flights, viewerId, elapsed) : after.hand;
+  return { ...after, players, hand, partnerHand };
+}
+
+function projectKnownHand(before: JunoCard[], after: JunoCard[], playedId: string | undefined,
+  flights: readonly PizzaFlight[], userId: string, elapsed: number): JunoCard[] {
+  const finalIds = new Set(after.map(c => c.id)), oldIds = new Set(before.map(c => c.id));
+  const original = before.filter(c => c.id !== playedId);
   const outgoing = original.filter(c => !finalIds.has(c.id));
-  const incoming = after.hand.filter(c => !oldIds.has(c.id));
-  const departed = flights.filter(f => f.fromUserId === viewerId && f.departureMs <= elapsed).length;
-  const arrived = flights.filter(f => f.toUserId === viewerId && f.arrivalMs <= elapsed).length;
+  const incoming = after.filter(c => !oldIds.has(c.id));
+  const departed = flights.filter(f => f.fromUserId === userId && f.departureMs <= elapsed).length;
+  const arrived = flights.filter(f => f.toUserId === userId && f.arrivalMs <= elapsed).length;
   const gone = new Set(outgoing.slice(0, departed).map(c => c.id));
-  return { ...after, players, hand: [...original.filter(c => !gone.has(c.id)), ...incoming.slice(0, arrived)] };
+  return [...original.filter(c => !gone.has(c.id)), ...incoming.slice(0, arrived)];
 }

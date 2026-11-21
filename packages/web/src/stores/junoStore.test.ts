@@ -89,6 +89,21 @@ describe('Juno session state', () => {
     useJunoStore.getState().bind(target, false); await useJunoStore.getState().command({ type: 'create' });
     expect(api.command).not.toHaveBeenCalled();
   });
+  it('sends the leave confirmation revision without rebasing or retrying it', async () => {
+    const game = junoGame();
+    const latest = { revision: 4, game };
+    useJunoStore.setState({ snapshot: latest });
+    const confirmed = { type: 'leave', gameId: game.id, revision: 2 } as const;
+    api.command.mockRejectedValueOnce(new HttpError(409, 'Stale', undefined, 'juno_stale'));
+    api.get.mockResolvedValueOnce(latest);
+    await useJunoStore.getState().command(confirmed);
+    expect(api.command).toHaveBeenCalledExactlyOnceWith('voice', confirmed, false, false, false, false, false);
+    expect(useJunoStore.getState().snapshot).toBe(latest);
+
+    useJunoStore.setState({ snapshot: { revision: 5, game: { ...game, id: 'replacement' } } });
+    await useJunoStore.getState().command(confirmed);
+    expect(api.command).toHaveBeenCalledTimes(1);
+  });
   it('routes a stale report to its origin once and reconciles without replaying the accusation', async () => {
     const game = junoGame('playing'); game.supportsReports = true;
     game.reportOpportunities = [{ id: 'miss-1', targetUserId: 'host-opponent', remainingMs: 1000 }];
