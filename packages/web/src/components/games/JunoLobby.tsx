@@ -66,7 +66,7 @@ export function JunoLobby({ onRanking }: { onRanking: () => void }) {
     <div className="juno-menu-actions">
       {!game ? loading && !snapshot ? <p role="status">{t('common:states.loading')}</p>
         : <button type="button" className="juno-primary" disabled={disabled} onClick={() => void command({ type: 'create' })}>{t('juno.create')}</button>
-        : target?.userId === game.hostId ? <button type="button" className="juno-primary" disabled={disabled || game.players.length < 2} onClick={() => void command({ type: 'start' })}>{t('juno.start')}</button>
+        : target?.userId === game.hostId ? <button type="button" className="juno-primary" disabled={disabled || game.players.length < 2 || (game.options.mode === 'duo' && game.players.length !== JUNO_MAX_DUO_PLAYERS)} onClick={() => void command({ type: 'start' })}>{t('juno.start')}</button>
           : !isPlayer ? <button type="button" className="juno-primary" disabled={disabled || game.players.length >= maxSeats} onClick={() => void command({ type: 'join' })}>{game.players.length >= maxSeats ? t('juno.full') : t('juno.join')}</button>
             : <p role="status">{t('juno.waitingHost')}</p>}
       <button type="button" className="juno-secondary" onClick={onRanking}>{t('juno.rankingTitle')}</button>

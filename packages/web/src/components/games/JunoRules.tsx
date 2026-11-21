@@ -24,7 +24,7 @@ function RuleCard({ face, color = null }: { face: Card['face']; color?: Card['co
   return <JunoCard card={{ id: `guide-${color ?? 'wild'}-${face}`, face, color }} />;
 }
 interface Props {
-  game: Pick<JunoView, 'phase' | 'supportsReports' | 'memoryEnabled' | 'supportsBots' | 'intoxicatedEnabled' | 'pizzaEnabled' | 'options'> | null;
+  game: Pick<JunoView, 'phase' | 'mode' | 'supportsReports' | 'memoryEnabled' | 'supportsBots' | 'intoxicatedEnabled' | 'pizzaEnabled' | 'options'> | null;
   supportsMemory?: boolean;
   supportsIntoxicated?: boolean;
   supportsPizza?: boolean;

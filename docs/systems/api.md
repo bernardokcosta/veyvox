@@ -10,7 +10,7 @@ an authenticated human member with VIEW_CHANNEL + CONNECT and a live voice-ownin
 socket in that space channel. Commands are `create`, `join`, `leave`, `start`,
 `rematch`, `draw`, `pass`, `play`, `announce`, `addBot`, `removeBot` (`botId` required),
 `report` (`targetUserId`, `opportunityId` required), `options` (`specials`/`stacking`
-booleans, at least one, host-only, lobby-only);
+booleans or `mode: 'single'|'duo'`, at least one, host-only, lobby-only);
 non-create commands name the table and expected
 revision (409 `juno_stale` on conflict). No opponent hands or draw order leave
 the server. Five creates and 60 commands/minute/account, plus the existing HTTP
@@ -20,16 +20,19 @@ voice or permission gates. Full rules, payloads and lifetime limits: [juno.md](j
 
 Optional `?memory=1` declares memory support; `intoxicated=1` additionally declares
 Entorpecido support and requires `memory=1`; `pizza=1` requires both preceding
-flags. Independent `?six=1` declares six-seat layout support and `?stacking=1`
-stacking UI support. Root `supportsMemory`, `supportsIntoxicated`, `supportsPizza`,
-`supportsSix`, `supportsOptions` and `supportsStacking` advertise host support. Only exact `1` is valid;
+flags. Independent `?six=1` declares six-seat layout support, `?stacking=1`
+stacking UI support and `?duos=1` duos UI support. Root `supportsMemory`,
+`supportsIntoxicated`, `supportsPizza`, `supportsSix`, `supportsOptions`,
+`supportsStacking` and `supportsDuos` advertise host support. Only exact `1` is valid;
 unknown/duplicate query keys are refused and GET variants share one read budget.
 The lobby freezes 108 classic cards, 109 with memory, 110 with Entorpecido, or
 111 with Pizza Maluca, according to all seated humans' declarations
 (`memoryEnabled`/`intoxicatedEnabled`/`pizzaEnabled`); a stacking round freezes
 `stacking` the same way, and mixed cohorts play classic. Lobby `options`
-choose specials (default on) and stacking (default off); `supportsOptions`
-advertises the command on new hosts.
+choose specials (default on), stacking (default off) and mode (default single);
+`supportsOptions` advertises the command on new hosts. Duos tables cap at four
+seats (`juno_table_full` past that) and freeze 2v2 teams by seating order; a
+duos round freezes only with every seated human declaring duos support.
 Unsupported enhanced-round reads/commands return 409
 `juno_update_required` without a snapshot (existing `leave` is still allowed).
 During `memoryCurse: {id,targetUserId}`, only the victim receives `hand: []`,

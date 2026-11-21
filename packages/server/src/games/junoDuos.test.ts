@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type { JunoAction } from '@veyvox/shared/src/juno.js';
 import { JunoRooms } from './juno.js';
 

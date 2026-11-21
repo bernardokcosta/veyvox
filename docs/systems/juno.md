@@ -266,9 +266,9 @@ draw order nor opponent hands are serialized. Cards use opaque random ids.
 
 State/command clients declare `?memory=1`, optionally with `intoxicated=1` (which
 requires memory) and `pizza=1` (which requires both), plus independent `?six=1`
-for six-seat tables and `?stacking=1` for stack-capable UI. All accept only exact `1`;
-duplicates/unknown keys are invalid. Snapshots advertise root
-`supportsMemory`/`supportsIntoxicated`/`supportsPizza`/`supportsSix`/`supportsStacking: true`.
+for six-seat tables, `?stacking=1` for stack-capable UI and `?duos=1` for duos UI.
+All accept only exact `1`; duplicates/unknown keys are invalid. Snapshots advertise root
+`supportsMemory`/`supportsIntoxicated`/`supportsPizza`/`supportsSix`/`supportsStacking`/`supportsDuos: true`.
 Seated humans refresh their declarations in the lobby;
 at start every human must support it to freeze `memoryEnabled: true`. Computers
 support them internally. `intoxicatedEnabled` additionally requires every human
@@ -287,9 +287,9 @@ computer hands are never returned. Client update-required errors clear cached
 private state, and old unmasked reads cannot replace a newer masked revision.
 The rule does not erase previously seen cards or prevent memory/collusion.
 
-The new client probes GET with all five flags and may fall back to stacking,
-then six, then pizza, then intoxicated, then memory-only, at most four times on exact 400 `invalid_body`
-from an old host, within the same auth/session boundary. A table with more than
+The new client probes GET with all six flags and may fall back to duos,
+then stacking, then six, then pizza, then intoxicated, then memory-only, at most
+five times on exact 400 `invalid_body` from an old host, within the same auth/session boundary. A table with more than
 four seats answers 409 `juno_update_required` to readers and mutators that did
 not declare `six=1`, so an older layout never silently omits two opponents.
 Growing beyond four seats additionally requires every seated human to have
@@ -340,14 +340,15 @@ settlement boundary also refuses to credit computer proposals defensively.
 
 ### Match options
 
-The lobby carries `{specials: true, stacking: false}` by default. Only the host
+The lobby carries `{specials: true, stacking: false, mode: 'single'}` by default. Only the host
 may change it, only in the lobby, through a host-only `options` command naming
-at least one of `specials`/`stacking`; the snapshot advertises root
+at least one of `specials`/`stacking`/`mode`; the snapshot advertises root
 `supportsOptions: true` and every game view carries the frozen `options`.
 New `supportsOptions`-less hosts never see the controls and keep classic
 behavior. A rematch keeps the lobby choice; starting freezes a copy into the
 round, so mid-round `options` are refused and later declarations cannot change
-an active deck.
+an active deck. Switching to `duos` with more than four seated is refused;
+a duo table caps at four seats (`juno_table_full` past that).
 
 With `specials` off the round always uses the classic 108-card deck, regardless
 of client support; the rare memory/intoxicated/pizza cards never appear.
@@ -368,6 +369,27 @@ it. Stacking rounds answer readers and mutators without that support with 409
 `juno_update_required`. The public view exposes only the integer `stackDraw`;
 the client highlights just +2/+4 and renders a pulsing neon "+N" overlay with
 `mix-blend-mode: screen` supplier digits, static under reduced motion.
+
+### Duos mode
+
+With `mode: 'duo'` the lobby caps at four seats and the round plays 2v2:
+seating order fixes the teams ([0,1] vs [2,3]), shown as Dupla A/B badges in
+the lobby, on seats and in results. Each player sees the partner's whole hand
+face-up in a read-only strip (`partnerHand`); nothing else about privacy
+changes — opponents still see backs, masked/cursed views keep opaque slots,
+and bots never report. A duo round needs exactly four seated players to start;
+leaving mid-round keeps the team playing solo and abandons the leaver as usual.
+
+The round ends on the first empty hand like always, but the win belongs to the
+team: both teammates are credited place 1 with the winner's full dynamic XP
+(incrementing wins and completed rounds for both), while the other team takes
+competition places 3/4. Abandoned starters keep their frozen team label but no
+place or XP. Mixed cohorts play single: starting requires every seated human on
+a duos-capable client (`?duos=1`, six negotiations and under), otherwise the
+round freezes as classic single. Duo rounds answer readers and mutators without
+that support with 409 `juno_update_required`. The `juno_round_participants`
+row stores the frozen `team` (1|2|null) next to place/XP so credited standings
+survive restarts; practice computer tables stay unranked as before.
 
 After changes, `juno_updated {channelId}` travels through existing
 VIEW_CHANNEL-filtered `sendToChannel`. This is a non-secret invalidation, not a
