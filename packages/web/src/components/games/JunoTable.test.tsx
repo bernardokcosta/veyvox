@@ -9,10 +9,10 @@ vi.mock('../../audio/AudioManager', () => ({ AudioManager: { getInstance: () => 
 
 const command = vi.fn(async () => {});
 function game(phase: JunoView['phase'] = 'lobby'): JunoView {
-  return { id: 'game', phase, hostId: 'a', players: [{ userId: 'a', name: 'Ada', cardCount: 2, announced: false },
+  return { id: 'game', phase, hostId: 'a', mode: 'single', teams: null, partnerHand: [], options: { specials: true, stacking: false, mode: 'single' }, players: [{ userId: 'a', name: 'Ada', cardCount: 2, announced: false },
     { userId: 'b', name: 'Bo', cardCount: 7, announced: false }], hand: phase === 'lobby' ? [] : [
     { id: 'wild', face: 'wild', color: null }, { id: 'number', face: '8', color: 'sky' }], topCard: { id: 'top', face: '3', color: 'coral' },
-    color: 'coral', direction: 1, currentPlayerId: 'a', drawnCardId: null, remainingMs: 40_000, winnerId: null, result: null, lastMove: null };
+    color: 'coral', direction: 1, currentPlayerId: 'a', drawnCardId: null, stackDraw: 0, remainingMs: 40_000, winnerId: null, result: null, lastMove: null };
 }
 beforeEach(() => {
   command.mockClear(); useJunoStore.getState().reset();

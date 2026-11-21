@@ -37,7 +37,8 @@
         "memory": "Special cards",
         "score": "Results and XP",
         "table": "Around the table",
-        "stacking": "Stacking"
+        "stacking": "Stacking",
+        "duos": "Duos"
       },
       "start": {
         "goal": "Be the first player to have no cards left.",
@@ -103,6 +104,10 @@
         "limits": "Without a matching draw card in hand, the whole pile is taken at once: no draw can fish for an answer, and the turn passes. Holding one, you may answer or take the pile with a draw. Timeouts draw the pile too.",
         "plus": "+{{amount}}",
         "take": "With a pending pile, drawing means taking the whole pile and losing the turn; running out of time does the same."
+      },
+      "duos": {
+        "rules": "Two players per team, seated 1-2 against 3-4. You see your partner’s whole hand but play only your own cards.",
+        "limits": "Only +2/+4 answers and full takes are allowed while a pile is pending, same as singles. If your partner leaves, you finish the round alone."
       }
     },
     "settings": {
@@ -245,9 +250,15 @@
       "specials": "Special cards",
       "specialsHint": "Memory, Intoxicated and Crazy Pizza. Off means a classic 108-card deck.",
       "stacking": "Allow stacking",
-      "stackingHint": "+2 and +4 pile onto each other. No match? Draw the whole pile."
+      "stackingHint": "+2 and +4 pile onto each other. No match? Draw the whole pile.",
+      "mode": "Game mode",
+      "single": "Singles",
+      "duos": "Duos",
+      "duosHint": "Two teams of two. You see your partner’s hand; the team wins together."
     },
-    "stackPending": "+{{amount}} to draw"
+    "stackPending": "+{{amount}} to draw",
+    "teamA": "Team A",
+    "teamB": "Team B"
   },
   "soundboard": {
     "title": "Soundboard",

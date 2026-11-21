@@ -102,7 +102,11 @@
 .juno-options { color: #eee9ff; }
 .juno-options h2 { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
 .juno-options label { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; cursor: pointer; }
-.juno-options input[type="checkbox"] { width: 18px; height: 18px; accent-color: #27ef7d; cursor: pointer; }
+.juno-options input[type="checkbox"], .juno-options input[type="radio"] { width: 18px; height: 18px; accent-color: #27ef7d; cursor: pointer; }
+.juno-options fieldset.juno-options-mode { border: 0; padding: 0; margin: 0 0 4px; }
+.juno-options fieldset.juno-options-mode legend { padding: 0 0 6px; font-size: 12px; font-weight: 700; color: #b9c8e7; }
+.juno-options fieldset.juno-options-mode label { display: inline-flex; margin-right: 16px; }
+.juno-options-teams { color: #b9e5ff !important; }
 .juno-options p { margin: 2px 0 10px 26px; font-size: 12px; color: var(--juno-muted); }
 .juno-options p:last-child { margin-bottom: 0; }
 .juno-options label:has(input[type="checkbox"]:disabled), .juno-options input[type="checkbox"]:disabled { cursor: default; }

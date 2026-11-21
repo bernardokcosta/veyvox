@@ -33,7 +33,8 @@ function GameProbe({ name }: { name: string }) {
 
 function game(): JunoView {
   return {
-    id: 'game', phase: 'playing', hostId: 'a',
+    id: 'game', phase: 'playing', hostId: 'a', mode: 'single', teams: null, partnerHand: [],
+    options: { specials: true, stacking: false, mode: 'single' },
     players: [
       { userId: 'a', name: 'Ada', cardCount: 2, announced: false },
       { userId: 'b', name: 'Bo', cardCount: 7, announced: false },

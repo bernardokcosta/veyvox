@@ -37,6 +37,23 @@ describe('Juno cosmic lobby', () => {
     expect(screen.queryByText('Seat available')).not.toBeInTheDocument();
     expect(screen.getAllByLabelText('Seat available')).toHaveLength(3);
   });
+  it('lets the host switch between single and duos, capping a duo lobby at four', async () => {
+    const game = junoGame(); game.supportsBots = true;
+    useJunoStore.setState({ snapshot: { revision: 2, supportsOptions: true, game } }); render(<JunoLobby onRanking={() => {}} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Match options' }));
+    const duo = screen.getByRole('radio', { name: 'Duos' });
+    expect(screen.getByRole('radio', { name: 'Singles' })).toBeChecked();
+    await userEvent.click(duo);
+    expect(command).toHaveBeenCalledWith({ type: 'options', mode: 'duo' });
+    await userEvent.keyboard('{Escape}');
+    act(() => useJunoStore.setState({ target: { userId: 'b', origin: window.location.origin, channelId: 'voice' } }));
+    act(() => useJunoStore.setState({ snapshot: { revision: 3, supportsOptions: true,
+      game: { ...game, options: { ...game.options, mode: 'duo' }, players: [game.players[0]!, game.players[0]!, game.players[0]!, game.players[0]!] } } }));
+    expect(screen.queryAllByLabelText('Seat available')).toHaveLength(0);
+    expect(screen.getByRole('button', { name: 'Table full' })).toBeDisabled();
+    await userEvent.click(screen.getByRole('button', { name: 'Match options' }));
+    expect(screen.getByRole('radio', { name: 'Duos' })).toBeDisabled();
+  });
   it('lets the host toggle match options in a modal, shows them read-only to others and hides them on old hosts', async () => {
     const game = junoGame(); game.supportsBots = true;
     useJunoStore.setState({ snapshot: { revision: 2, supportsOptions: true, game } }); render(<JunoLobby onRanking={() => {}} />);

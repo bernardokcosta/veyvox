@@ -37,7 +37,8 @@
         "memory": "Cartas especiais",
         "score": "Resultado e XP",
         "table": "Ao redor da mesa",
-        "stacking": "Empilhar"
+        "stacking": "Empilhar",
+        "duos": "Duplas"
       },
       "start": {
         "goal": "Seja a primeira pessoa a ficar sem cartas.",
@@ -103,6 +104,10 @@
         "limits": "Sem +2/+4 na mão, a pilha inteira é comprada na hora: nenhuma compra pode pescar uma resposta, e a vez passa. Tendo uma, você pode responder ou comprar a pilha toda. O tempo esgotado também compra a pilha.",
         "plus": "+{{amount}}",
         "take": "Com pilha pendente, comprar é levar a pilha toda e passar a vez; o tempo esgotado faz o mesmo."
+      },
+      "duos": {
+        "rules": "Dois jogadores por time, sentados 1-2 contra 3-4. Você vê a mão inteira do parceiro, mas joga só com as suas cartas.",
+        "limits": "Só +2/+4 responde ou compra a pilha inteira enquanto houver pendência, igual no individual. Se o parceiro sair, você termina a rodada sozinho."
       }
     },
     "settings": {
@@ -248,9 +253,15 @@
       "specials": "Cartas especiais",
       "specialsHint": "Memória, Entorpecido e Pizza Maluca. Desligado: baralho clássico de 108 cartas.",
       "stacking": "Permitir empilhar",
-      "stackingHint": "+2 e +4 empilham uns sobre os outros. Sem carta para responder? Compre a pilha toda."
+      "stackingHint": "+2 e +4 empilham uns sobre os outros. Sem carta para responder? Compre a pilha toda.",
+      "mode": "Modo de jogo",
+      "single": "Individual",
+      "duos": "Duplas",
+      "duosHint": "Dois times de dois. Você vê a mão do parceiro; a dupla vence junta."
     },
-    "stackPending": "+{{amount}} para comprar"
+    "stackPending": "+{{amount}} para comprar",
+    "teamA": "Dupla A",
+    "teamB": "Dupla B"
   },
   "soundboard": {
     "title": "Painel de áudios",
