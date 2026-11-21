@@ -52,6 +52,8 @@ export function JunoMatch() {
   };
   const cancelColor = () => { setColorChoice(null); colorTrigger.current?.focus(); };
   const playerName = (person: JunoPerson | undefined) => person?.computer ? t('juno.botName', { number: person.computer }) : person?.nickname ?? person?.name ?? '';
+  const teamOf = (userId: string | undefined): 1 | 2 | undefined =>
+    !userId || !game.teams ? undefined : game.teams.a.includes(userId) ? 1 : game.teams.b.includes(userId) ? 2 : undefined;
   const seat = (position: keyof typeof seats) => {
     const person = seats[position];
     const side = position === 'left' || position === 'right';
@@ -69,7 +71,7 @@ export function JunoMatch() {
         {game.memoryCurse?.targetUserId === person.userId && <span className="sr-only">{t('juno.memory.affected', { name: playerName(person) })}</span>}
         {game.intoxication?.targetUserId === person.userId && <span className="sr-only">{t('juno.intoxicated.affected', { name: playerName(person) })}</span>}
         <div className="juno-player-controls"><JunoPlayerBadge person={person} spaceId={spaceId} self={person.userId === selfId}
-          active={person.userId === game.currentPlayerId} next={person.userId === next?.userId} detail={t('juno.cardCount', { count: person.cardCount })} reportControl={reportControl} />
+          active={person.userId === game.currentPlayerId} next={person.userId === next?.userId} detail={t('juno.cardCount', { count: person.cardCount })} reportControl={reportControl} team={teamOf(person.userId)} />
         </div>
         {person.userId !== selfId && <div className={`juno-opponent-cards${side ? ' juno-side-hand' : ''}`} aria-hidden="true">
           {Array.from({ length: visibleCards }, (_, i) => side
@@ -109,6 +111,12 @@ export function JunoMatch() {
     </div>
     {!resolving && <div className="sr-only" role="status" aria-live="polite">{myTurn ? t('juno.yourTurn') : t('juno.theirTurn', { name: current?.name ?? '' })}</div>}
     {isPlayer ? <>
+      {game.mode === 'duo' && game.partnerHand.length > 0 && <div className="juno-partner-hand" role="group" aria-label={t('juno.partnerHand')}>
+        <span className="juno-partner-label">{t('juno.partnerHand')}</span>
+        <div className="juno-partner-cards">
+          {game.partnerHand.map(card => <span key={card.id} className="juno-hand-card juno-partner-card" role="img" aria-label={cardLabel(card)} title={cardLabel(card)}><JunoCard card={card} /></span>)}
+        </div>
+      </div>}
       <div className="juno-hand" role="group" aria-label={t('juno.yourHand')} aria-describedby={blind ? `${reportDescriptionId}-memory` : intoxicated ? `${reportDescriptionId}-intoxicated` : undefined}>
         {blind ? (game.maskedHand ?? []).map((slot, index) => <button key={slot.id} type="button" className="juno-hand-card juno-hidden-card"
           disabled={disabled || !myTurn} aria-label={t('juno.memory.hiddenCard', { number: formatNumber(index + 1) })} title={t('juno.memory.hiddenCard', { number: formatNumber(index + 1) })}

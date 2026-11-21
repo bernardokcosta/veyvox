@@ -90,6 +90,9 @@
 .juno-player-copy { min-width: 0; text-align: left; }
 .juno-player-copy strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 700; }
 .juno-player-copy small { margin-left: 4px; color: var(--juno-muted); font-size: 10px; font-weight: 400; }
+.juno-team { margin-left: 6px; padding: 1px 8px; border-radius: 10px; font-size: 10px; font-weight: 800; white-space: nowrap; }
+.juno-team-a { color: #9be9ff; background: #1297ff33; box-shadow: inset 0 0 0 1px #1297ff88; }
+.juno-team-b { color: #ffd166; background: #ff9d0022; box-shadow: inset 0 0 0 1px #ff9d088; }
 .juno-player-copy > span { display: block; font-size: 11px; line-height: 1.4; color: var(--juno-muted); }
 .juno-called { position: absolute; bottom: -5px; right: 5px; z-index: 2; padding: 1px 7px; border-radius: 8px; font-size: 10px; font-weight: 800; color: #ffce29; background: #090f29; }
 .juno-lobby { position: relative; height: 100%; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(6px, 1.8cqh, 16px); text-align: center; }
@@ -179,6 +182,10 @@ button.juno-seat-empty:hover:not(:disabled) { border-color: #27ef7d; color: #27e
 .juno-hand { display: flex; align-items: center; flex-shrink: 0; gap: 8px; overflow-x: auto; overflow-y: hidden; min-height: 0; height: clamp(76px, 23cqh, 160px); padding: 8px 8px 4px; scrollbar-width: thin; scrollbar-color: #53658b #090f29; }
 .juno-hand-card { width: clamp(40px, 13cqh, 88px); flex-shrink: 0; border-radius: 7px; transform-origin: center bottom; transition: transform .15s ease; }
 .juno-hand-card:first-child { margin-left: auto; }
+.juno-partner-hand { display: flex; align-items: center; gap: 8px; flex-shrink: 0; min-height: 0; padding: 2px 8px 0; overflow: hidden; }
+.juno-partner-label { flex-shrink: 0; font-size: 10px; font-weight: 700; color: var(--juno-muted); white-space: nowrap; }
+.juno-partner-cards { display: flex; align-items: center; gap: 4px; overflow-x: auto; overflow-y: hidden; min-height: 0; scrollbar-width: thin; }
+.juno-partner-card { width: clamp(26px, 7cqh, 52px); flex-shrink: 0; cursor: default; }
 .juno-hand-card:last-child { margin-right: auto; }
 .juno-hand-card:disabled { opacity: .65; }
 .juno-card-legal:not(:disabled) { transform: translateY(-3px); box-shadow: 0 0 0 2px #ffce29, 0 0 16px #ffce2922; }

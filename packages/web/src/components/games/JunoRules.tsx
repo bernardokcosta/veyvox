@@ -7,7 +7,7 @@ import { JUNO_ASSETS } from './junoAssets';
 
 const SECTIONS = {
   start: 'juno.guide.sections.start', turn: 'juno.guide.sections.turn', special: 'juno.guide.sections.special',
-  stacking: 'juno.guide.sections.stacking',
+  stacking: 'juno.guide.sections.stacking', duos: 'juno.guide.sections.duos',
   juno: 'juno.guide.sections.juno', memory: 'juno.guide.sections.memory', score: 'juno.guide.sections.score', table: 'juno.guide.sections.table',
 } as const;
 type Section = keyof typeof SECTIONS;
@@ -44,7 +44,8 @@ export function JunoRules({ game, supportsMemory, supportsIntoxicated, supportsP
   const stacking = game?.options?.stacking === true;
   const specialsOff = game?.options !== undefined && !game.options.specials;
   const showMemory = (specialCards && !specialsOff) || specialsOff;
-  const sections = SECTION_ORDER.filter(section => (section !== 'memory' || showMemory) && (section !== 'stacking' || stacking));
+  const duos = game?.options?.mode === 'duo' || game?.mode === 'duo';
+  const sections = SECTION_ORDER.filter(section => (section !== 'memory' || showMemory) && (section !== 'stacking' || stacking) && (section !== 'duos' || duos));
   const updateCurrentSection = useCallback(() => {
     const scroller = scroll.current;
     if (!scroller?.clientHeight) return;
@@ -52,12 +53,13 @@ export function JunoRules({ game, supportsMemory, supportsIntoxicated, supportsP
     for (const section of SECTION_ORDER) {
       if (section === 'memory' && !showMemory) continue;
       if (section === 'stacking' && !stacking) continue;
+      if (section === 'duos' && !duos) continue;
       const title = headings.current[section];
       if (title && title.offsetTop <= scroller.scrollTop + 24) current = section;
     }
     if (scroller.scrollTop > 0 && scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1) current = 'table';
     setActiveSection(current);
-  }, [stacking, showMemory]);
+  }, [stacking, showMemory, duos]);
   useEffect(() => {
     const scroller = scroll.current;
     if (!open || !scroller) return;
@@ -131,6 +133,9 @@ export function JunoRules({ game, supportsMemory, supportsIntoxicated, supportsP
               <figure><RuleCard face="draw4" /><figcaption>{t('juno.guide.stacking.plus', { amount: formatNumber(8) })}</figcaption></figure>
             </div>
             <p>{t('juno.guide.stacking.rules')}</p><p className="juno-guide-note">{t('juno.guide.stacking.limits')}</p>
+          </section>}
+          {duos && <section aria-labelledby={`${id}-duos`}>{heading('duos')}
+            <p>{t('juno.guide.duos.rules')}</p><p className="juno-guide-note">{t('juno.guide.duos.limits')}</p>
           </section>}
           <section aria-labelledby={`${id}-juno`}>{heading('juno')}
             <div className="juno-guide-call"><img src={JUNO_ASSETS.logo} alt="" aria-hidden="true" /><p>{t('juno.guide.announce')}</p></div>

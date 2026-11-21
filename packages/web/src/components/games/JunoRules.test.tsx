@@ -24,6 +24,15 @@ function geometry(guide: HTMLElement) {
 }
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 describe('illustrated Juno rules', () => {
+  it('teaches duos only for tables playing in team mode', async () => {
+    const duos = { ...game, mode: 'duo' as const, teams: { a: ['a', 'b'], b: ['c', 'd'] } };
+    const { guide, unmount } = await open({ game: duos, supportsMemory: true });
+    expect(within(guide).getByRole('heading', { name: 'Duos', level: 3 })).toBeInTheDocument();
+    expect(guide).toHaveTextContent(/whole hand/i);
+    unmount(); cleanup();
+    const { guide: plain } = await open({ game, supportsMemory: true });
+    expect(within(plain).queryByRole('heading', { name: 'Duos', level: 3 })).toBeNull();
+  });
   it('teaches stacking only for tables playing with it enabled', async () => {
     const stacked = { ...game, options: { specials: true, stacking: true } };
     const first = await open({ game: stacked, supportsMemory: true });

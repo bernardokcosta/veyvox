@@ -261,7 +261,8 @@
     },
     "stackPending": "+{{amount}} para comprar",
     "teamA": "Dupla A",
-    "teamB": "Dupla B"
+    "teamB": "Dupla B",
+    "partnerHand": "Mão da dupla"
   },
   "soundboard": {
     "title": "Painel de áudios",

@@ -258,7 +258,8 @@
     },
     "stackPending": "+{{amount}} to draw",
     "teamA": "Team A",
-    "teamB": "Team B"
+    "teamB": "Team B",
+    "partnerHand": "Partner’s hand"
   },
   "soundboard": {
     "title": "Soundboard",

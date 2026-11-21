@@ -138,6 +138,29 @@ describe('Juno cosmic interactive match', () => {
     await userEvent.click(screen.getByRole('button', { name: /play.*draw two/i }));
     expect(command).toHaveBeenCalledWith({ type: 'play', cardId: 'two', announce: false });
   });
+  it('shows the teammate hand face-up and read-only with team badges in duos', () => {
+    const game = junoGame('playing');
+    game.mode = 'duo';
+    game.teams = { a: ['a', 'b'], b: ['c', 'd'] };
+    game.players = [...game.players, { userId: 'c', name: 'Cy', cardCount: 5, announced: false }, { userId: 'd', name: 'Dee', cardCount: 3, announced: false }];
+    game.partnerHand = [{ id: 'ally', color: 'mint', face: '7' }];
+    useJunoStore.setState({ snapshot: { revision: 2, game } });
+    const { container } = render(<JunoMatch />);
+    const strip = container.querySelector('.juno-partner-hand');
+    expect(strip).toHaveTextContent('Partner’s hand');
+    expect(strip!.querySelector('img[src$="mint-7.webp"]')).toBeInTheDocument();
+    expect(strip!.querySelector('button')).toBeNull();
+    expect(screen.getAllByText('Team A')).toHaveLength(2);
+    expect(screen.getAllByText('Team B')).toHaveLength(2);
+  });
+  it('hides partner cards and team badges outside duos', () => {
+    const game = junoGame('playing');
+    game.partnerHand = [{ id: 'ally', color: 'mint', face: '7' }];
+    useJunoStore.setState({ snapshot: { revision: 2, game } });
+    const { container } = render(<JunoMatch />);
+    expect(container.querySelector('.juno-partner-hand')).not.toBeInTheDocument();
+    expect(screen.queryByText('Team A')).not.toBeInTheDocument();
+  });
   it('spreads each lateral back separately while preserving its exact public count', () => {
     const game = junoGame('playing');
     game.players.push({ ...game.players[1]!, userId: 'c', name: 'Eli' }, { ...game.players[1]!, userId: 'd', name: 'Noor' });

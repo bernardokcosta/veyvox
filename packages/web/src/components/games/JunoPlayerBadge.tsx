@@ -7,7 +7,7 @@ import { useCanonicalUserView } from '../../utils/userViewLookup';
 import { uploadUrl } from '../../utils/assetUrls';
 import { JUNO_ASSETS } from './junoAssets';
 
-interface BadgeProps { person: JunoPerson; spaceId: string; active?: boolean; next?: boolean; self?: boolean; detail?: ReactNode; reportControl?: ReactNode }
+interface BadgeProps { person: JunoPerson; spaceId: string; active?: boolean; next?: boolean; self?: boolean; detail?: ReactNode; reportControl?: ReactNode; team?: 1 | 2 }
 export function JunoPlayerBadge(props: BadgeProps) {
   // A hydrated profile must match this seat's native account ID.
   const { t } = useTranslation('voice');
@@ -20,7 +20,7 @@ function KnownPlayer(props: BadgeProps & { user: User }) {
   const user = useCanonicalUserView(props.user);
   return <Badge {...props} user={user} name={user.isDeleted ? props.person.name : props.person.nickname ?? user.displayName ?? user.username} />;
 }
-function Badge({ person, active, next, self, detail, name, user, reportControl }: BadgeProps & { name: string; user?: User }) {
+function Badge({ person, active, next, self, detail, name, user, reportControl, team }: BadgeProps & { name: string; user?: User }) {
   const { t } = useTranslation('voice');
   return <div aria-current={active ? 'true' : undefined} className={`juno-player-badge${active ? ' juno-player-active' : ''}${next ? ' juno-player-next' : ''}`}>
     <span className="juno-avatar-frame">
@@ -30,7 +30,7 @@ function Badge({ person, active, next, self, detail, name, user, reportControl }
       {reportControl}
     </span>
     {next && <span className="juno-next-marker" title={t('juno.nextTurn')} aria-label={t('juno.nextTurn')}>›</span>}
-    <span className="juno-player-copy"><strong title={name}>{name}{self && <small>{t('juno.you')}</small>}</strong>
+    <span className="juno-player-copy"><strong title={name}>{name}{self && <small>{t('juno.you')}</small>}{team && <span className={`juno-team juno-team-${team === 1 ? 'a' : 'b'}`}>{team === 1 ? t('juno.teamA') : t('juno.teamB')}</span>}</strong>
       {detail && <span>{detail}</span>}
     </span>
   </div>;
