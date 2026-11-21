@@ -307,6 +307,8 @@
     "notificationBody": "{{name}} ti volá"
   },
   "grid": {
+    "noVideoParticipants": "Nejsou k dispozici žádné kamery ani sdílené obrazovky.",
+    "showAllParticipants": "Zobrazit všechny účastníky",
     "waitingForOthers": "Čekání na ostatní…",
     "returnToGridHint": "Klikni pro návrat do mřížky",
     "backToGrid": "Zpět do mřížky",
@@ -476,6 +478,8 @@
   },
   "channelDuration": "Kanál aktivní {{duration}}",
   "controls": {
+    "hideNonVideo": "Skrýt účastníky bez videa",
+    "showNonVideo": "Zobrazit účastníky bez videa",
     "spaceMutedSelfMuted": "Ztlumen v prostoru (vlastní ztlumení)",
     "unmuteShortcut": "Zrušit ztlumení (M)",
     "muteShortcut": "Ztlumit (M)",

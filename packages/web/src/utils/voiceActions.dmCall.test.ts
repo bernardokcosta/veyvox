@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-const audio = vi.hoisted(() => ({ clearInputDenial: vi.fn(), resumeContext: vi.fn(async () => {}), setInputDevice: vi.fn(async () => null) }));
+const audio = vi.hoisted(() => ({ clearInputDenial: vi.fn(), resumeContext: vi.fn(async () => {}), setInputDevice: vi.fn(async () => null), releaseInputStream: vi.fn(), hasVoiceSession: () => false }));
 vi.mock('../audio/AudioManager', () => ({ AudioManager: { getInstance: () => audio } }));
 vi.mock('../hooks/useWebSocket', () => ({ wsSend: vi.fn(() => true) }));
 vi.mock('../hooks/useLiveKit', () => ({ getActiveRoom: vi.fn(() => null) }));

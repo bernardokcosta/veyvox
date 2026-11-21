@@ -41,6 +41,35 @@ function localShareOf(participants: readonly ParticipantInfo[]): { identity: str
   return { identity: self?.identity ?? null, sharing: self?.isScreenSharing ?? false };
 }
 
+/** One tone per pending call; cancel startup as well as an already-playing source. */
+function createCallLoop() {
+  let current: { channelId: string; controller: AbortController; source: AudioBufferSourceNode | null } | null = null;
+  const stop = () => {
+    const old = current;
+    current = null;
+    old?.controller.abort();
+    old?.source?.stop();
+  };
+  return {
+    stop,
+    sync(channelId: string | null, play: (signal: AbortSignal) => Promise<AudioBufferSourceNode | null>) {
+      if (current?.channelId === channelId) return;
+      stop();
+      if (!channelId) return;
+      const attempt = { channelId, controller: new AbortController(), source: null as AudioBufferSourceNode | null };
+      current = attempt;
+      void play(attempt.controller.signal).then((source) => {
+        if (current !== attempt) { source?.stop(); return; }
+        if (source) attempt.source = source;
+        else current = null;
+      }).catch((error: unknown) => {
+        if (current === attempt) current = null;
+        console.warn('[SoundController] Call tone failed to start', error);
+      });
+    },
+  };
+}
+
 export function SoundController() {
   const audioManager = AudioManager.getInstance();
   const currentUser = useAuthStore((s) => s.user);
@@ -68,14 +97,9 @@ export function SoundController() {
     selfWatchers: new Set<string>(),
   });
 
-  const incomingCallLoop = useRef<AudioBufferSourceNode | null>(null);
-  const incomingCallLoading = useRef(false);
-  /** Bumped when a pending ring load is abandoned, so its late result is discarded. */
-  const incomingCallAttempt = useRef(0);
-  const outgoingCallLoop = useRef<AudioBufferSourceNode | null>(null);
-  const outgoingCallLoading = useRef(false);
-
   useEffect(() => {
+    const incomingCallLoop = createCallLoop();
+    const outgoingCallLoop = createCallLoop();
     const timer = setTimeout(() => {
       isInitialMount.current = false;
     }, 1000);
@@ -85,43 +109,10 @@ export function SoundController() {
     // Re-evaluated on every voice tick and on every change of the user's own
     // status, so switching to dnd mid-ring silences it and leaving dnd while the
     // call still rings starts it. The in-app incoming-call card is unaffected.
-    const shouldRing = () => !!useVoiceStore.getState().incomingCall && alertsAllowed('incoming_call');
     const syncIncomingRing = () => {
-      if (shouldRing()) {
-        if (incomingCallLoop.current || incomingCallLoading.current) return;
-        const attempt = ++incomingCallAttempt.current;
-        incomingCallLoading.current = true;
-        playAlertSound('incoming_call', { loop: true })
-          .then((source) => {
-            if (attempt !== incomingCallAttempt.current) {
-              // Abandoned by the stop branch: another load may own the loop now.
-              source?.stop();
-              return;
-            }
-            incomingCallLoading.current = false;
-            if (!source) return;
-            if (shouldRing()) {
-              incomingCallLoop.current = source;
-            } else {
-              source.stop();
-            }
-          })
-          .catch((err: unknown) => {
-            if (attempt === incomingCallAttempt.current) incomingCallLoading.current = false;
-            console.warn('[SoundController] ringing failed to start', err);
-          });
-        return;
-      }
-      if (incomingCallLoop.current) {
-        incomingCallLoop.current.stop();
-        incomingCallLoop.current = null;
-      }
-      // Abandon a load still in flight, so a playSound that never settles
-      // cannot block every later ring.
-      if (incomingCallLoading.current) {
-        incomingCallAttempt.current++;
-        incomingCallLoading.current = false;
-      }
+      const call = useVoiceStore.getState().incomingCall;
+      incomingCallLoop.sync(call && alertsAllowed('incoming_call') ? call.dmChannelId : null,
+        (signal) => playAlertSound('incoming_call', { loop: true, signal }));
     };
 
     const unsubscribeVoice = useVoiceStore.subscribe((state) => {
@@ -261,25 +252,8 @@ export function SoundController() {
       syncIncomingRing();
 
       // -------- Outgoing Call (Calling) --------
-      if (state.outgoingCall && !outgoingCallLoop.current && !outgoingCallLoading.current) {
-        outgoingCallLoading.current = true;
-        audioManager
-          .playSound('call_calling', { loop: true, volume: getSfxVolume() })
-          .then((source) => {
-            if (!useVoiceStore.getState().outgoingCall) {
-              source?.stop();
-            } else {
-              outgoingCallLoop.current = source;
-            }
-            outgoingCallLoading.current = false;
-          });
-      } else if (!state.outgoingCall) {
-        if (outgoingCallLoop.current) {
-          outgoingCallLoop.current.stop();
-          outgoingCallLoop.current = null;
-        }
-        outgoingCallLoading.current = false;
-      }
+      outgoingCallLoop.sync(state.outgoingCall?.dmChannelId ?? null,
+        (signal) => audioManager.playSound('call_calling', { loop: true, ...sfxOpts, signal }));
     });
 
     // -------- Chat: message sound (the `message` alert rule, sounds.md) --------
@@ -304,8 +278,8 @@ export function SoundController() {
       unsubscribeVoice();
       unsubscribeChat();
       unsubscribeAuth();
-      if (incomingCallLoop.current) incomingCallLoop.current.stop();
-      if (outgoingCallLoop.current) outgoingCallLoop.current.stop();
+      incomingCallLoop.stop();
+      outgoingCallLoop.stop();
     };
   }, [currentUser?.id]);
 

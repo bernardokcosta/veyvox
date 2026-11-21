@@ -298,6 +298,8 @@
     "notificationBody": "{{name}} กำลังโทรหาคุณ"
   },
   "grid": {
+    "noVideoParticipants": "ไม่มีกล้องหรือหน้าจอที่แชร์ให้แสดง",
+    "showAllParticipants": "แสดงผู้เข้าร่วมทั้งหมด",
     "waitingForOthers": "รอคนอื่น…",
     "returnToGridHint": "คลิกกลับมุมมองกริด",
     "backToGrid": "กลับมุมมองกริด",
@@ -467,6 +469,8 @@
   },
   "channelDuration": "ช่องใช้งาน {{duration}}",
   "controls": {
+    "hideNonVideo": "ซ่อนผู้เข้าร่วมที่ไม่มีวิดีโอ",
+    "showNonVideo": "แสดงผู้เข้าร่วมที่ไม่มีวิดีโอ",
     "spaceMutedSelfMuted": "ปิดเสียงในสเปซ (ปิดเอง)",
     "unmuteShortcut": "เปิดเสียง (M)",
     "muteShortcut": "ปิดเสียง (M)",

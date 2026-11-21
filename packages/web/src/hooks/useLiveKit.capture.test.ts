@@ -9,6 +9,8 @@ const mocks = vi.hoisted(() => ({
   token: vi.fn(),
   connect: vi.fn(), disconnect: vi.fn(),
   audio: {
+    acquireAudioSession: vi.fn(() => vi.fn()),
+    hasVoiceSession: vi.fn(() => false),
     releaseInputStream: vi.fn(), resumeContext: vi.fn(),
     setVoiceProcessing: vi.fn(), setRnnoiseEnabled: vi.fn(),
     setInputDevice: vi.fn(), setInputVolume: vi.fn(),
@@ -64,6 +66,50 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
 describe('voice capture teardown', () => {
+  it('preserves capture when a waiting DM is canceled before a space retry finishes resuming audio', async () => {
+    const outgoing = { dmChannelId: 'dm', withCamera: false };
+    useVoiceStore.setState({ currentVoiceChannelId: 'space', outgoingCall: outgoing });
+    let ownsAudio = false;
+    mocks.audio.acquireAudioSession.mockImplementationOnce(() => {
+      ownsAudio = true;
+      return () => { ownsAudio = false; };
+    });
+    mocks.audio.hasVoiceSession.mockImplementationOnce(() => ownsAudio);
+    let finish!: () => void;
+    mocks.audio.resumeContext.mockReturnValueOnce(new Promise<void>(resolve => { finish = resolve; }));
+    const { result } = renderHook(() => useLiveKit());
+    let connecting!: Promise<void>;
+    act(() => { connecting = result.current.connect('space'); });
+    expect(useVoiceStore.getState().voiceConnectionStatus).toBe('disconnected');
+
+    act(() => { useVoiceStore.getState().abandonOutgoingCall(outgoing); });
+    expect(useVoiceStore.getState().outgoingCall).toBeNull();
+    expect(mocks.audio.releaseInputStream).not.toHaveBeenCalled();
+    await act(async () => { finish(); await connecting; });
+    expect(useVoiceStore.getState().isLiveKitConnected).toBe(true);
+    await act(async () => { await result.current.disconnect(); });
+    expect(mocks.audio.releaseInputStream).toHaveBeenCalledOnce();
+    expect(ownsAudio).toBe(false);
+  });
+
+  it('does not retire the newer room audio hold when a superseded resume resolves', async () => {
+    const releaseOld = vi.fn(), releaseNew = vi.fn();
+    mocks.audio.acquireAudioSession.mockReturnValueOnce(releaseOld).mockReturnValueOnce(releaseNew);
+    let finish!: () => void;
+    mocks.audio.resumeContext.mockReturnValueOnce(new Promise<void>(resolve => { finish = resolve; }));
+    const { result } = renderHook(() => useLiveKit());
+    let old!: Promise<void>;
+    act(() => { old = result.current.connect('old'); });
+    await act(async () => { await result.current.connect('new'); });
+    expect(mocks.audio.acquireAudioSession).toHaveBeenCalledTimes(2);
+    expect(releaseOld).toHaveBeenCalledOnce();
+    await act(async () => { finish(); await old; });
+    expect(releaseOld).toHaveBeenCalledOnce();
+    expect(releaseNew).not.toHaveBeenCalled();
+    await act(async () => { await result.current.disconnect(); });
+    expect(releaseNew).toHaveBeenCalledOnce();
+  });
+
   it('keeps the hook connecting during a signal-only reconnect', async () => {
     const { result } = renderHook(() => useLiveKit());
     await act(async () => { await result.current.connect('channel'); });

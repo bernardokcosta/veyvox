@@ -301,6 +301,8 @@
     "notificationBody": "{{name}} belt je"
   },
   "grid": {
+    "noVideoParticipants": "Er zijn geen camera’s of gedeelde schermen om te tonen.",
+    "showAllParticipants": "Alle deelnemers tonen",
     "waitingForOthers": "Wachten op anderen…",
     "returnToGridHint": "Klik om naar rasterweergave terug te keren",
     "backToGrid": "Terug naar rasterweergave",
@@ -470,6 +472,8 @@
   },
   "channelDuration": "Kanaal actief gedurende {{duration}}",
   "controls": {
+    "hideNonVideo": "Deelnemers zonder video verbergen",
+    "showNonVideo": "Deelnemers zonder video tonen",
     "spaceMutedSelfMuted": "In ruimte gedempt (zelf gedempt)",
     "unmuteShortcut": "Dempen opheffen (M)",
     "muteShortcut": "Dempen (M)",

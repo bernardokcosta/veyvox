@@ -204,11 +204,6 @@
       "count": 1
     }
   },
-  "packages/web/src/components/voice/VoiceGrid.test.tsx": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 2
-    }
-  },
   "packages/web/src/hooks/__tests__/useGridLayout.test.ts": {
     "prefer-const": {
       "count": 1

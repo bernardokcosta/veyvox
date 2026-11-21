@@ -313,6 +313,8 @@
     "notificationBody": "{{name}} يتصل بك"
   },
   "grid": {
+    "noVideoParticipants": "لا توجد كاميرات أو شاشات مشتركة لعرضها.",
+    "showAllParticipants": "إظهار جميع المشاركين",
     "waitingForOthers": "في انتظار الآخرين…",
     "returnToGridHint": "انقر للعودة إلى عرض الشبكة",
     "backToGrid": "عودة إلى عرض الشبكة",
@@ -482,6 +484,8 @@
   },
   "channelDuration": "القناة نشطة {{duration}}",
   "controls": {
+    "hideNonVideo": "إخفاء المشاركين دون فيديو",
+    "showNonVideo": "إظهار المشاركين دون فيديو",
     "spaceMutedSelfMuted": "مكتوم في المساحة (كتم ذاتي)",
     "unmuteShortcut": "إلغاء الكتم (M)",
     "muteShortcut": "كتم (M)",

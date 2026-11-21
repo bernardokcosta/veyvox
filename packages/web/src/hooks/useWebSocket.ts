@@ -80,11 +80,15 @@ function disconnect(conn: Connection): void {
   const ws = conn.ws; conn.ws = null; ws?.close();
 }
 
-/** A delayed call-end echo must never tear down a newly joined space room. */
-export function teardownDmCall(): void {
+/** Retire only this call's slots. A late DM event must not disconnect another room. */
+export function teardownDmCall(dmChannelId: string): void {
   const voice = useVoiceStore.getState();
-  voice.setIncomingCall(null); voice.setOutgoingCall(null); voice.setActiveDmCall(null);
-  if (!voice.currentVoiceChannelId) void voice.disconnectFn?.();
+  if (voice.outgoingCall?.dmChannelId === dmChannelId) voice.abandonOutgoingCall(voice.outgoingCall);
+  if (voice.incomingCall?.dmChannelId === dmChannelId) voice.setIncomingCall(null);
+  if (voice.activeDmCall?.dmChannelId === dmChannelId) {
+    voice.setActiveDmCall(null);
+    if (!voice.currentVoiceChannelId) void voice.disconnectFn?.();
+  }
 }
 export function dmCallEventIsOurs(event: { dmChannelId: string }): boolean {
   const voice = useVoiceStore.getState();
@@ -169,7 +173,7 @@ function handleEvent(event: ServerEvent, readyAlreadyDelivered: boolean, current
       if (voice.activeDmCall && !calls.some(call => call.dmChannelId === voice.activeDmCall?.dmChannelId)) {
         voice.setActiveDmCall(null); if (!voice.currentVoiceChannelId) void voice.disconnectFn?.();
       }
-      if (voice.outgoingCall && !calls.some(call => call.dmChannelId === voice.outgoingCall?.dmChannelId)) voice.setOutgoingCall(null);
+      if (voice.outgoingCall && !calls.some(call => call.dmChannelId === voice.outgoingCall?.dmChannelId)) voice.abandonOutgoingCall(voice.outgoingCall);
       void social.loadFriends(); void social.loadRequests();
       break;
     }
@@ -287,7 +291,7 @@ function handleEvent(event: ServerEvent, readyAlreadyDelivered: boolean, current
       }
       break;
     }
-    case 'dm_call_rejected': if (dmCallEventIsOurs(event)) teardownDmCall(); break;
+    case 'dm_call_rejected': teardownDmCall(event.dmChannelId); break;
     case 'dm_call_waiting': {
       const waiting = new Map(useVoiceStore.getState().dmWaitingUntil);
       if (event.endsAt === null) waiting.delete(event.dmChannelId);
@@ -299,7 +303,7 @@ function handleEvent(event: ServerEvent, readyAlreadyDelivered: boolean, current
       voice.setVoiceUsers(event.dmChannelId, []);
       const waiting = new Map(useVoiceStore.getState().dmWaitingUntil);
       if (waiting.delete(event.dmChannelId)) useVoiceStore.setState({ dmWaitingUntil: waiting });
-      if (dmCallEventIsOurs(event)) teardownDmCall();
+      teardownDmCall(event.dmChannelId);
       break;
     }
     case 'dm_channel_created': spaces.upsertDmChannel(event.dmChannel); break;
@@ -345,8 +349,8 @@ function handleEvent(event: ServerEvent, readyAlreadyDelivered: boolean, current
       recordDiagnostic({ event: 'ws-error', subsystem: 'websocket', level: 'error', errorCode: event.code });
       console.error('WebSocket error:', event.message);
       if (event.dmChannelId) {
-        if (voice.outgoingCall?.dmChannelId === event.dmChannelId) voice.setOutgoingCall(null);
-        if ((event.code === 'dm_call_not_found' || event.code === 'not_dm_member') && voice.activeDmCall?.dmChannelId === event.dmChannelId) teardownDmCall();
+        if ((event.code === 'dm_call_not_found' || event.code === 'not_dm_member') && voice.activeDmCall?.dmChannelId === event.dmChannelId) teardownDmCall(event.dmChannelId);
+        else if (voice.outgoingCall?.dmChannelId === event.dmChannelId) voice.abandonOutgoingCall(voice.outgoingCall);
       }
       if (event.code) useUIStore.getState().addToast(describeErrorCode(event.code, event.message, event.details), 'warning'); break;
     case 'join_request_received':

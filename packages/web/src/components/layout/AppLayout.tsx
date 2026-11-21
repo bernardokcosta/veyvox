@@ -58,15 +58,9 @@ export function AppLayout() {
   const { spaceId, channelId } = useParams<{ spaceId?: string; channelId?: string }>();
   const navigate = useNavigate();
   
-  // Global interaction handler to resume AudioContext
+  // A user gesture can unblock requested sound, but must not wake an idle DAC.
   useEffect(() => {
-    const resume = () => {
-      AudioManager.getInstance().resumeContext().then(() => {
-        window.removeEventListener('click', resume);
-        window.removeEventListener('keydown', resume);
-        window.removeEventListener('touchstart', resume);
-      });
-    };
+    const resume = () => AudioManager.getInstance().resumeIfInUse();
     window.addEventListener('click', resume);
     window.addEventListener('keydown', resume);
     window.addEventListener('touchstart', resume);

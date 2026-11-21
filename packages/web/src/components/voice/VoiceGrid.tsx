@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { VoiceUser } from './VoiceUser';
 import { StreamTile } from './StreamTile';
@@ -10,26 +10,35 @@ import { useTrackStats } from '../../hooks/useTrackStats';
 import { useJunoStore } from '../../stores/junoStore';
 import { JunoTile } from '../games/JunoTile';
 import { JunoTable } from '../games/JunoTable';
+import { VOICE_CHROME_ATTR, VOICE_CHROME_IDLE } from '../../hooks/usePointerReveal';
 
 interface VoiceGridProps {
   participants: ParticipantInfo[];
+  fullscreen?: boolean;
+  chromeRevealed?: boolean;
 }
 
-export function VoiceGrid({ participants }: VoiceGridProps) {
+export function VoiceGrid({ participants, fullscreen = false, chromeRevealed = false }: VoiceGridProps) {
   const { t } = useTranslation(['voice', 'common']);
   const focusedParticipantId = useVoiceStore((s) => s.focusedParticipantId);
   const setFocusedParticipant = useVoiceStore((s) => s.setFocusedParticipant);
   const watchingStreams = useVoiceStore((s) => s.watchingStreams);
-  const [stripHidden, setStripHidden] = useState(false);
+  const hideNonVideo = useVoiceStore((s) => s.hideNonVideoParticipants);
+  const setHideNonVideo = useVoiceStore((s) => s.setHideNonVideoParticipants);
+  const unwatchedCameras = useVoiceStore((s) => s.unwatchedCameras);
   const channelId = useVoiceStore(s => s.currentVoiceChannelId);
   const gameOpen = useJunoStore(s => s.open);
   const gameExists = useJunoStore(s => !!s.snapshot?.game);
   const gameChannelId = useJunoStore(s => s.target?.channelId);
   const showGame = !!channelId && gameChannelId === channelId && (gameExists || gameOpen);
 
-  const tiles = useMemo<(GridTile | { kind: 'game'; key: string })[]>(() => [
-    ...deriveGridTiles(participants), ...(showGame ? [{ kind: 'game' as const, key: 'juno:game' }] : []),
-  ], [participants, showGame]);
+  const tiles = useMemo<(GridTile | { kind: 'game'; key: string })[]>(() => {
+    const callTiles = deriveGridTiles(participants);
+    const visible = hideNonVideo ? callTiles.filter((tile) =>
+      tile.kind === 'stream' || hasVisibleCamera(tile.participant, unwatchedCameras),
+    ) : callTiles;
+    return [...visible, ...(showGame ? [{ kind: 'game' as const, key: 'juno:game' }] : [])];
+  }, [participants, showGame, hideNonVideo, unwatchedCameras]);
   const shouldCollectStreamStats = tiles.some((tile) =>
     tile.kind === 'stream'
     && (tile.participant.isLocal || watchingStreams.has(tile.participant.userId)),
@@ -40,30 +49,25 @@ export function VoiceGrid({ participants }: VoiceGridProps) {
 
   const { cols, tileWidth, tileHeight, ref: gridRef } = useGridLayout(tiles.length);
 
-  // Reset strip visibility when focus target changes
-  useEffect(() => {
-    setStripHidden(false);
-  }, [focusedParticipantId, gameOpen]);
+  const focusedTile = showGame && gameOpen ? tiles.find(t => t.kind === 'game') : focusedParticipantId
+    ? tiles.find((t) => t.key === focusedParticipantId)
+    : null;
+  const edgeToEdge = fullscreen && (focusedTile?.kind === 'stream'
+    || (focusedTile?.kind === 'user' && hasVisibleCamera(focusedTile.participant, unwatchedCameras)));
+  const focusKey = focusedTile?.key;
+  const [strip, setStrip] = useState({ focusKey, edgeToEdge, hidden: edgeToEdge });
+  const sameFocus = strip.focusKey === focusKey && strip.edgeToEdge === edgeToEdge;
+  const stripHidden = sameFocus ? strip.hidden : edgeToEdge;
+  if (!sameFocus) setStrip({ focusKey, edgeToEdge, hidden: stripHidden });
 
-  // Unfocus if the focused stream tile no longer exists
+  // In fullscreen the watch action remains available while a screen track attaches.
   useEffect(() => {
-    const currentStreamKeys = new Set(
-      tiles
-        .filter(
-          (t): t is GridTile & { kind: 'stream' } =>
-            t.kind === 'stream' && t.screenTrack?.readyState === 'live',
-        )
-        .map((t) => t.key),
-    );
-
-    if (
-      focusedParticipantId &&
-      focusedParticipantId.endsWith(':stream') &&
-      !currentStreamKeys.has(focusedParticipantId)
-    ) {
-      setFocusedParticipant(null);
-    }
-  }, [tiles, focusedParticipantId, setFocusedParticipant]);
+    if (!focusedParticipantId) return;
+    const focused = tiles.find((tile) => tile.key === focusedParticipantId);
+    const noLongerVisible = !focused && (hideNonVideo || focusedParticipantId.endsWith(':stream'));
+    const lostDockedStream = focused?.kind === 'stream' && !fullscreen && focused.screenTrack?.readyState !== 'live';
+    if (noLongerVisible || lostDockedStream) setFocusedParticipant(null);
+  }, [tiles, fullscreen, hideNonVideo, focusedParticipantId, setFocusedParticipant]);
 
   if (tiles.length === 0) {
     return (
@@ -79,23 +83,31 @@ export function VoiceGrid({ participants }: VoiceGridProps) {
             <path d="M11 5L6 9H2V15H6L11 19V5ZM15.54 8.46C16.48 9.4 17 10.67 17 12S16.48 14.6 15.54 15.54L14.12 14.12C14.69 13.55 15 12.79 15 12S14.69 10.45 14.12 9.88L15.54 8.46Z" />
           </svg>
           <p className="text-txt-tertiary text-sm">
-            {t('voice:grid.waitingForOthers')}
+            {t(hideNonVideo ? 'voice:grid.noVideoParticipants' : 'voice:grid.waitingForOthers')}
           </p>
+          {hideNonVideo && (
+            <button
+              type="button"
+              onClick={() => setHideNonVideo(false)}
+              className="mt-3 rounded-lg px-3 py-2 text-sm font-medium bg-accent-primary/20 text-txt-primary hover:bg-accent-primary/30"
+            >
+              {t('voice:grid.showAllParticipants')}
+            </button>
+          )}
         </div>
       </div>
     );
   }
 
-  const focusedTile = showGame && gameOpen ? tiles.find(t => t.kind === 'game') : focusedParticipantId
-    ? tiles.find((t) => t.key === focusedParticipantId)
-    : null;
-
-  // Render a single tile polymorphically
-  const renderTile = (tile: GridTile | { kind: 'game'; key: string }, large?: boolean) =>
+  const focusedChrome = edgeToEdge ? (chromeRevealed ? 'opacity-100' : VOICE_CHROME_IDLE) : undefined;
+  const chromeAttrs = edgeToEdge ? { [VOICE_CHROME_ATTR]: '' } : {};
+  const chromeHitArea = chromeRevealed ? 'pointer-events-auto' :
+    'pointer-events-none focus:pointer-events-auto [@media(hover:none)]:pointer-events-auto [@media(any-pointer:coarse)]:pointer-events-auto';
+  const renderTile = (tile: GridTile | { kind: 'game'; key: string }, large?: boolean, chrome?: string) =>
     tile.kind === 'game' ? (large ? <JunoTable /> : <JunoTile />) : tile.kind === 'user' ? (
-      <VoiceUser tile={tile} large={large} />
+      <VoiceUser tile={tile} large={large} fullscreenChrome={chrome} />
     ) : (
-      <StreamTile tile={tile} large={large} stats={streamStats} />
+      <StreamTile tile={tile} large={large} stats={streamStats} fullscreenChrome={chrome} />
     );
   const focusTile = (tile: GridTile | { kind: 'game'; key: string }) => {
     useJunoStore.getState().setOpen(tile.kind === 'game');
@@ -106,21 +118,24 @@ export function VoiceGrid({ participants }: VoiceGridProps) {
   if (focusedTile) {
     const otherTiles = tiles.filter((t) => t.key !== focusedTile.key);
     return (
-      <div className={`flex-1 min-h-0 flex flex-col overflow-hidden relative${focusedTile.kind === 'game' ? ' juno-focus-layout' : ''}`}>
+      <div className={`flex-1 min-h-0 flex flex-col overflow-hidden relative${focusedTile.kind === 'game' ? ' juno-focus-layout' : ''}${edgeToEdge ? ' bg-black' : ''}`}>
         {/* Main focused view */}
         <div
-          className={`flex-1 p-2 min-h-0 relative ${focusedTile.kind === 'game' ? 'flex flex-col' : 'cursor-pointer'}`}
+          className={`flex-1 min-h-0 relative ${edgeToEdge ? '' : 'p-2'} ${focusedTile.kind === 'game' ? 'flex flex-col' : 'cursor-pointer'}`}
           onClick={focusedTile.kind === 'game' ? undefined : () => setFocusedParticipant(null)}
           title={focusedTile.kind === 'game' ? undefined : t('voice:grid.returnToGridHint')}
         >
-          {renderTile(focusedTile, true)}
+          {renderTile(focusedTile, true, focusedChrome)}
           {/* Grid button — top-right */}
-          {focusedTile.kind !== 'game' && <button
+          {focusedTile.kind !== 'game' && <div
+            {...chromeAttrs}
+            className={`absolute right-4 z-10 ${edgeToEdge ? `top-14 pointer-events-none transition-opacity ${focusedChrome}` : 'top-4'}`}
+          ><button
             onClick={(e) => {
               e.stopPropagation();
               setFocusedParticipant(null);
             }}
-            className="absolute top-4 right-4 z-10 h-7 px-3 bg-black/60 hover:bg-black/80 rounded-lg flex items-center gap-2 text-white/70 hover:text-white transition-colors"
+            className={`h-7 px-3 rounded-lg flex items-center gap-2 text-white/70 hover:text-white transition-colors ${edgeToEdge ? `glass-bubble ${chromeHitArea}` : 'bg-black/60 hover:bg-black/80'}`}
             title={t('voice:grid.backToGrid')}
           >
             <svg
@@ -132,18 +147,25 @@ export function VoiceGrid({ participants }: VoiceGridProps) {
               <path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zm10-10h8v8h-8V3zm0 10h8v8h-8v-8z" />
             </svg>
             <span className="text-xs font-medium">{t('voice:grid.gridButton')}</span>
-          </button>}
+          </button></div>}
         </div>
 
         {/* Centered Hide/Show Members button — divider between focused tile and strip */}
         {otherTiles.length > 0 && (
-          <div className="juno-focus-toggle flex justify-center flex-shrink-0 py-1">
+          <div
+            {...chromeAttrs}
+            className={`juno-focus-toggle flex justify-center flex-shrink-0 py-1 ${edgeToEdge ? `pointer-events-none transition-opacity ${focusedChrome}` : ''} ${
+              edgeToEdge && stripHidden ? 'absolute inset-x-0 bottom-24 z-10' : ''}`}
+          >
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                setStripHidden(!stripHidden);
+                setStrip({ focusKey, edgeToEdge, hidden: !stripHidden });
               }}
-              className="px-4 py-1 bg-black/50 hover:bg-black/70 rounded-full flex items-center gap-2 text-white/60 hover:text-white transition-colors text-xs"
+              className={`px-4 py-1 rounded-full flex items-center gap-2 text-white/60 hover:text-white transition-colors text-xs ${edgeToEdge
+                ? `glass-bubble ${chromeHitArea}`
+                : 'bg-black/50 hover:bg-black/70'}`}
+              aria-expanded={!stripHidden}
               title={stripHidden ? t('voice:grid.showMembers') : t('voice:grid.hideMembers')}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -174,6 +196,7 @@ export function VoiceGrid({ participants }: VoiceGridProps) {
             ))}
           </div>
         )}
+        {edgeToEdge && !stripHidden && otherTiles.length > 0 && <div className="h-24 shrink-0" />}
       </div>
     );
   }
@@ -203,4 +226,8 @@ export function VoiceGrid({ participants }: VoiceGridProps) {
       </div>
     </div>
   );
+}
+
+function hasVisibleCamera(participant: ParticipantInfo, unwatchedCameras: ReadonlySet<string>): boolean {
+  return participant.isCameraOn && (participant.isLocal || !unwatchedCameras.has(participant.userId));
 }

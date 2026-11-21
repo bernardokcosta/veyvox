@@ -301,6 +301,8 @@
     "notificationBody": "{{name}} ringer dig"
   },
   "grid": {
+    "noVideoParticipants": "Det finns inga kameror eller delade skärmar att visa.",
+    "showAllParticipants": "Visa alla deltagare",
     "waitingForOthers": "Väntar på andra…",
     "returnToGridHint": "Klicka för att återgå till rutnätsvy",
     "backToGrid": "Tillbaka till rutnätsvy",
@@ -470,6 +472,8 @@
   },
   "channelDuration": "Kanal aktiv i {{duration}}",
   "controls": {
+    "hideNonVideo": "Dölj deltagare utan video",
+    "showNonVideo": "Visa deltagare utan video",
     "spaceMutedSelfMuted": "Mutad i rummet (självmutad)",
     "unmuteShortcut": "Sluta muta (M)",
     "muteShortcut": "Muta (M)",

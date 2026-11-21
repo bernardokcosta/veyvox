@@ -301,6 +301,8 @@
     "notificationBody": "{{name}} menelepon Anda"
   },
   "grid": {
+    "noVideoParticipants": "Tidak ada kamera atau layar bersama yang bisa ditampilkan.",
+    "showAllParticipants": "Tampilkan semua peserta",
     "waitingForOthers": "Menunggu orang lain…",
     "returnToGridHint": "Klik untuk kembali ke tampilan grid",
     "backToGrid": "Kembali ke tampilan grid",
@@ -470,6 +472,8 @@
   },
   "channelDuration": "Kanal aktif selama {{duration}}",
   "controls": {
+    "hideNonVideo": "Sembunyikan peserta tanpa video",
+    "showNonVideo": "Tampilkan peserta tanpa video",
     "spaceMutedSelfMuted": "Dibisukan di ruang (bisukan sendiri)",
     "unmuteShortcut": "Bunyikan (M)",
     "muteShortcut": "Bisukan (M)",

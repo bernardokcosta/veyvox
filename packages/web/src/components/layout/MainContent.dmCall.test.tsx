@@ -9,6 +9,8 @@ vi.mock('../../audio/AudioManager', () => ({
       clearInputDenial: vi.fn(),
       resumeContext: vi.fn(() => Promise.resolve()),
       setInputDevice: vi.fn(() => Promise.resolve(null)),
+      releaseInputStream: vi.fn(),
+      hasVoiceSession: () => false,
     }),
   },
 }));
@@ -19,7 +21,8 @@ vi.mock('../chat/MessageInput', () => ({ MessageInput: () => null }));
 
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import type { DmChannel, User } from '@veyvox/shared';
+import type { Channel, DmChannel, User } from '@veyvox/shared';
+import type { ParticipantInfo } from '../../hooks/useLiveKit';
 import { useAuthStore } from '../../stores/authStore';
 import { useChatStore } from '../../stores/chatStore';
 import { useSpaceStore } from '../../stores/spaceStore';
@@ -31,9 +34,9 @@ import { MainContent } from './MainContent';
 const partner = { id: 'partner', username: 'alice' } as User;
 const dm = { id: 'dm-1', members: [partner], ownerId: null } as DmChannel;
 
-function renderDm() {
+function renderDm(pathname = `/channels/@me/${dm.id}`) {
   return render(
-    <MemoryRouter initialEntries={[`/channels/@me/${dm.id}`]}>
+    <MemoryRouter initialEntries={[pathname]}>
       <MainContent />
     </MemoryRouter>,
   );
@@ -44,8 +47,38 @@ beforeEach(() => {
   useAuthStore.setState({ user: { id: 'self', username: 'self' } as User });
   useChatStore.setState({ currentChannelId: dm.id });
   useSpaceStore.setState({ currentSpaceId: null, channels: [], dmChannels: [dm] });
-  useUIStore.setState({ showDms: true });
-  useVoiceStore.setState({ outgoingCall: null, activeDmCall: null, incomingCall: null, voiceUsers: new Map(), connectFn: null });
+  useUIStore.setState({ showDms: true, voiceFullscreen: false });
+  useVoiceStore.setState({
+    outgoingCall: null, activeDmCall: null, incomingCall: null, voiceUsers: new Map(), connectFn: null,
+    currentVoiceChannelId: null, participants: [], focusedParticipantId: null, hideNonVideoParticipants: false,
+  });
+});
+
+it.each(['dm', 'space'])('uses focused fullscreen chrome on the desktop %s call surface', (surface) => {
+  const camera: ParticipantInfo = {
+    identity: 'partner', userId: 'partner', username: 'alice',
+    isMuted: false, isDeafened: false, isCameraOn: true, isScreenSharing: false, isLocal: false,
+    audioTrack: null, videoTrack: null, screenTrack: null, screenAudioTrack: null,
+    lkVideoTrack: null, lkScreenTrack: null, cachedUser: partner,
+  };
+  useUIStore.setState({ voiceFullscreen: true });
+  useVoiceStore.setState({
+    participants: [camera, { ...camera, identity: 'self', userId: 'self', username: 'self', cachedUser: null, isLocal: true, isCameraOn: false }],
+    focusedParticipantId: camera.identity,
+  });
+  if (surface === 'dm') {
+    useVoiceStore.setState({ activeDmCall: { dmChannelId: dm.id } });
+    renderDm();
+  } else {
+    const channel = { id: 'voice', name: 'General', type: 'voice' } as Channel;
+    useUIStore.setState({ showDms: false });
+    useSpaceStore.setState({ currentSpaceId: 'space', channels: [channel] });
+    useChatStore.setState({ currentChannelId: channel.id });
+    useVoiceStore.setState({ currentVoiceChannelId: channel.id });
+    renderDm('/channels/space/voice');
+  }
+  expect(screen.getByRole('button', { name: /show members/i }).closest('[data-voice-chrome]')).toHaveClass('opacity-100');
+  expect(screen.getByRole('button', { name: /grid/i }).closest('[data-voice-chrome]')).toHaveClass('opacity-100');
 });
 
 describe('desktop DM header call actions', () => {

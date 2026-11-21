@@ -226,7 +226,15 @@ select another endpoint, token or identity. `sendDmCallEnd` and
 
 **Caller connect guard.** In `dm_call_accepted`, the caller connects to the DM room gated on `wasOutgoingCall` (only the initiating session ever sets `outgoingCall`) — **not** on `!isLiveKitConnected`. A caller already sitting in a space voice channel is LiveKit-connected; gating on that would skip the DM connect and strand them in the space channel. `connect()` de-dupes an already-connected same room, so `wasOutgoingCall` alone is sufficient.
 
-**DM-call teardown never disconnects a space connection (`teardownDmCall`).** Native call end/rejection clears the DM UI and tears down LiveKit **only when `currentVoiceChannelId` is null**. Space/DM slots are mutually exclusive. If the last DM participant joins a space room, the old DM's end echo must not disconnect the new space room. Regression: `hooks/teardownDmCall.test.ts`.
+**DM-call teardown is scoped to the named native DM (`teardownDmCall`).** An
+end/rejection clears its own slots and disconnects LiveKit only when that DM is
+active and no space voice channel has taken over. Canceling an unanswered call
+locally or losing it to a rejection, timeout, correlated refusal or ready
+snapshot also invalidates its pre-armed microphone request and stops an open
+capture, unless an active or connecting voice room already owns it. That
+ownership includes a LiveKit audio hold acquired before the context resumes
+and the store reports `connecting`. Acceptance and switching to a space
+channel hand off capture instead of releasing it.
 
 ### Native SoundController Identity
 
@@ -634,6 +642,24 @@ The fullscreen toggle in `VoiceControlBar` flips the `voiceFullscreen` flag in `
 
 **Fullscreen chrome:** the channel header and call controls are positioned over the video instead of reserving rows. Their overlay bands use `pointer-events: none`, and only the actual buttons opt back into hit testing, so transparent chrome never steals tile or Grid-button clicks. The header actions leave the top-right Grid corner clear.
 
+In desktop DM and space calls, focusing a share or visible camera in fullscreen
+uses a black, unpadded viewport with `object-contain` and no tile ring or radius.
+The member strip starts collapsed on entering fullscreen video focus or picking
+another video. Its collapsed toggle floats above the call bar; expanding it gives
+the strip a separate row and leaves room for the bar. Grid, strip controls and
+video badges follow pointer reveal; the focused buttons also reveal on keyboard
+focus and stay visible on coarse pointers. The Watch Stream action is available
+even before a remote screen track attaches. Juno focus and docked/mobile grids
+retain their original layout.
+
+**Video-only grid:** `hideNonVideoParticipants` is a device-local, opt-in voice
+preference shared by both desktops and the mobile call header. It filters the
+grid and focused strip without modifying call counts, permissions, audio or
+subscription intent. A published share remains watchable before its track
+attaches. Enabled cameras are shown unless the viewer stopped watching that
+native account's camera. Juno is never filtered out. Focus on an excluded tile
+clears, and the empty view offers a way to show all participants again.
+
 Both overlays are revealed by **pointer movement** and hidden again after `POINTER_REVEAL_IDLE_MS` (2.5 s) of stillness, via `hooks/usePointerReveal`. `MainContent` owns that state — it holds `voiceContainerRef`, which is the element the pointer moves over — and passes it to `VoiceControlBar` as `revealed`.
 
 This deliberately is **not** `group-hover/voice`, which is what it was until the idle behaviour was added. Hover is geometric: it asks whether the pointer is inside the box. Fullscreen makes `group/voice` the whole viewport, so hover is true wherever the pointer is, both overlays sat at `opacity-100` permanently, and the header band covered the top of the stream with no way to dismiss it short of moving the pointer out of the window. Idle is a question about time and needs a timer.
@@ -736,6 +762,14 @@ Both surfaces are backed by the shared `useAudioDevices()` hook. The store field
 
 ### Output routing — `AudioContext.setSinkId`
 All audio (remote voice, screen-share audio, sound effects) flows through `AudioManager`'s master bus → `AudioContext.destination`. Output device switching is therefore done via `AudioContext.setSinkId(deviceId)`, NOT via LiveKit's `switchActiveDevice('audiooutput')` (which targets `<audio>` elements that are killed by `AppLayout`'s MutationObserver). Safari < 17 lacks `setSinkId` on AudioContext — `AudioOutputSection` detects this (once a real context exists) and falls back to OS default with an explanatory note.
+
+The shared graph is reused but suspended after 1.5 seconds without a call,
+remote track, microphone capture or playback. Idle gestures and input-gain
+changes do not create or wake the graph. The near-silent Safari keep-alive
+oscillator runs only for voice sessions. Connection attempts own independent
+holds so teardown from an older attempt cannot drop a newer call's hold.
+Playback that starts during a pending suspend queues a resume immediately,
+preserving the user gesture where one is available.
 
 **Mobile platforms with no per-element output routing (iOS Safari):** `AudioOutputSection` feature-detects `'setSinkId' in HTMLMediaElement.prototype` at module load (cached). When false, the entire section is hidden — no header, no fallback copy. iOS users adjust audio routing via OS controls (Bluetooth menu, Control Center) and do not expect per-app output selection. Android Chrome ≥ 110 supports `setSinkId` and renders the picker normally. The detection runs before any hooks via an outer wrapper (`AudioOutputSection` → early-return-`null` → `AudioOutputSectionInner`) so the inner component's hook order remains stable.
 

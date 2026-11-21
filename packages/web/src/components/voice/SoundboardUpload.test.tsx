@@ -4,8 +4,9 @@ import { soundboardWavDuration } from '@veyvox/shared/src/soundboard';
 import { SoundboardUpload } from './SoundboardUpload';
 import { useAuthStore } from '../../stores/authStore';
 
-const mocks = vi.hoisted(() => ({ decode: vi.fn(), upload: vi.fn(), start: vi.fn() }));
+const mocks = vi.hoisted(() => ({ decode: vi.fn(), upload: vi.fn(), start: vi.fn(), acquirePlayback: vi.fn(() => vi.fn()) }));
 vi.mock('../../audio/AudioManager', () => ({ AudioManager: { getInstance: () => ({
+  acquirePlayback: mocks.acquirePlayback,
   ensureContext: () => ({ decodeAudioData: mocks.decode, createBufferSource: () => ({ connect: vi.fn(), disconnect: vi.fn(), stop: vi.fn(), start: mocks.start }) }),
   resumeContext: async () => {}, getMasterOutput: () => ({}),
 }) } }));
@@ -27,6 +28,7 @@ afterEach(() => vi.unstubAllGlobals());
 describe('soundboard crop boundary UX', () => {
   it.each([[6.01, 16.01, 10], [0.5, 0.6, 0.1]])('previews and uploads selection %s → %s', async (start, end, duration) => {
     const done = vi.fn();
+    const release = vi.fn(); mocks.acquirePlayback.mockReturnValueOnce(release);
     render(<SoundboardUpload spaceId="space" maxDuration={10} onDone={done} onCancel={vi.fn()} />);
     const file = new File(['source'], 'Victory.wav', { type: 'audio/wav' });
     Object.defineProperty(file, 'arrayBuffer', { value: async () => new ArrayBuffer(0) });
@@ -39,8 +41,10 @@ describe('soundboard crop boundary UX', () => {
     expect(preview).toBeEnabled(); expect(add).toBeEnabled();
     fireEvent.click(preview);
     await waitFor(() => expect(mocks.start).toHaveBeenCalledWith(0, start, duration));
+    expect(release).not.toHaveBeenCalled();
     fireEvent.click(add);
     await waitFor(() => expect(done).toHaveBeenCalledOnce());
+    expect(release).toHaveBeenCalledOnce();
     const [space, payload] = mocks.upload.mock.calls[0]!;
     expect(space).toBe('space');
     const bytes = Uint8Array.from(atob(payload.audio), c => c.charCodeAt(0));

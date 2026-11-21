@@ -307,6 +307,8 @@
     "notificationBody": "{{name}} звонит вам"
   },
   "grid": {
+    "noVideoParticipants": "Нет камер или демонстраций экрана для показа.",
+    "showAllParticipants": "Показать всех участников",
     "waitingForOthers": "Ждём, пока присоединятся другие…",
     "returnToGridHint": "Нажмите, чтобы вернуться к сетке",
     "backToGrid": "Вернуться к сетке",
@@ -476,6 +478,8 @@
   },
   "channelDuration": "Канал активен {{duration}}",
   "controls": {
+    "hideNonVideo": "Скрыть участников без видео",
+    "showNonVideo": "Показать участников без видео",
     "spaceMutedSelfMuted": "Микрофон отключён в пространстве и у вас",
     "unmuteShortcut": "Включить микрофон (M)",
     "muteShortcut": "Отключить микрофон (M)",

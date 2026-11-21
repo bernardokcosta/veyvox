@@ -17,6 +17,7 @@ import { VoiceGrid } from '../voice/VoiceGrid';
 import { SoundboardButton } from '../voice/SoundboardButton';
 import { GamesButton } from '../games/GamesButton';
 import { deriveGridTiles } from '../../hooks/useLiveKit';
+import { VideoOnlyToggle } from '../voice/VideoOnlyToggle';
 import { requestMicPermission } from '../../utils/voice';
 
 /**
@@ -307,6 +308,7 @@ export function MobileVoiceFullScreen() {
         <span className="text-xs text-txt-tertiary">
           {t('voice:mobileCall.connectedCount', { count: participants.length })}
         </span>
+        <VideoOnlyToggle className="w-10 h-10 shrink-0 rounded-lg flex items-center justify-center" />
         {!isDmCall && (
           <button
             onClick={() => pushMobileScreen('members')}

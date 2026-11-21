@@ -304,6 +304,8 @@
     "notificationBody": "{{name}} t’appelle"
   },
   "grid": {
+    "noVideoParticipants": "Aucune caméra ni aucun partage d’écran à afficher.",
+    "showAllParticipants": "Afficher tous les participants",
     "waitingForOthers": "En attente des autres participants…",
     "returnToGridHint": "Cliquer pour revenir à la vue en grille",
     "backToGrid": "Retour à la vue en grille",
@@ -473,6 +475,8 @@
   },
   "channelDuration": "Appel actif dans ce canal depuis {{duration}}",
   "controls": {
+    "hideNonVideo": "Masquer les participants sans vidéo",
+    "showNonVideo": "Afficher les participants sans vidéo",
     "spaceMutedSelfMuted": "Micro coupé dans l’espace (aussi coupé par toi)",
     "unmuteShortcut": "Activer le micro (M)",
     "muteShortcut": "Couper le micro (M)",

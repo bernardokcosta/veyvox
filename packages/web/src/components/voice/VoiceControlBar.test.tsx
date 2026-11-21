@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { VoiceControlBar } from './VoiceControlBar';
 import { useUIStore } from '../../stores/uiStore';
 import { useVoiceStore } from '../../stores/voiceStore';
@@ -28,10 +28,26 @@ beforeEach(() => {
     isMuted: false,
     isDeafened: false,
     isCameraOn: false,
+    hideNonVideoParticipants: false,
     isScreenSharing: false,
     spaceMutedUserIds: new Set(),
     spaceDeafenedUserIds: new Set(),
   });
+});
+
+it('toggles and persists the local video-only preference', async () => {
+  render(<VoiceControlBar />);
+  const button = screen.getByRole('button', { name: /hide participants without video/i });
+  expect(button).toHaveAttribute('aria-pressed', 'false');
+  fireEvent.click(button);
+  expect(button).toHaveAttribute('aria-pressed', 'true');
+  // Clear the in-memory value without writing over the saved preference.
+  const saved = localStorage.getItem('backspace-voice-settings');
+  expect(saved).not.toBeNull();
+  act(() => useVoiceStore.setState({ hideNonVideoParticipants: false }));
+  localStorage.setItem('backspace-voice-settings', saved ?? '');
+  await act(async () => { await useVoiceStore.persist.rehydrate(); });
+  expect(button).toHaveAttribute('aria-pressed', 'true');
 });
 
 describe('VoiceControlBar fullscreen hit testing', () => {

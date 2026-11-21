@@ -411,10 +411,12 @@ did (`role_hierarchy` from the voice moderation events, `dm_call_in_progress`,
 message events (see "DM Messages")); the client shows it as a warning
 toast in the user's language (`describeErrorCode`, with the event's `details`). An `error` without a code
 is only logged. An `error` with a `dmChannelId` equal to the DM the client is
-calling, from the instance that serves that DM, also clears the calling state
-(`outgoingCall`), which stops the outgoing ring. A `dm_call_not_found` or
-`not_dm_member` naming the call the client is in, from that call's instance,
-takes the client out of it (`teardownDmCall`).
+calling also clears the calling state (`outgoingCall`), which stops the outgoing
+ring and releases its pre-armed microphone if no active or connecting room
+uses it. A `dm_call_not_found` or `not_dm_member` naming the call the client is
+in takes the client out of that call (`teardownDmCall`). Terminal DM events do
+not clear other DMs' slots or disconnect a space call. This is client teardown
+only; the wire events and native DM IDs are unchanged.
 
 ### DM Channel Management
 | type | fields | scope |

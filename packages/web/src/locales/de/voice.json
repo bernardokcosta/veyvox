@@ -301,6 +301,8 @@
     "notificationBody": "{{name}} ruft dich an"
   },
   "grid": {
+    "noVideoParticipants": "Keine Kameras oder Bildschirmfreigaben verfügbar.",
+    "showAllParticipants": "Alle Teilnehmenden anzeigen",
     "waitingForOthers": "Warten auf weitere Teilnehmer…",
     "returnToGridHint": "Klicken, um zur Rasteransicht zurückzukehren",
     "backToGrid": "Zurück zur Rasteransicht",
@@ -470,6 +472,8 @@
   },
   "channelDuration": "Kanal seit {{duration}} aktiv",
   "controls": {
+    "hideNonVideo": "Teilnehmende ohne Video ausblenden",
+    "showNonVideo": "Teilnehmende ohne Video anzeigen",
     "spaceMutedSelfMuted": "Im Space stummgeschaltet (auch selbst stummgeschaltet)",
     "unmuteShortcut": "Stummschaltung aufheben (M)",
     "muteShortcut": "Stummschalten (M)",

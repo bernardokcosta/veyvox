@@ -342,6 +342,8 @@
     "notificationBody": "{{name}} está ligando para você"
   },
   "grid": {
+    "noVideoParticipants": "Nenhuma câmera ou tela compartilhada para exibir.",
+    "showAllParticipants": "Mostrar todos os participantes",
     "waitingForOthers": "Aguardando a entrada de outras pessoas...",
     "returnToGridHint": "Clique para voltar à visualização em grade",
     "backToGrid": "Voltar à visualização em grade",
@@ -511,6 +513,8 @@
   },
   "channelDuration": "Canal ativo há {{duration}}",
   "controls": {
+    "hideNonVideo": "Ocultar participantes sem vídeo",
+    "showNonVideo": "Mostrar participantes sem vídeo",
     "spaceMutedSelfMuted": "Silenciado no espaço (você também se silenciou)",
     "unmuteShortcut": "Reativar microfone (M)",
     "muteShortcut": "Silenciar (M)",
