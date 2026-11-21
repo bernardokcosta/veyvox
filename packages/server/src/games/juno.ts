@@ -1,7 +1,7 @@
 import { randomInt, randomUUID } from 'node:crypto';
 import { JUNO_COLORS, JUNO_MAX_PLAYERS, JUNO_MAX_DUO_PLAYERS, JUNO_TURN_MS, JUNO_REPORT_MS, JUNO_PIZZA_MS, canPlayJuno, type JunoAction, type JunoCard,
   type JunoColor, type JunoCommand, type JunoMode, type JunoMove, type JunoPerson, type JunoSnapshot, type JunoView, type JunoScoreboard } from '@veyvox/shared/src/juno.js';
-import { buildJunoStandings } from './junoStandings.js';
+import { buildJunoStandings, applyDuoResults } from './junoStandings.js';
 import type { JunoSettlement } from './junoProgression.js';
 import { chooseJunoBlindCard, chooseJunoBotAction } from './junoBot.js';
 import { redistributeJunoPizza } from './junoPizza.js';
@@ -318,9 +318,16 @@ export class JunoRooms {
     }
     if (!round?.result || !this.options.settle || !table.spaceId) return;
     if (!table.settlement) {
+      const base = buildJunoStandings(table.starters,
+        round.players.map(p => ({ userId: p.userId, cardCount: p.hand.length })), round.winnerId, round.result);
+      if (round.duos && round.teams) {
+        for (const row of base) row.team = round.teams.a.includes(row.userId) ? 1 : round.teams.b.includes(row.userId) ? 2 : null;
+      }
+      const standings = round.duos && round.teams && round.result === 'emptyHand' && round.winnerId
+        ? applyDuoResults(base, round.winnerId, round.teams)
+        : base;
       table.settlement = { roundId: table.id, spaceId: table.spaceId, channelId, finishedAt: this.now(),
-        scoringVersion: 1, result: round.result, duos: round.duos ? round.teams : null, standings: buildJunoStandings(table.starters,
-          round.players.map(p => ({ userId: p.userId, cardCount: p.hand.length })), round.winnerId, round.result) };
+        scoringVersion: 1, result: round.result, duos: round.duos ? round.teams : null, standings: standings };
       table.scoreboard = { roundId: table.id, status: round.result === 'emptyHand' ? 'pending' : 'unranked',
         standings: table.settlement.standings.map(p => ({ ...p })) };
     }

@@ -73,6 +73,22 @@ describe('durable Juno progression', () => {
     expect(rows.map(r => [r.spaceId, r.totalXp]).sort()).toEqual([['other', 133], ['space', 266]]);
     expect(() => settleJunoRound(settlement('one', 'other'), fixture.db)).toThrow();
   });
+  it('credits both teammates with the winner award and persists their teams', async () => {
+    const { applyDuoResults } = await import('./junoStandings.js');
+    const teams = { a: ['a', 'b'], b: ['c', 'd'] };
+    const base = buildJunoStandings(['a', 'b', 'c', 'd'].map(userId => ({ userId, name: userId })),
+      [{ userId: 'a', cardCount: 0 }, { userId: 'b', cardCount: 3 }, { userId: 'c', cardCount: 1 }, { userId: 'd', cardCount: 4 }], 'a', 'emptyHand');
+    for (const row of base) row.team = teams.a.includes(row.userId) ? 1 : 2;
+    const standings = applyDuoResults(base, 'a', teams);
+    const result = settleJunoRound({ roundId: 'duo', spaceId: 'space', channelId: 'voice', finishedAt: 100, scoringVersion: 1, result: 'emptyHand', standings, duos: teams }, fixture.db);
+    expect(result).toMatchObject({ status: 'credited' });
+    const winners = result.standings.filter(r => r.place === 1);
+    expect(winners.map(r => r.userId).sort()).toEqual(['a', 'b']);
+    expect(winners[0]!.xp).toBe(winners[1]!.xp);
+    expect(fixture.db.select().from(schema.junoPlayerStats).where(eq(schema.junoPlayerStats.userId, 'b')).get()).toMatchObject({ wins: 1, completedRounds: 1, totalXp: winners[0]!.xp });
+    const stored = fixture.db.select().from(schema.junoRoundParticipants).where(eq(schema.junoRoundParticipants.roundId, 'duo')).all();
+    expect(stored.map(r => [r.userId, r.team]).sort()).toEqual([['a', 1], ['b', 1], ['c', 2], ['d', 2]]);
+  });
   it('credits a six-player round with places 1-6 and refuses a seventh starter', () => {
     for (const id of ['e', 'f']) {
       fixture.db.insert(schema.users).values({ id, username: id, passwordHash: 'test-not-a-password', displayName: id.toUpperCase(), avatar: `${id}.webp`, createdAt: 1 }).run();
