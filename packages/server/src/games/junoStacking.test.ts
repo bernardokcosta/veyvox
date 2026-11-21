@@ -53,6 +53,20 @@ describe('Juno stacking engine', () => {
     expect(state.stackDraw).toBe(0); expect(state.turn).toBe(0);
     expect(state.lastMove).toMatchObject({ type: 'draw', userId: 'c', amount: 6 });
   });
+  it('takes the whole pile at once with no fishing draw when the victim holds no stack card', () => {
+    const state = stackingRound();
+    actInRound(state, 'a', { type: 'play', cardId: 'a-draw2' }, 0);
+    // 'c' holds no +2/+4: drawing takes the entire pile and ends the turn, with no playable-draw continuation.
+    const before = state.players[2]!.hand.length;
+    actInRound(state, 'b', { type: 'play', cardId: 'b-draw2' }, 1);
+    actInRound(state, 'c', { type: 'draw' }, 2);
+    expect(state.players[2]!.hand.length).toBe(before + 4);
+    expect(state.stackDraw).toBe(0);
+    expect(state.drawnCardId).toBeNull();
+    expect(state.turn).toBe(0);
+    expect(() => actInRound(state, 'c', { type: 'play', cardId: state.players[2]!.hand[0]!.id }, 3)).toThrow('juno_not_your_turn');
+    expect(() => actInRound(state, 'c', { type: 'draw' }, 3)).toThrow('juno_not_your_turn');
+  });
   it('refuses passes and ordinary plays while a stack is pending, but allows JUNO calls', () => {
     const state = stackingRound();
     actInRound(state, 'a', { type: 'play', cardId: 'a-draw2' }, 0);
