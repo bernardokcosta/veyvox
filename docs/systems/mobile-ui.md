@@ -593,6 +593,7 @@ File: `MobileVoiceFullScreen.tsx`
 - Remote screen-share tracks render in their own `StreamTile` (one extra tile per streaming participant) — the user must tap "Watch Stream" or focus the tile to subscribe; until then it's an avatar placeholder. `setStreamSubscription` and the `stream_watch` data-channel protocol fire identically on mobile.
 - Tap-to-focus: tapping any tile sets `voiceStore.focusedParticipantId` and the grid switches into the focused-publisher layout (one large tile + bottom strip of others). This works through touch events without modification.
 - Mute / deafen / camera badges, speaking-ring, "(you)" suffix, context-menu (right-click on desktop, long-press on iOS — Safari fires `contextmenu` on long-press), local-mute/volume sliders, watch/unwatch — all carry over.
+- The call header's video-only toggle uses the same persisted local preference as desktop. It affects only the grid and focused strip; the connected count and call controls are unchanged.
 
 **Auto-focus on screen-share (mobile-only).** When `MobileVoiceFullScreen` mounts (or while it's already mounted) and a screen-share publication appears, the screen sets `focusedParticipantId` to the first live `${identity}:stream` tile so the user lands directly on the watchable stream. Two refs gate the behaviour:
 

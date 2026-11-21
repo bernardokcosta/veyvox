@@ -7,10 +7,11 @@ function setup() {
   const media = { loop: false, preload: '', src: '', currentTime: 0, error: null as MediaError | null, play: vi.fn(async () => {}), pause: vi.fn(), load: vi.fn(), removeAttribute: vi.fn(), addEventListener: vi.fn(), removeEventListener: vi.fn() };
   const gain = { gain: { value: 0 }, connect: vi.fn(), disconnect: vi.fn() };
   const source = { connect: vi.fn(), disconnect: vi.fn() };
-  const manager = { resumeContext: vi.fn(async () => {}), ensureContext: () => ({ createGain: () => gain, createMediaElementSource: () => source }) as unknown as AudioContext, getMasterOutput: () => ({}) as AudioNode };
+  const release = vi.fn();
+  const manager = { acquirePlayback: vi.fn(() => release), resumeContext: vi.fn(async () => {}), ensureContext: () => ({ createGain: () => gain, createMediaElementSource: () => source }) as unknown as AudioContext, getMasterOutput: () => ({}) as AudioNode };
   const createMedia = vi.fn(() => media as unknown as HTMLAudioElement);
   const player = createJunoMusicPlayer(status, { manager: () => manager, createMedia });
-  return { player, media, gain, source, manager, createMedia, status };
+  return { player, media, gain, source, manager, createMedia, status, release };
 }
 const flush = async () => { for (let i = 0; i < 8; i++) await Promise.resolve(); };
 describe('managed Juno music stream', () => {
@@ -77,5 +78,36 @@ describe('managed Juno music stream', () => {
     s.manager.resumeContext.mockReturnValueOnce(new Promise<void>(resolve => { done = resolve; }));
     s.player.update(true, .2); s.player.update(false, .2); done(); await flush(); expect(s.media.play).not.toHaveBeenCalled();
     s.player.update(true, .2); await flush(); s.player.update(true, 0); expect(s.gain.gain.value).toBe(0); expect(s.media.pause).toHaveBeenCalled(); s.player.dispose();
+  });
+  it('holds output throughout playback and releases on hide even when resume is pending', async () => {
+    const s = setup(); let done!: () => void;
+    s.manager.resumeContext.mockReturnValueOnce(new Promise<void>(resolve => { done = resolve; }));
+    s.player.update(true, .2);
+    expect(s.manager.acquirePlayback).toHaveBeenCalledOnce();
+    expect(s.release).not.toHaveBeenCalled();
+    s.player.update(false, .2);
+    expect(s.release).toHaveBeenCalledOnce();
+    done(); await flush();
+    expect(s.media.play).not.toHaveBeenCalled();
+    expect(s.release).toHaveBeenCalledOnce();
+    s.player.update(true, .2); await flush();
+    expect(s.status).toHaveBeenLastCalledWith('playing');
+    expect(s.release).toHaveBeenCalledOnce();
+    s.player.dispose();
+    expect(s.release).toHaveBeenCalledTimes(2);
+  });
+  it('reopens without waiting for an abandoned resume and protects the new hold', async () => {
+    const s = setup(); let finish!: () => void;
+    const releaseNew = vi.fn();
+    s.manager.acquirePlayback.mockReturnValueOnce(s.release).mockReturnValueOnce(releaseNew);
+    s.manager.resumeContext.mockReturnValueOnce(new Promise<void>(resolve => { finish = resolve; }));
+    s.player.update(true, .2); s.player.update(false, .2);
+    s.player.update(true, .2); await flush();
+    expect(s.media.play).toHaveBeenCalledOnce();
+    finish(); await flush();
+    expect(s.release).toHaveBeenCalledOnce();
+    expect(releaseNew).not.toHaveBeenCalled();
+    s.player.dispose();
+    expect(releaseNew).toHaveBeenCalledOnce();
   });
 });

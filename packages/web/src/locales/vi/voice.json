@@ -301,6 +301,8 @@
     "notificationBody": "{{name}} đang gọi bạn"
   },
   "grid": {
+    "noVideoParticipants": "Không có camera hoặc màn hình được chia sẻ để hiển thị.",
+    "showAllParticipants": "Hiện tất cả người tham gia",
     "waitingForOthers": "Đang chờ người khác…",
     "returnToGridHint": "Nhấn để về xem lưới",
     "backToGrid": "Về xem lưới",
@@ -470,6 +472,8 @@
   },
   "channelDuration": "Kênh hoạt động {{duration}}",
   "controls": {
+    "hideNonVideo": "Ẩn người tham gia không có video",
+    "showNonVideo": "Hiện người tham gia không có video",
     "spaceMutedSelfMuted": "Tắt tiếng trong không gian (tự tắt)",
     "unmuteShortcut": "Bật tiếng (M)",
     "muteShortcut": "Tắt tiếng (M)",

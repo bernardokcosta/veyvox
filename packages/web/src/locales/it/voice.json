@@ -304,6 +304,8 @@
     "notificationBody": "{{name}} ti sta chiamando"
   },
   "grid": {
+    "noVideoParticipants": "Non ci sono videocamere o schermi condivisi da mostrare.",
+    "showAllParticipants": "Mostra tutti i partecipanti",
     "waitingForOthers": "In attesa che altri entrino...",
     "returnToGridHint": "Clicca per tornare alla griglia",
     "backToGrid": "Torna alla griglia",
@@ -473,6 +475,8 @@
   },
   "channelDuration": "Canale attivo da {{duration}}",
   "controls": {
+    "hideNonVideo": "Nascondi i partecipanti senza video",
+    "showNonVideo": "Mostra i partecipanti senza video",
     "spaceMutedSelfMuted": "Silenziato dallo spazio (silenzio personale)",
     "unmuteShortcut": "Riattiva audio (M)",
     "muteShortcut": "Silenzia (M)",

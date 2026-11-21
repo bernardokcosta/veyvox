@@ -221,7 +221,10 @@ describe('SoundController ringing when a cue never loads', () => {
     mountAs('online');
 
     await act(async () => { useVoiceStore.setState({ incomingCall: call }); });
+    const signal = playSound.mock.calls[0]?.[1]?.signal;
+    expect(signal).toBeInstanceOf(AbortSignal);
     await act(async () => { useVoiceStore.setState({ incomingCall: null }); });
+    expect(signal.aborted).toBe(true);
     await act(async () => { useVoiceStore.setState({ incomingCall: { ...call } }); });
     expect(soundsPlayed()).toEqual(['call_ringing', 'call_ringing']);
 

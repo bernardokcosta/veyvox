@@ -16,6 +16,8 @@ vi.mock('../../audio/AudioManager', () => ({
       clearInputDenial: vi.fn(),
       resumeContext: vi.fn(() => Promise.resolve()),
       setInputDevice: vi.fn(() => Promise.resolve(null)),
+      releaseInputStream: vi.fn(),
+      hasVoiceSession: () => false,
     })),
   },
 }));

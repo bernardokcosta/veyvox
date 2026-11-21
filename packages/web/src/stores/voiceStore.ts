@@ -110,6 +110,7 @@ export interface VoiceState {
    */
   dmWaitingUntil: Map<string, number>;
   focusedParticipantId: string | null;
+  hideNonVideoParticipants: boolean;
   screenShareConfig: ScreenShareConfig;
   cameraConfig: CameraConfig;
   /**
@@ -165,6 +166,7 @@ export interface VoiceState {
   activeDmCall: ActiveDmCall | null;
   setIncomingCall: (call: IncomingDmCall | null) => void;
   setOutgoingCall: (call: OutgoingDmCall | null) => void;
+  abandonOutgoingCall: (expected: OutgoingDmCall) => boolean;
   setActiveDmCall: (call: ActiveDmCall | null) => void;
   setVoiceUsers: (channelId: string, userIds: string[]) => void;
   setVoiceChannelElapsedSeconds: (channelId: string, elapsedSeconds: number | null) => void;
@@ -189,6 +191,7 @@ export interface VoiceState {
   toggleScreenShare: () => void;
   toggleDeafen: () => void;
   setFocusedParticipant: (id: string | null) => void;
+  setHideNonVideoParticipants: (hide: boolean) => void;
   setScreenShareConfig: (config: Partial<ScreenShareConfig>) => void;
   setCameraConfig: (config: Partial<CameraConfig>) => void;
   setLastScreenShareSourceId: (sourceId: string | null) => void;
@@ -304,6 +307,7 @@ export const useVoiceStore = create<VoiceState>()(
       channelVoiceBitrateKbps: null,
       dmWaitingUntil: new Map(),
       focusedParticipantId: null,
+      hideNonVideoParticipants: false,
       screenShareConfig: { ...AUTO_SCREEN_SHARE_QUALITY, mode: 'gaming', shareAudio: !isElectron(), forceSdr: false },
       cameraConfig: { height: 720, fps: 30, customBitrateKbps: null },
       lastScreenShareSourceId: null,
@@ -465,6 +469,19 @@ export const useVoiceStore = create<VoiceState>()(
 
       setIncomingCall: (call) => set({ incomingCall: call }),
       setOutgoingCall: (call) => set({ outgoingCall: call }),
+      abandonOutgoingCall: (expected) => {
+        const state = get();
+        if (state.outgoingCall !== expected) return false;
+        // A ringing call may have pre-armed capture, but not at the expense of
+        // an active or connecting call. The hold is taken before resume(),
+        // when LiveKit may not have reported 'connecting' in this store yet.
+        if (!state.activeDmCall && !isInVoiceRoom(state) && state.voiceConnectionStatus !== 'connecting') {
+          const manager = AudioManager.getInstance();
+          if (!manager.hasVoiceSession()) manager.releaseInputStream();
+        }
+        set({ outgoingCall: null });
+        return true;
+      },
       setActiveDmCall: (call) => set({ activeDmCall: call }),
 
       setVoiceUsers: (channelId, userIds) => {
@@ -610,6 +627,7 @@ export const useVoiceStore = create<VoiceState>()(
       toggleScreenShare: () => set((state) => ({ isScreenSharing: !state.isScreenSharing, screenShareSdr: state.isScreenSharing ? false : state.screenShareSdr })),
 
       setFocusedParticipant: (id) => set({ focusedParticipantId: id }),
+      setHideNonVideoParticipants: (hide) => set({ hideNonVideoParticipants: hide }),
       setLastScreenShareSourceId: (sourceId) => set({ lastScreenShareSourceId: sourceId }),
       setScreenShareConfig: (config) => set((state) => ({
         screenShareConfig: { ...state.screenShareConfig, ...config },
@@ -962,6 +980,7 @@ export const useVoiceStore = create<VoiceState>()(
         cameraDeviceId: state.cameraDeviceId,
         screenShareConfig: state.screenShareConfig,
         cameraConfig: state.cameraConfig,
+        hideNonVideoParticipants: state.hideNonVideoParticipants,
         lastScreenShareSourceId: state.lastScreenShareSourceId,
         echoCancellation: state.echoCancellation,
         autoGainControl: state.autoGainControl,
@@ -977,6 +996,7 @@ export const useVoiceStore = create<VoiceState>()(
       }),
       merge: (persistedState: any, currentState: VoiceState) => {
         const merged = { ...currentState, ...persistedState };
+        merged.hideNonVideoParticipants = persistedState?.hideNonVideoParticipants === true;
         // Old/partial settings keep the new defaults; invalid codec values must
         // not bypass capability checks even when the stored version is current.
         merged.screenShareConfig = {

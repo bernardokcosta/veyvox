@@ -9,6 +9,7 @@ export const POINTER_REVEAL_IDLE_MS = 2500;
  * pointer can rest in the padding between them while aiming.
  */
 export const VOICE_CHROME_ATTR = 'data-voice-chrome';
+export const VOICE_CHROME_IDLE = 'opacity-0 focus-within:opacity-100 [@media(hover:none)]:opacity-100 [@media(any-pointer:coarse)]:opacity-100';
 
 /**
  * Reveals overlay chrome while the pointer moves over `targetRef`, and hides

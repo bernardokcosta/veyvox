@@ -304,6 +304,8 @@
     "notificationBody": "{{name}} te está llamando"
   },
   "grid": {
+    "noVideoParticipants": "No hay cámaras ni pantallas compartidas que mostrar.",
+    "showAllParticipants": "Mostrar a todos los participantes",
     "waitingForOthers": "Esperando a que entren los demás…",
     "returnToGridHint": "Haz clic para volver a la vista en cuadrícula",
     "backToGrid": "Volver a la vista en cuadrícula",
@@ -473,6 +475,8 @@
   },
   "channelDuration": "El canal lleva {{duration}} en llamada",
   "controls": {
+    "hideNonVideo": "Ocultar a los participantes sin vídeo",
+    "showNonVideo": "Mostrar a los participantes sin vídeo",
     "spaceMutedSelfMuted": "Micrófono silenciado en el espacio (también por ti)",
     "unmuteShortcut": "Activar micrófono (M)",
     "muteShortcut": "Silenciar micrófono (M)",

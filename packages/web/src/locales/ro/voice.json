@@ -304,6 +304,8 @@
     "notificationBody": "{{name}} te apelează"
   },
   "grid": {
+    "noVideoParticipants": "Nu există camere sau ecrane partajate de afișat.",
+    "showAllParticipants": "Afișează toți participanții",
     "waitingForOthers": "Se așteaptă ca alții să se alăture...",
     "returnToGridHint": "Fă clic pentru a reveni la vizualizarea în grilă",
     "backToGrid": "Înapoi la vizualizarea în grilă",
@@ -473,6 +475,8 @@
   },
   "channelDuration": "Canal activ de {{duration}}",
   "controls": {
+    "hideNonVideo": "Ascunde participanții fără video",
+    "showNonVideo": "Afișează participanții fără video",
     "spaceMutedSelfMuted": "Microfon oprit pentru spațiu (oprit de tine)",
     "unmuteShortcut": "Pornește microfonul (M)",
     "muteShortcut": "Oprește microfonul (M)",

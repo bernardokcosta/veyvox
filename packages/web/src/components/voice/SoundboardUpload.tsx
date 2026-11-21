@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MAX_SOUNDBOARD_BYTES, SOUNDBOARD_SAMPLE_RATE } from '@veyvox/shared/src/soundboard';
 import { AudioManager } from '../../audio/AudioManager';
@@ -22,13 +22,23 @@ export function SoundboardUpload({ spaceId, maxDuration, onDone, onCancel }: {
   const [busy, setBusy] = useState(false); const [error, setError] = useState('');
   const [previewing, setPreviewing] = useState(false);
   const source = useRef<AudioBufferSourceNode | null>(null);
+  const playback = useRef<(() => void) | null>(null);
   const generation = useRef(0);
   const sessionRevision = useRef(useAuthStore.getState().sessionRevision).current;
   const current = (run: number) => run === generation.current && sessionRevision === useAuthStore.getState().sessionRevision;
   // Drag-to-select anchor in seconds; null when not dragging.
   const dragAnchor = useRef<number | null>(null);
-  const stop = () => { try { source.current?.stop(); } catch { /* Already ended. */ } source.current?.disconnect(); source.current = null; setPreviewing(false); };
-  useEffect(() => () => { generation.current++; try { source.current?.stop(); } catch { /* Already ended. */ } source.current?.disconnect(); }, []);
+  const disposePlayback = useCallback(() => {
+    const node = source.current; source.current = null;
+    if (node) {
+      node.onended = null;
+      try { node.stop(); } catch { /* Already ended. */ }
+      node.disconnect();
+    }
+    playback.current?.(); playback.current = null;
+  }, []);
+  const stop = () => { disposePlayback(); setPreviewing(false); };
+  useEffect(() => () => { generation.current++; disposePlayback(); }, [disposePlayback]);
   const peaks = useMemo(() => {
     if (!buffer) return [];
     const data = buffer.getChannelData(0);
@@ -61,17 +71,21 @@ export function SoundboardUpload({ spaceId, maxDuration, onDone, onCancel }: {
     finally { if (current(run)) setBusy(false); }
   };
   const preview = async () => {
-    if (previewing) { stop(); return; }
+    if (playback.current) { stop(); return; }
     if (!buffer || !valid) return;
     const run = generation.current;
+    const manager = AudioManager.getInstance();
+    const release = manager.acquirePlayback(); playback.current = release;
+    let started = false;
     try {
-      const manager = AudioManager.getInstance(); await manager.resumeContext();
-      if (!current(run)) return;
+      await manager.resumeContext();
+      if (!current(run) || playback.current !== release) return;
       const context = manager.ensureContext(); const node = context.createBufferSource();
       node.buffer = buffer; node.connect(manager.getMasterOutput()); source.current = node;
-      node.onended = () => { if (source.current === node) { node.disconnect(); source.current = null; setPreviewing(false); } };
-      node.start(0, start, duration); setPreviewing(true);
-    } catch { setError(t('voice:soundboard.playFailed')); }
+      node.onended = () => { if (source.current === node) stop(); };
+      node.start(0, start, duration); started = true; setPreviewing(true);
+    } catch { if (current(run) && playback.current === release) setError(t('voice:soundboard.playFailed')); }
+    finally { if (!started && playback.current === release) disposePlayback(); }
   };
   const save = async () => {
     if (!buffer || !valid || !name.trim() || !emoji.trim() || busy) return;

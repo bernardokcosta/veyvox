@@ -9,7 +9,8 @@ import { SoundboardButton } from './SoundboardButton';
 import { GamesButton } from '../games/GamesButton';
 import { hasPermissionBit, PermissionBits } from '../../utils/permissions';
 import { handleMuteAction, handleDeafenAction, handleCameraAction, handleScreenShareAction, handleDisconnectAction } from '../../utils/voiceActions';
-import { VOICE_CHROME_ATTR } from '../../hooks/usePointerReveal';
+import { VOICE_CHROME_ATTR, VOICE_CHROME_IDLE } from '../../hooks/usePointerReveal';
+import { VideoOnlyToggle } from './VideoOnlyToggle';
 
 const btnBase = 'w-10 h-10 flex items-center justify-center rounded-full transition-colors';
 const btnDefault = `${btnBase} bg-surface-channel text-txt-secondary hover:bg-surface-elevated hover:text-txt-primary`;
@@ -53,7 +54,7 @@ export function VoiceControlBar({ revealed = false }: { revealed?: boolean }) {
   // idle timer pull it away would take the menu with it.
   const fullscreenVisibility = revealed || shareMenuOpen
     ? 'opacity-100'
-    : 'opacity-0 focus-within:opacity-100 [@media(hover:none)]:opacity-100 [@media(any-pointer:coarse)]:opacity-100';
+    : VOICE_CHROME_IDLE;
   const containerClassName = voiceFullscreen
     ? `pointer-events-none absolute inset-x-0 bottom-0 z-20 h-24 flex items-end justify-center pb-6 transition-opacity duration-300 ease-out ${fullscreenVisibility}`
     : 'absolute bottom-6 left-1/2 -translate-x-1/2 z-20 opacity-0 translate-y-4 group-hover/voice:opacity-100 group-hover/voice:translate-y-0 transition-all duration-300 ease-out';
@@ -212,6 +213,8 @@ export function VoiceControlBar({ revealed = false }: { revealed?: boolean }) {
             <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z" />
           </svg>
         </button>
+
+        <VideoOnlyToggle className={`${btnBase} hover:bg-interactive-hover`} />
 
         {/* Fullscreen Toggle */}
         <button

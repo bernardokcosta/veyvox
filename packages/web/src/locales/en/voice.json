@@ -339,6 +339,8 @@
     "notificationBody": "{{name}} is calling you"
   },
   "grid": {
+    "noVideoParticipants": "No cameras or screen shares to show.",
+    "showAllParticipants": "Show all participants",
     "waitingForOthers": "Waiting for others to join...",
     "returnToGridHint": "Click to return to grid view",
     "backToGrid": "Back to grid view",
@@ -508,6 +510,8 @@
   },
   "channelDuration": "Channel active for {{duration}}",
   "controls": {
+    "hideNonVideo": "Hide participants without video",
+    "showNonVideo": "Show participants without video",
     "spaceMutedSelfMuted": "Space Muted (self-muted)",
     "unmuteShortcut": "Unmute (M)",
     "muteShortcut": "Mute (M)",

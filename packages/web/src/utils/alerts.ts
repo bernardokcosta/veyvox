@@ -88,12 +88,13 @@ export function messageAlertsUser(
  */
 export function playAlertSound(
   kind: AlertKind,
-  options: { loop?: boolean } = {},
+  options: { loop?: boolean; signal?: AbortSignal } = {},
 ): Promise<AudioBufferSourceNode | null> {
   if (!alertsAllowed(kind)) return Promise.resolve(null);
   return AudioManager.getInstance().playSound(ALERT_SOUNDS[kind], {
     loop: options.loop === true,
     volume: getSfxVolume(),
+    ...(options.signal ? { signal: options.signal } : {}),
   });
 }
 

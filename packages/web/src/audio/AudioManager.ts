@@ -3,6 +3,8 @@ import rnnoiseWorkletPath from '@sapphi-red/web-noise-suppressor/rnnoiseWorklet.
 import rnnoiseWasmPath from '@sapphi-red/web-noise-suppressor/rnnoise.wasm?url';
 import rnnoiseWasmSimdPath from '@sapphi-red/web-noise-suppressor/rnnoise_simd.wasm?url';
 
+const IDLE_SUSPEND_MS = 1_500;
+
 export class AudioManager {
   private static instance: AudioManager | null = null;
   private ctx: AudioContext | null = null;
@@ -16,6 +18,7 @@ export class AudioManager {
   
   private currentInputDeviceId: string = 'default';
   private desiredOutputDeviceId: string = 'default';
+  private desiredInputVolume = 100;
   private currentStream: MediaStream | null = null;
   private isInitialized = false;
   
@@ -32,7 +35,12 @@ export class AudioManager {
   private stereoMerger: ChannelMergerNode | null = null;
   private rnnoiseEnabled = false;
   private rnnoiseReady = false;
-  private keepAliveOscillator: OscillatorNode | null = null;
+  private keepAlive: { oscillator: OscillatorNode; gain: GainNode } | null = null;
+  private readonly voiceSessions = new Set<symbol>();
+  private readonly playbacks = new Set<symbol>();
+  private idleTimer?: ReturnType<typeof setTimeout>;
+  private suspending: Promise<void> | null = null;
+  private releasePendingInput: (() => void) | null = null;
 
   // Cached `getUserMedia` denial. After a NotAllowedError, subsequent
   // `setInputDevice` calls (e.g. `useLiveKit.syncMic` racing the user's
@@ -93,24 +101,14 @@ export class AudioManager {
     this.inputGain.connect(this.silentGain);
     this.silentGain.connect(this.ctx.destination);
 
-    this.inputGain.gain.setValueAtTime(1, this.ctx.currentTime);
-
-    // Safari suspends the AudioContext when it detects no audible output,
-    // even while WebRTC audio is flowing through the pipeline. A sub-bass
-    // oscillator at near-zero gain keeps the rendering thread alive without
-    // producing audible sound.
-    this.keepAliveOscillator = this.ctx.createOscillator();
-    this.keepAliveOscillator.frequency.value = 20;
-    const keepAliveGain = this.ctx.createGain();
-    keepAliveGain.gain.value = 0.00001;
-    this.keepAliveOscillator.connect(keepAliveGain);
-    keepAliveGain.connect(this.ctx.destination);
-    this.keepAliveOscillator.start();
+    this.inputGain.gain.setValueAtTime(this.desiredInputVolume / 100, this.ctx.currentTime);
+    this.syncVoiceKeepAlive();
 
     this.ctx.onstatechange = () => {
       console.log(`[AudioManager] Context state: ${this.ctx?.state}`);
       if (this.ctx?.state === 'running') {
         this.notifyResumed();
+        this.scheduleIdleSuspend();
       }
     };
 
@@ -118,6 +116,87 @@ export class AudioManager {
 
     // Apply pending output device selection (user preference loaded before context creation)
     this.applyOutputDevice();
+    this.scheduleIdleSuspend();
+  }
+
+  private syncVoiceKeepAlive(): void {
+    const ctx = this.ctx;
+    if (!ctx) return;
+    if (this.hasVoiceSession()) {
+      if (this.keepAlive) return;
+      // Safari may stop a silent WebRTC graph. Keep it ticking only for voice,
+      // never for idle UI or one-shot playback.
+      const oscillator = ctx.createOscillator();
+      oscillator.frequency.value = 20;
+      const gain = ctx.createGain();
+      gain.gain.value = 0.00001;
+      oscillator.connect(gain);
+      gain.connect(ctx.destination);
+      oscillator.start();
+      this.keepAlive = { oscillator, gain };
+    } else if (this.keepAlive) {
+      const { oscillator, gain } = this.keepAlive;
+      this.keepAlive = null;
+      oscillator.stop();
+      oscillator.disconnect();
+      gain.disconnect();
+    }
+  }
+
+  private hasAudioActivity(): boolean {
+    return this.hasVoiceSession() || this.playbacks.size > 0 || this.hasActiveStream();
+  }
+
+  private cancelIdleSuspend(): void {
+    clearTimeout(this.idleTimer);
+    this.idleTimer = undefined;
+  }
+
+  private scheduleIdleSuspend(): void {
+    const ctx = this.ctx;
+    if (this.idleTimer !== undefined || ctx?.state !== 'running' || this.hasAudioActivity()) return;
+    this.idleTimer = setTimeout(() => {
+      this.idleTimer = undefined;
+      if (ctx.state !== 'running' || this.hasAudioActivity()) return;
+      const pending = ctx.suspend().catch((error: unknown) => {
+        console.error('[AudioManager] Failed to suspend idle context:', error);
+      });
+      this.suspending = pending;
+      void pending.then(() => { if (this.suspending === pending) this.suspending = null; });
+    }, IDLE_SUSPEND_MS);
+  }
+
+  private holdAudio(set: Set<symbol>): () => void {
+    const lease = Symbol();
+    set.add(lease);
+    this.cancelIdleSuspend();
+    if (set === this.voiceSessions) this.syncVoiceKeepAlive();
+    return () => {
+      if (!set.delete(lease)) return;
+      if (set === this.voiceSessions) this.syncVoiceKeepAlive();
+      this.scheduleIdleSuspend();
+    };
+  }
+
+  acquireAudioSession(): () => void {
+    return this.holdAudio(this.voiceSessions);
+  }
+
+  /** Includes a connection attempt waiting for AudioContext.resume(). */
+  hasVoiceSession(): boolean {
+    return this.voiceSessions.size > 0;
+  }
+
+  /** A sound owner holds this from the beginning of a start through stop/end. */
+  acquirePlayback(): () => void {
+    return this.holdAudio(this.playbacks);
+  }
+
+  /** An unrelated gesture must not wake idle audio; an actual blocked sound can. */
+  resumeIfInUse(): void {
+    if (this.ctx && this.ctx.state !== 'closed' && (this.ctx.state !== 'running' || this.suspending) && this.hasAudioActivity()) {
+      void this.resumeContext();
+    }
   }
 
   /**
@@ -152,15 +231,19 @@ export class AudioManager {
   }
 
   async resumeContext() {
-    if (!this.ctx) this.initContext();
-    if (this.ctx && this.ctx.state === 'suspended') {
+    this.cancelIdleSuspend();
+    const ctx = this.ensureContext();
+    if (ctx.state !== 'closed' && (ctx.state !== 'running' || this.suspending)) {
       try {
-        await this.ctx.resume();
+        // Queue resume behind a suspend already sent to the browser. Call it in
+        // this turn instead of awaiting suspend and losing user activation.
+        await ctx.resume();
         console.log('[AudioManager] AudioContext resumed.');
       } catch (err) {
         console.error('[AudioManager] Failed to resume context:', err);
       }
     }
+    this.scheduleIdleSuspend();
   }
 
   async loadSound(name: string): Promise<AudioBuffer | null> {
@@ -183,45 +266,65 @@ export class AudioManager {
     }
   }
 
-  async playSound(name: string, options: { loop?: boolean; volume?: number } = {}): Promise<AudioBufferSourceNode | null> {
-    await this.resumeContext();
-    const buffer = await this.loadSound(name);
-    if (!buffer || !this.ctx) return null;
+  async playSound(name: string, options: { loop?: boolean; volume?: number; signal?: AbortSignal } = {}): Promise<AudioBufferSourceNode | null> {
+    const { signal } = options;
+    if (signal?.aborted) return null;
+    const releasePlayback = this.acquirePlayback();
+    let abortPlayback = releasePlayback;
+    let started = false;
+    let onAbort: (() => void) | undefined;
+    try {
+      const prepare = async () => {
+        await this.resumeContext();
+        return signal?.aborted ? null : this.loadSound(name);
+      };
+      // A browser resume can wait indefinitely for a gesture. Ring owners
+      // can cancel that wait without a late cue waking a newer call.
+      const buffer = signal ? await Promise.race([
+        new Promise<null>((resolve) => {
+          onAbort = () => resolve(null);
+          signal.addEventListener('abort', onAbort, { once: true });
+        }),
+        prepare(),
+      ]) : await prepare();
+      if (!buffer || !this.ctx || signal?.aborted) return null;
 
-    const source = this.ctx.createBufferSource();
-    source.buffer = buffer;
-    source.loop = options.loop || false;
+      const source = this.ctx.createBufferSource();
+      source.buffer = buffer;
+      source.loop = options.loop ?? false;
+      const gainNode = this.ctx.createGain();
+      const targetVolume = options.volume ?? 0.8;
+      abortPlayback = this.trackPlayback(source, gainNode, releasePlayback);
 
-    const gainNode = this.ctx.createGain();
-    const targetVolume = options.volume ?? 0.8;
-
-    // Short attack/release envelope to avoid the click/pop that occurs when a
-    // buffer starts (or ends) at a non-zero sample amplitude. Without this the
-    // waveform's first sample jumps from silence instantly, producing an
-    // audible pop — most noticeable on the looping call cues. Mirrors the
-    // envelope used by playTestTone().
-    const now = this.ctx.currentTime;
-    const attack = 0.01; // 10ms fade-in — kills the start pop, imperceptible
-    gainNode.gain.setValueAtTime(0, now);
-    gainNode.gain.linearRampToValueAtTime(targetVolume, now + attack);
-
-    // Tail fade-out for one-shots so they don't pop at the natural end of the
-    // buffer. Looping cues are stopped explicitly by the caller, so they ramp
-    // in once and hold; no tail ramp is scheduled for them.
-    if (!source.loop) {
-      const release = 0.01; // 10ms fade-out
-      const dur = buffer.duration;
-      if (dur > attack + release) {
-        gainNode.gain.setValueAtTime(targetVolume, now + dur - release);
-        gainNode.gain.linearRampToValueAtTime(0, now + dur);
+      // Brief fades avoid pops; looping tones have no scheduled tail fade.
+      const now = this.ctx.currentTime;
+      const fade = 0.01;
+      gainNode.gain.setValueAtTime(0, now);
+      gainNode.gain.linearRampToValueAtTime(targetVolume, now + fade);
+      if (!source.loop && buffer.duration > fade * 2) {
+        gainNode.gain.setValueAtTime(targetVolume, now + buffer.duration - fade);
+        gainNode.gain.linearRampToValueAtTime(0, now + buffer.duration);
       }
+      source.connect(gainNode);
+      gainNode.connect(this.masterBoost!);
+      source.start(now);
+      started = true;
+      return source;
+    } finally {
+      if (onAbort) signal?.removeEventListener('abort', onAbort);
+      if (!started) abortPlayback();
     }
+  }
 
-    source.connect(gainNode);
-    gainNode.connect(this.masterBoost!);
-
-    source.start(now);
-    return source;
+  private trackPlayback(source: AudioScheduledSourceNode, gain: GainNode, release: () => void): () => void {
+    const end = () => {
+      source.disconnect();
+      gain.disconnect();
+      release();
+    };
+    // Callers may use onended for their own state; this cleanup is independent.
+    source.addEventListener('ended', end, { once: true });
+    return () => { source.removeEventListener('ended', end); end(); };
   }
 
   /**
@@ -252,6 +355,8 @@ export class AudioManager {
       throw this.inputDenialError;
     }
 
+    const release = this.acquirePlayback();
+    this.releasePendingInput = release;
     try {
       if (this.currentStream) {
         // Detach our `onended` handlers BEFORE stopping. `.stop()` synchronously
@@ -332,6 +437,9 @@ export class AudioManager {
         this.inputDenialError = err;
       }
       throw err;
+    } finally {
+      if (this.releasePendingInput === release) this.releasePendingInput = null;
+      release();
     }
   }
 
@@ -378,6 +486,9 @@ export class AudioManager {
     // The missing currentStream makes the next join acquire a fresh stream.
     this.currentInputDeviceId = 'default';
     this.streamGeneration++;
+    this.releasePendingInput?.();
+    this.releasePendingInput = null;
+    this.scheduleIdleSuspend();
   }
 
   /**
@@ -398,6 +509,7 @@ export class AudioManager {
         // `setInputDevice` does not short-circuit on the stale-but-non-null
         // currentStream.
         this.currentStream = null;
+        this.scheduleIdleSuspend();
         // Reason classification is the consumer's responsibility — they probe
         // `getUserMedia` to distinguish unplug vs revoke vs unavailable. We
         // emit `'unknown'` so the type is still informative if a future caller
@@ -488,6 +600,7 @@ export class AudioManager {
       tracks.forEach(t => { t.onended = null; });
       tracks.forEach(t => t.stop());
       this.currentStream = null;
+      this.scheduleIdleSuspend();
     }
   }
 
@@ -496,7 +609,7 @@ export class AudioManager {
   }
 
   setInputVolume(volume: number) {
-    if (!this.isInitialized) this.initContext();
+    this.desiredInputVolume = volume;
     if (this.inputGain && this.ctx) {
       const gainValue = volume / 100;
       this.inputGain.gain.setTargetAtTime(gainValue, this.ctx.currentTime, 0.1);
@@ -523,6 +636,7 @@ export class AudioManager {
       tracks.forEach(t => { t.onended = null; });
       tracks.forEach(t => t.stop());
       this.currentStream = null;
+      this.scheduleIdleSuspend();
     }
   }
 
@@ -595,20 +709,28 @@ export class AudioManager {
    * settings to confirm that audio is reaching the chosen output device.
    */
   async playTestTone(): Promise<void> {
-    await this.resumeContext();
-    if (!this.ctx) return;
-    const osc = this.ctx.createOscillator();
-    osc.frequency.value = 440;
-    const gain = this.ctx.createGain();
-    // Soft envelope to avoid pop on start/stop.
-    const now = this.ctx.currentTime;
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.15, now + 0.02);
-    gain.gain.linearRampToValueAtTime(0, now + 0.4);
-    osc.connect(gain);
-    gain.connect(this.masterBoost!);
-    osc.start(now);
-    osc.stop(now + 0.45);
+    const releasePlayback = this.acquirePlayback();
+    let abortPlayback = releasePlayback;
+    try {
+      await this.resumeContext();
+      const ctx = this.ensureContext();
+      const oscillator = ctx.createOscillator();
+      oscillator.frequency.value = 440;
+      const gain = ctx.createGain();
+      abortPlayback = this.trackPlayback(oscillator, gain, releasePlayback);
+      // Soft envelope to avoid pop on start/stop.
+      const now = ctx.currentTime;
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(0.15, now + 0.02);
+      gain.gain.linearRampToValueAtTime(0, now + 0.4);
+      oscillator.connect(gain);
+      gain.connect(this.masterBoost!);
+      oscillator.start(now);
+      oscillator.stop(now + 0.45);
+    } catch (error) {
+      abortPlayback();
+      throw error;
+    }
   }
 
   getContext(): AudioContext | null {

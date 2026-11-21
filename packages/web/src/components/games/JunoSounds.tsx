@@ -27,7 +27,7 @@ export function JunoSounds({ target, connected }: { target: JunoTarget | null; c
     let alive = true;
     let previous: JunoView | null = null;
     let seenError = useJunoStore.getState().error;
-    interface PlayingCue { source?: AudioBufferSourceNode; gain?: GainNode; envelope?: GainNode; scale: number }
+    interface PlayingCue { source?: AudioBufferSourceNode; gain?: GainNode; envelope?: GainNode; scale: number; release: () => void }
     const lanes = new Map<JunoSoundLane, PlayingCue>();
     const volume = () => getSfxVolume() * useJunoPreferences.getState().effectsVolume / 100;
     const valid = () => {
@@ -38,17 +38,20 @@ export function JunoSounds({ target, connected }: { target: JunoTarget | null; c
     };
     const stopLane = (lane: JunoSoundLane) => {
       const cue = lanes.get(lane); lanes.delete(lane);
+      if (cue?.source) cue.source.onended = null;
       try { cue?.source?.stop(); } catch { /* A source may already have ended. */ }
       cue?.source?.disconnect(); cue?.gain?.disconnect(); cue?.envelope?.disconnect();
+      cue?.release();
     };
     const stop = () => { for (const lane of lanes.keys()) stopLane(lane); };
     const play = (name: JunoSoundCue) => {
       if (!valid()) return;
       const definition = JUNO_SOUNDS[name], lane = definition.lane;
       stopLane(lane);
-      const attempt: PlayingCue = { scale: definition.gain };
-      lanes.set(lane, attempt);
       const started = Date.now(), manager = AudioManager.getInstance();
+      const attempt: PlayingCue = { scale: definition.gain, release: manager.acquirePlayback() };
+      lanes.set(lane, attempt);
+      let startedPlayback = false;
       void (async () => {
         await manager.resumeContext();
         if (!valid() || lanes.get(lane) !== attempt || Date.now() - started > 3_000) return;
@@ -74,11 +77,13 @@ export function JunoSounds({ target, connected }: { target: JunoTarget | null; c
         node.connect(envelope); envelope.connect(gain); gain.connect(manager.getMasterOutput());
         node.onended = () => {
           node.disconnect(); gain.disconnect(); envelope.disconnect();
-          if (lanes.get(lane) === attempt) lanes.delete(lane);
+          if (lanes.get(lane) === attempt) { lanes.delete(lane); attempt.release(); }
         };
         node.start();
-      })().catch(() => {
-        if (lanes.get(lane) === attempt) stopLane(lane);
+        startedPlayback = true;
+      })().finally(() => {
+        if (!startedPlayback && lanes.get(lane) === attempt) stopLane(lane);
+      }).catch(() => {
         // Audio/autoplay failure must never reject a game update or interaction.
       });
     };

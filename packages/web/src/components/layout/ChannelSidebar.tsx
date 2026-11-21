@@ -873,10 +873,11 @@ function UserAreaPanel({
       return;
     }
 
-    const start = async () => {
+    const manager = AudioManager.getInstance();
+    const start = () => {
+      if (analyserRef.current || !manager.getContext()) return;
       try {
-        await AudioManager.getInstance().resumeContext();
-        const analyser = AudioManager.getInstance().getAnalyserNode();
+        const analyser = manager.getAnalyserNode();
         analyser.fftSize = 256;
         analyserRef.current = analyser;
         
@@ -885,14 +886,16 @@ function UserAreaPanel({
           if (!analyserRef.current) return;
           analyserRef.current.getByteFrequencyData(data);
           const avg = data.reduce((a, b) => a + b, 0) / data.length;
-          setMicLevel(Math.min(avg / 128, 1));
+          setMicLevel(manager.hasActiveStream() ? Math.min(avg / 128, 1) : 0);
           animFrameRef.current = requestAnimationFrame(tick);
         };
         tick();
       } catch { /* no mic access */ }
     };
+    const unsubscribe = manager.onResumed(start);
     start();
     return () => {
+      unsubscribe();
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
       analyserRef.current = null;
     };
@@ -917,8 +920,6 @@ function UserAreaPanel({
       setOpenPanel(panel);
       setShowInputDeviceList(false);
       setShowOutputDeviceList(false);
-      // Resume the AudioContext so the mic-level meter starts measuring on open.
-      AudioManager.getInstance().resumeContext();
     }
   };
 

@@ -301,6 +301,8 @@
     "notificationBody": "{{name}} ringer til dig"
   },
   "grid": {
+    "noVideoParticipants": "Der er ingen kameraer eller delte skærme at vise.",
+    "showAllParticipants": "Vis alle deltagere",
     "waitingForOthers": "Venter på andre…",
     "returnToGridHint": "Klik for at vende tilbage til gittervisning",
     "backToGrid": "Tilbage til gittervisning",
@@ -470,6 +472,8 @@
   },
   "channelDuration": "Kanal aktiv i {{duration}}",
   "controls": {
+    "hideNonVideo": "Skjul deltagere uden video",
+    "showNonVideo": "Vis deltagere uden video",
     "spaceMutedSelfMuted": "Mutet i rummet (selv mutet)",
     "unmuteShortcut": "Ophæv mute (M)",
     "muteShortcut": "Dæmp (M)",
