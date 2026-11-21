@@ -18,22 +18,22 @@
   },
   "dependencies": {
     "@veyvox/shared": "workspace:*",
-    "@fastify/cors": "^11.4.1",
+    "@fastify/cors": "^11.4.3",
     "@fastify/helmet": "^13.2.0",
-    "@fastify/multipart": "^10.1.8",
+    "@fastify/multipart": "^10.1.9",
     "@fastify/rate-limit": "^11.2.2",
-    "@fastify/static": "^10.1.10",
+    "@fastify/static": "^10.1.11",
     "@fastify/websocket": "^11.3.7",
     "@tus/file-store": "^2.1.2",
     "@tus/server": "^2.4.7",
     "bcryptjs": "^3.0.3",
-    "better-sqlite3": "^13.0.3",
+    "better-sqlite3": "^13.2.0",
     "cheerio": "^1.2.0",
     "dotenv": "^18.0.9",
     "drizzle-orm": "^0.45.4",
     "fastify": "^5.12.8",
     "jsonwebtoken": "^9.0.3",
-    "livekit-server-sdk": "^2.19.2",
+    "livekit-server-sdk": "^2.20.0",
     "sharp": "^0.35.5",
     "tsx": "^4.23.15"
   },
@@ -46,6 +46,6 @@
     "drizzle-kit": "^0.31.11",
     "typescript": "^5.9.3",
     "vitest": "^5.1.0",
-    "ws": "^8.22.1"
+    "ws": "^8.23.0"
   }
 }
