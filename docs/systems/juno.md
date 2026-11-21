@@ -1,6 +1,6 @@
 # Juno: native voice games
 
-Juno is an original, self-hosted 2–4 player shedding-card game for **space voice
+Juno is an original, self-hosted 2–6 player shedding-card game for **space voice
 channels**. It uses the selected native server's authenticated connection.
 DMs and platform bot accounts are not supported.
 The host can add built-in computer opponents for practice. Active tables
@@ -31,14 +31,17 @@ new dependency is used.
 ## Rules
 
 The 108-card deck has four colors, one zero and two of each 1–9, skip, reverse
-and +2 per color, plus four wilds and four wild +4s. The server shuffles with
+and +2 per color, plus four wilds and four wild +4s (six seats still deal from
+the same 108/109/110/111-card decks; the discard pile recycles as before). With
+the specials option off the deck is always this classic 108. The server shuffles with
 `crypto.randomInt`, deals seven, and starts on a numeric discard. Match the
 active color or face; a wild chooses the next color. A +4 is legal only if the
-hand has no card of the active color. No stacking or +4 challenges.
+hand has no card of the active color. Without the stacking option there is no
+stacking or +4 challenge.
 
 Skip skips the next turn. Reverse changes direction and skips the opponent in
-a two-player game. +2/+4 immediately draw for the next player, who loses their
-turn; final-card penalties still apply before recording victory. A voluntary
+a two-player game. Without stacking, +2/+4 immediately draw for the next player,
+who loses their turn; final-card penalties still apply before recording victory. A voluntary
 draw offers only that drawn card if legal, otherwise passes immediately. There
 is no draw-until-playable. A player may pass after drawing a playable card.
 
@@ -168,7 +171,10 @@ approximately 2.2053-second `juno_pizza.ogg` on the existing effects/output bus.
 card flights and displayed hands. The author's occupied hand is visited first,
 following the round direction; up to five cards depart with a 45ms stagger from
 100ms after that hand's visit and arrive 700ms later, inside the five-second pause.
-All boundaries are rounded upward to integer milliseconds. Hands and native
+Departures clamp so every arrival lands at or before the pause end, which only
+binds six-seat tables. All boundaries are rounded upward to integer milliseconds.
+The schedule is complete (up to five flights per hand); the decorative ghost
+layer separately renders at most 20 nodes spread across the schedule. Hands and native
 animations share the first observation's start anchor, retained across polls;
 native animation start times also account for delayed rendering/pending play,
 and timeout delays are rounded upward so they cannot fire before a boundary.
@@ -186,7 +192,7 @@ or resolution completion uses the committed view directly, without replay.
 Run `pnpm preview:juno`, then open
 `http://127.0.0.1:5173/dev-juno-pizza.html`. It renders the real `JunoTable`,
 commands, sounds and built-in bots, backed by a separate loopback-only
-in-memory `JunoRooms` process on port 39998. Choose 2–4 seats and use the reset
+in-memory `JunoRooms` process on port 39998. Choose 2–6 seats and use the reset
 button to restart. The initial deal swaps existing card instances so the player
 owns the single pizza; production dealing is unchanged. The preview clock waits
 for the first action so the opening pizza remains available while inspecting.
@@ -199,8 +205,11 @@ nor its client module is reachable from the production app/build.
 
 At start, the room freezes its starter roster and round UUID. On `emptyHand`,
 the winner is first and the other finishers rank by remaining count **after**
-final-card draw penalties. Places 1–4 award 120/80/40/20 XP. Ties share place/XP
-with competition ranks (`1,2,2,4`); abandoned starters have no place or XP, and do
+final-card draw penalties. Places 1–6 award base 120/80/40/20/10/5 XP, plus small
+deterministic dynamic bonuses: the average opposing hand size (capped at +20),
+a larger table (four or more finishers) and a round where nobody abandoned.
+Every finisher earns at least the base award. Ties share place and
+total XP with competition ranks (`1,2,2,4`); abandoned starters have no place or XP, and do
 not reserve a rank. Spectators never receive awards. Only eligible finishers
 increment completed rounds; only the winner increments wins. `playersLeft`,
 `stalemate` and `expired` never award or increment counters.
@@ -256,9 +265,10 @@ Spectators receive `hand: []`. Neither the
 draw order nor opponent hands are serialized. Cards use opaque random ids.
 
 State/command clients declare `?memory=1`, optionally with `intoxicated=1` (which
-requires memory) and `pizza=1` (which requires both). All accept only exact `1`;
-duplicates/unknown keys are invalid. Snapshots advertise root
-`supportsMemory`/`supportsIntoxicated`/`supportsPizza: true`.
+requires memory) and `pizza=1` (which requires both), plus independent `?six=1`
+for six-seat tables, `?stacking=1` for stack-capable UI and `?duos=1` for duos UI.
+All accept only exact `1`; duplicates/unknown keys are invalid. Snapshots advertise root
+`supportsMemory`/`supportsIntoxicated`/`supportsPizza`/`supportsSix`/`supportsStacking`/`supportsDuos: true`.
 Seated humans refresh their declarations in the lobby;
 at start every human must support it to freeze `memoryEnabled: true`. Computers
 support them internally. `intoxicatedEnabled` additionally requires every human
@@ -266,7 +276,7 @@ to declare that capability; `pizzaEnabled` additionally requires all humans to
 declare pizza. Mixed cohorts use their supported 108/109/110-card deck;
 later declarations cannot change an active deck. Rematch creates a fresh lobby.
 Older hosts ignore the query; ranking URLs are unchanged. GET query variants
-share the same existing 600/minute/address read budget.
+share the same existing 1000/minute/address read budget.
 
 Enhanced-round viewers missing any enabled support receive 409 `juno_update_required` with
 no view, even if omitting the query or spectating. Normal authentication/access
@@ -277,9 +287,14 @@ computer hands are never returned. Client update-required errors clear cached
 private state, and old unmasked reads cannot replace a newer masked revision.
 The rule does not erase previously seen cards or prevent memory/collusion.
 
-The new client probes GET with all three flags and may fall back to intoxicated,
-then memory-only, at most twice on exact 400 `invalid_body` from an old host,
-within the same auth/session boundary.
+The new client probes GET with all six flags and may fall back to duos,
+then stacking, then six, then pizza, then intoxicated, then memory-only, at most
+five times on exact 400 `invalid_body` from an old host, within the same auth/session boundary. A table with more than
+four seats answers 409 `juno_update_required` to readers and mutators that did
+not declare `six=1`, so an older layout never silently omits two opponents.
+Growing beyond four seats additionally requires every seated human to have
+declared `six=1`: the server tracks lobby declarations per client generation
+and refuses the fifth seat or bot while anyone seated predates six support.
 Later polls and POSTs use confirmed support from the existing scoped snapshot;
 reconnect/scope reset renegotiates. Compatibility never retries a mutation.
 
@@ -295,18 +310,23 @@ retried automatically. Confirmed `lastMove.type: 'report'` names reporter `userI
 accused `targetUserId` and actual drawn `amount` (existing deck scarcity rules
 apply). Schemas bound ids, revisions, colors and
 payload size (2 KiB). All state changes are synchronous; stale commands get 409
-`juno_stale`, never an automatic mutation retry. Only the host starts/rematches;
+`juno_stale`, never an automatic mutation retry. `leave` is not turn-bound:
+the confirmation stays open across moves and submits the revision when it
+opened. The matching game accepts any revision between the caller taking their
+current seat and the latest state. An old game or seat cannot be left by a delayed click.
+Only the host starts/rematches;
 a new lobby keeps only that host, requiring everyone else to join explicitly.
 Late joiners can spectate a running/finished round but cannot take a seat.
 
 ### Built-in computer opponents
 
 `supportsBots` and `supportsAnnounce` are optional per-view capability flags.
-Computer seats are ephemeral `computer: 1|2|3` people with server-generated ids,
+Computer seats are ephemeral `computer: 1|2|3|4|5` people with server-generated ids,
 not platform accounts, voice seats or external AI. Only the human host may add/
-remove them, only in the lobby; capacity remains four. An absent capability on an
+remove them, only in the lobby; capacity remains six (up to five `computer: 1–5`
+bots with one human host). An absent capability on an
 old host hides bot management; the JUNO button uses legacy play.announce there.
-Current human auth/voice/permissions and revision gates are unchanged.
+Current human auth/voice/permissions gates are unchanged.
 On older hosts without `supportsReports`, clients hide reporting and show that
 host's legacy automatic-penalty rule. Reports do not change computer decisions,
 private-hand projection, practice eligibility or settlement.
@@ -321,6 +341,68 @@ Any computer starter freezes `practice: true`. Results keep placements/counts bu
 zero XP and unranked status for everybody, without invoking persistence or adding
 wins/completed-round counters. Human-only progression is unchanged. The separate
 settlement boundary also refuses to credit computer proposals defensively.
+
+### Match options
+
+The lobby carries `{specials: true, stacking: false, mode: 'single'}` by default. Only the host
+may change it, only in the lobby, through a host-only `options` command naming
+at least one of `specials`/`stacking`/`mode`; the snapshot advertises root
+`supportsOptions: true` and every game view carries the frozen `options`.
+New `supportsOptions`-less hosts never see the controls and keep classic
+behavior. A rematch keeps the lobby choice; starting freezes a copy into the
+round, so mid-round `options` are refused and later declarations cannot change
+an active deck. Switching to `duos` with more than four seated is refused;
+a duo table caps at four seats (`juno_table_full` past that).
+
+With `specials` off the round always uses the classic 108-card deck, regardless
+of client support; the rare memory/intoxicated/pizza cards never appear.
+
+With `stacking` on, a played +2/+4 adds its amount to the pending `stackDraw`
+instead of drawing for the next player, who keeps the turn order. While a stack
+is pending, only +2/+4 continuations (any color, no +4 restriction) or the full
+take-draw are legal; passing, ordinary plays, color picks and pizza plays are
+refused, while JUNO calls stay available. A stacking +2 sets the active color
+to its own; a stacking +4 keeps the current color unless a new one is named.
+A player without +2/+4 takes the pile at once, with no draw to fish for an answer
+and no drawn-card continuation: only cards already in hand can answer a pile. Emptying the hand on a
+stacking play wins immediately and clears the stack. Timeouts draw the pending
+total for the victim instead of a single card. Computers stack when able and
+take the pile otherwise. Mixed cohorts play classic: starting requires every
+seated human on a stacking-capable client, otherwise the round freezes without
+it. Stacking rounds answer readers and mutators without that support with 409
+`juno_update_required`. The public view exposes only the integer `stackDraw`;
+the client highlights just +2/+4 and renders a pulsing neon "+N" overlay with
+`mix-blend-mode: screen` supplier digits, static under reduced motion.
+When a confirmed stack take draws multiple cards, the client briefly
+pulses the number actually drawn with the player's name, even if `stackDraw`
+was cleared in the same snapshot. A timeout needs a +2/+4 on top of the discard
+to distinguish it from a Memory penalty. This uses the existing view and does
+not delay play.
+
+### Duos mode
+
+With `mode: 'duo'` the lobby caps at four seats and the round plays 2v2:
+seating order fixes the teams ([0,1] vs [2,3]), shown as Dupla A/B badges in
+the lobby, on seats and in results. Each player sees the partner's whole hand
+face-up at the partner's seat (`partnerHand`), with read-only horizontal scrolling
+for large hands. Pizza uses the same departure/arrival timing for both visible
+hands; nothing else about privacy
+changes — opponents still see backs, masked/cursed views keep opaque slots,
+and bots never report. A duo round needs exactly four seated players to start;
+leaving mid-round keeps the team playing solo and abandons the leaver as usual.
+
+The round ends on the first empty hand like always, but the win belongs to the
+team: both teammates are credited place 1 with the winner's full dynamic XP
+(incrementing wins and completed rounds for both), while the other team's
+finishers both take place 2, with their usual individual XP bonus.
+Abandoned starters keep their frozen team label but no
+place or XP. Mixed cohorts play single: starting requires every seated human on
+a duos-capable client (`?duos=1`, six negotiations and under), otherwise the
+round freezes as classic single. Duo rounds answer readers and mutators without
+that support with 409 `juno_update_required`. The `juno_round_participants`
+row stores the frozen `team` (1|2|null) next to place/XP so credited standings
+survive restarts. Settlement validates the proposal against the original
+four-seat order. Practice tables show team places but award no XP or wins.
 
 After changes, `juno_updated {channelId}` travels through existing
 VIEW_CHANNEL-filtered `sendToChannel`. This is a non-secret invalidation, not a
@@ -351,8 +433,8 @@ origin, channel changes and reconnect-ready invalidate reads and cancel recovery
 
 Per-account budgets: five creates/minute and 60 commands/minute, in addition to
 the unchanged global HTTP address budget. State GETs instead use a separate bounded
-600/minute/address route budget, so four players plus four spectators behind one
-NAT can follow 60 moves/minute and their 12 fallback polls each (576 reads) without
+1000/minute/address route budget, so six players plus six spectators behind one
+NAT can follow 60 moves/minute and their 12 fallback polls each (864 reads) without
 spending the ordinary HTTP budget. Auth, voice and permission gates are unchanged;
 ranking and POST command routes retain their existing limits. At most 1,000 tables. Lobby/result
 idle expiry is 15 minutes; a running round has an absolute two-hour limit.
@@ -504,8 +586,9 @@ conservation/recycling, unchanged turn/drawn restrictions, departure/immediate
 victory/XP stability, receipt-anchored countdowns and older hosts.
 
 `test/juno-e2e.test.ts` boots the actual server against unique temporary storage,
-opens five authenticated WS voice sessions, and plays a complete four-player
-round with a spectator while checking private-hand isolation, then a second voice
+opens seven authenticated WS voice sessions, and plays a complete four-player
+round with a spectator while checking private-hand isolation, then a complete
+six-player round with places 1–6 and dynamic XP, then a second voice
 channel, restart durability and independent space. Native progression suites
 verify authenticated identities and separate space totals. SQLite suites cover
 rollback/retry, duplicate credits, paging/ties, erasure and upgrades.

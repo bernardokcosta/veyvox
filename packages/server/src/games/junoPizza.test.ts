@@ -14,7 +14,7 @@ function round(count = 3): JunoRound {
     hand: [...(i === 0 ? [card('pizza', 'pizza', null)] : []), ...Array.from({ length: 7 }, (_, j) => card(`${i}:${j}`))] })),
   drawPile: [card('draw')], discard: [card('top', '8', 'sky')], color: 'sky', direction: 1, turn: 0,
   drawnCardId: null, deadline: 45_000, winnerId: null, result: null, lastMove: null, blockedTurns: 0,
-  reportWindows: [], memoryEnabled: true, intoxicatedEnabled: true, pizzaEnabled: true };
+  reportWindows: [], memoryEnabled: true, intoxicatedEnabled: true, pizzaEnabled: true, specials: true, stacking: false, stackDraw: 0, duos: false, teams: null };
 }
 const cards = (state: JunoRound) => [...state.drawPile, ...state.discard, ...state.players.flatMap(p => p.hand)];
 const play = (state: JunoRound, now = 100) => actInRound(state, '0', { type: 'play', cardId: 'pizza' }, now);

@@ -4,7 +4,7 @@
   "juno_exists": "Der er allerede et Juno-bord i denne kanal.",
   "juno_capacity": "Denne instans har nået grænsen for aktive spil.",
   "juno_stale": "Bordet ændrede sig. Tjek den aktuelle tur og prøv igen.",
-  "juno_full": "Alle fire pladser er optaget.",
+  "juno_full": "Alle seks pladser er optaget.",
   "juno_in_progress": "Denne runde er allerede begyndt. Se med eller gå med i næste lobby.",
   "juno_player_required": "Sæt dig ved bordet først.",
   "juno_host_required": "Kun bordets vært kan gøre dette.",

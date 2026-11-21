@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useJunoStore } from '../../stores/junoStore';
 import { JunoMatch } from './JunoMatch';
@@ -103,6 +103,124 @@ describe('Juno cosmic interactive match', () => {
     act(() => useJunoStore.setState({ stale: true, snapshot: { revision: 3, game: { ...game, hand: [], color: null, topCard: null,
       memoryCurse: { id: 'curse-2', targetUserId: 'a' }, maskedHand: [{ id: 'hidden-1' }] } } }));
     expect(screen.getByRole('button', { name: 'Hidden card 1' })).toBeDisabled();
+  });
+  it('renders only occupied extra top seats: four slots with two players, six with six', () => {
+    const two = junoGame('playing');
+    useJunoStore.setState({ snapshot: { revision: 2, game: two } });
+    const { container, unmount } = render(<JunoMatch />);
+    expect(container.querySelectorAll('.juno-seat')).toHaveLength(4);
+    expect(container.querySelector('[data-seat="topLeft"]')).toBeNull();
+    expect(container.querySelector('[data-seat="topRight"]')).toBeNull();
+    unmount();
+    const six = junoGame('playing');
+    for (const [userId, name] of [['c', 'Cy'], ['d', 'Dee'], ['e', 'Eli'], ['f', 'Fay']] as const) {
+      six.players.push({ userId, name, cardCount: 7, announced: false });
+    }
+    useJunoStore.setState({ snapshot: { revision: 3, game: six } });
+    const { container: full } = render(<JunoMatch />);
+    for (const position of ['top', 'topLeft', 'topRight', 'left', 'right', 'bottom']) {
+      expect(full.querySelector(`[data-seat="${position}"]`)).toBeInTheDocument();
+    }
+    expect(full.querySelectorAll('.juno-seat')).toHaveLength(6);
+  });
+  it('shows the neon stack total and only allows stacking cards or the take-draw', async () => {
+    const game = junoGame('playing');
+    game.stackDraw = 4;
+    game.hand = [{ id: 'two', face: 'draw2', color: 'coral' }, { id: 'plain', face: '5', color: 'coral' }];
+    game.players[1]!.cardCount = 3;
+    useJunoStore.setState({ snapshot: { revision: 2, game } });
+    const { container } = render(<JunoMatch />);
+    expect(container.querySelector('.juno-stack-overlay')).toBeInTheDocument();
+    expect(screen.getByRole('status', { name: '+4 to draw' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /play.*draw two/i })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /play.*5/i })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Draw pile' })).toBeEnabled();
+    await userEvent.click(screen.getByRole('button', { name: /play.*draw two/i }));
+    expect(command).toHaveBeenCalledWith({ type: 'play', cardId: 'two', announce: false });
+  });
+  it('shows the confirmed +4 even when the server clears the +2 stack and the next player moves immediately', () => {
+    vi.useFakeTimers();
+    const game = junoGame('playing');
+    game.stackDraw = 2;
+    game.players.push({ userId: 'c', name: 'Cy', cardCount: 2, announced: false });
+    useJunoStore.setState({ snapshot: { revision: 2, game } });
+    render(<JunoMatch />);
+    expect(screen.getByRole('status', { name: '+2 to draw' })).toBeInTheDocument();
+
+    const settled = { ...game, stackDraw: 0,
+      lastMove: { id: 'automatic-take', type: 'draw' as const, userId: 'c', amount: 4 } };
+    act(() => useJunoStore.setState({ snapshot: { revision: 3, game: settled } }));
+    expect(screen.queryByRole('status', { name: '+2 to draw' })).not.toBeInTheDocument();
+    const confirmation = screen.getByRole('status', { name: 'Cy drew 4 cards from the pile' });
+    expect(confirmation).toHaveTextContent('+4');
+    expect(screen.getByRole('button', { name: /play.*wild/i })).toBeEnabled();
+
+    act(() => vi.advanceTimersByTime(200));
+    act(() => useJunoStore.setState({ snapshot: { revision: 4, game: { ...settled,
+      lastMove: { id: 'normal-draw', type: 'draw', userId: 'a', amount: 1 } } } }));
+    act(() => vi.advanceTimersByTime(1_199));
+    expect(confirmation).toBeInTheDocument();
+    act(() => vi.advanceTimersByTime(201));
+    expect(confirmation).not.toBeInTheDocument();
+    act(() => useJunoStore.setState({ snapshot: { revision: 4, game: {
+      ...settled, lastMove: { id: 'normal-draw', type: 'draw', userId: 'a', amount: 1 },
+    } } }));
+    expect(screen.queryByRole('status', { name: /drew.*from the pile/i })).not.toBeInTheDocument();
+  });
+  it.each([['memory', false], ['draw2', true]] as const)('attributes a timeout correctly with %s on the discard', (face, isStack) => {
+    const game = junoGame('playing');
+    game.options.stacking = true;
+    useJunoStore.setState({ snapshot: { revision: 2, game } });
+    render(<JunoMatch />);
+    act(() => useJunoStore.setState({ snapshot: { revision: 3, game: { ...game,
+      topCard: { id: 'top', face, color: face === 'memory' ? null : 'coral' },
+      lastMove: { id: 'timeout', type: 'timeout', userId: 'b', amount: 2 },
+    } } }));
+    const confirmation = screen.queryByRole('status', { name: 'Bo drew 2 cards from the pile' });
+    if (isStack) expect(confirmation).toBeInTheDocument();
+    else expect(confirmation).not.toBeInTheDocument();
+  });
+  it.each([['a', 'left'], ['b', 'right']] as const)('shows the teammate cards only at the matching seat for %s', (userId, position) => {
+    const game = junoGame('playing');
+    game.mode = 'duo';
+    game.teams = { a: ['a', 'b'], b: ['c', 'd'] };
+    game.players = [...game.players, { userId: 'c', name: 'Cy', cardCount: 5, announced: false }, { userId: 'd', name: 'Dee', cardCount: 3, announced: false }];
+    game.partnerHand = Array.from({ length: 12 }, (_, i) => ({ id: `ally-${i}`, color: 'mint', face: '7' }));
+    useJunoStore.setState({ target: { userId, origin: window.location.origin, channelId: 'voice' }, snapshot: { revision: 2, game } });
+    const { container } = render(<JunoMatch />);
+    const seat = container.querySelector<HTMLElement>(`[data-seat="${position}"]`)!;
+    const hand = within(seat).getByRole('group', { name: 'Partner’s hand' });
+    expect(within(hand).getAllByRole('img', { name: /green.*7/i })).toHaveLength(12);
+    expect(hand.querySelector('img[src$="mint-7.webp"]')).toBeInTheDocument();
+    expect(within(hand).queryByRole('button')).not.toBeInTheDocument();
+    expect(seat.querySelector('.juno-opponent-cards')).not.toBeInTheDocument();
+    expect(container.querySelectorAll('.juno-opponent-cards')).toHaveLength(2);
+    expect(screen.getAllByRole('group', { name: 'Partner’s hand' })).toHaveLength(1);
+    expect(screen.getAllByText('Team A')).toHaveLength(2);
+    expect(screen.getAllByText('Team B')).toHaveLength(2);
+    for (const chip of screen.getAllByText(/^Team [AB]$/)) expect(chip.closest('strong')).toBeNull();
+  });
+  it.each(['spectator', 'departed partner'])('does not show private faces for a %s', viewer => {
+    const game = junoGame('playing');
+    game.mode = 'duo';
+    game.teams = { a: ['a', 'b'], b: ['c', 'd'] };
+    game.players.push({ userId: 'c', name: 'Cy', cardCount: 5, announced: false }, { userId: 'd', name: 'Dee', cardCount: 3, announced: false });
+    if (viewer === 'departed partner') game.players.splice(1, 1);
+    // Even if a previous hand is present, it must not be rendered on another seat.
+    game.partnerHand = [{ id: 'ally', color: 'mint', face: '7' }];
+    const userId = viewer === 'spectator' ? 'watcher' : 'a';
+    useJunoStore.setState({ target: { userId, origin: window.location.origin, channelId: 'voice' }, snapshot: { revision: 2, game } });
+    const { container } = render(<JunoMatch />);
+    expect(screen.queryByRole('group', { name: 'Partner’s hand' })).not.toBeInTheDocument();
+    expect(container.querySelector('img[src$="mint-7.webp"]')).not.toBeInTheDocument();
+  });
+  it('hides partner cards and team badges outside duos', () => {
+    const game = junoGame('playing');
+    game.partnerHand = [{ id: 'ally', color: 'mint', face: '7' }];
+    useJunoStore.setState({ snapshot: { revision: 2, game } });
+    const { container } = render(<JunoMatch />);
+    expect(container.querySelector('.juno-partner-hand')).not.toBeInTheDocument();
+    expect(screen.queryByText('Team A')).not.toBeInTheDocument();
   });
   it('spreads each lateral back separately while preserving its exact public count', () => {
     const game = junoGame('playing');

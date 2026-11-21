@@ -7,7 +7,7 @@ import { useCanonicalUserView } from '../../utils/userViewLookup';
 import { uploadUrl } from '../../utils/assetUrls';
 import { JUNO_ASSETS } from './junoAssets';
 
-interface BadgeProps { person: JunoPerson; spaceId: string; active?: boolean; next?: boolean; self?: boolean; detail?: ReactNode; reportControl?: ReactNode }
+interface BadgeProps { person: JunoPerson; spaceId: string; active?: boolean; next?: boolean; self?: boolean; detail?: ReactNode; reportControl?: ReactNode; team?: 1 | 2 }
 export function JunoPlayerBadge(props: BadgeProps) {
   // A hydrated profile must match this seat's native account ID.
   const { t } = useTranslation('voice');
@@ -20,9 +20,9 @@ function KnownPlayer(props: BadgeProps & { user: User }) {
   const user = useCanonicalUserView(props.user);
   return <Badge {...props} user={user} name={user.isDeleted ? props.person.name : props.person.nickname ?? user.displayName ?? user.username} />;
 }
-function Badge({ person, active, next, self, detail, name, user, reportControl }: BadgeProps & { name: string; user?: User }) {
+function Badge({ person, active, next, self, detail, name, user, reportControl, team }: BadgeProps & { name: string; user?: User }) {
   const { t } = useTranslation('voice');
-  return <div aria-current={active ? 'true' : undefined} className={`juno-player-badge${active ? ' juno-player-active' : ''}${next ? ' juno-player-next' : ''}`}>
+  return <div aria-current={active ? 'true' : undefined} className={`juno-player-badge${team ? ' juno-player-badge-team' : ''}${active ? ' juno-player-active' : ''}${next ? ' juno-player-next' : ''}`}>
     <span className="juno-avatar-frame">
       {person.computer ? <span className="juno-computer-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><rect x="5" y="6" width="14" height="14" rx="4" /><path d="M12 2v4M2 11h3m14 0h3M9 16h6" /><circle cx="9" cy="11" r="1" /><circle cx="15" cy="11" r="1" /></svg></span>
         : <Avatar src={user && !user.isDeleted ? uploadUrl(user.avatar) : null} name={name} user={user} userId={person.userId} size={32} />}
@@ -31,7 +31,10 @@ function Badge({ person, active, next, self, detail, name, user, reportControl }
     </span>
     {next && <span className="juno-next-marker" title={t('juno.nextTurn')} aria-label={t('juno.nextTurn')}>›</span>}
     <span className="juno-player-copy"><strong title={name}>{name}{self && <small>{t('juno.you')}</small>}</strong>
-      {detail && <span>{detail}</span>}
+      {team ? <span className="juno-team-line">
+        <span className={`juno-team juno-team-${team === 1 ? 'a' : 'b'}`}>{team === 1 ? t('juno.teamA') : t('juno.teamB')}</span>
+        {detail && <span className="juno-team-detail">{detail}</span>}
+      </span> : detail && <span>{detail}</span>}
     </span>
   </div>;
 }

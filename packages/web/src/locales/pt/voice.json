@@ -36,17 +36,20 @@
         "juno": "Diga JUNO",
         "memory": "Cartas especiais",
         "score": "Resultado e XP",
-        "table": "Ao redor da mesa"
+        "table": "Ao redor da mesa",
+        "stacking": "Empilhar",
+        "duos": "Duplas"
       },
       "start": {
         "goal": "Seja a primeira pessoa a ficar sem cartas.",
         "deal": "Cada pessoa começa com sete cartas. São quatro cores; o baralho clássico tem 108 cartas. A primeira carta aberta é um número e o jogo começa no sentido horário.",
-        "setup": "O Juno tem de dois a quatro lugares em um canal de voz do espaço. O anfitrião cria a mesa e inicia a rodada depois que os jogadores entram."
+        "setup": "O Juno tem de dois a seis lugares em um canal de voz do espaço. O anfitrião cria a mesa e inicia a rodada depois que os jogadores entram."
       },
       "turn": {
         "match": "Combine a cor ativa ou o número ou símbolo da última carta. Um coringa permitido também pode ser jogado. Todos estes exemplos combinam com um 5 azul:",
         "draw": "Você pode comprar uma carta, não continuar comprando até encontrar uma que sirva. Se a nova carta puder ser jogada, jogue essa carta ou passe; depois de comprar, não pode jogar outra carta da mão. Se ela não combinar, sua vez termina automaticamente. Não é possível simplesmente passar antes de comprar uma carta jogável.",
-        "clock": "São {{seconds}} segundos para o turno inteiro, incluindo a decisão depois de comprar. Se o tempo acabar, compre uma e passe; se já comprou, apenas passe. Dizer JUNO não reinicia o relógio. A maldição da memória tem outra penalidade por tempo esgotado."
+        "clock": "São {{seconds}} segundos para o turno inteiro, incluindo a decisão depois de comprar. Se o tempo acabar, compre uma e passe; se já comprou, apenas passe. Dizer JUNO não reinicia o relógio. A maldição da memória tem outra penalidade por tempo esgotado.",
+        "clockStacking": "Com pilha pendente valem os mesmos segundos, mas o tempo esgotado compra a pilha inteira e passa a vez."
       },
       "examples": {
         "top": "5 azul · última carta",
@@ -60,7 +63,10 @@
         "draw2": "O próximo jogador compra duas cartas e perde a vez. Ele não pode responder com outra carta de compra.",
         "wild": "Pode ser jogado sobre qualquer cor ou símbolo e permite escolher a próxima cor ativa.",
         "draw4": "Escolha uma cor; o próximo jogador compra quatro e perde a vez. Só pode ser jogado se você não tiver nenhuma carta da cor ativa, mesmo que um número ou símbolo de outra cor combine.",
-        "limits": "Não há acúmulo de compras nem desafio do +4. Se sua última carta for +2 ou +4, a compra ainda é aplicada antes de calcular as posições finais."
+        "limits": "Não há acúmulo de compras nem desafio do +4. Se sua última carta for +2 ou +4, a compra ainda é aplicada antes de calcular as posições finais.",
+        "stackingNote": "Com empilhar ativado, +2 e +4 encadeiam sem combinar cor e sem restrição do +4. Um +4 de resposta pode nomear a próxima cor.",
+        "draw2Stacking": "Com empilhar: soma 2 à pilha para o próximo responder ou comprar. Sem pilha: ele compra duas e passa a vez.",
+        "draw4Stacking": "Com empilhar: soma 4 à pilha para o próximo responder ou comprar, e pode nomear a próxima cor. Sem pilha: ele compra quatro e passa a vez, só se você não tiver carta da cor ativa."
       },
       "announce": "Com duas cartas, aperte o logo JUNO antes de jogar e ficar com uma. É um botão, não reconhecimento de voz. Dizer depois não corrige o esquecimento; ganhar cartas também apaga seu anúncio anterior.",
       "reporting": {
@@ -73,14 +79,18 @@
         "miss": "Se errar, a carta escolhida continua oculta na sua mão, você compra duas, a maldição termina e a vez passa uma vez. Se o tempo acabar, também compra duas, encerra a maldição e passa.",
         "limits": "Não dá para comprar ou passar para evitar a tentativa às cegas. Denúncias não curam a maldição. Se a carta de memória for sua última carta, você vence sem deixar outro jogador amaldiçoado.",
         "inactive": "Não está ativa nesta rodada: o baralho clássico dela não contém a carta rara de memória.",
-        "lobby": "A carta rara só entra quando os aplicativos de todos os jogadores humanos são compatíveis. Uma mesa com versões diferentes pode usar o baralho clássico; o baralho não muda durante a rodada."
+        "lobby": "A carta rara só entra quando os aplicativos de todos os jogadores humanos são compatíveis. Uma mesa com versões diferentes pode usar o baralho clássico; o baralho não muda durante a rodada.",
+        "disabled": "Cartas especiais desligadas nesta mesa: o baralho é o clássico de 108."
       },
       "score": {
         "ranking": "A primeira mão vazia vence. As demais posições seguem a quantidade de cartas restantes, incluindo qualquer compra causada pela última carta.",
-        "award": "XP recebido",
-        "ties": "Empates compartilham posição e XP: duas pessoas empatadas em segundo recebem 80 XP cada, e a posição seguinte é a quarta. Só contam rodadas concluídas apenas por humanos e com vencedor; só o vencedor ganha uma vitória. Sair antes não dá posição nem XP.",
+        "award": "XP de base",
+        "ties": "Empates compartilham posição e prêmio base: duas pessoas empatadas em segundo partem de 80 XP cada, e a posição seguinte é a quarta. Só contam rodadas concluídas apenas por humanos e com vencedor; só o vencedor ganha uma vitória. Sair antes não dá posição nem XP.",
+        "dynamic": "O XP final soma bônus pequenos e determinísticos ao prêmio base: média das mãos adversárias (com teto), mesa maior (quatro ou mais finalistas) e rodada sem desistências. Empatados mantêm sempre o mesmo XP, e todo finalista recebe pelo menos o prêmio base.",
         "practice": "Uma rodada iniciada com bot continua sendo treino, mesmo que ele saia depois: não dá XP, vitórias ou rodadas no ranking. O XP pertence a este espaço e soma seus canais de voz, não outros espaços.",
-        "pending": "Enquanto o resultado está sendo salvo, o XP está pendente, ainda não foi recebido. Uma nova mesa fica disponível depois que esse resultado é resolvido."
+        "pending": "Enquanto o resultado está sendo salvo, o XP está pendente, ainda não foi recebido. Uma nova mesa fica disponível depois que esse resultado é resolvido.",
+        "stackingWin": "Com empilhar ativado, um +2/+4 final vence na hora: a pilha morre com a rodada e ninguém a compra.",
+        "rankingStacking": "A primeira mão vazia vence na hora — um +2/+4 final nunca compra para ninguém. As demais posições seguem a quantidade de cartas restantes."
       },
       "table": {
         "seats": "Você pode assistir a uma rodada em andamento, mas novos jogadores não entram no meio dela. Depois do resultado, o anfitrião abre um novo lobby; as outras pessoas entram nessa nova mesa explicitamente.",
@@ -88,6 +98,18 @@
         "deck": "Quando o monte de compra acaba, os descartes são embaralhados de novo, exceto a última carta aberta. Uma penalidade compra só as cartas disponíveis se não houver a quantidade completa. Se um ciclo inteiro não tiver compra disponível nem jogada válida, a rodada empata, sem XP.",
         "connection": "Uma reconexão breve da voz mantém seu lugar só enquanto o período de tolerância existente for válido. Mesas em andamento são temporárias: reiniciar o servidor encerra os jogos.",
         "expiry": "A rodada também expira depois de duas horas, sem vencedor nem XP. Rodadas encerradas por saída de jogadores ou falta de jogadas também não dão XP."
+      },
+      "stacking": {
+        "rules": "Com empilhar ativado, +2 ou +4 responde qualquer pilha pendente, independente da cor. Cada resposta soma as cartas à pilha e passa adiante; empilhar +2 sobre +4 (e vice-versa) vale. Um +2 empilhado define a cor ativa como a sua; um +4 empilhado mantém a cor atual, a menos que uma nova seja nomeada. A última carta ainda vence na hora.",
+        "limits": "Sem +2/+4 na mão, a pilha inteira é comprada na hora: nenhuma compra pode pescar uma resposta, e a vez passa. Tendo uma, você pode responder ou comprar a pilha toda. O tempo esgotado também compra a pilha.",
+        "plus": "+{{amount}}",
+        "take": "Com pilha pendente, comprar é levar a pilha toda e passar a vez; o tempo esgotado faz o mesmo."
+      },
+      "duos": {
+        "rules": "Dois jogadores por dupla, com os assentos 1–2 contra 3–4. Você vê a mão inteira no assento do parceiro, mas joga só com as suas cartas.",
+        "limits": "Se o parceiro sair, você termina a rodada sozinho.",
+        "winner": "Quem fica sem cartas primeiro vence pela dupla. Quem terminou na dupla vencedora divide o primeiro lugar e, em rodadas válidas para o ranking, recebe o mesmo XP e uma vitória por jogador.",
+        "ranking": "Quem terminou na outra dupla fica em segundo lugar, com o bônus de XP pelas cartas restantes calculado para cada jogador. Sair antes do fim não dá posição nem XP."
       }
     },
     "settings": {
@@ -154,14 +176,14 @@
     "previousPage": "Página anterior",
     "nextPage": "Próxima página",
     "scoreHint": "O XP do Juno pertence a este espaço e soma todos os seus canais de voz.",
-    "scoreRules": "1º: 120 XP · 2º: 80 XP · 3º: 40 XP · 4º: 20 XP. Empates compartilham posição e XP. Só contam rodadas concluídas com vencedor; sair antes não rende XP.",
+    "scoreRules": "1º: 120 XP · 2º: 80 XP · 3º: 40 XP · 4º: 20 XP · 5º: 10 XP · 6º: 5 XP de base, mais bônus pequenos por cartas, tamanho da mesa e ausência de desistências. Empates compartilham posição e XP. Só contam rodadas concluídas com vencedor; sair antes não rende XP.",
     "chooseGame": "Escolha um jogo para jogar com quem está na chamada.",
     "name": "Juno",
     "games": "Jogos",
     "open": "Abrir Juno",
     "tagline": "Uma boa rivalidade entre amigos",
     "invitation": "A próxima rodada começa aqui",
-    "description": "Combine cores, vire o jogo e seja o primeiro a ficar sem cartas. Um jogo original para 2 a 4 pessoas neste canal de voz.",
+    "description": "Combine cores, vire o jogo e seja o primeiro a ficar sem cartas. Um jogo original para 2 a 6 pessoas neste canal de voz.",
     "create": "Criar uma mesa",
     "lobbyTitle": "Puxe uma cadeira",
     "lobbyHint": "Quem está na chamada pode entrar. O anfitrião começa quando a mesa estiver pronta.",
@@ -227,7 +249,23 @@
     },
     "rules": "Como jogar",
     "rulesText": "Cada jogador recebe 7 cartas. Combine a cor ou o símbolo da última carta, ou jogue um coringa e escolha a cor. Fique sem cartas para vencer.\nBloqueio pula o próximo jogador; inverter muda o sentido (com dois jogadores, pula o adversário). +2 e +4 fazem o próximo comprar e perder a vez. Não acumulam. +4 só pode ser jogado sem nenhuma carta da cor ativa; não há desafios.\nCompre uma: só pode jogar essa nova carta, se combinar, ou passar. Se ela não combinar, a vez passa automaticamente.\nSão 45 segundos por turno. Ao acabar o tempo, compre uma e passe; se já comprou, apenas passe. Ao sair, suas cartas voltam ao baralho; com menos de dois jogadores a rodada termina sem vencedor. Uma reconexão rápida da voz mantém seu lugar. Reiniciar o servidor encerra os jogos.",
-    "comingSoon": "Em breve"
+    "comingSoon": "Em breve",
+    "options": {
+      "title": "Opções da partida",
+      "specials": "Cartas especiais",
+      "specialsHint": "Memória, Entorpecido e Pizza Maluca. Desligado: baralho clássico de 108 cartas.",
+      "stacking": "Permitir empilhar",
+      "stackingHint": "+2 e +4 empilham uns sobre os outros. Sem carta para responder? Compre a pilha toda.",
+      "mode": "Modo de jogo",
+      "single": "Individual",
+      "duos": "Duplas",
+      "duosHint": "Dois times de dois. Você vê a mão do parceiro; a dupla vence junta."
+    },
+    "stackPending": "+{{amount}} para comprar",
+    "stackTaken": "{{name}} comprou {{amount}} cartas da pilha",
+    "teamA": "Dupla A",
+    "teamB": "Dupla B",
+    "partnerHand": "Mão da dupla"
   },
   "soundboard": {
     "title": "Painel de áudios",

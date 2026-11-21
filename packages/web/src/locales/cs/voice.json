@@ -41,7 +41,7 @@
       "start": {
         "goal": "První se zbav všech karet.",
         "deal": "Každý začíná se sedmi kartami. Jsou čtyři barvy; klasický balíček má 108 karet. První lícová karta je číslo a hraje se po směru hodin.",
-        "setup": "Juno má dvě až čtyři místa v hlasovém kanálu prostoru. Hostitel vytvoří stůl a spustí kolo, jakmile se hráči přidají."
+        "setup": "Juno má dvě až šest míst v hlasovém kanálu prostoru. Hostitel vytvoří stůl a spustí kolo, jakmile se hráči přidají."
       },
       "turn": {
         "match": "Shoduj aktivní barvu či číslo nebo symbol poslední karty. Povolená divoká je další cesta. Všechny tyto příklady se hodí k modré 5:",
@@ -78,7 +78,7 @@
       "score": {
         "ranking": "Vyhrává první prázdná ruka. Ostatní končící se řadí podle zbylých karet, včetně případného postihu za dobrání poslední karty.",
         "award": "Uděleno XP",
-        "ties": "Remízy dělí stejné místo i XP: dva hráči dělení druzí berou po 80 XP a další místo je čtvrté. Počítají se jen dokončená kola bez botů s vítězem; jen vítěz bere výhru. Předčasný odchod nedává místo ani XP.",
+        "ties": "Remízy dělí stejné místo i XP: dva hráči dělení druzí berou po 80 XP základu a další místo je čtvrté. Počítají se jen dokončená kola bez botů s vítězem; jen vítěz bere výhru. Předčasný odchod nedává místo ani XP.",
         "practice": "Kolo načaté s botem zůstává tréninkové, i když bot později odejde: bez XP, výher a rankovaných kol. XP patří tomuto prostoru a spojuje jeho hlasové kanály, ne jiné prostory.",
         "pending": "Zatímco se výsledky ukládají, XP je ještě čekající, ne už získané. Nový stůl bude dostupný, jakmile se tento výsledek zúčtuje."
       },
@@ -156,14 +156,14 @@
     "previousPage": "Předchozí stránka",
     "nextPage": "Další stránka",
     "scoreHint": "XP Juno patří tomuto prostoru, napříč všemi jeho hlasovými kanály.",
-    "scoreRules": "1.: 120 XP · 2.: 80 XP · 3.: 40 XP · 4.: 20 XP. Remízy dělí místo i XP. Počítají se jen dokončená kola s vítězem; předčasný odchod nedává XP.",
+    "scoreRules": "1.: 120 XP · 2.: 80 XP · 3.: 40 XP · 4.: 20 XP · 5.: 10 XP · 6.: 5 XP základ plus malé bonusy. Remízy dělí místo i XP. Počítají se jen dokončená kola s vítězem; předčasný odchod nedává XP.",
     "chooseGame": "Vyber hru ke hraní s lidmi na tvém hovoru.",
     "name": "Juno",
     "games": "Hry",
     "open": "Otevřít Juno",
     "tagline": "Trocha přátelského soupeření",
     "invitation": "Tvé další kolo začíná zde",
-    "description": "Shoduj barvy, otáčej stoly a zbav se karet jako první. Originální karetní hra pro 2–4 lidi na tomto hlasovém kanálu.",
+    "description": "Shoduj barvy, otáčej stoly a zbav se karet jako první. Originální karetní hra pro 2–6 lidi na tomto hlasovém kanálu.",
     "create": "Vytvořit stůl",
     "lobbyTitle": "Zaber místo",
     "lobbyHint": "Přidat se smí každý na hovoru. Hostitel startuje, až je stůl hotový.",

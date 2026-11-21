@@ -14,12 +14,15 @@ import { JunoRooms, JunoError } from '../games/juno.js';
 import { hydrateJunoSnapshot, readJunoRanking, settleJunoRound } from '../games/junoProgression.js';
 
 type Params = { channelId: string };
-type JunoQuery = { memory?: string; intoxicated?: string; pizza?: string };
+type JunoQuery = { memory?: string; intoxicated?: string; pizza?: string; six?: string; stacking?: string; duos?: string };
 function invalidJunoQuery(query: JunoQuery): boolean {
-  return Object.keys(query).some(key => key !== 'memory' && key !== 'intoxicated' && key !== 'pizza')
+  return Object.keys(query).some(key => key !== 'memory' && key !== 'intoxicated' && key !== 'pizza' && key !== 'six' && key !== 'stacking' && key !== 'duos')
     || (query.memory !== undefined && query.memory !== '1')
     || (query.intoxicated !== undefined && (query.intoxicated !== '1' || query.memory !== '1'))
-    || (query.pizza !== undefined && (query.pizza !== '1' || query.memory !== '1' || query.intoxicated !== '1'));
+    || (query.pizza !== undefined && (query.pizza !== '1' || query.memory !== '1' || query.intoxicated !== '1'))
+    || (query.six !== undefined && query.six !== '1')
+    || (query.stacking !== undefined && query.stacking !== '1')
+    || (query.duos !== undefined && query.duos !== '1');
 }
 function gameError(error: unknown, reply: FastifyReply) {
   if (!(error instanceof JunoError) || !isErrorCode(error.message)) throw error;
@@ -41,10 +44,11 @@ function gate(channelId: string, userId: string, reply: FastifyReply): boolean {
 const commandSchema = {
   type: 'object', required: ['type'], additionalProperties: false,
   properties: {
-    type: { type: 'string', enum: ['create', 'join', 'leave', 'start', 'rematch', 'draw', 'pass', 'play', 'announce', 'addBot', 'removeBot', 'report'] },
+    type: { type: 'string', enum: ['create', 'join', 'leave', 'start', 'rematch', 'draw', 'pass', 'play', 'announce', 'addBot', 'removeBot', 'report', 'options'] },
     gameId: { type: 'string', minLength: 1, maxLength: 64 }, revision: { type: 'integer', minimum: 0, maximum: Number.MAX_SAFE_INTEGER },
     cardId: { type: 'string', minLength: 1, maxLength: 64 }, color: { type: 'string', enum: ['coral', 'amber', 'mint', 'sky'] },
-    announce: { type: 'boolean' },
+    announce: { type: 'boolean' }, specials: { type: 'boolean' }, stacking: { type: 'boolean' },
+    mode: { type: 'string', enum: ['single', 'duo'] },
     botId: { type: 'string', minLength: 1, maxLength: 64 },
     targetUserId: { type: 'string', minLength: 1, maxLength: 64 },
     opportunityId: { type: 'string', minLength: 1, maxLength: 64 },
@@ -54,6 +58,7 @@ const commandSchema = {
     { if: { properties: { type: { const: 'play' } } }, then: { required: ['cardId'] } },
     { if: { properties: { type: { const: 'removeBot' } } }, then: { required: ['botId'] } },
     { if: { properties: { type: { const: 'report' } } }, then: { required: ['targetUserId', 'opportunityId'] } },
+    { if: { properties: { type: { const: 'options' } } }, then: { anyOf: [{ required: ['specials'] }, { required: ['stacking'] }, { required: ['mode'] }] } },
   ],
 };
 
@@ -101,14 +106,14 @@ export async function junoRoutes(app: FastifyInstance): Promise<void> {
     },
     // Live updates fan out to every player/spectator, plus fallback polls.
     // Keep this bounded read budget separate from ordinary HTTP and commands.
-    config: { rateLimit: { max: 600, timeWindow: '1 minute' } },
+    config: { rateLimit: { max: 1000, timeWindow: '1 minute' } },
   }, async (request, reply) => {
     if (!gate(request.params.channelId, request.userId, reply)) return;
     const user = getDb().select().from(schema.users).where(eq(schema.users.id, request.userId)).get();
     if (!user || user.isDeleted || user.isBot) return sendError(reply, 403, 'forbidden');
     reply.header('Cache-Control', 'no-store');
     const spaceId = getDb().select().from(schema.channels).where(eq(schema.channels.id, request.params.channelId)).get()!.spaceId;
-    try { return hydrateJunoSnapshot(rooms.read(request.params.channelId, request.userId, request.query.memory === '1', request.query.intoxicated === '1', request.query.pizza === '1'), spaceId); }
+    try { return hydrateJunoSnapshot(rooms.read(request.params.channelId, request.userId, request.query.memory === '1', request.query.intoxicated === '1', request.query.pizza === '1', request.query.six === '1', request.query.stacking === '1', request.query.duos === '1'), spaceId); }
     catch (error) { return gameError(error, reply); }
   });
   app.post<{ Params: Params; Body: JunoCommand; Querystring: JunoQuery }>(root, {
@@ -130,7 +135,7 @@ export async function junoRoutes(app: FastifyInstance): Promise<void> {
     reply.header('Cache-Control', 'no-store');
     try {
       const spaceId = getDb().select().from(schema.channels).where(eq(schema.channels.id, channelId)).get()!.spaceId;
-      return hydrateJunoSnapshot(rooms.command(channelId, { userId: request.userId, name: user.displayName ?? user.username }, request.body, request.query.memory === '1', request.query.intoxicated === '1', request.query.pizza === '1'), spaceId);
+      return hydrateJunoSnapshot(rooms.command(channelId, { userId: request.userId, name: user.displayName ?? user.username }, request.body, request.query.memory === '1', request.query.intoxicated === '1', request.query.pizza === '1', request.query.six === '1', request.query.stacking === '1', request.query.duos === '1'), spaceId);
     } catch (error) {
       return gameError(error, reply);
     }

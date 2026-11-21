@@ -15,11 +15,22 @@ export function JunoResult() {
   if (!game || game.phase !== 'finished') return null;
   const board = game.scoreboard; const saving = board?.status === 'pending';
   const winner = [...game.players, ...(board?.standings ?? [])].find(p => p.userId === game.winnerId);
-  const won = !!game.winnerId && game.winnerId === target?.userId;
+  const winnerTeam: 1 | 2 | undefined = game.teams && game.winnerId != null
+    ? game.teams.a.includes(game.winnerId) ? 1 : game.teams.b.includes(game.winnerId) ? 2 : undefined
+    : undefined;
+  const viewerId = target?.userId;
+  const viewerStanding = board?.standings.find(row => row.userId === viewerId);
+  const winningTeam = winnerTeam === 1 ? game.teams?.a : winnerTeam === 2 ? game.teams?.b : undefined;
+  const won = !!viewerId && (winningTeam
+    ? winningTeam.includes(viewerId) && (viewerStanding
+      ? viewerStanding.outcome === 'completed' && viewerStanding.place === 1
+      : game.players.some(player => player.userId === viewerId))
+    : game.winnerId === viewerId);
+  const winnerName = winner ? winner.computer ? t('juno.botName', { number: winner.computer }) : winner.name : '';
   return <div className="juno-result">
     {game.winnerId && <img className="juno-crown" src={JUNO_ASSETS.crown} alt="" aria-hidden="true" />}
     <h2>{won ? t('juno.victory') : t('juno.roundResults')}{saving && <span className="juno-saving" title={t('juno.creditPending')} aria-hidden="true">◌</span>}</h2>
-    <p role="status">{winner ? t('juno.winner', { name: winner.computer ? t('juno.botName', { number: winner.computer }) : winner.name }) : t('juno.finished')}</p>
+    <p role="status">{winner ? winnerTeam !== undefined ? t('juno.winner', { name: winnerTeam === 1 ? t('juno.teamA') : t('juno.teamB') }) : t('juno.winner', { name: winnerName }) : t('juno.finished')}</p>
     {game.result && !winner && <p>{t(RESULT_KEYS[game.result])}</p>}
     {saving && <p className="sr-only" role="status">{t('juno.creditPending')}</p>}
     {board && <ol className="juno-score-list" aria-label={t('juno.roundResults')}>
@@ -28,7 +39,7 @@ export function JunoResult() {
           {row.place && row.place <= 3 && <img src={row.place === 1 ? JUNO_ASSETS.gold : row.place === 2 ? JUNO_ASSETS.silver : JUNO_ASSETS.bronze} alt="" aria-hidden="true" />}
           <b>{row.place ? formatNumber(row.place) : '—'}</b>
         </span>
-        <JunoPlayerBadge person={row} spaceId={spaceId} self={row.userId === target?.userId}
+        <JunoPlayerBadge person={row} spaceId={spaceId} self={row.userId === target?.userId} team={row.team ?? undefined}
           detail={row.outcome === 'abandoned' ? t('juno.abandoned') : row.cardCount !== null ? t('juno.cardCount', { count: row.cardCount }) : undefined} />
         <span className="juno-earned">{game.practice ? t('juno.practice') : saving ? t('common:states.loading') : board.status === 'credited' && row.outcome === 'completed'
           ? t('juno.xpEarned', { xp: formatNumber(row.xp) }) : t('juno.unranked')}</span>

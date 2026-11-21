@@ -36,17 +36,20 @@
         "juno": "Call JUNO",
         "memory": "Special cards",
         "score": "Results and XP",
-        "table": "Around the table"
+        "table": "Around the table",
+        "stacking": "Stacking",
+        "duos": "Duos"
       },
       "start": {
         "goal": "Be the first player to have no cards left.",
         "deal": "Everyone starts with seven cards. There are four colors; the classic deck has 108 cards. The first face-up card is a number, and play begins clockwise.",
-        "setup": "Juno has two to four seats in a space voice channel. The host creates the table and starts the round once the players have joined."
+        "setup": "Juno has two to six seats in a space voice channel. The host creates the table and starts the round once the players have joined."
       },
       "turn": {
         "match": "Match the active color or the last card's number or symbol. A permitted wild is another way to play. These examples all fit a blue 5:",
         "draw": "You may draw one card, not keep drawing until something fits. If the new card is playable, play that card or pass; you cannot play another card from your hand after drawing. If it does not fit, your turn ends automatically. You cannot simply pass before drawing a playable card.",
-        "clock": "You have {{seconds}} seconds for the whole turn, including the choice after a draw. When time runs out, draw one and pass; if you already drew, only pass. Calling JUNO does not restart the clock. The memory curse has a different timeout penalty."
+        "clock": "You have {{seconds}} seconds for the whole turn, including the choice after a draw. When time runs out, draw one and pass; if you already drew, only pass. Calling JUNO does not restart the clock. The memory curse has a different timeout penalty.",
+        "clockStacking": "With a pending pile the same seconds apply, but running out of time draws the entire pile and passes the turn."
       },
       "examples": {
         "top": "Blue 5 · last card",
@@ -60,7 +63,10 @@
         "draw2": "The next player draws two cards and loses their turn. They cannot answer with another draw card.",
         "wild": "Play over any color or symbol and choose the next active color.",
         "draw4": "Choose a color; the next player draws four and loses their turn. You may play this only if you have no card of the active color, even if a different-colored number or symbol would fit.",
-        "limits": "No stacking and no +4 challenges. If your final card is +2 or +4, the draw penalty still applies before the final standings are calculated."
+        "limits": "No stacking and no +4 challenges. If your final card is +2 or +4, the draw penalty still applies before the final standings are calculated.",
+        "stackingNote": "With stacking on, +2 and +4 chain onto each other with no color match and no +4 restriction. A +4 answer may name the next color.",
+        "draw2Stacking": "With stacking: adds 2 to the pile for the next player to answer or take. Without a pile: they draw two and lose the turn.",
+        "draw4Stacking": "With stacking: adds 4 to the pile for the next player to answer or take, and may name the next color. Without a pile: they draw four and lose the turn, only if you hold no card of the active color."
       },
       "announce": "With two cards, press the JUNO logo before playing down to one. This is a button, not voice recognition. A late call does not fix a missed announcement, and gaining cards clears your previous call.",
       "reporting": {
@@ -73,14 +79,18 @@
         "miss": "A wrong choice keeps the attempted card hidden in your hand, draws two, clears the curse and passes once. Running out of time also draws two, clears the curse and passes.",
         "limits": "You cannot draw or pass to avoid the blind attempt. Reports do not cure the curse. If the memory card is your last card, you win without leaving another player cursed.",
         "inactive": "Not active in this round: its classic deck does not contain the rare memory card.",
-        "lobby": "The rare card is enabled only when all human players' clients support it. A mixed-version table may use the classic deck; its deck stays fixed for that round."
+        "lobby": "The rare card is enabled only when all human players' clients support it. A mixed-version table may use the classic deck; its deck stays fixed for that round.",
+        "disabled": "Special cards are off at this table: the deck is the classic 108."
       },
       "score": {
         "ranking": "The first empty hand wins. Other finishers are ranked by their remaining card counts, including any final-card draw penalty.",
-        "award": "XP awarded",
-        "ties": "Ties share the same place and XP: two players tied for second both receive 80 XP, and the next place is fourth. Only completed human-only rounds with a winner count; only the winner gains a win. Leaving early earns no place or XP.",
+        "award": "Base XP",
+        "ties": "Ties share the same place and base award: two players tied for second both start from 80 XP, and the next place is fourth. Only completed human-only rounds with a winner count; only the winner gains a win. Leaving early earns no place or XP.",
+        "dynamic": "Final XP adds small deterministic bonuses to the base award: average opposing hand size (capped), a larger table (four or more finishers) and a round where nobody abandoned. Tied players always keep identical XP, and every finisher earns at least the base award.",
         "practice": "A round started with a bot remains practice, even if the bot later leaves: no XP, wins or ranked rounds are credited. XP belongs to this space and combines its voice channels, not other spaces.",
-        "pending": "While results are being saved, XP is still pending, not already earned. A new table becomes available once that result has been resolved."
+        "pending": "While results are being saved, XP is still pending, not already earned. A new table becomes available once that result has been resolved.",
+        "stackingWin": "With stacking on, a final +2/+4 wins at once: the pile dies with the round and nobody draws it.",
+        "rankingStacking": "The first empty hand wins at once — a final +2/+4 never draws for anyone. Other finishers are ranked by their remaining card counts."
       },
       "table": {
         "seats": "A running round can be watched, but new players cannot take a seat midway. After the result, the host opens a fresh lobby; everyone else joins that new table explicitly.",
@@ -88,6 +98,18 @@
         "deck": "When the draw pile runs out, discards are shuffled back in, except the top card. A penalty draws only the cards available if the full amount cannot be supplied. If a full cycle has neither an available draw nor a legal play, the round ends in a draw, without XP.",
         "connection": "A brief voice reconnection keeps your seat only while the existing reconnection grace remains valid. Live tables are temporary: restarting the server ends them.",
         "expiry": "A round also expires after two hours, without a winner or XP. Rounds ending because players left or no moves remain do not award XP either."
+      },
+      "stacking": {
+        "rules": "With stacking on, a +2 or +4 answers any pending pile, no matter the color. Each answer adds its cards to the pile and passes it on; stacking +2 onto +4 (and back) is allowed. A stacking +2 sets the active color to its own; a stacking +4 keeps the current color unless a new one is named. The last card still wins at once.",
+        "limits": "Without a matching draw card in hand, the whole pile is taken at once: no draw can fish for an answer, and the turn passes. Holding one, you may answer or take the pile with a draw. Timeouts draw the pile too.",
+        "plus": "+{{amount}}",
+        "take": "With a pending pile, drawing means taking the whole pile and losing the turn; running out of time does the same."
+      },
+      "duos": {
+        "rules": "Two players per team, seated 1-2 against 3-4. You see your partner’s whole hand at their seat, but play only your own cards.",
+        "limits": "If your partner leaves, you finish the round alone.",
+        "winner": "The first empty hand wins the round for their team. Teammates who finish share first place and earn the same XP and one win each in a ranked round.",
+        "ranking": "The other team’s finishers both take second place, with the normal remaining-card XP bonus for each player. Leaving early earns no place or XP."
       }
     },
     "settings": {
@@ -152,14 +174,14 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "scoreHint": "Juno XP belongs to this space, across all its voice channels.",
-    "scoreRules": "1st: 120 XP · 2nd: 80 XP · 3rd: 40 XP · 4th: 20 XP. Ties share place and XP. Only completed rounds with a winner count; leaving early earns no XP.",
+    "scoreRules": "1st: 120 XP · 2nd: 80 XP · 3rd: 40 XP · 4th: 20 XP · 5th: 10 XP · 6th: 5 XP base, plus small bonuses for cards, table size and no leavers. Ties share place and XP. Only completed rounds with a winner count; leaving early earns no XP.",
     "chooseGame": "Choose a game to play with the people in your call.",
     "name": "Juno",
     "games": "Games",
     "open": "Open Juno",
     "tagline": "A little friendly rivalry",
     "invitation": "Your next round starts here",
-    "description": "Match colors, turn the tables, and be the first to empty your hand. An original card game for 2–4 people in this voice channel.",
+    "description": "Match colors, turn the tables, and be the first to empty your hand. An original card game for 2–6 people in this voice channel.",
     "create": "Create a table",
     "lobbyTitle": "Pull up a seat",
     "lobbyHint": "Everyone in the call can join. The host starts when the table is ready.",
@@ -224,7 +246,23 @@
     },
     "rules": "How to play",
     "rulesText": "Each player gets 7 cards. Match the last card’s color or symbol, or play a wild and choose a color. Empty your hand to win.\nSkip skips the next player; reverse changes direction (with two players, it skips). +2 and +4 immediately draw cards for the next player and skip their turn. No stacking. +4 is only allowed when you have no card of the active color; no challenges.\nDraw one: play only that new card if it matches, or pass. An unplayable draw passes automatically.\nYou have 45 seconds per turn. Time running out draws one and passes; after drawing it just passes. If someone leaves, their cards return to the deck; fewer than two players ends the round without a winner. A short voice reconnect keeps your seat. Restarting the server ends games.",
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "options": {
+      "title": "Match options",
+      "specials": "Special cards",
+      "specialsHint": "Memory, Intoxicated and Crazy Pizza. Off means a classic 108-card deck.",
+      "stacking": "Allow stacking",
+      "stackingHint": "+2 and +4 pile onto each other. No match? Draw the whole pile.",
+      "mode": "Game mode",
+      "single": "Singles",
+      "duos": "Duos",
+      "duosHint": "Two teams of two. You see your partner’s hand; the team wins together."
+    },
+    "stackPending": "+{{amount}} to draw",
+    "stackTaken": "{{name}} drew {{amount}} cards from the pile",
+    "teamA": "Team A",
+    "teamB": "Team B",
+    "partnerHand": "Partner’s hand"
   },
   "soundboard": {
     "title": "Soundboard",

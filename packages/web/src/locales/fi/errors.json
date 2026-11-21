@@ -4,7 +4,7 @@
   "juno_exists": "Tällä kanavalla on jo Juno-pöytä.",
   "juno_capacity": "Tämä instanssi on saavuttanut aktiivisten pelien rajan.",
   "juno_stale": "Pöytä muuttui. Tarkista nykyinen vuoro ja yritä uudelleen.",
-  "juno_full": "Kaikki neljä paikkaa ovat varattuja.",
+  "juno_full": "Kaikki kuusi paikkaa ovat varattuja.",
   "juno_in_progress": "Tämä kierros on jo alkanut. Katso tai liity seuraavaan aulaan.",
   "juno_player_required": "Istu ensin pöytään.",
   "juno_host_required": "Vain pöydän isäntä voi tehdä tämän.",

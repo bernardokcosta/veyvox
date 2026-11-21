@@ -44,10 +44,21 @@
       "path": "cards/intoxicated.webp",
       "sourceFile": "Carta neon “Entorpecido” cósmica.png",
       "sourceSha256": "3540e9f0b768b388f25e289fb1d46240c85c40d0e12cc29931c2bdc6111c62fd",
-      "sourceDimensions": [1060, 1484],
-      "crop": { "left": 19, "top": 25, "width": 1021, "height": 1427 },
+      "sourceDimensions": [
+        1060,
+        1484
+      ],
+      "crop": {
+        "left": 19,
+        "top": 25,
+        "width": 1021,
+        "height": 1427
+      },
       "roundedMaskRadius": 66,
-      "dimensions": [720, 1056],
+      "dimensions": [
+        720,
+        1056
+      ],
       "fit": "fill; normalize cropped card frame to standard dimensions without padding",
       "bytes": 196672,
       "sha256": "fb7fbf2f52ed79f605a653e2d289bf74fc92f8a1d21bfd3582762e6c5c29cd62"
@@ -56,9 +67,17 @@
       "path": "cards/memory.webp",
       "sourceFile": "Carta cósmica da memória nebulosa.png",
       "sourceSha256": "3c8c19c8ff6a0d4a234645993ce35aac5289d12b83eb06135e24a09b97be2f09",
-      "crop": { "left": 80, "top": 76, "width": 904, "height": 1326 },
+      "crop": {
+        "left": 80,
+        "top": 76,
+        "width": 904,
+        "height": 1326
+      },
       "roundedMaskRadius": 66,
-      "dimensions": [720, 1056],
+      "dimensions": [
+        720,
+        1056
+      ],
       "bytes": 160244,
       "sha256": "fe0bca91a30d77bac43bd64e289244ca3772a5b9af1beea4790f4f10fa33d878"
     },
@@ -760,7 +779,10 @@
       "sourceEntry": "Animação de martelo de juiz neon.gif",
       "bytes": 167565,
       "sha256": "782e92bc0e255568f8001b0af6eb6f542a7d849d4390ea117daeacd3e4f25db2",
-      "dimensions": [724, 241],
+      "dimensions": [
+        724,
+        241
+      ],
       "frames": 9
     },
     {
@@ -769,7 +791,10 @@
       "sourceSha256": "782e92bc0e255568f8001b0af6eb6f542a7d849d4390ea117daeacd3e4f25db2",
       "bytes": 27024,
       "sha256": "c9e97999e94233b50b03954c8496a24b189a9e040cd5dbe8fe788d6f1c3ba006",
-      "dimensions": [180, 150]
+      "dimensions": [
+        180,
+        150
+      ]
     },
     {
       "path": "cards/pizza.webp",
@@ -838,6 +863,204 @@
       "unchanged": true,
       "bytes": 52964,
       "sha256": "d64ff0f92fcf158b73095617d59c881d8c9dd421a7f3e0f51d88b0f0d49e3a4f"
+    },
+    {
+      "path": "ui/stack-0.webp",
+      "sourceFile": "Imagem do ChatGPT 20 de nov. de 2026, 19_45_58-1.png",
+      "sourceSha256": "9c9c22f974aced67481966c11e93ec4e0d6f72c6c0a10193cd5bef6b7e0271ad",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 362,
+        "height": 362
+      },
+      "dimensions": [
+        362,
+        362
+      ],
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
+      "bytes": 43148,
+      "sha256": "87e0803917e6fa8fbda9b6de2cb3cf35abfbae2345896dd8d8df29e93c550c80"
+    },
+    {
+      "path": "ui/stack-1.webp",
+      "sourceFile": "Imagem do ChatGPT 20 de nov. de 2026, 19_45_58-1.png",
+      "sourceSha256": "9c9c22f974aced67481966c11e93ec4e0d6f72c6c0a10193cd5bef6b7e0271ad",
+      "crop": {
+        "left": 362,
+        "top": 0,
+        "width": 362,
+        "height": 362
+      },
+      "dimensions": [
+        362,
+        362
+      ],
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
+      "bytes": 51254,
+      "sha256": "412ade64b75e2b022b2888ad203bee6ad8da4530c2503742eae2fdae97ed2b57"
+    },
+    {
+      "path": "ui/stack-2.webp",
+      "sourceFile": "Imagem do ChatGPT 20 de nov. de 2026, 19_45_58-1.png",
+      "sourceSha256": "9c9c22f974aced67481966c11e93ec4e0d6f72c6c0a10193cd5bef6b7e0271ad",
+      "crop": {
+        "left": 724,
+        "top": 0,
+        "width": 362,
+        "height": 362
+      },
+      "dimensions": [
+        362,
+        362
+      ],
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
+      "bytes": 50798,
+      "sha256": "577f88f71ebab10a28a8e38980b27798ac3efa12c3c8416ab977c8af27e3321d"
+    },
+    {
+      "path": "ui/stack-3.webp",
+      "sourceFile": "Imagem do ChatGPT 20 de nov. de 2026, 19_45_58-1.png",
+      "sourceSha256": "9c9c22f974aced67481966c11e93ec4e0d6f72c6c0a10193cd5bef6b7e0271ad",
+      "crop": {
+        "left": 1086,
+        "top": 0,
+        "width": 362,
+        "height": 362
+      },
+      "dimensions": [
+        362,
+        362
+      ],
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
+      "bytes": 47628,
+      "sha256": "d364459ddc0bbc71666118bea026452f997466b196473218be5359e7b2585741"
+    },
+    {
+      "path": "ui/stack-4.webp",
+      "sourceFile": "Imagem do ChatGPT 20 de nov. de 2026, 19_45_58-1.png",
+      "sourceSha256": "9c9c22f974aced67481966c11e93ec4e0d6f72c6c0a10193cd5bef6b7e0271ad",
+      "crop": {
+        "left": 0,
+        "top": 362,
+        "width": 362,
+        "height": 362
+      },
+      "dimensions": [
+        362,
+        362
+      ],
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
+      "bytes": 45510,
+      "sha256": "095e83724d561360d41092e4b54ad24215a93a0a95e9708eee4135e59f76a5e3"
+    },
+    {
+      "path": "ui/stack-5.webp",
+      "sourceFile": "Imagem do ChatGPT 20 de nov. de 2026, 19_45_58-1.png",
+      "sourceSha256": "9c9c22f974aced67481966c11e93ec4e0d6f72c6c0a10193cd5bef6b7e0271ad",
+      "crop": {
+        "left": 362,
+        "top": 362,
+        "width": 362,
+        "height": 362
+      },
+      "dimensions": [
+        362,
+        362
+      ],
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
+      "bytes": 51184,
+      "sha256": "da088be51fa965d228df465fc6381894e39239710ba503f8e7f1038c40b38656"
+    },
+    {
+      "path": "ui/stack-6.webp",
+      "sourceFile": "Imagem do ChatGPT 20 de nov. de 2026, 19_45_58-1.png",
+      "sourceSha256": "9c9c22f974aced67481966c11e93ec4e0d6f72c6c0a10193cd5bef6b7e0271ad",
+      "crop": {
+        "left": 724,
+        "top": 362,
+        "width": 362,
+        "height": 362
+      },
+      "dimensions": [
+        362,
+        362
+      ],
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
+      "bytes": 50498,
+      "sha256": "c5bbde10804399b4d076fd16f108177f51352ba9500b3d5970f7870a343eb13b"
+    },
+    {
+      "path": "ui/stack-7.webp",
+      "sourceFile": "Imagem do ChatGPT 20 de nov. de 2026, 19_45_58-1.png",
+      "sourceSha256": "9c9c22f974aced67481966c11e93ec4e0d6f72c6c0a10193cd5bef6b7e0271ad",
+      "crop": {
+        "left": 1086,
+        "top": 362,
+        "width": 362,
+        "height": 362
+      },
+      "dimensions": [
+        362,
+        362
+      ],
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
+      "bytes": 47992,
+      "sha256": "4383dc1c360010e659628458eac2834f828ad6f12f818ee48df71c0ead23612a"
+    },
+    {
+      "path": "ui/stack-8.webp",
+      "sourceFile": "Imagem do ChatGPT 20 de nov. de 2026, 19_45_58-1.png",
+      "sourceSha256": "9c9c22f974aced67481966c11e93ec4e0d6f72c6c0a10193cd5bef6b7e0271ad",
+      "crop": {
+        "left": 0,
+        "top": 724,
+        "width": 362,
+        "height": 362
+      },
+      "dimensions": [
+        362,
+        362
+      ],
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
+      "bytes": 46284,
+      "sha256": "dd1b308dbe7fe4119d367a4aece28d5c35ea0c99b9cc1f89d4cc2e256bfdb22a"
+    },
+    {
+      "path": "ui/stack-9.webp",
+      "sourceFile": "Imagem do ChatGPT 20 de nov. de 2026, 19_45_58-1.png",
+      "sourceSha256": "9c9c22f974aced67481966c11e93ec4e0d6f72c6c0a10193cd5bef6b7e0271ad",
+      "crop": {
+        "left": 362,
+        "top": 724,
+        "width": 362,
+        "height": 362
+      },
+      "dimensions": [
+        362,
+        362
+      ],
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
+      "bytes": 51466,
+      "sha256": "ea5d9390e36b69980561d0ee3d665e05d46e4939b2fe1a6444ca12724a641978"
+    },
+    {
+      "path": "ui/stack-plus.webp",
+      "sourceFile": "Imagem do ChatGPT 20 de nov. de 2026, 19_45_58-1.png",
+      "sourceSha256": "9c9c22f974aced67481966c11e93ec4e0d6f72c6c0a10193cd5bef6b7e0271ad",
+      "crop": {
+        "left": 724,
+        "top": 724,
+        "width": 362,
+        "height": 362
+      },
+      "dimensions": [
+        362,
+        362
+      ],
+      "fit": "exact 362x362 supplier tile, alpha preserved; screen-blended at render",
+      "bytes": 47932,
+      "sha256": "5424a4adb20a328feef37ef5e3b7d44b600d5b88e41b9b2c2347b690b261a959"
     }
   ],
   "pizzaAudio": {

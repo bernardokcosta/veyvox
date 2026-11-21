@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { JunoView } from '@veyvox/shared/src/juno';
 import { useJunoStore } from '../../stores/junoStore';
@@ -9,10 +9,10 @@ vi.mock('../../audio/AudioManager', () => ({ AudioManager: { getInstance: () => 
 
 const command = vi.fn(async () => {});
 function game(phase: JunoView['phase'] = 'lobby'): JunoView {
-  return { id: 'game', phase, hostId: 'a', players: [{ userId: 'a', name: 'Ada', cardCount: 2, announced: false },
+  return { id: 'game', phase, hostId: 'a', mode: 'single', teams: null, partnerHand: [], options: { specials: true, stacking: false, mode: 'single' }, players: [{ userId: 'a', name: 'Ada', cardCount: 2, announced: false },
     { userId: 'b', name: 'Bo', cardCount: 7, announced: false }], hand: phase === 'lobby' ? [] : [
     { id: 'wild', face: 'wild', color: null }, { id: 'number', face: '8', color: 'sky' }], topCard: { id: 'top', face: '3', color: 'coral' },
-    color: 'coral', direction: 1, currentPlayerId: 'a', drawnCardId: null, remainingMs: 40_000, winnerId: null, result: null, lastMove: null };
+    color: 'coral', direction: 1, currentPlayerId: 'a', drawnCardId: null, stackDraw: 0, remainingMs: 40_000, winnerId: null, result: null, lastMove: null };
 }
 beforeEach(() => {
   command.mockClear(); useJunoStore.getState().reset();
@@ -54,6 +54,37 @@ describe('Juno native table', () => {
     await userEvent.keyboard('{Escape}');
     expect(screen.queryByRole('group', { name: /leave this game/i })).not.toBeInTheDocument();
     expect(command).not.toHaveBeenCalled(); expect(leave).toHaveFocus();
+  });
+  it('keeps the leave bar through another player’s turn and a failed attempt, until the seat is gone', async () => {
+    const current = game('playing');
+    useJunoStore.setState({ snapshot: { revision: 2, game: current } });
+    render(<JunoTable />);
+    await userEvent.click(screen.getByRole('button', { name: 'Leave game' }));
+    act(() => useJunoStore.setState({ snapshot: { revision: 3, game: { ...current, currentPlayerId: 'b' } } }));
+    const bar = screen.getByRole('group', { name: /leave this game/i });
+    await userEvent.click(within(bar).getByRole('button', { name: 'Leave game' }));
+    expect(command).toHaveBeenCalledExactlyOnceWith({ type: 'leave', gameId: current.id, revision: 2 });
+    expect(bar).toBeInTheDocument();
+    act(() => useJunoStore.setState({ snapshot: { revision: 4, game: { ...current, players: current.players.slice(1) } } }));
+    expect(bar).not.toBeInTheDocument();
+    act(() => useJunoStore.setState({ snapshot: { revision: 5, game: current } }));
+    expect(screen.queryByRole('group', { name: /leave this game/i })).not.toBeInTheDocument();
+  });
+  it('does not carry a leave confirmation into a different game', async () => {
+    render(<JunoTable />);
+    await userEvent.click(screen.getByRole('button', { name: 'Leave game' }));
+    expect(screen.getByRole('group', { name: /leave this game/i })).toBeInTheDocument();
+    act(() => useJunoStore.setState({ snapshot: { revision: 2, game: { ...game(), id: 'replacement' } } }));
+    expect(screen.queryByRole('group', { name: /leave this game/i })).not.toBeInTheDocument();
+    expect(command).not.toHaveBeenCalled();
+  });
+  it('does not rebase a confirmation when it missed a leave and rejoin in the same lobby', async () => {
+    render(<JunoTable />);
+    await userEvent.click(screen.getByRole('button', { name: 'Leave game' }));
+    act(() => useJunoStore.setState({ snapshot: { revision: 4, game: game() } }));
+    const bar = screen.getByRole('group', { name: /leave this game/i });
+    await userEvent.click(within(bar).getByRole('button', { name: 'Leave game' }));
+    expect(command).toHaveBeenCalledExactlyOnceWith({ type: 'leave', gameId: 'game', revision: 1 });
   });
   it('navigates to the ranking and back without losing a private hand or sending commands', async () => {
     useJunoStore.setState({ snapshot: { revision: 1, game: game('playing') } }); render(<JunoTable />);

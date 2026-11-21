@@ -62,3 +62,13 @@ name and matching SHA-256. The original Downloads file remains untouched. It is
 streamed locally through the existing audio output rather than decoded into the
 short-cue cache. No external service, authorship/license claim, offline-music
 guarantee or release/deployment authorization is inferred.
+
+The stacking scoreboard digits were supplied and approved for source
+implementation on 2026-11-20 in `Imagem do ChatGPT 20 de nov. de 2026,
+19_45_58-1.png` (1448×1086). `ui/stack-0.webp` through `ui/stack-9.webp`
+plus `ui/stack-plus.webp` crop the exact 362×362 supplier grid (digits
+row-major, `+` at column 2 row 2) without resampling or recoloring, preserving
+the supplier alpha. The overlay composites them with `mix-blend-mode: screen`
+so the neon glow reads on the cosmic table. Source/output
+hashes, crops and sizes are in the manifest. The original Downloads file
+remains untouched. No authorship/license claim is inferred.

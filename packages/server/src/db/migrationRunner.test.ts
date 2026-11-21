@@ -61,8 +61,8 @@ describe('the single ordered migration transaction', () => {
     const before = ledger(db), beforeChanges = vi.fn();
     // Two pre-existing pending migrations plus every migration added since
     // (0051 bookmarks, 0052 disk cleanup, 0053 sticker scopes, 0054 voice
-    // bitrate, 0055 camera limits).
-    expect(readMigrationState(db, folder).pending.map(m => m.folderMillis)).toHaveLength(7);
+    // bitrate, 0055 camera limits, 0056 juno team column).
+    expect(readMigrationState(db, folder).pending.map(m => m.folderMillis)).toHaveLength(8);
     runMigrations(db, { migrationsFolder: folder, beforeChanges });
     expect(ledger(db).slice(0, 49)).toEqual(before);
     expect(db.prepare('SELECT id,password_hash FROM users').all()).toEqual([{ id: 'native', password_hash: 'synthetic-credential-native' }]);

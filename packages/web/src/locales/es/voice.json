@@ -41,7 +41,7 @@
       "start": {
         "goal": "Sé la primera persona en quedarse sin cartas.",
         "deal": "Cada jugador empieza con siete cartas. Hay cuatro colores y la baraja clásica tiene 108 cartas. La primera carta descubierta es un número y se empieza a jugar en sentido horario.",
-        "setup": "Juno tiene entre dos y cuatro asientos en un canal de voz de un espacio. El anfitrión crea la mesa e inicia la ronda cuando los jugadores han entrado."
+        "setup": "Juno tiene entre dos y seis asientos en un canal de voz de un espacio. El anfitrión crea la mesa e inicia la ronda cuando los jugadores han entrado."
       },
       "turn": {
         "match": "Juega una carta del color activo o con el mismo número o símbolo que la última carta. También puedes jugar un comodín permitido. Todos estos ejemplos encajan sobre un 5 azul:",
@@ -78,7 +78,7 @@
       "score": {
         "ranking": "Gana quien se quede sin cartas primero. Los demás se clasifican por las cartas que les queden, incluida cualquier penalización de la última carta.",
         "award": "XP otorgada",
-        "ties": "Los empates comparten puesto y XP: dos jugadores empatados en el segundo puesto reciben 80 XP cada uno y el siguiente puesto es el cuarto. Solo cuentan las rondas completadas exclusivamente entre humanos y con un ganador. Solo el ganador suma una victoria. Salir antes no otorga puesto ni XP.",
+        "ties": "Los empates comparten puesto y XP: dos jugadores empatados en el segundo puesto reciben 80 XP de base cada uno y el siguiente puesto es el cuarto. Solo cuentan las rondas completadas exclusivamente entre humanos y con un ganador. Solo el ganador suma una victoria. Salir antes no otorga puesto ni XP.",
         "practice": "Una ronda que empieza con un bot sigue siendo de práctica aunque el bot salga después: no suma XP, victorias ni rondas clasificadas. La XP pertenece a este espacio y se combina entre sus canales de voz, no con otros espacios.",
         "pending": "Mientras se guardan los resultados, la XP está pendiente y aún no se ha ganado. Se puede abrir una mesa nueva cuando se haya resuelto ese resultado."
       },
@@ -154,14 +154,14 @@
     "previousPage": "Página anterior",
     "nextPage": "Página siguiente",
     "scoreHint": "La XP de Juno pertenece a este espacio y abarca todos sus canales de voz.",
-    "scoreRules": "1.º: 120 XP · 2.º: 80 XP · 3.º: 40 XP · 4.º: 20 XP. Los empates comparten puesto y XP. Solo cuentan las rondas completadas con un ganador. Salir antes no otorga XP.",
+    "scoreRules": "1.º: 120 XP · 2.º: 80 XP · 3.º: 40 XP · 4.º: 20 XP · 5.º: 10 XP · 6.º: 5 XP de base, más pequeñas bonificaciones. Los empates comparten puesto y XP. Solo cuentan las rondas completadas con un ganador. Salir antes no otorga XP.",
     "chooseGame": "Elige un juego para jugar con las personas de tu llamada.",
     "name": "Juno",
     "games": "Juegos",
     "open": "Abrir Juno",
     "tagline": "Un poco de rivalidad amistosa",
     "invitation": "Tu próxima ronda empieza aquí",
-    "description": "Combina colores, dale la vuelta a la partida y sé la primera persona en quedarse sin cartas. Un juego de cartas original para 2–4 personas de este canal de voz.",
+    "description": "Combina colores, dale la vuelta a la partida y sé la primera persona en quedarse sin cartas. Un juego de cartas original para 2–6 personas de este canal de voz.",
     "create": "Crear una mesa",
     "lobbyTitle": "Toma asiento",
     "lobbyHint": "Cualquiera que esté en la llamada puede entrar. El anfitrión empieza cuando la mesa está lista.",

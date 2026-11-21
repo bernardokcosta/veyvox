@@ -5,6 +5,7 @@ import { api, HttpError, RateLimitError } from '../api/client';
 /** Origin scopes the current-server cache, never an alternate API route. */
 export interface JunoTarget { origin: string; channelId: string; userId: string }
 export interface JunoRankingTarget { origin: string; spaceId: string; userId: string }
+export type JunoStoreAction = Exclude<JunoAction, { type: 'leave' }> | Extract<JunoCommand, { type: 'create' | 'leave' }>;
 interface RankingState { target: JunoRankingTarget | null; page: JunoRankingPage | null; loading: boolean; error: unknown; unsupported: boolean }
 const emptyRanking = (): RankingState => ({ target: null, page: null, loading: false, error: null, unsupported: false });
 interface JunoState {
@@ -30,7 +31,7 @@ interface JunoState {
   setSupported: (supported: boolean) => void;
   bind: (target: JunoTarget | null, connected: boolean) => void;
   load: () => Promise<void>;
-  command: (action: JunoAction | { type: 'create' }) => Promise<void>;
+  command: (action: JunoStoreAction) => Promise<void>;
   invalidate: (channelId: string) => void;
   reset: () => void;
 }
@@ -138,7 +139,8 @@ export const useJunoStore = create<JunoState>((set, get) => ({
     flight.promise = (async () => {
       try {
         const snapshot = await api.juno.get(target.channelId, snapshotAtStart ? snapshotAtStart.supportsIntoxicated === true : true,
-          snapshotAtStart ? snapshotAtStart.supportsPizza === true : true);
+          snapshotAtStart ? snapshotAtStart.supportsPizza === true : true, snapshotAtStart ? snapshotAtStart.supportsSix === true : true,
+          snapshotAtStart ? snapshotAtStart.supportsStacking === true : true, snapshotAtStart ? snapshotAtStart.supportsDuos === true : true);
         if (epoch !== currentEpoch || run !== readRun) return;
         if (snapshot.revision >= (get().snapshot?.revision ?? -1)) set({ snapshot, observedAt: Date.now() });
         const coolingDown = Date.now() < retryAt;
@@ -166,12 +168,14 @@ export const useJunoStore = create<JunoState>((set, get) => ({
     const { target, connected, pending, snapshot, stale } = get();
     if (!target || !connected || pending || stale || Date.now() < retryAt) return;
     if (action.type !== 'create' && !snapshot?.game) return;
-    const command: JunoCommand = action.type === 'create' ? action
+    if (action.type === 'leave' && action.gameId !== snapshot?.game?.id) return;
+    // A leave confirmation refers to the seat the user saw when opening it.
+    const command: JunoCommand = action.type === 'create' || action.type === 'leave' ? action
       : { ...action, gameId: snapshot!.game!.id, revision: snapshot!.revision };
     const currentEpoch = epoch;
     set({ pending: true, error: null });
     try {
-      const next = await api.juno.command(target.channelId, command, snapshot?.supportsIntoxicated === true, snapshot?.supportsPizza === true);
+      const next = await api.juno.command(target.channelId, command, snapshot?.supportsIntoxicated === true, snapshot?.supportsPizza === true, snapshot?.supportsSix === true, snapshot?.supportsStacking === true, snapshot?.supportsDuos === true);
       if (epoch !== currentEpoch) return;
       if (next.revision >= (get().snapshot?.revision ?? -1)) set({ snapshot: next, observedAt: Date.now() });
     } catch (error) {

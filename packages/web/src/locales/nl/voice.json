@@ -41,7 +41,7 @@
       "start": {
         "goal": "Raak als eerste al je kaarten kwijt.",
         "deal": "Iedereen begint met zeven kaarten. Er zijn vier kleuren; het klassieke deck heeft 108 kaarten. De eerste open kaart is een nummer en het spel gaat met de klok mee.",
-        "setup": "Juno heeft twee tot vier plaatsen in een ruimtespraakkanaal. De host maakt de tafel en start de ronde zodra spelers zijn gejoind."
+        "setup": "Juno heeft twee tot zes plaatsen in een ruimtespraakkanaal. De host maakt de tafel en start de ronde zodra spelers zijn gejoind."
       },
       "turn": {
         "match": "Match de actieve kleur of het nummer of symbool van de laatste kaart. Een toegestane wild is een andere manier. Deze voorbeelden passen allemaal op een blauwe 5:",
@@ -78,7 +78,7 @@
       "score": {
         "ranking": "De eerste lege hand wint. De overige spelers die de ronde afmaken, worden gerangschikt op resterende kaarten, inclusief eventuele pakstraf voor de laatste kaart.",
         "award": "XP toegekend",
-        "ties": "Gelijkstanden delen plaats en XP: twee spelers gedeeld tweede krijgen allebei 80 XP, en de volgende plaats is vierde. Alleen voltooide rondes zonder bots met winnaar tellen; alleen de winnaar krijgt een winst. Vroeg vertrekken geeft geen plaats of XP.",
+        "ties": "Gelijkstanden delen plaats en XP: twee spelers gedeeld tweede krijgen allebei 80 XP als basis, en de volgende plaats is vierde. Alleen voltooide rondes zonder bots met winnaar tellen; alleen de winnaar krijgt een winst. Vroeg vertrekken geeft geen plaats of XP.",
         "practice": "Een ronde met een bot blijft oefening, ook als de bot later vertrekt: geen XP, winst of gerankte rondes. XP hoort bij deze ruimte en verbindt zijn spraakkanalen, niet andere ruimtes.",
         "pending": "Terwijl resultaten worden opgeslagen is XP nog in behandeling, niet al verdiend. Een nieuwe tafel komt beschikbaar zodra dit resultaat is verwerkt."
       },
@@ -152,14 +152,14 @@
     "previousPage": "Vorige pagina",
     "nextPage": "Volgende pagina",
     "scoreHint": "Juno-XP hoort bij deze ruimte, over al zijn spraakkanalen.",
-    "scoreRules": "1e: 120 XP · 2e: 80 XP · 3e: 40 XP · 4e: 20 XP. Gelijkstanden delen plaats en XP. Alleen voltooide rondes met winnaar tellen; vroeg vertrekken geeft geen XP.",
+    "scoreRules": "1e: 120 XP · 2e: 80 XP · 3e: 40 XP · 4e: 20 XP · 5e: 10 XP · 6e: 5 XP als basis plus kleine bonussen. Gelijkstanden delen plaats en XP. Alleen voltooide rondes met winnaar tellen; vroeg vertrekken geeft geen XP.",
     "chooseGame": "Kies een spel om met de mensen in je gesprek te spelen.",
     "name": "Juno",
     "games": "Spellen",
     "open": "Juno openen",
     "tagline": "Een beetje vriendelijke rivaliteit",
     "invitation": "Je volgende ronde begint hier",
-    "description": "Match kleuren, keer tafels om en raak als eerste je hand kwijt. Een origineel kaartspel voor 2–4 mensen in dit spraakkanaal.",
+    "description": "Match kleuren, keer tafels om en raak als eerste je hand kwijt. Een origineel kaartspel voor 2–6 mensen in dit spraakkanaal.",
     "create": "Een tafel aanmaken",
     "lobbyTitle": "Schuif aan",
     "lobbyHint": "Iedereen in het gesprek kan joinen. De host start als de tafel klaar is.",

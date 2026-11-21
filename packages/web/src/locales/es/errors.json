@@ -4,7 +4,7 @@
   "juno_exists": "Ya hay una mesa de Juno en este canal.",
   "juno_capacity": "Esta instancia ha alcanzado su límite de partidas activas.",
   "juno_stale": "La mesa ha cambiado. Comprueba de quién es el turno e inténtalo de nuevo.",
-  "juno_full": "Los cuatro asientos están ocupados.",
+  "juno_full": "Los seis asientos están ocupados.",
   "juno_in_progress": "Esta ronda ya ha empezado. Puedes observarla o entrar en la siguiente sala.",
   "juno_player_required": "Primero debes sentarte a la mesa.",
   "juno_host_required": "Solo el anfitrión de la mesa puede hacer esto.",

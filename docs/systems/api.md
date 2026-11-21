@@ -9,22 +9,34 @@ GET/POST `/channels/:channelId/juno` return a private `JunoSnapshot`. They requi
 an authenticated human member with VIEW_CHANNEL + CONNECT and a live voice-owning
 socket in that space channel. Commands are `create`, `join`, `leave`, `start`,
 `rematch`, `draw`, `pass`, `play`, `announce`, `addBot`, `removeBot` (`botId` required),
-`report` (`targetUserId`, `opportunityId` required);
-non-create commands name the table and expected
-revision (409 `juno_stale` on conflict). No opponent hands or draw order leave
+`report` (`targetUserId`, `opportunityId` required), `options` (`specials`/`stacking`
+booleans or `mode: 'single'|'duo'`, at least one, host-only, lobby-only).
+Non-create commands name the table and expected revision (409 `juno_stale`
+on conflict). `leave` is independent of turn: for the same game ID it accepts
+a revision from the caller's current seat through the current table revision.
+This avoids racing fast turns without allowing a delayed request to release a
+new seat. It does not relax authentication, voice, or permission gates.
+No opponent hands or draw order leave
 the server. Five creates and 60 commands/minute/account, plus the existing HTTP
-limit. State GETs have a separate bounded 600/minute/address route budget for
+limit. State GETs have a separate bounded 1000/minute/address route budget for
 live-update fanout and fallback polling; this does not relax POST, account, auth,
 voice or permission gates. Full rules, payloads and lifetime limits: [juno.md](juno.md).
 
 Optional `?memory=1` declares memory support; `intoxicated=1` additionally declares
 Entorpecido support and requires `memory=1`; `pizza=1` requires both preceding
-flags. Root `supportsMemory`, `supportsIntoxicated` and `supportsPizza` advertise
-host support. Only exact `1` is valid;
+flags. Independent `?six=1` declares six-seat layout support, `?stacking=1`
+stacking UI support and `?duos=1` duos UI support. Root `supportsMemory`,
+`supportsIntoxicated`, `supportsPizza`, `supportsSix`, `supportsOptions`,
+`supportsStacking` and `supportsDuos` advertise host support. Only exact `1` is valid;
 unknown/duplicate query keys are refused and GET variants share one read budget.
 The lobby freezes 108 classic cards, 109 with memory, 110 with Entorpecido, or
 111 with Pizza Maluca, according to all seated humans' declarations
-(`memoryEnabled`/`intoxicatedEnabled`/`pizzaEnabled`).
+(`memoryEnabled`/`intoxicatedEnabled`/`pizzaEnabled`); a stacking round freezes
+`stacking` the same way, and mixed cohorts play classic. Lobby `options`
+choose specials (default on), stacking (default off) and mode (default single);
+`supportsOptions` advertises the command on new hosts. Duos tables cap at four
+seats (`juno_table_full` past that) and freeze 2v2 teams by seating order; a
+duos round freezes only with every seated human declaring duos support.
 Unsupported enhanced-round reads/commands return 409
 `juno_update_required` without a snapshot (existing `leave` is still allowed).
 During `memoryCurse: {id,targetUserId}`, only the victim receives `hand: []`,
@@ -68,7 +80,7 @@ equal total XP before pagination; own summary is returned even off-page. All Jun
 reads are no-store, contain no opponent faces or historical channel details.
 `addBot`/`removeBot` are host-only lobby actions for ephemeral computer opponents,
 not account/voice bots. Optional `supportsBots`/`supportsAnnounce` advertise these
-actions; absent on older hosts. Computer participants carry `computer: 1|2|3`
+actions; absent on older hosts. Computer participants carry `computer: 1|2|3|4|5`
 without a user profile. `practice` freezes true for computer rounds: zero XP,
 wins or completed-round increments for everyone. A private computer hand is never
 returned even when its id is used as viewer. `announce` confirms a two-card JUNO

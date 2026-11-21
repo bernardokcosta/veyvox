@@ -2,10 +2,10 @@
 import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { MemoryRouter } from 'react-router-dom';
-import type { JunoAction, JunoSnapshot } from '@veyvox/shared/src/juno';
+import type { JunoSnapshot } from '@veyvox/shared/src/juno';
 import { JunoTable } from '../components/games/JunoTable';
 import { JunoSounds } from '../components/games/JunoSounds';
-import { useJunoStore } from '../stores/junoStore';
+import { useJunoStore, type JunoStoreAction } from '../stores/junoStore';
 import { useSpaceStore } from '../stores/spaceStore';
 import { useVoiceStore } from '../stores/voiceStore';
 import { initI18n } from '../i18n';
@@ -34,35 +34,38 @@ async function read() {
   catch (error) { if (run === generation) useJunoStore.setState({ error, stale: true }); }
   finally { reading = false; }
 }
-async function command(action: JunoAction | { type: 'create' }) {
+async function command(action: JunoStoreAction) {
   const state = useJunoStore.getState();
   const run = generation;
   if (spectator || state.pending || !state.snapshot?.game) return;
   if (action.type === 'create' || action.type === 'rematch' || action.type === 'start' || action.type === 'addBot' || action.type === 'removeBot') return;
+  if (action.type === 'leave' && action.gameId !== state.snapshot.game.id) return;
   state.playFeedback?.('select');
   useJunoStore.setState({ pending: true, error: null });
   try {
-    const view = await request('/action', { ...action, gameId: state.snapshot.game.id, revision: state.snapshot.revision });
+    const view = await request('/action', action.type === 'leave' ? action
+      : { ...action, gameId: state.snapshot.game.id, revision: state.snapshot.revision });
     if (run === generation) accept(view);
   } catch (error) { if (run === generation) { useJunoStore.setState({ error }); await read(); } }
   finally { if (run === generation) useJunoStore.setState({ pending: false }); }
 }
-async function reset(players: number) {
+async function reset(players: number, stacking = false) {
   generation++;
-  const view = await request('/reset', { players });
+  const view = await request('/reset', { players, ...(stacking ? { stacking: true } : {}) });
   useJunoStore.setState({ snapshot: null, pending: false });
   if (spectator) await read(); else accept(view);
 }
 function Preview() {
-  const [players, setPlayers] = useState(4), [resetting, setResetting] = useState(false);
+  const [players, setPlayers] = useState(4), [stacking, setStacking] = useState(false), [resetting, setResetting] = useState(false);
   return <main className="mx-auto flex h-dvh max-w-[1200px] flex-col gap-3 p-3">
     <header className="flex flex-wrap items-center gap-3">
       <strong>Pizza Maluca — preview local</strong>
       <label>Jogadores <select className="input-standard ml-2" value={players} disabled={resetting} onChange={event => setPlayers(Number(event.target.value))}>
-        {[2, 3, 4].map(n => <option key={n} value={n}>{n}</option>)}
+        {[2, 3, 4, 5, 6].map(n => <option key={n} value={n}>{n}</option>)}
       </select></label>
+      <label className="flex items-center gap-2"><input type="checkbox" checked={stacking} disabled={resetting} onChange={event => setStacking(event.target.checked)} />Empilhar +2/+4</label>
       <button className="glass rounded-lg px-3 py-2" disabled={resetting} onClick={() => {
-        setResetting(true); void reset(players).catch(error => useJunoStore.setState({ error })).finally(() => setResetting(false));
+        setResetting(true); void reset(players, stacking).catch(error => useJunoStore.setState({ error })).finally(() => setResetting(false));
       }}>Recomeçar com Pizza</button>
       <a className="text-accent-primary underline" href={spectator ? '/dev-juno-pizza.html' : '/dev-juno-pizza.html?spectator=1'} target="_blank" rel="noreferrer">
         {spectator ? 'Abrir jogador' : 'Abrir visão de espectador'}

@@ -4,7 +4,7 @@
   "juno_exists": "このチャンネルに既にJunoテーブルがあります。",
   "juno_capacity": "このインスタンスは稼働中ゲーム上限に達しました。",
   "juno_stale": "テーブルが変わりました。現在の手番を確認して再試行。",
-  "juno_full": "4席すべて使用中。",
+  "juno_full": "6席すべて使用中。",
   "juno_in_progress": "このラウンドは開始済み。観戦か次ロビーに参加。",
   "juno_player_required": "まずテーブルに着席。",
   "juno_host_required": "テーブルホストのみ可能です。",

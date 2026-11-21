@@ -64,6 +64,26 @@ describe('Juno authorized transport', () => {
     expect(left.statusCode).toBe(200); expect(left.json().game).toBeNull();
   });
 
+  it('lets only the host set lobby options, freezes them at start and advertises option support', async () => {
+    const stacked = `${url}?stacking=1`;
+    let view = (await app.inject({ method: 'POST', url: stacked, headers, payload: { type: 'create' } })).json<JunoSnapshot>();
+    expect(view.supportsOptions).toBe(true);
+    expect(view.game!.options).toEqual({ specials: true, stacking: false, mode: 'single' });
+    const options = async (payload: object, who = 'remote-row') => app.inject({ method: 'POST', url: stacked, headers: { authorization: who },
+      payload: { ...payload, gameId: view.game!.id, revision: view.revision } });
+    expect((await options({ type: 'options', stacking: true }, 'guest')).statusCode).toBe(400);
+    expect((await options({ type: 'options' })).statusCode).toBe(400);
+    view = (await options({ type: 'options', stacking: true, specials: false })).json<JunoSnapshot>();
+    expect(view.game!.options).toEqual({ specials: false, stacking: true, mode: 'single' });
+    const joined = await app.inject({ method: 'POST', url: stacked, headers: { authorization: 'guest' },
+      payload: { type: 'join', gameId: view.game!.id, revision: view.revision } });
+    expect(joined.statusCode).toBe(200); view = joined.json<JunoSnapshot>();
+    view = (await app.inject({ method: 'POST', url: stacked, headers, payload: { type: 'start', gameId: view.game!.id, revision: view.revision } })).json<JunoSnapshot>();
+    expect(view.game!.options).toEqual({ specials: false, stacking: true, mode: 'single' });
+    const started = (await app.inject({ method: 'POST', url: stacked, headers,
+      payload: { type: 'options', stacking: false, gameId: view.game!.id, revision: view.revision } }));
+    expect(started.statusCode).toBe(400); expect(started.json().code).toBe('juno_in_progress');
+  });
   it('rejects malformed intoxication declarations and never enables it for a memory-only cohort', async () => {
     for (const query of ['?intoxicated=1', '?memory=1&intoxicated=0', '?memory=1&intoxicated=1&intoxicated=1', '?memory=1&intoxicated=true']) {
       expect((await app.inject({ method: 'GET', url: url + query, headers })).statusCode).toBe(400);
@@ -99,21 +119,21 @@ describe('Juno authorized transport', () => {
       expect((await app.inject({ method: 'GET', url: url + query, headers })).statusCode).toBe(400);
     }
   });
-  it('supports four players and four spectators sharing an IP without spending the ordinary HTTP budget', async () => {
+  it('supports six players and six spectators sharing an IP without spending the ordinary HTTP budget', async () => {
     await app.close(); app = Fastify();
     await app.register(rateLimit, { max: 200, timeWindow: '1 minute', keyGenerator: request => request.ip,
       allowList: () => false });
     app.get('/ordinary-request', async () => ({ ok: true }));
     await app.register(junoRoutes);
-    // 60 public moves + 12 fallback polls per viewer in one minute = 576 reads.
-    for (let viewer = 0; viewer < 8; viewer++) {
+    // 60 public moves + 12 fallback polls per viewer in one minute = 864 reads.
+    for (let viewer = 0; viewer < 12; viewer++) {
       for (let read = 0; read < 72; read++) {
         const reply = await app.inject({ method: 'GET', url: url + (read % 2 ? '?memory=1' : ''), headers: { authorization: `viewer-${viewer}` } });
         expect(reply.statusCode).toBe(200);
       }
     }
     expect((await app.inject({ method: 'GET', url: '/ordinary-request' })).statusCode).toBe(200);
-    for (let read = 576; read < 600; read++) expect((await app.inject({ method: 'GET', url, headers })).statusCode).toBe(200);
+    for (let read = 864; read < 1000; read++) expect((await app.inject({ method: 'GET', url, headers })).statusCode).toBe(200);
     expect((await app.inject({ method: 'GET', url, headers })).statusCode).toBe(429);
     // Authentication and command budgets are not relaxed with the read budget.
     expect((await create()).statusCode).toBe(200);
@@ -176,7 +196,7 @@ describe('Juno authorized transport', () => {
     try {
       const payload = { type: 'report', gameId: snapshot.game!.id, revision: snapshot.revision, targetUserId: 'opponent', opportunityId: 'miss-1' };
       expect((await app.inject({ method: 'POST', url, headers, payload })).statusCode).toBe(200);
-      expect(command).toHaveBeenCalledWith('voice', { userId: 'remote-row', name: 'Alice' }, payload, false, false, false);
+      expect(command).toHaveBeenCalledWith('voice', { userId: 'remote-row', name: 'Alice' }, payload, false, false, false, false, false, false);
       state.room = 'other'; expect((await app.inject({ method: 'POST', url, headers, payload })).statusCode).toBe(403);
       expect(command).toHaveBeenCalledTimes(1);
     } finally { command.mockRestore(); }

@@ -4,7 +4,7 @@
   "juno_exists": "Bu kanalda zaten bir Juno masası var.",
   "juno_capacity": "Bu örnek etkin oyun sınırına ulaştı.",
   "juno_stale": "Masa değişti. Geçerli sırayı kontrol edip tekrar dene.",
-  "juno_full": "Dört koltuk da dolu.",
+  "juno_full": "Altı koltuk da dolu.",
   "juno_in_progress": "Bu tur başladı. İzle veya bir sonraki lobiye katıl.",
   "juno_player_required": "Önce masaya katıl.",
   "juno_host_required": "Bunu yalnızca masa sahibi yapabilir.",

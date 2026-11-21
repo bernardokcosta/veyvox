@@ -4,7 +4,7 @@
   "juno_exists": "이 채널에 이미 Juno 테이블이 있습니다.",
   "juno_capacity": "이 인스턴스는 활성 게임 한도에 도달했습니다.",
   "juno_stale": "테이블이 변경되었습니다. 현재 차례를 확인하고 다시 시도하세요.",
-  "juno_full": "4석이 모두 찼습니다.",
+  "juno_full": "6석이 모두 찼습니다.",
   "juno_in_progress": "이 라운드는 이미 시작되었습니다. 관전하거나 다음 로비에 참가하세요.",
   "juno_player_required": "먼저 테이블에 앉으세요.",
   "juno_host_required": "테이블 호스트만 가능합니다.",

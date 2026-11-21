@@ -1,0 +1,1 @@
+ALTER TABLE `juno_round_participants` ADD `team` integer;

@@ -23,6 +23,10 @@ export const JUNO_ASSETS = {
   hammer: `${ROOT}/ui/hammer.gif`, hammerStill: `${ROOT}/ui/hammer-still.webp`,
   pizza: `${ROOT}/ui/pizza.webp`, flour: `${ROOT}/ui/flour.webp`,
   flourParticle: `${ROOT}/ui/flour-particle.webp`, flourImpact: `${ROOT}/ui/flour-impact.webp`,
+  stack: {
+    plus: `${ROOT}/ui/stack-plus.webp`,
+    ...Object.fromEntries(Array.from({ length: 10 }, (_, i) => [String(i), `${ROOT}/ui/stack-${i}.webp`])),
+  } as Record<'0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9', string> & { plus: string },
 };
 
 /** The displayed slot is at most 96 CSS px, including room for its hover effect. */

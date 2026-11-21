@@ -4,7 +4,7 @@
   "juno_exists": "Na tym kanale jest już stół Juno.",
   "juno_capacity": "Ta instancja osiągnęła limit aktywnych gier.",
   "juno_stale": "Stół się zmienił. Sprawdź bieżącą turę i spróbuj ponownie.",
-  "juno_full": "Wszystkie cztery miejsca są zajęte.",
+  "juno_full": "Wszystkie sześć miejsc są zajęte.",
   "juno_in_progress": "Ta runda już się zaczęła. Oglądaj albo dołącz do następnego lobby.",
   "juno_player_required": "Najpierw dołącz do stołu.",
   "juno_host_required": "Może to zrobić tylko gospodarz stołu.",

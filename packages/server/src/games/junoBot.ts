@@ -2,8 +2,14 @@ import { randomInt } from 'node:crypto';
 import { JUNO_COLORS, canPlayJuno, type JunoAction, type JunoCard, type JunoColor } from '@veyvox/shared/src/juno.js';
 
 /** Deliberately cannot receive a round, another hand, or the draw pile. */
-export function chooseJunoBotAction(hand: readonly JunoCard[], top: JunoCard, color: JunoColor, drawnCardId: string | null): JunoAction {
-  const legal = hand.filter(card => (!drawnCardId || card.id === drawnCardId) && canPlayJuno(card, hand, top, color));
+export function chooseJunoBotAction(hand: readonly JunoCard[], top: JunoCard, color: JunoColor, drawnCardId: string | null, stackDraw = 0): JunoAction {
+  if (stackDraw > 0) {
+    const stack = hand.find(card => card.face === 'draw2' || card.face === 'draw4');
+    if (!stack) return { type: 'draw' };
+    const colors = JUNO_COLORS.map(color => ({ color, count: hand.filter(other => other.id !== stack.id && other.color === color).length }));
+    colors.sort((a, b) => b.count - a.count);
+    return { type: 'play', cardId: stack.id, announce: true, ...(stack.color === null ? { color: colors[0]!.color } : {}) };
+  }  const legal = hand.filter(card => (!drawnCardId || card.id === drawnCardId) && canPlayJuno(card, hand, top, color));
   const card = legal.find(card => card.color !== null) ?? legal[0];
   if (!card) return { type: drawnCardId ? 'pass' : 'draw' };
   const colors = JUNO_COLORS.map(color => ({ color, count: hand.filter(other => other.id !== card.id && other.color === color).length }));

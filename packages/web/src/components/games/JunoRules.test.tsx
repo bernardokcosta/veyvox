@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { JunoView } from '@veyvox/shared/src/juno';
@@ -24,6 +24,42 @@ function geometry(guide: HTMLElement) {
 }
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 describe('illustrated Juno rules', () => {
+  it('teaches duos only for tables playing in team mode', async () => {
+    const duos = { ...game, mode: 'duo' as const, teams: { a: ['a', 'b'], b: ['c', 'd'] } };
+    const { guide, unmount } = await open({ game: duos, supportsMemory: true });
+    expect(within(guide).getByRole('heading', { name: 'Duos', level: 3 })).toBeInTheDocument();
+    expect(guide).toHaveTextContent(/whole hand/i);
+    expect(guide).toHaveTextContent(/share first place and earn the same XP/i);
+    expect(guide).toHaveTextContent(/both take second place/i);
+    expect(within(within(guide).getByRole('table')).getAllByRole('rowheader').map(row => row.textContent)).toEqual(['1', '2']);
+    expect(guide).toHaveTextContent(/leaving early earns no place or XP/i);
+    expect(guide).not.toHaveTextContent(/only the winner gains a win/i);
+    unmount(); cleanup();
+    const { guide: plain } = await open({ game, supportsMemory: true });
+    expect(within(plain).queryByRole('heading', { name: 'Duos', level: 3 })).toBeNull();
+    expect(plain).toHaveTextContent(/only the winner gains a win/i);
+  });
+  it('teaches stacking only for tables playing with it enabled', async () => {
+    const stacked = { ...game, options: { specials: true, stacking: true } };
+    const first = await open({ game: stacked, supportsMemory: true });
+    expect(within(first.guide).getByRole('heading', { name: 'Stacking', level: 3 })).toBeInTheDocument();
+    expect(first.guide).toHaveTextContent(/pile/i);
+    expect(first.guide).toHaveTextContent(/no color match/i);
+    expect(first.guide).toHaveTextContent(/wins at once/i);
+    expect(first.guide).not.toHaveTextContent(/cannot answer with another draw card/i);
+    expect(first.guide).not.toHaveTextContent(/When time runs out, draw one and pass/i);
+    expect(first.guide).not.toHaveTextContent(/final-card draw penalty/i);
+    first.unmount(); cleanup();
+    const { guide: plain } = await open({ game, supportsMemory: true });
+    expect(within(plain).queryByRole('heading', { name: 'Stacking', level: 3 })).toBeNull();
+    expect(plain).toHaveTextContent(/no stacking/i);
+  });
+  it('explains disabled specials instead of the support requirement', async () => {
+    const classic = { ...game, phase: 'lobby' as const, options: { specials: false, stacking: false } };
+    const { guide } = await open({ game: classic, supportsMemory: true });
+    expect(guide).toHaveTextContent(/classic 108/i);
+    expect(guide).not.toHaveTextContent(/only when all human players/i);
+  });
   it('teaches pizza and its persistent flour only in supported lobbies or enabled frozen rounds', async () => {
     const { guide, rerender } = await open({ game: { ...game, pizzaEnabled: true }, supportsPizza: true });
     expect(guide.querySelector('img[src="/games/juno/cards/pizza.webp"]')).toBeInTheDocument();
@@ -59,7 +95,7 @@ describe('illustrated Juno rules', () => {
     }
     expect(guide.querySelectorAll('button img')).toHaveLength(0);
     expect(within(guide).getByRole('table')).toHaveTextContent('120');
-    for (const value of ['80', '40', '20']) expect(within(guide).getByRole('table')).toHaveTextContent(value);
+    for (const value of ['80', '40', '20', '10', '5']) expect(within(guide).getByRole('table')).toHaveTextContent(value);
     expect(guide).toHaveTextContent(/no stacking/i); expect(guide).toHaveTextContent(/clears the curse/i);
     expect(guide).toHaveTextContent(/two hours/i); expect(guide).toHaveTextContent(/remains practice/i);
   });

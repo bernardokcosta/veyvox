@@ -41,7 +41,7 @@
       "start": {
         "goal": "Elinde kart kalmayan ilk oyuncu ol.",
         "deal": "Herkes yedi kartla başlar. Dört renk vardır; klasik destede 108 kart bulunur. İlk açık kart bir sayıdır ve oyun saat yönünde başlar.",
-        "setup": "Juno, alan ses kanalında iki ile dört koltuk arasında oynanır. Ev sahibi masayı oluşturur ve oyuncular katıldıktan sonra turu başlatır."
+        "setup": "Juno, alan ses kanalında iki ile altı koltuk arasında oynanır. Ev sahibi masayı oluşturur ve oyuncular katıldıktan sonra turu başlatır."
       },
       "turn": {
         "match": "Etkin renkle veya son kartın sayısı ya da simgesiyle eşleştir. İzin verilen bir joker başka bir oynama yoludur. Bu örneklerin tümü mavi 5 ile uyumludur:",
@@ -78,7 +78,7 @@
       "score": {
         "ranking": "İlk boş el kazanır. Diğer bitirenler, son kart çekim cezası dahil kalan kart sayılarına göre sıralanır.",
         "award": "Verilen XP",
-        "ties": "Beraberlikler aynı sırayı ve XP'yi paylaşır: ikinci sırayı paylaşan iki oyuncu da 80 XP alır ve sonraki sıra dördüncü olur. Yalnızca tamamlanmış, yalnızca insanlarla oynanan ve bir kazananı olan turlar sayılır; yalnızca kazanan bir zafer kazanır. Erken ayrılmak sıra veya XP kazandırmaz.",
+        "ties": "Beraberlikler aynı sırayı ve XP'yi paylaşır: ikinci sırayı paylaşan iki oyuncu da 80 baz XP alır ve sonraki sıra dördüncü olur. Yalnızca tamamlanmış, yalnızca insanlarla oynanan ve bir kazananı olan turlar sayılır; yalnızca kazanan bir zafer kazanır. Erken ayrılmak sıra veya XP kazandırmaz.",
         "practice": "Bir botla başlatılan tur, bot sonradan ayrılsa bile antrenman olarak kalır: XP, zafer veya dereceli tur verilmez. XP bu alana aittir ve ses kanallarını birleştirir, diğer alanları değil.",
         "pending": "Sonuçlar kaydedilirken XP hâlâ beklemededir, henüz kazanılmamıştır. Bu sonuç çözüldükten sonra yeni bir masa kullanılabilir olur."
       },
@@ -152,14 +152,14 @@
     "previousPage": "Önceki sayfa",
     "nextPage": "Sonraki sayfa",
     "scoreHint": "Juno XP'si bu alana aittir, tüm ses kanallarında geçerlidir.",
-    "scoreRules": "1.: 120 XP · 2.: 80 XP · 3.: 40 XP · 4.: 20 XP. Beraberlikler sırayı ve XP'yi paylaşır. Yalnızca kazananı olan tamamlanmış turlar sayılır; erken ayrılmak XP kazandırmaz.",
+    "scoreRules": "1.: 120 XP · 2.: 80 XP · 3.: 40 XP · 4.: 20 XP · 5.: 10 XP · 6.: 5 XP taban artı küçük bonuslar. Beraberlikler sırayı ve XP'yi paylaşır. Yalnızca kazananı olan tamamlanmış turlar sayılır; erken ayrılmak XP kazandırmaz.",
     "chooseGame": "Aramandaki kişilerle oynamak için bir oyun seç.",
     "name": "Juno",
     "games": "Oyunlar",
     "open": "Juno'yu aç",
     "tagline": "Küçük, dostça bir rekabet",
     "invitation": "Sıradaki turun burada başlıyor",
-    "description": "Renkleri eşleştir, masayı tersine çevir ve elini ilk boşaltan ol. Bu ses kanalında 2–4 kişi için özgün bir kart oyunu.",
+    "description": "Renkleri eşleştir, masayı tersine çevir ve elini ilk boşaltan ol. Bu ses kanalında 2–6 kişi için özgün bir kart oyunu.",
     "create": "Masa oluştur",
     "lobbyTitle": "Bir koltuğa otur",
     "lobbyHint": "Aramadaki herkes katılabilir. Ev sahibi masa hazır olduğunda başlatır.",

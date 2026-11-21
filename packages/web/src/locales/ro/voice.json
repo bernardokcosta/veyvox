@@ -41,7 +41,7 @@
       "start": {
         "goal": "Fii primul jucător care rămâne fără cărți.",
         "deal": "Toată lumea începe cu șapte cărți. Sunt patru culori; pachetul clasic are 108 cărți. Prima carte întoarsă cu fața în sus este un număr, iar jocul începe în sensul acelor de ceasornic.",
-        "setup": "Juno are de la două la patru locuri într-un canal vocal al spațiului. Gazda creează masa și începe runda după ce jucătorii s-au alăturat."
+        "setup": "Juno are de la două la șase locuri într-un canal vocal al spațiului. Gazda creează masa și începe runda după ce jucătorii s-au alăturat."
       },
       "turn": {
         "match": "Potrivește culoarea activă sau numărul ori simbolul ultimei cărți. Un joker permis este o altă variantă de a juca. Toate aceste exemple se potrivesc cu un 5 albastru:",
@@ -78,7 +78,7 @@
       "score": {
         "ranking": "Prima mână goală câștigă. Ceilalți jucători care termină sunt clasați după numărul de cărți rămase, inclusiv după eventuala penalizare de tragere pentru ultima carte.",
         "award": "XP acordat",
-        "ties": "Egalitățile împart același loc și aceeași XP: doi jucători clasați pe locul al doilea primesc amândoi 80 XP, iar locul următor este al patrulea. Contează doar rundele finalizate doar cu oameni și cu un câștigător; doar câștigătorul primește o victorie. Plecarea timpurie nu aduce loc sau XP.",
+        "ties": "Egalitățile împart același loc și aceeași XP: doi jucători clasați pe locul al doilea primesc amândoi 80 XP de bază, iar locul următor este al patrulea. Contează doar rundele finalizate doar cu oameni și cu un câștigător; doar câștigătorul primește o victorie. Plecarea timpurie nu aduce loc sau XP.",
         "practice": "O rundă începută cu un bot rămâne antrenament, chiar dacă botul pleacă ulterior: nu se acordă XP, victorii sau runde clasate. XP aparține acestui spațiu și însumează canalele sale vocale, nu alte spații.",
         "pending": "Cât timp rezultatele sunt salvate, XP este încă în așteptare, nu deja câștigată. O masă nouă devine disponibilă după ce rezultatul a fost soluționat."
       },
@@ -154,14 +154,14 @@
     "previousPage": "Pagina anterioară",
     "nextPage": "Pagina următoare",
     "scoreHint": "XP Juno aparține acestui spațiu, în toate canalele sale vocale.",
-    "scoreRules": "Locul 1: 120 XP · Locul 2: 80 XP · Locul 3: 40 XP · Locul 4: 20 XP. Egalitățile împart locul și XP. Contează doar rundele finalizate cu un câștigător; plecarea timpurie nu aduce XP.",
+    "scoreRules": "Locul 1: 120 XP · Locul 2: 80 XP · Locul 3: 40 XP · Locul 4: 20 XP · Locul 5: 10 XP · Locul 6: 5 XP bază plus bonusuri mici. Egalitățile împart locul și XP. Contează doar rundele finalizate cu un câștigător; plecarea timpurie nu aduce XP.",
     "chooseGame": "Alege un joc pentru a juca cu persoanele din apelul tău.",
     "name": "Juno",
     "games": "Jocuri",
     "open": "Deschide Juno",
     "tagline": "O mică rivalitate prietenoasă",
     "invitation": "Următoarea ta rundă începe aici",
-    "description": "Potrivește culori, întoarce jocul și fii primul care își golește mâna. Un joc de cărți original pentru 2–4 persoane din acest canal vocal.",
+    "description": "Potrivește culori, întoarce jocul și fii primul care își golește mâna. Un joc de cărți original pentru 2–6 persoane din acest canal vocal.",
     "create": "Creează o masă",
     "lobbyTitle": "Ia loc",
     "lobbyHint": "Toți cei din apel se pot alătura. Gazda începe când masa este pregătită.",

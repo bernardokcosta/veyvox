@@ -41,7 +41,7 @@
       "start": {
         "goal": "Bli först med att inte ha några kort kvar.",
         "deal": "Alla börjar med sju kort. Det finns fyra färger; den klassiska leken har 108 kort. Det första öppna kortet är ett nummer och spelet går medurs.",
-        "setup": "Juno har två till fyra platser i ett rums röstkanal. Värden skapar bordet och startar rundan när spelarna gått med."
+        "setup": "Juno har två till sex platser i ett rums röstkanal. Värden skapar bordet och startar rundan när spelarna gått med."
       },
       "turn": {
         "match": "Matcha den aktiva färgen eller det senaste kortets nummer eller symbol. En tillåten wild är ett annat sätt. Alla dessa exempel passar på en blå 5:",
@@ -78,7 +78,7 @@
       "score": {
         "ranking": "Den första tomma handen vinner. Övriga slutplaceringar rankas efter återstående kort, inklusive eventuell dragstraff för sista kortet.",
         "award": "XP utdelad",
-        "ties": "Vid oavgjort delas samma plats och XP: två spelare på delad andraplats får båda 80 XP, och nästa plats är fjärde. Endast avslutade rundor utan bottar med vinnare räknas; endast vinnaren får en vinst. Att gå tidigt ger ingen plats eller XP.",
+        "ties": "Vid oavgjort delas samma plats och XP: två spelare på delad andraplats får båda 80 XP som bas, och nästa plats är fjärde. Endast avslutade rundor utan bottar med vinnare räknas; endast vinnaren får en vinst. Att gå tidigt ger ingen plats eller XP.",
         "practice": "En runda startad med en bot förblir träning, även om boten senare går: ingen XP, vinst eller rankad runda tillgodoräknas. XP hör till detta rum och förenar dess röstkanaler, inte andra rum.",
         "pending": "Medan resultat sparas är XP fortfarande väntande, inte redan intjänad. Ett nytt bord blir tillgängligt när detta resultat har behandlats."
       },
@@ -152,14 +152,14 @@
     "previousPage": "Föregående sida",
     "nextPage": "Nästa sida",
     "scoreHint": "Juno-XP hör till detta rum, över alla dess röstkanaler.",
-    "scoreRules": "1:a: 120 XP · 2:a: 80 XP · 3:a: 40 XP · 4:a: 20 XP. Vid oavgjort delas plats och XP. Endast avslutade rundor med vinnare räknas; tidigt avhopp ger ingen XP.",
+    "scoreRules": "1:a: 120 XP · 2:a: 80 XP · 3:a: 40 XP · 4:a: 20 XP · 5:a: 10 XP · 6:a: 5 XP som bas plus små bonusar. Vid oavgjort delas plats och XP. Endast avslutade rundor med vinnare räknas; tidigt avhopp ger ingen XP.",
     "chooseGame": "Välj ett spel att spela med personerna i ditt samtal.",
     "name": "Juno",
     "games": "Spel",
     "open": "Öppna Juno",
     "tagline": "Lite vänlig rivalitet",
     "invitation": "Din nästa runda börjar här",
-    "description": "Matcha färger, vänd borden och bli först med att tömma handen. Ett originellt kortspel för 2–4 personer i denna röstkanal.",
+    "description": "Matcha färger, vänd borden och bli först med att tömma handen. Ett originellt kortspel för 2–6 personer i denna röstkanal.",
     "create": "Skapa ett bord",
     "lobbyTitle": "Slå dig ner",
     "lobbyHint": "Alla i samtalet kan gå med. Värden startar när bordet är klart.",

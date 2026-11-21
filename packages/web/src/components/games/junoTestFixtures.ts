@@ -6,10 +6,10 @@ export function junoUser(id = 'a', name = id === 'a' ? 'Ada' : id === 'b' ? 'Bo'
     bio: null, status: 'online', customStatus: null, isAdmin: false, createdAt: 1 };
 }
 export function junoGame(phase: JunoView['phase'] = 'lobby'): JunoView {
-  return { id: 'game', phase, hostId: 'a', players: ['a', 'b'].map((id, i) => ({ userId: id, name: junoUser(id).displayName!, user: junoUser(id), cardCount: i === 0 ? 2 : 7, announced: false })),
+  return { id: 'game', phase, hostId: 'a', mode: 'single', teams: null, partnerHand: [], options: { specials: true, stacking: false, mode: 'single' }, players: ['a', 'b'].map((id, i) => ({ userId: id, name: junoUser(id).displayName!, user: junoUser(id), cardCount: i === 0 ? 2 : 7, announced: false })),
     hand: phase === 'playing' ? [{ id: 'wild', color: null, face: 'wild' }, { id: 'number', color: 'sky', face: '8' }] : [],
     topCard: { id: 'top', color: 'coral', face: '3' }, color: 'coral', direction: 1, currentPlayerId: 'a',
-    drawnCardId: null, remainingMs: 40000, winnerId: null, result: null, lastMove: null };
+    drawnCardId: null, stackDraw: 0, remainingMs: 40000, winnerId: null, result: null, lastMove: null };
 }
 export function junoRanking(spaceId = 'space'): JunoRankingPage {
   return { spaceId, limit: 25, offset: 0, total: 0, entries: [],

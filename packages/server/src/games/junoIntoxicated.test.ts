@@ -16,7 +16,7 @@ function round(): State {
     { userId: 'c', name: 'C', hand: [card('c-other', '8', 'coral')], announced: false },
   ], drawPile: Array.from({ length: 20 }, (_, i) => card(`draw-${i}`, '9', 'amber')),
   discard: [card('top', '3')], color: 'mint', direction: 1, turn: 0, drawnCardId: null,
-  deadline: 45_000, winnerId: null, result: null, lastMove: null, blockedTurns: 0, reportWindows: [], memoryEnabled: true, intoxicatedEnabled: true };
+  deadline: 45_000, winnerId: null, result: null, lastMove: null, blockedTurns: 0, reportWindows: [], memoryEnabled: true, intoxicatedEnabled: true, specials: true, stacking: false, stackDraw: 0, duos: false, teams: null };
 }
 function intoxicate(state = round()): State { actInRound(state, 'a', { type: 'play', cardId: 'intoxicated' }, 1); return state; }
 const total = (state: State) => state.drawPile.length + state.discard.length + state.players.reduce((n, p) => n + p.hand.length, 0);

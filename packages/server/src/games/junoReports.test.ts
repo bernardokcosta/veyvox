@@ -7,7 +7,7 @@ function round(): JunoRound {
   return { players: ['a', 'b', 'c'].map(userId => ({ userId, name: userId, announced: false,
     hand: [card(`${userId}-1`), card(`${userId}-2`)] })), drawPile: [card('d1'), card('d2'), card('d3')],
   discard: [card('top')], color: 'coral', direction: 1, turn: 0, drawnCardId: null, deadline: 45_000,
-  winnerId: null, result: null, lastMove: null, blockedTurns: 0, reportWindows: [] };
+  winnerId: null, result: null, lastMove: null, blockedTurns: 0, reportWindows: [], specials: true, stacking: false, stackDraw: 0, duos: false, teams: null };
 }
 const miss = (state: JunoRound, id = 'a', now = 100) => actInRound(state, id, { type: 'play', cardId: `${id}-1` }, now);
 const report = (state: JunoRound, actor = 'c', now = 101) => actInRound(state, actor,

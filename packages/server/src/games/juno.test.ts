@@ -10,6 +10,7 @@ function round(count = 3): JunoRound {
     drawPile: Array.from({ length: 30 }, (_, i) => card(`d${i}`, '9', 'amber')),
     discard: [card('top')], color: 'coral', direction: 1, turn: 0, drawnCardId: null,
     deadline: 45_000, winnerId: null, result: null, lastMove: null, blockedTurns: 0, reportWindows: [],
+    specials: true, stacking: false, stackDraw: 0, duos: false, teams: null,
   };
 }
 describe('Juno authoritative rules', () => {
@@ -117,28 +118,105 @@ describe('Juno authoritative rules', () => {
 
 describe('Juno rooms, privacy and lifecycle', () => {
   function setup() {
-    let now = 0; const seated = new Set(['a', 'b', 'c', 'd', 'e']); const changed = vi.fn();
+    let now = 0; const seated = new Set(['a', 'b', 'c', 'd', 'e', 'f', 'g']); const changed = vi.fn();
     const rooms = new JunoRooms({ present: (_channel, id) => seated.has(id), changed, now: () => now });
-    const send = (id: string, action: JunoAction) => {
-      const snapshot = rooms.read('voice', id);
-      return rooms.command('voice', { userId: id, name: id }, { ...action, gameId: snapshot.game!.id, revision: snapshot.revision });
+    const send = (id: string, action: JunoAction, six = false) => {
+      const snapshot = rooms.read('voice', id, false, false, false, six);
+      return rooms.command('voice', { userId: id, name: id }, { ...action, gameId: snapshot.game!.id, revision: snapshot.revision }, false, false, false, six);
     };
     rooms.command('voice', { userId: 'a', name: 'a' }, { type: 'create' });
     return { rooms, seated, changed, send, setTime: (value: number) => { now = value; } };
   }
-  it('caps seats at four, rejects late joins, and never serializes hidden cards', () => {
-    const { rooms, send } = setup(); for (const id of ['b', 'c', 'd']) send(id, { type: 'join' });
-    expect(() => send('e', { type: 'join' })).toThrow('juno_full');
-    send('a', { type: 'start' }); const a = rooms.read('voice', 'a'); const b = rooms.read('voice', 'b');
-    expect(a.game!.hand).toHaveLength(7); expect(rooms.read('voice', 'e').game!.hand).toEqual([]);
+  it('caps seats at six, rejects late joins, and never serializes hidden cards', () => {
+    const { rooms, send } = setup(); rooms.read('voice', 'a', false, false, false, true);
+    for (const id of ['b', 'c', 'd', 'e', 'f']) send(id, { type: 'join' }, true);
+    expect(() => send('g', { type: 'join' }, true)).toThrow('juno_full');
+    send('a', { type: 'start' }, true);
+    const a = rooms.read('voice', 'a', false, false, false, true), b = rooms.read('voice', 'b', false, false, false, true);
+    expect(a.game!.hand).toHaveLength(7); expect(rooms.read('voice', 'g', false, false, false, true).game!.hand).toEqual([]);
     for (const c of b.game!.hand) expect(JSON.stringify(a)).not.toContain(`"${c.id}"`);
-    expect(() => send('e', { type: 'join' })).toThrow('juno_in_progress');
+    expect(() => send('g', { type: 'join' }, true)).toThrow('juno_in_progress');
+  });
+  it('requires every seated human on a six-capable client before growing beyond four', () => {
+    const { rooms, send } = setup();
+    send('b', { type: 'join' }, true); send('c', { type: 'join' }, true); send('d', { type: 'join' });
+    rooms.read('voice', 'a', false, false, false, true);
+    // d never declared six support: even a fully capable joiner or bot is refused.
+    expect(() => send('e', { type: 'join' }, true)).toThrow('juno_update_required');
+    expect(() => send('a', { type: 'addBot' }, true)).toThrow('juno_update_required');
+    expect(() => send('e', { type: 'join' })).toThrow('juno_update_required');
+    // After the old client leaves, growth is allowed.
+    send('d', { type: 'leave' });
+    send('e', { type: 'join' }, true);
+    expect(rooms.read('voice', 'e', false, false, false, true).game!.players).toHaveLength(4);
+    send('f', { type: 'join' }, true);
+    expect(rooms.read('voice', 'f', false, false, false, true).game!.players).toHaveLength(5);
+    expect(() => rooms.read('voice', 'f')).toThrow('juno_update_required');
+    send('a', { type: 'start' }, true);
+    expect(rooms.read('voice', 'a', false, false, false, true).game!.phase).toBe('playing');
+    expect(() => rooms.read('voice', 'a')).toThrow('juno_update_required');
+  });
+  it('keeps six protection on the starter roster after departures, and leave without six still succeeds', () => {
+    const { rooms, send } = setup(); rooms.read('voice', 'a', false, false, false, true);
+    for (const id of ['b', 'c', 'd', 'e', 'f']) send(id, { type: 'join' }, true);
+    send('a', { type: 'start' }, true);
+    send('e', { type: 'leave' }, true); send('f', { type: 'leave' }, true);
+    expect(rooms.read('voice', 'a', false, false, false, true).game!.players).toHaveLength(4);
+    expect(() => rooms.read('voice', 'a')).toThrow('juno_update_required');
+    const snapshot = rooms.read('voice', 'd', false, false, false, true);
+    const left = rooms.command('voice', { userId: 'd', name: 'd' },
+      { type: 'leave', gameId: snapshot.game!.id, revision: snapshot.revision });
+    expect(left.game).toBeNull();
+    expect(left.supportsSix).toBe(true);
+  });
+  it('completes a randomized six-player round while conserving every card', () => {
+    const { rooms, send } = setup(); rooms.read('voice', 'a', false, false, false, true);
+    for (const id of ['b', 'c', 'd', 'e', 'f']) send(id, { type: 'join' }, true);
+    send('a', { type: 'start' }, true);
+    for (let i = 0; i < 5_000; i++) {
+      const view = rooms.read('voice', 'a', false, false, false, true).game!;
+      if (view.phase === 'finished') break;
+      const own = rooms.read('voice', view.currentPlayerId!, false, false, false, true).game!;
+      const playable = own.hand.find(c => (!own.drawnCardId || c.id === own.drawnCardId)
+        && canPlayJuno(c, own.hand, own.topCard!, own.color!));
+      send(own.currentPlayerId!, playable ? { type: 'play', cardId: playable.id, color: 'mint', announce: true }
+        : { type: own.drawnCardId ? 'pass' : 'draw' }, true);
+    }
+    const done = rooms.read('voice', 'a', false, false, false, true).game!;
+    expect(done.phase).toBe('finished');
+    expect(done.players).toHaveLength(6);
+    expect(done.winnerId ?? done.result).toBeTruthy();
   });
   it('rejects repeated commands and non-host starts', () => {
     const { rooms, send } = setup(); send('b', { type: 'join' });
     expect(() => send('b', { type: 'start' })).toThrow('juno_host_required');
     const old = rooms.read('voice', 'a'); send('a', { type: 'start' });
     expect(() => rooms.command('voice', { userId: 'a', name: 'a' }, { type: 'start', gameId: old.game!.id, revision: old.revision })).toThrow('juno_stale');
+  });
+  it('lets a seated player leave outside their turn with a revision from before the turn changed', () => {
+    const { rooms, send, setTime } = setup();
+    send('b', { type: 'join' }); send('c', { type: 'join' }); send('a', { type: 'start' });
+    const old = rooms.read('voice', 'c');
+    setTime(JUNO_TURN_MS);
+    const current = rooms.read('voice', 'c');
+    expect(current.revision).toBeGreaterThan(old.revision);
+    expect(current.game!.currentPlayerId).toBe('b');
+    const left = rooms.command('voice', { userId: 'c', name: 'c' },
+      { type: 'leave', gameId: old.game!.id, revision: old.revision });
+    expect(left.game!.players.map(p => p.userId)).toEqual(['a', 'b']);
+    expect(left.game!.currentPlayerId).toBe('b');
+  });
+  it('rejects a stale leave from a previous seat, another game, or a future revision', () => {
+    const { rooms, send } = setup();
+    send('b', { type: 'join' });
+    const old = rooms.read('voice', 'b');
+    send('b', { type: 'leave' }); send('b', { type: 'join' });
+    const current = rooms.read('voice', 'b');
+    const leave = (gameId: string, revision: number) => rooms.command('voice', { userId: 'b', name: 'b' }, { type: 'leave', gameId, revision });
+    expect(() => leave(old.game!.id, old.revision)).toThrow('juno_stale');
+    expect(() => leave('other-game', current.revision)).toThrow('juno_stale');
+    expect(() => leave(current.game!.id, current.revision + 1)).toThrow('juno_stale');
+    expect(rooms.read('voice', 'b').game!.players).toHaveLength(2);
   });
   it('automatically draws/passes expired turns and removes departed players', () => {
     const { rooms, send, setTime, seated } = setup(); send('b', { type: 'join' }); send('c', { type: 'join' }); send('a', { type: 'start' });

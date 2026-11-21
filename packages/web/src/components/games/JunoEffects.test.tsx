@@ -1,4 +1,4 @@
-import { act, render } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { JunoEffects } from './JunoEffects';
 
@@ -51,6 +51,15 @@ describe('confirmed Juno feedback', () => {
     rerender(<JunoEffects move={{ id: 'play', type: 'play', userId: 'a', card: { id: 'public', face: 'draw4', color: null } }} position="bottom" name="Ada" />);
     expect(container.querySelector('.juno-effect-card img')).toHaveAttribute('src', '/games/juno/cards/draw4.webp');
     expect(container.querySelector('.juno-effect-special')).toHaveTextContent('+4');
+  });
+  it('does not replay an old stack take or mistake a report for one, and confirms a new timeout', () => {
+    const move = { id: 'old', type: 'draw' as const, userId: 'b', amount: 4 };
+    const { rerender } = render(<JunoEffects move={move} position="left" name="Bo" />);
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    rerender(<JunoEffects move={{ ...move, id: 'report', type: 'report' }} position="left" name="Bo" />);
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    rerender(<JunoEffects move={{ ...move, id: 'timeout', type: 'timeout', amount: 6 }} position="left" name="Bo" topCardFace="draw4" />);
+    expect(screen.getByRole('status', { name: 'Bo drew 6 cards from the pile' })).toHaveTextContent('+6');
   });
   it('animates only a confirmed report with the actual positive draw amount', () => {
     const { container, rerender } = render(<JunoEffects move={null} position="left" name="Bo" />);

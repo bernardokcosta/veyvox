@@ -33,7 +33,8 @@ function GameProbe({ name }: { name: string }) {
 
 function game(): JunoView {
   return {
-    id: 'game', phase: 'playing', hostId: 'a',
+    id: 'game', phase: 'playing', hostId: 'a', mode: 'single', teams: null, partnerHand: [],
+    options: { specials: true, stacking: false, mode: 'single' },
     players: [
       { userId: 'a', name: 'Ada', cardCount: 2, announced: false },
       { userId: 'b', name: 'Bo', cardCount: 7, announced: false },
@@ -195,6 +196,55 @@ describe('bidi isolation for user content', () => {
       const caption = getComputedStyle(container.querySelector('figcaption')!);
       expect(caption.overflowWrap).toBe('anywhere');
       expect(caption.fontSize).toBe('12px');
+    } finally {
+      style.remove();
+    }
+  });
+
+  it('pins the three top seats to one horizontal badge line', () => {
+    const style = document.createElement('style');
+    style.textContent = junoStyles;
+    document.head.append(style);
+    try {
+      const { container } = render(
+        <div className="juno-arena">
+          <div className="juno-seat juno-seat-topLeft" />
+          <div className="juno-seat juno-seat-top" />
+          <div className="juno-seat juno-seat-topRight" />
+        </div>,
+      );
+      for (const seat of container.querySelectorAll('.juno-seat')) {
+        expect(getComputedStyle(seat).alignSelf).toBe('start');
+      }
+    } finally {
+      style.remove();
+    }
+  });
+
+  it('keeps stacking digits left-to-right in any game language', () => {
+    const style = document.createElement('style');
+    style.textContent = junoStyles;
+    document.head.append(style);
+    try {
+      const { container } = render(<div className="juno-stack-overlay" dir="rtl" />);
+      expect(getComputedStyle(container.querySelector('.juno-stack-overlay')!)).toHaveProperty('direction', 'ltr');
+    } finally {
+      style.remove();
+    }
+  });
+
+  it('centers the remove-bot cross inside its circle with breathing room from the seat edge', () => {
+    const style = document.createElement('style');
+    style.textContent = junoStyles;
+    document.head.append(style);
+    try {
+      const { container } = render(
+        <div className="juno-lobby-seat"><div className="juno-player-badge" /><button className="juno-remove-bot" type="button">×</button></div>,
+      );
+      const cross = getComputedStyle(container.querySelector('.juno-remove-bot')!);
+      expect(cross.justifyContent).toBe('center');
+      expect(cross.alignItems).toBe('center');
+      expect(cross.right).not.toBe('3px');
     } finally {
       style.remove();
     }

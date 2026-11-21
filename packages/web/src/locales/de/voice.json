@@ -41,7 +41,7 @@
       "start": {
         "goal": "Werde als erste Person alle Karten los.",
         "deal": "Alle beginnen mit sieben Karten. Es gibt vier Farben; das klassische Deck hat 108 Karten. Die erste offene Karte ist eine Zahl, gespielt wird zunächst im Uhrzeigersinn.",
-        "setup": "Juno bietet zwei bis vier Plätze in einem Sprachkanal des Spaces. Der Gastgeber erstellt den Tisch und startet die Runde, sobald die Spieler beigetreten sind."
+        "setup": "Juno bietet zwei bis sechs Plätze in einem Sprachkanal des Spaces. Der Gastgeber erstellt den Tisch und startet die Runde, sobald die Spieler beigetreten sind."
       },
       "turn": {
         "match": "Lege die aktive Farbe oder dieselbe Zahl beziehungsweise dasselbe Symbol wie auf der letzten Karte. Auch ein erlaubter Joker ist möglich. Diese Beispiele passen alle auf eine blaue 5:",
@@ -78,7 +78,7 @@
       "score": {
         "ranking": "Die erste leere Hand gewinnt. Die übrigen Plätze richten sich nach der Zahl der restlichen Karten, einschließlich einer Ziehstrafe durch die letzte Karte.",
         "award": "Vergebene XP",
-        "ties": "Bei Gleichstand werden Platz und XP geteilt: Zwei Zweitplatzierte erhalten jeweils 80 XP, der nächste Platz ist der vierte. Nur abgeschlossene reine Menschenrunden mit Gewinner zählen; nur der Gewinner erhält einen Sieg. Wer vorher geht, bekommt weder Platz noch XP.",
+        "ties": "Bei Gleichstand werden Platz und XP geteilt: Zwei Zweitplatzierte erhalten jeweils 80 XP als Basis, der nächste Platz ist der vierte. Nur abgeschlossene reine Menschenrunden mit Gewinner zählen; nur der Gewinner erhält einen Sieg. Wer vorher geht, bekommt weder Platz noch XP.",
         "practice": "Eine mit Bot gestartete Runde bleibt eine Übung, auch wenn der Bot später geht: keine XP, Siege oder gewerteten Runden. XP gehören zu diesem Space und werden über seine Sprachkanäle summiert, nicht über andere Spaces.",
         "pending": "Solange das Ergebnis gespeichert wird, sind die XP noch ausstehend und nicht bereits verdient. Ein neuer Tisch ist verfügbar, sobald das Ergebnis abschließend verarbeitet wurde."
       },
@@ -152,14 +152,14 @@
     "previousPage": "Vorherige Seite",
     "nextPage": "Nächste Seite",
     "scoreHint": "Juno-XP gelten für diesen Space und alle seine Sprachkanäle.",
-    "scoreRules": "1. Platz: 120 XP · 2.: 80 XP · 3.: 40 XP · 4.: 20 XP. Gleichstände teilen Platz und XP. Nur abgeschlossene Runden mit Sieger zählen; vorzeitiges Verlassen gibt keine XP.",
+    "scoreRules": "1. Platz: 120 XP · 2.: 80 XP · 3.: 40 XP · 4.: 20 XP · 5.: 10 XP · 6.: 5 XP Basis plus kleine Boni. Gleichstände teilen Platz und XP. Nur abgeschlossene Runden mit Sieger zählen; vorzeitiges Verlassen gibt keine XP.",
     "chooseGame": "Wähle ein Spiel, um mit den Personen im Anruf zu spielen.",
     "name": "Juno",
     "games": "Spiele",
     "open": "Juno öffnen",
     "tagline": "Ein freundschaftliches Kräftemessen",
     "invitation": "Die nächste Runde beginnt hier",
-    "description": "Kombiniere Farben, wende das Blatt und werde zuerst alle Karten los. Ein eigenes Kartenspiel für 2–4 Personen in diesem Sprachkanal.",
+    "description": "Kombiniere Farben, wende das Blatt und werde zuerst alle Karten los. Ein eigenes Kartenspiel für 2–6 Personen in diesem Sprachkanal.",
     "create": "Tisch erstellen",
     "lobbyTitle": "Nimm Platz",
     "lobbyHint": "Alle im Anruf können mitspielen. Der Gastgeber startet, wenn der Tisch bereit ist.",
