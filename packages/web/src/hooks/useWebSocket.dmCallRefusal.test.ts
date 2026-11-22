@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { DmChannel } from '@veyvox/shared';
 import { act, cleanup, renderHook } from '@testing-library/react';
-import { installSocketHarness, TestWebSocket } from '../test/socketHarness';
+import { installSocketHarness, TestHeartbeatWorker, TestWebSocket } from '../test/socketHarness';
 import { junoUser } from '../components/games/junoTestFixtures';
 
 // jsdom has no AudioWorkletNode; the handler's imports reach the voice stack.
@@ -27,7 +27,7 @@ const { useSpaceStore } = await import('../stores/spaceStore');
 const { useUIStore } = await import('../stores/uiStore');
 const { useVoiceStore } = await import('../stores/voiceStore');
 const { useAuthStore } = await import('../stores/authStore');
-const { cancelOutgoingDmCall, startDmCall } = await import('../utils/voiceActions');
+const { acceptIncomingDmCall, cancelOutgoingDmCall, joinDmCall, startDmCall } = await import('../utils/voiceActions');
 const { initI18n } = await import('../i18n');
 const i18n = (await import('../i18n')).default;
 
@@ -163,6 +163,55 @@ describe('the end of a DM call', () => {
     ws.deliver({ type: 'dm_call_ended', dmChannelId: GROUP });
     expect(useVoiceStore.getState().outgoingCall).toEqual(outgoing(OTHER));
     expect(releaseInputStream).toHaveBeenCalledOnce();
+  });
+
+  it('waits for the cancel-specific pong before retrying the same DM', () => {
+    const ws = homeSocket();
+    TestHeartbeatWorker.all.at(-1)!.onmessage?.();
+    expect(startDmCall(GROUP)).toBe(true);
+    expect(cancelOutgoingDmCall(GROUP)).toBe(true);
+    expect(ws.sent.map(event => event.type)).toEqual(['auth', 'ping', 'dm_call_start', 'dm_call_end', 'ping']);
+    ws.deliver({ type: 'pong' }); // Earlier heartbeat
+    expect(startDmCall(GROUP)).toBe(false);
+    expect(joinDmCall(GROUP)).toBe(false);
+    ws.deliver({ type: 'dm_call_ended', dmChannelId: GROUP }); // First call only
+    expect(startDmCall(GROUP)).toBe(false);
+    ws.deliver({ type: 'pong' });
+    expect(startDmCall(GROUP)).toBe(true);
+    expect(useVoiceStore.getState().outgoingCall).toEqual(outgoing(GROUP));
+    expect(releaseInputStream).toHaveBeenCalledOnce();
+  });
+
+  it('retires the fence when its socket closes even if the server has no end to echo', () => {
+    const ws = homeSocket();
+    expect(startDmCall(GROUP)).toBe(true);
+    expect(cancelOutgoingDmCall(GROUP)).toBe(true);
+    expect(useVoiceStore.getState().pendingDmCancels.has(GROUP)).toBe(true);
+    ws.fail();
+    expect(useVoiceStore.getState().pendingDmCancels.has(GROUP)).toBe(false);
+  });
+
+  it('blocks an incoming accept in the same DM before the old end and pong', () => {
+    const ws = homeSocket();
+    const connectFn = vi.fn().mockResolvedValue(undefined);
+    const disconnectFn = vi.fn().mockResolvedValue(undefined);
+    useVoiceStore.setState({ connectFn, disconnectFn });
+    expect(startDmCall(GROUP)).toBe(true);
+    expect(cancelOutgoingDmCall(GROUP)).toBe(true);
+    const ring = { type: 'dm_call_incoming', dmChannelId: GROUP, callerId: 'bob', callerName: 'Bob' };
+    ws.deliver(ring);
+
+    expect(acceptIncomingDmCall()).toBe(false);
+    expect(ws.sent.some(event => event.type === 'dm_call_accept')).toBe(false);
+    expect(connectFn).not.toHaveBeenCalled();
+    ws.deliver({ type: 'dm_call_ended', dmChannelId: GROUP });
+    ws.deliver({ type: 'pong' });
+    expect(disconnectFn).not.toHaveBeenCalled();
+    expect(connectFn).not.toHaveBeenCalled();
+
+    ws.deliver(ring);
+    expect(acceptIncomingDmCall()).toBe(true);
+    expect(connectFn).toHaveBeenCalledExactlyOnceWith(GROUP, true);
   });
 
   it('tears down the call the client is in', () => {

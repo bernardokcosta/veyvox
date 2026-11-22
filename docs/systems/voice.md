@@ -235,6 +235,10 @@ capture, unless an active or connecting voice room already owns it. That
 ownership includes a LiveKit audio hold acquired before the context resumes
 and the store reports `connecting`. Acceptance and switching to a space
 channel hand off capture instead of releasing it.
+After ending or declining a DM call, that same conversation's Start/Join/Accept
+controls wait for the current socket to acknowledge processing the command
+before letting a new attempt arm its microphone. Other conversations are
+unaffected; see [WebSocket ordering](websocket.md).
 
 ### Native SoundController Identity
 

@@ -13,7 +13,7 @@ function resetCallState(): void {
 beforeEach(() => { vi.clearAllMocks(); vi.mocked(wsSend).mockReturnValue(true); resetCallState(); });
 describe('native DM call actions', () => {
   it('allows an idle call and arms the microphone inside the tap', () => {
-    expect(canStartDmCall(useVoiceStore.getState())).toBe(true); expect(startDmCall(DM)).toBe(true);
+    expect(canStartDmCall(useVoiceStore.getState(), DM)).toBe(true); expect(startDmCall(DM)).toBe(true);
     expect(useVoiceStore.getState().outgoingCall).toEqual({ dmChannelId: DM, withCamera: false }); expect(wsSend).toHaveBeenCalledExactlyOnceWith({ type: 'dm_call_start', dmChannelId: DM });
     expect(audio.clearInputDenial).toHaveBeenCalled(); expect(audio.resumeContext).toHaveBeenCalled(); expect(audio.setInputDevice).toHaveBeenCalled();
   });
@@ -22,7 +22,7 @@ describe('native DM call actions', () => {
     { outgoingCall: { dmChannelId: 'other', withCamera: false } }, { activeDmCall: { dmChannelId: 'other' } },
     { incomingCall: { dmChannelId: 'other', callerId: 'bob', callerName: 'Bob' } },
   ])('does not start or join while another native call slot is occupied', state => {
-    useVoiceStore.setState(state); expect(canStartDmCall(useVoiceStore.getState())).toBe(false); expect(startDmCall(DM)).toBe(false); expect(joinDmCall(DM)).toBe(false); expect(wsSend).not.toHaveBeenCalled();
+    useVoiceStore.setState(state); expect(canStartDmCall(useVoiceStore.getState(), DM)).toBe(false); expect(startDmCall(DM)).toBe(false); expect(joinDmCall(DM)).toBe(false); expect(wsSend).not.toHaveBeenCalled();
   });
   it.each(['start', 'join'] as const)('does not enter an unannounced %s when the socket is disconnected', action => {
     vi.mocked(wsSend).mockReturnValue(false); const connect = vi.fn(async () => {}); useVoiceStore.setState({ connectFn: connect });

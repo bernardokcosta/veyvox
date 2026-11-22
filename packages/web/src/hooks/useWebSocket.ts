@@ -44,6 +44,9 @@ interface Connection {
   token: string;
   revision: number;
   origin: string;
+  sentPings: number;
+  receivedPongs: number;
+  dmCancelPings: Map<string, number>;
 }
 let connection: Connection | null = null;
 
@@ -70,12 +73,41 @@ function startHeartbeat(conn: Connection): void {
   `], { type: 'application/javascript' }));
   const worker = new Worker(conn.heartbeatUrl); conn.heartbeatWorker = worker;
   worker.onmessage = () => {
-    if (ownsSession(conn) && conn.heartbeatWorker === worker && conn.ws?.readyState === WebSocket.OPEN) conn.ws.send(JSON.stringify({ type: 'ping' }));
+    if (ownsSession(conn) && conn.heartbeatWorker === worker && conn.ws?.readyState === WebSocket.OPEN) sendPing(conn, conn.ws);
   };
   worker.postMessage('start');
 }
+function sendPing(conn: Connection, ws: WebSocket): number {
+  ws.send(JSON.stringify({ type: 'ping' }));
+  return ++conn.sentPings;
+}
+
+function receivePong(conn: Connection): void {
+  if (conn.receivedPongs >= conn.sentPings) return;
+  const acknowledged = ++conn.receivedPongs;
+  let changed = false;
+  for (const [channelId, ping] of conn.dmCancelPings) {
+    if (ping <= acknowledged) {
+      conn.dmCancelPings.delete(channelId);
+      changed = true;
+    }
+  }
+  if (changed) useVoiceStore.setState({ pendingDmCancels: new Set(conn.dmCancelPings.keys()) });
+}
+
+function clearPingSequence(conn: Connection): void {
+  conn.sentPings = 0;
+  conn.receivedPongs = 0;
+  if (conn.dmCancelPings.size === 0) return;
+  conn.dmCancelPings.clear();
+  useVoiceStore.setState({ pendingDmCancels: new Set() });
+}
+
 function disconnect(conn: Connection): void {
-  if (connection === conn) connection = null;
+  if (connection === conn) {
+    connection = null;
+    clearPingSequence(conn);
+  }
   clearTimeout(conn.reconnectTimer); conn.reconnectTimer = undefined; stopHeartbeat(conn);
   const ws = conn.ws; conn.ws = null; ws?.close();
 }
@@ -385,6 +417,7 @@ function connect(conn: Connection): void {
     let event: ServerEvent;
     try { event = JSON.parse(message.data as string) as ServerEvent; } catch { console.error('Failed to parse WebSocket message'); return; }
     if (!event || typeof event !== 'object' || typeof event.type !== 'string') return;
+    if (event.type === 'pong') { receivePong(conn); return; }
     const alreadyDelivered = readyDelivered; if (event.type === 'ready') readyDelivered = true;
     try { handleEvent(event, alreadyDelivered, current); } catch (error) { console.error('Error handling WS event "%s":', event.type, error); }
   };
@@ -392,6 +425,7 @@ function connect(conn: Connection): void {
     if (!current()) return;
     recordDiagnostic({ event: 'ws-closed', subsystem: 'websocket', level: event.code === 1000 ? 'info' : 'warning', reason: event.code });
     conn.ws = null; stopHeartbeat(conn);
+    clearPingSequence(conn);
     const delay = Math.min(1000 * 2 ** conn.reconnectAttempts, 30000); conn.reconnectAttempts++;
     recordDiagnostic({ event: 'ws-reconnect', subsystem: 'websocket', level: 'warning', attempt: conn.reconnectAttempts });
     conn.reconnectTimer = setTimeout(() => connect(conn), delay);
@@ -404,8 +438,18 @@ export function getWsConnected(): boolean {
 }
 /** False means not handed to an open socket: callers must not count it as sent. */
 export function wsSend(event: ClientEvent): boolean {
-  if (!connection || !ownsSession(connection) || connection.ws?.readyState !== WebSocket.OPEN) return false;
-  connection.ws.send(JSON.stringify(event)); return true;
+  const conn = connection;
+  const ws = conn?.ws;
+  if (!conn || !ownsSession(conn) || ws?.readyState !== WebSocket.OPEN) return false;
+  if (event.type === 'ping') { sendPing(conn, ws); return true; }
+  ws.send(JSON.stringify(event));
+  // The server handles end/decline and broadcasts any terminal event before
+  // processing the next frame. Fence retries in this DM until that frame's pong.
+  if (event.type === 'dm_call_end' || event.type === 'dm_call_reject') {
+    conn.dmCancelPings.set(event.dmChannelId, sendPing(conn, ws));
+    useVoiceStore.setState({ pendingDmCancels: new Set(conn.dmCancelPings.keys()) });
+  }
+  return true;
 }
 /** The top-level app owns the single current-server socket and its timers. */
 export function useWebSocket() {
@@ -414,7 +458,8 @@ export function useWebSocket() {
   useEffect(() => {
     if (!token) { setIsConnected(false); return; }
     if (connection) disconnect(connection);
-    const conn: Connection = { ws: null, heartbeatWorker: null, heartbeatUrl: null, reconnectAttempts: 0, reconnectTimer: undefined, token, revision, origin: window.location.origin };
+    const conn: Connection = { ws: null, heartbeatWorker: null, heartbeatUrl: null, reconnectAttempts: 0, reconnectTimer: undefined,
+      token, revision, origin: window.location.origin, sentPings: 0, receivedPongs: 0, dmCancelPings: new Map() };
     connection = conn; connect(conn);
     const timer = setInterval(() => setIsConnected(getWsConnected()), 500);
     return () => { clearInterval(timer); disconnect(conn); };

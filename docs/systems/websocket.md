@@ -418,6 +418,19 @@ in takes the client out of that call (`teardownDmCall`). Terminal DM events do
 not clear other DMs' slots or disconnect a space call. This is client teardown
 only; the wire events and native DM IDs are unchanged.
 
+After locally canceling, hanging up or declining a DM call, the client
+blocks starting, joining or accepting another call in that same DM until signaling
+acknowledges a `ping` sent immediately after `dm_call_end` or `dm_call_reject`.
+The current server handles these commands
+and sends any resulting terminal events synchronously before replying to
+the next ping. Heartbeat and cancellation pings share the socket's FIFO
+sequence so a previous heartbeat cannot unlock the retry early. The fence
+is local, per DM and per socket: other DMs remain available, and replacing
+the socket retires it along with that socket's callbacks. No action is queued:
+the next valid click is what pre-arms the microphone. This deliberately
+reuses the current protocol rather than introducing a call ID or using a
+timer that cannot distinguish an old echo from a current terminal event.
+
 ### DM Channel Management
 | type | fields | scope |
 |------|--------|-------|
