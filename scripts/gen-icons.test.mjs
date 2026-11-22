@@ -92,6 +92,15 @@ test('generates every raster, ICO and ICNS output deterministically', async t =>
     if (['logo.png', 'icon-192.png', 'icon-512.png'].includes(name)) assert.equal(raw[3], 0, `${name} must not keep the black exterior matte`);
   }
   const dock = await png(path.join(root, 'packages/desktop/build/icon.png'), 512);
+  const android = name => path.join(root, 'packages/mobile/android/res/drawable', name);
+  for (const [name, size] of [['ic_launcher.png', 192], ['ic_launcher_foreground.png', 432]]) {
+    const pixels = await png(android(name), size);
+    for (const corner of [0, size - 1, size * (size - 1), size * size - 1]) {
+      assert.equal(pixels[corner * 4 + 3], 0, `${name} must not have an opaque corner`);
+    }
+    assert.ok(pixels.some((value, index) => index % 4 === 3 && value === 255));
+    assert.deepEqual(await fs.readFile(android(name)), await fs.readFile(path.join(ROOT, 'packages/mobile/android/res/drawable', name)));
+  }
   for (let y = 0; y < 50; y++) for (let x = 0; x < 512; x++) assert.equal(dock[(y * 512 + x) * 4 + 3], 0);
   for (const [name, w, h] of [['tray-iconTemplate.png', 22, 22], ['tray-iconTemplate@2x.png', 44, 44]]) {
     const raw = await png(path.join(root, 'packages/desktop/resources', name), w, h);

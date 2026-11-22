@@ -3,9 +3,10 @@
 Source files:
 - `packages/mobile/Cargo.toml` — `veyvox-mobile` crate, permissive deps only (MIT/Apache-2.0/ISC/BSD), cargo-apk Android metadata
 - `packages/mobile/rust-toolchain.toml` — stable + `aarch64` / `armv7` / `x86_64` Android targets
-- `packages/mobile/android/res/drawable/ic_launcher.png` — packaged launcher icon (`@drawable/ic_launcher`)
+- `packages/mobile/android/res/drawable-v26/ic_launcher.xml` — adaptive launcher icon, with a separate transparent mark and plum background; alpha-clean PNG fallback
 - `packages/mobile/src/main.rs` — host preview `main`
 - `packages/mobile/src/lib.rs` — `android_main` (NativeActivity → eframe) and `VeyvoxApp`: login bootstrap, lazy history, reconciled sends, WS dispatch, voice gating
+- `packages/mobile/src/onboarding.rs` — native server selection and login presentation
 - `packages/mobile/src/state.rs` — tabs, screen stack, spaces/channels/DMs/friends/members/messages
 - `packages/mobile/src/api.rs` — REST client, same routes and envelopes as the web client
 - `packages/mobile/src/ws.rs` — realtime socket worker (`client: 'mobile'`), `type`-tagged frames
@@ -42,6 +43,16 @@ not committed here.
 
 The preview maps the following `MobileShell` surfaces. It does not have
 full visual or functional parity with the web client.
+
+Before sign-in, the native UI follows the desktop instance picker and
+web `LoginPage`: the user confirms the server address, then enters the
+account credentials for that address. Both steps share the dark auth
+palette, DM Sans type and full-width touch controls. A scrollable card
+keeps the flow usable in shorter windows. The auth copy follows the
+device's English/Portuguese language (English fallback). Changing the
+selected server or signing out clears credential drafts and their edit
+history; selecting an address does not send a network request or submit
+the login form.
 
 | Web (`packages/web/.../layout/`) | Rust (`packages/mobile/src/`) | Notes |
 |----------------------------------|-------------------------------|-------|

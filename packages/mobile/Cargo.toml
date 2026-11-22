@@ -57,6 +57,7 @@ strip = "strip"
 # Path to your application's resources folder, relative to this Cargo.toml.
 # Packaged as the APK's `res/` overlay (e.g. the launcher drawable below).
 resources = "android/res"
+assets = "assets"
 
 # See https://developer.android.com/guide/topics/manifest/uses-sdk-element
 [package.metadata.android.sdk]

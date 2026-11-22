@@ -140,6 +140,7 @@ export async function generateIcons(root = ROOT) {
   const build = join(root, 'packages/desktop/build');
   const resources = join(root, 'packages/desktop/resources');
   const web = join(root, 'packages/web/public/icons');
+  const android = join(root, 'packages/mobile/android/res/drawable');
   const write = (file, bytes) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, bytes); };
   write(join(brand, 'app-icon-1024.png'), await renderPng(app, 1024));
   for (const size of [16, 32, 48, 64, 128, 256, 512, 1024]) write(join(build, `icons/${size}x${size}.png`), await renderPng(app, size));
@@ -161,10 +162,15 @@ export async function generateIcons(root = ROOT) {
   write(join(web, 'logo.png'), await renderPng(app, 256));
   write(join(web, 'logo-mark.png'), await renderPng(white, 256));
   write(join(web, 'symbol.png'), await renderPng(symbol, 512));
+  write(join(android, 'ic_launcher.png'), await renderPng(app, 192));
+  // Android supplies the adaptive outline; no pre-rounded tile or matte.
+  const foreground = await sharp({ create: { width: 432, height: 432, channels: 4, background: TRANSPARENT } })
+    .composite([{ input: await renderPng(symbol, 212), gravity: 'center' }]).png(PNG).toBuffer();
+  write(join(android, 'ic_launcher_foreground.png'), foreground);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  generateIcons().then(() => console.log('Generated Veyvox web/PWA, desktop and tray icons from the supplied PNG masters.')).catch(error => {
+  generateIcons().then(() => console.log('Generated Veyvox web/PWA, Android, desktop and tray icons from the supplied PNG masters.')).catch(error => {
     console.error(error); process.exitCode = 1;
   });
 }

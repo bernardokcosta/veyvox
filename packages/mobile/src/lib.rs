@@ -1,6 +1,6 @@
 //! Veyvox Android client — 100% Rust.
 //!
-//! Android-only `egui` interface, 1:1 with the web `MobileShell`
+//! Android-only `egui` preview based on the web `MobileShell`
 //! (`docs/systems/mobile-ui.md`): root tabs Spaces / DMs / You, pushed
 //! screen stack, chat, voice overlay (mini-bar + full screen), settings.
 //! No iOS target exists. Performance is the reason for the language choice:
@@ -19,6 +19,7 @@
 //!   late or failed answer can never open or wedge a call.
 
 pub mod api;
+mod onboarding;
 pub mod screens;
 pub mod state;
 pub mod voice;
@@ -133,6 +134,7 @@ pub struct VeyvoxApp {
     state: AppState,
     voice: voice::VoiceState,
     drafts: Drafts,
+    onboarding_language: onboarding::Language,
     login_rx: Option<Receiver<LoginResult>>,
     history_jobs: Vec<PendingHistory>,
     history_loaded: HashSet<String>,
@@ -171,6 +173,7 @@ impl Default for VeyvoxApp {
                 hide_password: true,
                 ..Drafts::default()
             },
+            onboarding_language: onboarding::Language::default(),
             login_rx: None,
             history_jobs: Vec::new(),
             history_loaded: HashSet::new(),
@@ -203,8 +206,20 @@ impl Default for VeyvoxApp {
 }
 
 impl VeyvoxApp {
-    pub fn new(_cc: &eframe::CreationContext<'_>) -> Self {
-        Self::default()
+    pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
+        let locale = ["LC_ALL", "LC_MESSAGES", "LANG"]
+            .into_iter()
+            .find_map(|key| std::env::var(key).ok().filter(|tag| !tag.is_empty()))
+            .unwrap_or_default();
+        Self::with_locale(cc, &locale)
+    }
+
+    fn with_locale(cc: &eframe::CreationContext<'_>, locale: &str) -> Self {
+        onboarding::install_fonts(&cc.egui_ctx);
+        Self {
+            onboarding_language: onboarding::Language::from_tag(locale),
+            ..Self::default()
+        }
     }
 
     fn now_ms() -> u64 {
@@ -237,19 +252,51 @@ impl VeyvoxApp {
 
     // ── workers ──────────────────────────────────────────────
 
-    fn start_login(&mut self, ctx: &egui::Context) {
-        let instance = match InstanceConfig::parse(&self.drafts.instance_url) {
-            Ok(instance) => instance,
-            Err(err) => {
-                self.state.status_text = format!("Instance URL: {err}");
-                return;
-            }
-        };
-        if self.drafts.username.trim().is_empty() || self.drafts.password.is_empty() {
-            self.state.status_text = "Enter your username and password.".to_string();
+    fn clear_login_credentials(&mut self, ctx: &egui::Context) {
+        self.drafts.username.clear();
+        self.drafts.password.clear();
+        self.drafts.hide_password = true;
+        onboarding::clear_credential_editors(ctx);
+    }
+
+    fn select_login_server(&mut self, ctx: &egui::Context) {
+        if let Ok(instance) = InstanceConfig::parse(&self.drafts.instance_url) {
+            self.drafts.instance_url.clone_from(&instance.base_url);
+            self.clear_login_credentials(ctx);
+            self.state.instance = Some(instance);
+            self.state.status_text.clear();
+        } else {
+            self.state.status_text = self.onboarding_language.copy().invalid_server.into();
+        }
+    }
+
+    fn change_login_server(&mut self, ctx: &egui::Context) {
+        if self.busy {
             return;
         }
-        let client = api::RestClient::new(instance.clone());
+        self.state.instance = None;
+        self.clear_login_credentials(ctx);
+        self.state.status_text.clear();
+    }
+
+    fn start_login(&mut self, ctx: &egui::Context) {
+        if self.busy || self.login_rx.is_some() {
+            return;
+        }
+        let copy = self.onboarding_language.copy();
+        let Some(instance) = self.state.instance.clone() else {
+            self.state.status_text = copy.invalid_server.into();
+            return;
+        };
+        if self.drafts.username.trim().is_empty() {
+            self.state.status_text = copy.username_required.into();
+            return;
+        }
+        if self.drafts.password.is_empty() {
+            self.state.status_text = copy.password_required.into();
+            return;
+        }
+        let client = api::RestClient::new(instance);
         let username = self.drafts.username.trim().to_string();
         let password = self.drafts.password.clone();
         let (tx, rx) = channel();
@@ -257,8 +304,7 @@ impl VeyvoxApp {
         self.busy = true;
         self.session_epoch = self.session_epoch.wrapping_add(1);
         let epoch = self.session_epoch;
-        self.state.instance = Some(instance);
-        self.state.status_text = "Signing in…".to_string();
+        self.state.status_text.clear();
         let repaint = ctx.clone();
         std::thread::spawn(move || {
             let result =
@@ -438,7 +484,7 @@ impl VeyvoxApp {
 
     // ── polling ──────────────────────────────────────────────
 
-    fn poll_login(&mut self) {
+    fn poll_login(&mut self, ctx: &egui::Context) {
         let result = match self.login_rx.as_ref() {
             Some(rx) => match rx.try_recv() {
                 Ok(result) => result,
@@ -464,14 +510,15 @@ impl VeyvoxApp {
                 };
                 let profile_missing = boot.profile_missing;
                 apply_boot(&mut self.state, boot);
+                self.clear_login_credentials(ctx);
                 self.state.status_text = if profile_missing {
                     "Signed in — profile unavailable; privacy shows defaults.".to_string()
                 } else {
                     "Signed in.".to_string()
                 };
             }
-            Err(err) => {
-                self.state.status_text = format!("Sign-in failed: {err}");
+            Err(_) => {
+                self.state.status_text = self.onboarding_language.copy().failed.into();
             }
         }
     }
@@ -1141,7 +1188,7 @@ impl VeyvoxApp {
             || self.voice.incoming_dm_id() == Some(dm_id)
     }
 
-    fn logout(&mut self) {
+    fn logout(&mut self, ctx: &egui::Context) {
         if let Some(ws) = self.ws.take() {
             ws.shutdown();
         }
@@ -1176,15 +1223,13 @@ impl VeyvoxApp {
         self.is_admin = false;
         self.busy = false;
         self.privacy_saved = None;
-        // Secrets and drafts never survive a logout; the instance URL and
-        // the username stay as a convenience for the next sign-in.
-        self.drafts.password.clear();
+        // The server address can be reused; credentials and undo history can't.
+        self.clear_login_credentials(ctx);
         self.drafts.composer_by_channel.clear();
         self.drafts.friend_username.clear();
         self.drafts.dm_rename.clear();
         self.drafts.discoverable = None;
         self.drafts.show_activity = None;
-        self.state.status_text = "Signed out.".to_string();
     }
 }
 
@@ -1336,15 +1381,13 @@ impl eframe::App for VeyvoxApp {
             AppTheme::Dark => ctx.set_visuals(egui::Visuals::dark()),
             AppTheme::Light => ctx.set_visuals(egui::Visuals::light()),
         }
-        self.poll_login();
+        self.poll_login(ctx);
         self.poll_jobs();
         self.poll_ws();
         self.ensure_ws();
 
         if self.state.session.is_none() {
-            egui::CentralPanel::default().show(ctx, |ui| {
-                self.render_login(ui);
-            });
+            self.render_login(ctx);
             return;
         }
 
@@ -1406,49 +1449,79 @@ impl eframe::App for VeyvoxApp {
 }
 
 impl VeyvoxApp {
-    fn render_login(&mut self, ui: &mut egui::Ui) {
-        ui.vertical_centered(|ui| {
-            ui.heading("Veyvox");
-            ui.label("Self-hosted chat, voice and video.");
+    fn render_login(&mut self, ctx: &egui::Context) {
+        use onboarding as auth;
+        let copy = self.onboarding_language.copy();
+        let server = self.state.instance.as_ref().map(|s| s.base_url.clone());
+        let enter = ctx.input(|i| i.key_pressed(egui::Key::Enter));
+        auth::page(ctx, server.is_some(), |ui| {
+            let Some(server) = server else {
+                auth::header(ui, copy.welcome, copy.connect_prompt);
+                auth::error(ui, &self.state.status_text);
+                let label = auth::field_label(ui, copy.server, false);
+                let address = auth::input(
+                    ui,
+                    &mut self.drafts.instance_url,
+                    &label,
+                    auth::Field::Server,
+                    "chat.example.com",
+                    false,
+                );
+                ui.add_space(20.0);
+                if auth::primary(ui, copy.continue_action).clicked()
+                    || (enter && address.lost_focus())
+                {
+                    self.select_login_server(ctx);
+                }
+                return;
+            };
+            auth::header(ui, copy.login_title, copy.login_prompt);
+            auth::error(ui, &self.state.status_text);
+            ui.add_enabled_ui(!self.busy, |ui| {
+                let label = auth::field_label(ui, copy.username, true);
+                auth::input(
+                    ui,
+                    &mut self.drafts.username,
+                    &label,
+                    auth::Field::Username,
+                    "",
+                    false,
+                );
+                ui.add_space(20.0);
+                let label = auth::field_label(ui, copy.password, true);
+                let masked = !self.drafts.password_visible();
+                let password = auth::input(
+                    ui,
+                    &mut self.drafts.password,
+                    &label,
+                    auth::Field::Password,
+                    "",
+                    masked,
+                );
+                ui.allocate_ui_with_layout(
+                    egui::vec2(ui.available_width(), screens::TOUCH_TARGET),
+                    egui::Layout::right_to_left(egui::Align::Center),
+                    |ui| {
+                        if auth::secondary(ui, if masked { copy.show } else { copy.hide }).clicked()
+                        {
+                            self.drafts.hide_password = !self.drafts.hide_password;
+                        }
+                    },
+                );
+                let action = if self.busy {
+                    copy.submitting
+                } else {
+                    copy.submit
+                };
+                if auth::primary(ui, action).clicked() || (enter && password.lost_focus()) {
+                    self.start_login(ctx);
+                }
+                ui.add_space(16.0);
+                if auth::selected_server(ui, &server, copy.change_server).clicked() {
+                    self.change_login_server(ctx);
+                }
+            });
         });
-        ui.separator();
-        ui.label("Instance URL");
-        ui.text_edit_singleline(&mut self.drafts.instance_url);
-        ui.label("Username");
-        ui.text_edit_singleline(&mut self.drafts.username);
-        ui.label("Password");
-        ui.horizontal(|ui| {
-            if self.drafts.password_visible() {
-                ui.text_edit_singleline(&mut self.drafts.password);
-            } else {
-                ui.add(egui::TextEdit::singleline(&mut self.drafts.password).password(true));
-            }
-            if ui
-                .add(egui::Button::new("Show").min_size(egui::vec2(72.0, screens::TOUCH_TARGET)))
-                .clicked()
-            {
-                self.drafts.hide_password = !self.drafts.hide_password;
-            }
-        });
-        ui.add_space(8.0);
-        let label = if self.busy {
-            "Signing in…"
-        } else {
-            "Sign in"
-        };
-        if ui
-            .add(
-                egui::Button::new(label)
-                    .min_size(egui::vec2(ui.available_width(), screens::TOUCH_TARGET)),
-            )
-            .clicked()
-            && !self.busy
-            && self.login_rx.is_none()
-        {
-            let ctx = ui.ctx().clone();
-            self.start_login(&ctx);
-        }
-        ui.label("Android-only native client. No iOS build is offered.");
     }
 
     fn render_spaces_tab(&mut self, ui: &mut egui::Ui) {
@@ -1751,7 +1824,7 @@ impl VeyvoxApp {
             )
             .clicked()
         {
-            self.logout();
+            self.logout(ui.ctx());
         }
     }
 
@@ -2035,7 +2108,7 @@ impl VeyvoxApp {
             )
             .clicked()
         {
-            self.logout();
+            self.logout(ui.ctx());
         }
     }
 
@@ -2157,7 +2230,7 @@ impl VeyvoxApp {
             )
             .clicked()
         {
-            self.logout();
+            self.logout(ui.ctx());
             self.state.instance = None;
         }
     }
@@ -2450,6 +2523,7 @@ fn android_main(app: winit::platform::android::activity::AndroidApp) {
         android_logger::Config::default().with_max_level(log::LevelFilter::Info),
     );
     log::info!("Veyvox starting on Android");
+    let locale = app.config().language().unwrap_or_default();
     let options = eframe::NativeOptions {
         android_app: Some(app),
         ..Default::default()
@@ -2457,7 +2531,9 @@ fn android_main(app: winit::platform::android::activity::AndroidApp) {
     if let Err(err) = eframe::run_native(
         "Veyvox",
         options,
-        Box::new(|cc| Ok(Box::new(VeyvoxApp::new(cc)) as Box<dyn eframe::App>)),
+        Box::new(move |cc| {
+            Ok(Box::new(VeyvoxApp::with_locale(cc, &locale)) as Box<dyn eframe::App>)
+        }),
     ) {
         log::error!("Veyvox exited with error: {err:?}");
     }
@@ -2485,9 +2561,89 @@ mod tests {
         let mut app = VeyvoxApp::default();
         let ctx = egui::Context::default();
         app.drafts.instance_url = "not a url with spaces and \u{1}".to_string();
+        app.select_login_server(&ctx);
         app.start_login(&ctx);
-        assert!(app.state.status_text.contains("Instance URL"));
+        assert!(app.state.status_text.contains("server"));
         assert!(app.state.instance.is_none());
+    }
+
+    #[test]
+    fn selecting_a_server_does_not_submit_credentials() {
+        let mut app = VeyvoxApp::default();
+        let ctx = egui::Context::default();
+        app.drafts.instance_url = "chat.example.com".into();
+        app.drafts.username = "remembered".into();
+        app.drafts.password = "stale-password".into();
+        app.select_login_server(&ctx);
+        assert_eq!(
+            app.state.instance.as_ref().unwrap().base_url,
+            "https://chat.example.com"
+        );
+        assert!(app.login_rx.is_none());
+        assert!(app.drafts.password.is_empty());
+        let password_id = onboarding::Field::Password.id();
+        egui::TextEdit::store_state(&ctx, password_id, Default::default());
+        app.change_login_server(&ctx);
+        assert!(app.state.instance.is_none());
+        assert!(app.drafts.username.is_empty());
+        assert!(egui::TextEdit::load_state(&ctx, password_id).is_none());
+    }
+
+    #[test]
+    fn logout_then_selecting_a_different_server_discards_credentials_and_editor_state() {
+        let mut app = VeyvoxApp::default();
+        let ctx = egui::Context::default();
+        app.drafts.instance_url = "server-a.example".into();
+        app.select_login_server(&ctx);
+        app.drafts.username = "server-a-user".into();
+        app.drafts.password = "server-a-password".into();
+        let fields = [onboarding::Field::Username, onboarding::Field::Password];
+        for field in fields {
+            egui::TextEdit::store_state(&ctx, field.id(), Default::default());
+            assert!(egui::TextEdit::load_state(&ctx, field.id()).is_some());
+        }
+        app.logout(&ctx);
+        assert!(app.drafts.username.is_empty());
+        assert!(app.state.status_text.is_empty());
+        assert!(fields
+            .into_iter()
+            .all(|field| egui::TextEdit::load_state(&ctx, field.id()).is_none()));
+        app.drafts.instance_url = "server-b.example".into();
+        app.select_login_server(&ctx);
+        assert_eq!(
+            app.state.instance.as_ref().unwrap().base_url,
+            "https://server-b.example",
+        );
+        assert!(app.drafts.username.is_empty());
+        assert!(app.drafts.password.is_empty());
+    }
+
+    #[test]
+    fn onboard_login_button_is_visible_in_a_phone_viewport() {
+        let ctx = egui::Context::default();
+        onboarding::install_fonts(&ctx);
+        let mut app = VeyvoxApp::default();
+        app.drafts.instance_url = "chat.example.com".into();
+        app.select_login_server(&ctx);
+        let viewport = egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(390.0, 780.0));
+        let output = ctx.run(
+            egui::RawInput {
+                screen_rect: Some(viewport),
+                ..Default::default()
+            },
+            |ctx| app.render_login(ctx),
+        );
+        let button = output
+            .shapes
+            .iter()
+            .find_map(|clipped| match &clipped.shape {
+                egui::Shape::Text(shape) if shape.galley.text() == "Log In" => {
+                    Some((shape.visual_bounding_rect(), clipped.clip_rect))
+                }
+                _ => None,
+            });
+        let (bounds, clip) = button.expect("login button label is rendered");
+        assert!(viewport.intersect(clip).contains_rect(bounds));
     }
 
     #[test]
@@ -2735,7 +2891,7 @@ mod tests {
             .insert("c1".into(), "half-typed".to_string());
         app.history_loaded.insert("c1".into());
         app.session_epoch = 4;
-        app.logout();
+        app.logout(&egui::Context::default());
         assert!(app.drafts.password.is_empty());
         assert!(app.drafts.composer_by_channel.is_empty());
         assert!(app.history_loaded.is_empty());

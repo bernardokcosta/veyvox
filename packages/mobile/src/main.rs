@@ -11,7 +11,10 @@ use veyvox_mobile::VeyvoxApp;
 
 #[cfg(not(target_os = "android"))]
 fn main() -> Result<(), eframe::Error> {
-    let options = eframe::NativeOptions::default();
+    let options = eframe::NativeOptions {
+        viewport: egui::ViewportBuilder::default().with_inner_size([390.0, 780.0]),
+        ..Default::default()
+    };
     eframe::run_native(
         "Veyvox",
         options,

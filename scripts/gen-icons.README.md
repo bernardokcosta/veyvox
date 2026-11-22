@@ -51,6 +51,7 @@ the independently composed maskable icon remains opaque too.
 | `icon-192.png`, `icon-512.png`, `logo.png`, `apple-touch-icon.png` in the web icon directory | Boxed PWA/sidebar/touch composition; Apple-touch is opaque |
 | `icon-maskable-512.png` in the web icon directory | Opaque plum gradient and colored mark fitted inside a central 60% square, within the maskable safe circle |
 | `logo-mark.png`, `symbol.png` in the web icon directory | White UI silhouette at 256px; colored symbol at 512px |
+| `packages/mobile/android/res/drawable/` | Transparent 192px launcher fallback and 432px adaptive foreground with the original colored mark. Android applies the mask to the separate plum background. |
 
 Tests inspect the actual ICO/ICNS containers and embedded frames, source hashes,
 dimensions, template RGB/alpha, opacity, framing and repeat-run hashes. Output is

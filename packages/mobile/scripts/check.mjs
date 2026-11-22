@@ -57,10 +57,16 @@ for (const line of depLines) {
   ok(allowedDeps.has(name), `unreviewed dependency (add license evidence first): ${name}`);
 }
 
-const sources = ['src/main.rs', 'src/lib.rs', 'src/state.rs', 'src/api.rs', 'src/ws.rs', 'src/voice.rs', 'src/screens.rs'];
+const sources = ['src/main.rs', 'src/lib.rs', 'src/onboarding.rs', 'src/state.rs', 'src/api.rs', 'src/ws.rs', 'src/voice.rs', 'src/screens.rs'];
 for (const file of sources) ok(fs.existsSync(path.join(root, file)), `missing ${file}`);
 ok(fs.existsSync(path.join(root, 'rust-toolchain.toml')), 'missing rust-toolchain.toml');
 ok(fs.existsSync(path.join(root, 'android/res/drawable/ic_launcher.png')), 'missing packaged launcher icon');
+const adaptiveIcon = path.join(root, 'android/res/drawable-v26/ic_launcher.xml');
+ok(fs.existsSync(adaptiveIcon) && fs.readFileSync(adaptiveIcon, 'utf8').includes('@drawable/ic_launcher_foreground'),
+  'missing adaptive launcher foreground reference');
+ok(fs.existsSync(path.join(root, 'android/res/drawable/ic_launcher_foreground.png')), 'missing adaptive launcher foreground');
+ok(cargo.includes('assets = "assets"') && fs.existsSync(path.join(root, 'assets/DMSans-OFL.txt')),
+  'missing bundled DM Sans license');
 
 if (failures.length) {
   console.error('mobile check failed:');
