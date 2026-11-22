@@ -62,7 +62,10 @@ and the [local Flatpak build guide](flatpak/README.md).
 
 Open your instance in a phone browser and use **Add to Home Screen / Install**
 where supported. The PWA has a touch-oriented interface and an offline outgoing
-message queue. There is no native iOS or Android app-store build in this release.
+message queue. The [native Rust Android preview](docs/systems/mobile-native.md)
+is built as `Veyvox-<version>-android.apk` and downloadable from a successful
+CI run's `android-apk` artifact. It does not yet support voice or video media.
+See also the [responsive web shell](docs/systems/mobile-ui.md).
 
 ## Installation
 

@@ -14,6 +14,15 @@ async function fixture(t) {
   const directory = await releaseFixture(t); const notesPath = path.join(path.dirname(directory), path.basename(directory) + '-notes.md');
   await fs.writeFile(notesPath, '# Veyvox 1.15.1\n\nSynthetic release notes with a complete summary and explicit acceptance limitations for these local HTTP fixture tests.\n');
   t.after(() => fs.unlink(notesPath));
+  const androidDirectory = `${directory}-android`;
+  const apkName = 'Veyvox-1.15.1-android.apk';
+  const apkPath = path.join(androidDirectory, apkName);
+  const apkBytes = 'synthetic APK bytes';
+  const apkDigest = createHash('sha256').update(apkBytes).digest('hex');
+  await fs.mkdir(androidDirectory);
+  t.after(() => fs.rm(androidDirectory, { recursive: true, force: true }));
+  await fs.writeFile(apkPath, apkBytes);
+  await fs.writeFile(`${apkPath}.sha256`, `${apkDigest}  ${apkName}\n`);
   const state = { releases: [], assets: [], uploads: 0, publishes: 0, failUpload: false, commit: COMMIT };
   const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, 'http://fixture'); const route = url.pathname.replace('/repos/bernardokcosta/veyvox', '');
@@ -37,21 +46,22 @@ async function fixture(t) {
   t.after(() => new Promise((resolve) => server.close(resolve)));
   const api = createGitHubReleaseApi({ token: 'synthetic-test-token', fetch: (url, options) => {
     const original = new URL(url);
-    assert.ok(['api.github.com', 'uploads.github.com'].includes(original.hostname));
+    const isUpload = options.method === 'POST' && original.pathname.endsWith('/assets');
+    assert.equal(original.hostname, isUpload ? 'uploads.github.com' : 'api.github.com');
     return fetch(`http://127.0.0.1:${server.address().port}${original.pathname}${original.search}`, options);
   } });
-  const options = { repository: 'bernardokcosta/veyvox', tag: 'v1.15.1', commit: COMMIT, notesPath, directory,
+  const options = { repository: 'bernardokcosta/veyvox', tag: 'v1.15.1', commit: COMMIT, notesPath, directory, androidDirectory,
     inventory: await validateDesktopRelease(directory, '1.15.1'), releaseId: 42, publish: true };
-  return { options, state, api };
+  return { options, state, api, apkPath, apkName, apkBytes };
 }
 
 test('one id-aware writer verifies exact bytes and reruns without replacing public assets', async (t) => {
   const { options, state, api } = await fixture(t);
   assert.equal(await prepareDesktopRelease(options, api), 42);
   await publishDesktopRelease(options, api);
-  assert.equal(state.assets.length, 16); assert.equal(state.uploads, 16); assert.equal(state.publishes, 1);
+  assert.equal(state.assets.length, 17); assert.equal(state.uploads, 17); assert.equal(state.publishes, 1);
   await publishDesktopRelease(options, api);
-  assert.equal(state.uploads, 16); assert.equal(state.publishes, 1);
+  assert.equal(state.uploads, 17); assert.equal(state.publishes, 1);
 });
 
 test('upload failure leaves a draft and a retry resumes the same release id', async (t) => {
@@ -60,7 +70,7 @@ test('upload failure leaves a draft and a retry resumes the same release id', as
   assert.equal(state.releases[0].draft, true); assert.equal(state.publishes, 0);
   assert.equal(state.assets.length, 3);
   state.failUpload = false; await publishDesktopRelease({ ...options, publish: false }, api);
-  assert.equal(state.assets.length, 16); assert.equal(state.releases[0].draft, true);
+  assert.equal(state.assets.length, 17); assert.equal(state.releases[0].draft, true);
   await publishDesktopRelease(options, api); assert.equal(state.publishes, 1);
 });
 
@@ -84,6 +94,51 @@ test('never overwrites conflicting assets, edited notes or unrelated untagged dr
   state.assets = []; state.releases[0].body = 'User-edited notes';
   await assert.rejects(publishDesktopRelease(options, api), /notes/i);
   assert.equal(state.publishes, 0); assert.deepEqual(state.releases[1], unrelated);
+});
+
+test('the checked Android APK is uploaded to the same draft without breaking reruns', async (t) => {
+  const { options, state, api, apkName } = await fixture(t); await prepareDesktopRelease(options, api);
+  await publishDesktopRelease({ ...options, publish: false }, api);
+  assert.equal(state.assets.length, 17);
+  assert.equal(state.assets.at(-1).name, apkName);
+  assert.equal(state.releases[0].draft, true);
+  const result = await publishDesktopRelease(options, api);
+  assert.equal(result.assets, 17);
+  assert.equal(state.releases[0].draft, false);
+  // A rerun finds everything in place and changes nothing.
+  const rerun = await publishDesktopRelease(options, api);
+  assert.equal(rerun.assets, 17);
+  assert.equal(state.uploads, 17);
+  // Anything else extra is still refused.
+  state.assets.push({ id: 201, name: 'unexpected-binary.bin', size: 8, digest: 'sha256:' + 'd'.repeat(64) });
+  await assert.rejects(publishDesktopRelease(options, api), /unexpected/i);
+});
+
+test('missing, locally tampered, or remotely mismatched Android APK never makes the draft public', async (t) => {
+  const { options, state, api, apkPath } = await fixture(t); await prepareDesktopRelease(options, api);
+  await assert.rejects(publishDesktopRelease({ ...options, androidDirectory: undefined }, api), /Android APK directory/i);
+  await fs.writeFile(apkPath, 'tampered');
+  await assert.rejects(publishDesktopRelease(options, api), /Android APK.*digest/i);
+  assert.equal(state.uploads, 0);
+  assert.equal(state.publishes, 0);
+  assert.equal(state.releases[0].draft, true);
+});
+
+test('a wrong or missing remote Android APK prevents public transition even after upload', async (t) => {
+  const { options, state, api, apkName } = await fixture(t); await prepareDesktopRelease(options, api);
+  for (const remove of [false, true]) {
+    state.assets = [];
+    const altered = {
+      ...api,
+      listAssets: async (...args) => (await api.listAssets(...args)).flatMap((asset) => {
+        if (asset.name !== apkName) return [asset];
+        return remove ? [] : [{ ...asset, digest: `sha256:${'0'.repeat(64)}` }];
+      }),
+    };
+    await assert.rejects(publishDesktopRelease(options, altered), /different bytes|incomplete remote/i);
+    assert.equal(state.publishes, 0);
+    assert.equal(state.releases[0].draft, true);
+  }
 });
 
 test('digest fallback verifies bytes without forwarding authorization to signed CDN redirects', async () => {

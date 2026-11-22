@@ -2,7 +2,7 @@ name: CI
 
 # Runs the workspace's lint, typecheck, production build, and full test suite on
 # every pull request and on pushes to the supported default branches. The stable
-# "Build & test" aggregate includes lint, image and Windows native validation.
+# "Build & test" aggregate includes lint, image, Windows native and Android APK validation.
 # master protection also requires the separate enforcing security/CodeQL checks.
 
 on:
@@ -20,6 +20,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  mobile-android:
+    name: Android APK (Rust)
+    uses: ./.github/workflows/mobile-android.yml
+
   native-sdr:
     name: Windows native capture
     uses: ./.github/workflows/native-sdr-capture.yml
@@ -207,7 +211,7 @@ jobs:
   build-and-test-required:
     name: Build & test
     if: always()
-    needs: [build-and-test, build-image, lint, native-sdr]
+    needs: [build-and-test, build-image, lint, native-sdr, mobile-android]
     runs-on: ubuntu-latest
     steps:
       - name: Verify matrix result
@@ -228,4 +232,8 @@ jobs:
             echo "Windows native build/load/package checks did not succeed: ${{ needs.native-sdr.result }}"
             exit 1
           fi
-          echo "All matrix legs passed, lint is clean, the image builds and Windows native packages verify."
+          if [ "${{ needs.mobile-android.result }}" != "success" ]; then
+            echo "Android APK build did not succeed: ${{ needs.mobile-android.result }}"
+            exit 1
+          fi
+          echo "All matrix legs passed, lint is clean, the image builds, and Windows native and Android packages verify."

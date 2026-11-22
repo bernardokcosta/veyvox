@@ -50,6 +50,56 @@ export function findVersionedManifests(root = REPO_ROOT) {
 /** Accepts a plain semver release. Prereleases and build metadata are not used here. */
 const VERSION_PATTERN = /^\d+\.\d+\.\d+$/;
 
+/**
+ * Updates the Rust sources of truth for the Android client alongside the
+ * package.json manifests: `packages/mobile/Cargo.toml` (`[package]`
+ * version, read by `mobile check` and baked into the APK versionName) and
+ * the `veyvox-mobile` stanza of `packages/mobile/Cargo.lock` (committed
+ * for reproducible APK builds). Line endings of each file are preserved
+ * (a CRLF checkout must not poison the next bump). Returns the pending
+ * writes without touching disk; `main` validates everything first and
+ * only then writes, so a failure can never leave manifests diverged.
+ */
+export async function updateRustVersion(root, next) {
+  const pending = [];
+  const cargo = path.join(root, 'packages/mobile/Cargo.toml');
+  const raw = await readFile(cargo, 'utf8');
+  const eol = raw.includes('\r\n') ? '\r\n' : '\n';
+  const updated = raw
+    .split(/\r?\n/)
+    .map((line) =>
+      /^version\s*=\s*"[^"]*"$/.test(line) ? `version = "${next}"` : line,
+    )
+    .join(eol);
+  if (updated === raw) throw new Error('No [package] version found in packages/mobile/Cargo.toml');
+  pending.push([cargo, updated]);
+
+  const lock = path.join(root, 'packages/mobile/Cargo.lock');
+  let lockRaw;
+  try {
+    lockRaw = await readFile(lock, 'utf8');
+  } catch {
+    throw new Error('packages/mobile/Cargo.lock is missing; generate it with `cargo test -p veyvox-mobile` and commit it');
+  }
+  const lockEol = lockRaw.includes('\r\n') ? '\r\n' : '\n';
+  const lockLines = lockRaw.split(/\r?\n/);
+  let lockUpdated = false;
+  for (let i = 0; i + 2 < lockLines.length; i++) {
+    if (
+      lockLines[i] === '[[package]]' &&
+      lockLines[i + 1] === 'name = "veyvox-mobile"' &&
+      /^version = "[^"]*"$/.test(lockLines[i + 2])
+    ) {
+      lockLines[i + 2] = `version = "${next}"`;
+      lockUpdated = true;
+      break;
+    }
+  }
+  if (!lockUpdated) throw new Error('No veyvox-mobile stanza found in packages/mobile/Cargo.lock');
+  pending.push([lock, lockLines.join(lockEol)]);
+  return pending;
+}
+
 async function main() {
   const next = process.argv[2];
 
@@ -64,7 +114,7 @@ async function main() {
   }
 
   const manifests = findVersionedManifests();
-  const written = [];
+  const pending = [];
 
   for (const relative of manifests) {
     const file = path.join(REPO_ROOT, relative);
@@ -84,6 +134,17 @@ async function main() {
       process.exit(1);
     }
 
+    pending.push([file, updated, relative]);
+  }
+
+  for (const [file, updated] of await updateRustVersion(REPO_ROOT, next)) {
+    pending.push([file, updated, path.relative(REPO_ROOT, file).split(path.sep).join('/')]);
+  }
+
+  // Validate-everything-first: every write below is already computed, so a
+  // failure above leaves the tree untouched instead of half-bumped.
+  const written = [];
+  for (const [file, updated, relative] of pending) {
     await writeFile(file, updated);
     written.push(relative);
   }

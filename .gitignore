@@ -17,7 +17,8 @@ packages/server/dist/
 packages/shared/dist/
 packages/desktop/dist/
 packages/desktop/dist-electron/
-packages/mobile/
+packages/mobile/dist/
+packages/mobile/target/
 
 # Data
 data/

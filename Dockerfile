@@ -28,6 +28,7 @@ COPY tsconfig.base.json ./
 COPY packages/shared/package.json packages/shared/
 COPY packages/server/package.json packages/server/
 COPY packages/web/package.json packages/web/
+COPY packages/mobile/package.json packages/mobile/
 
 # Copy patches (referenced by pnpm-lock.yaml)
 COPY patches/ patches/
@@ -57,6 +58,7 @@ COPY tsconfig.base.json ./
 COPY packages/shared/package.json packages/shared/
 COPY packages/server/package.json packages/server/
 COPY packages/web/package.json packages/web/
+COPY packages/mobile/package.json packages/mobile/
 
 # Copy patches (referenced by pnpm-lock.yaml)
 COPY patches/ patches/
@@ -112,6 +114,7 @@ COPY tsconfig.base.json ./
 COPY packages/shared/package.json packages/shared/
 COPY packages/server/package.json packages/server/
 COPY packages/web/package.json packages/web/
+COPY packages/mobile/package.json packages/mobile/
 
 # Copy shared source (needed at runtime since server imports types directly)
 COPY packages/shared/ packages/shared/

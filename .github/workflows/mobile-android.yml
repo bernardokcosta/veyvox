@@ -1,0 +1,153 @@
+name: Mobile Android (Rust APK)
+
+# Android-only 100% Rust client (packages/mobile). Builds the universal
+# `Veyvox-<version>-android.apk` (arm64 phones, 32-bit ARM, x86_64 for the
+# emulator) via CI, tag releases or manual dispatch and uploads it as the `android-apk`
+# artifact. The desktop inventory validator never sees it: the artifact
+# name deliberately does NOT match `release-*`, so `release.yml`'s
+# desktop `validate` job keeps assembling exactly its four groups. The
+# emulator job installs the APK, cold-opens the launcher activity and
+# asserts the process is alive. No iOS job exists and none is planned.
+
+on:
+  workflow_call:
+    secrets:
+      ANDROID_RELEASE_KEYSTORE_BASE64:
+        description: 'Dedicated release keystore (base64). Required for tag builds; absent on PR builds.'
+        required: false
+      ANDROID_RELEASE_KEYSTORE_PASSWORD:
+        description: 'Password for the dedicated release keystore. Required for tag builds; absent on PR builds.'
+        required: false
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-android-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  workflow-validation:
+    name: Validate mobile workflow
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check GitHub Actions syntax and expression contexts
+        shell: bash
+        run: |
+          curl --fail --location --retry 3 --output "$RUNNER_TEMP/actionlint.tar.gz" https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz
+          echo "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  $RUNNER_TEMP/actionlint.tar.gz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP" actionlint
+          "$RUNNER_TEMP/actionlint" -oneline
+
+  build-apk:
+    name: Build Android APK (Rust)
+    needs: workflow-validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js (versioned APK name + structural checks)
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+
+      - name: Setup Java 17 (Android SDK requirement)
+        uses: actions/setup-java@3a4f6e1af504cf6a31855fa899c6aa5355ba6c12 # v4.7.0
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3.2.2
+        with:
+          # Space-separated package list; no inner quotes (each item is
+          # passed verbatim to sdkmanager, quotes would become part of
+          # the name).
+          packages: platform-tools platforms;android-34 build-tools;34.0.0
+
+      - name: Install and select Android NDK r27 and SDK Build Tools 34
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdkmanager "ndk;27.0.12077973"
+          ndk="$ANDROID_HOME/ndk/27.0.12077973"
+          # ndk-build 0.10.0 selects the highest SDK Build Tools directory
+          # it sees, and prefers the ROOT vars inherited from the runner.
+          sdk="$(mktemp -d "$RUNNER_TEMP/veyvox-android-sdk.XXXXXX")"
+          mkdir "$sdk/platforms" "$sdk/build-tools"
+          ln -s "$ANDROID_HOME/platforms/android-34" "$sdk/platforms/android-34"
+          ln -s "$ANDROID_HOME/build-tools/34.0.0" "$sdk/build-tools/34.0.0"
+          cat "$ndk/source.properties"
+          cat "$sdk/build-tools/34.0.0/source.properties"
+          {
+            echo "ANDROID_NDK_ROOT=$ndk"
+            echo "ANDROID_NDK_HOME=$ndk"
+            echo "ANDROID_SDK_ROOT=$sdk"
+            echo "ANDROID_HOME=$sdk"
+          } >> "$GITHUB_ENV"
+
+      - name: Setup Rust stable + Android targets
+        uses: dtolnay/rust-toolchain@39008827e6b4319a349e9a42dfc90579dd25f1ca # stable
+        with:
+          toolchain: stable
+          targets: aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android
+          components: clippy,rustfmt
+
+      - name: Structural checks (versions and Android-only gates)
+        run: node packages/mobile/scripts/check.mjs
+
+      - name: Install cargo-apk (Rust APK packager, MIT/Apache)
+        shell: bash
+        run: cargo install cargo-apk --version 0.10.0 --locked
+
+      - name: Build, sign and verify the release APK
+        working-directory: packages/mobile
+        env:
+          ANDROID_RELEASE_KEYSTORE_BASE64: ${{ github.ref_type == 'tag' && secrets.ANDROID_RELEASE_KEYSTORE_BASE64 || '' }}
+          ANDROID_RELEASE_KEYSTORE_PASSWORD: ${{ github.ref_type == 'tag' && secrets.ANDROID_RELEASE_KEYSTORE_PASSWORD || '' }}
+        run: node scripts/build-android.mjs
+
+      - name: Upload APK artifact (desktop validator ignores this name)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: android-apk
+          path: |
+            packages/mobile/dist/Veyvox-*-android.apk
+            packages/mobile/dist/Veyvox-*-android.apk.sha256
+          if-no-files-found: error
+          compression-level: 0
+
+  emulator-smoke:
+    name: Install and open the APK on Android
+    needs: build-apk
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Download the APK under test
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: android-apk
+          path: android-apk
+
+      - name: Enable emulator access to KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Boot the emulator, install, cold-open and assert alive
+        uses: ReactiveCircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2
+        with:
+          api-level: 34
+          target: default
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          # Each line is executed by a separate POSIX `sh -c`.
+          script: set -eu; cd android-apk; set -- Veyvox-*-android.apk; test "$#" -eq 1; test -s "$1"; sha256sum --check --strict "$1.sha256"; adb install -r "$1"; adb shell monkey -p io.github.bernardokcosta.veyvox -c android.intent.category.LAUNCHER 1; sleep 8; adb shell pidof io.github.bernardokcosta.veyvox; adb shell dumpsys activity activities | grep -E 'ResumedActivity:.*io\.github\.bernardokcosta\.veyvox/'

@@ -39,7 +39,7 @@ test('workflow keeps matrix read-only, fuses/signature before artifact upload an
   const uploadIndex = build.steps.findIndex((step) => step.uses?.startsWith('actions/upload-artifact@'));
   assert.ok(fuseIndex >= 0 && signIndex > fuseIndex && uploadIndex > signIndex);
   assert.match(build.steps[fuseIndex].run, /if \[ "\$failed" -ne 0 \]/);
-  assert.deepEqual(workflow.jobs.publish.needs, ['build', 'native-sdr', 'validate', 'installed']);
+  assert.deepEqual(workflow.jobs.publish.needs, ['build', 'mobile-apk', 'native-sdr', 'validate', 'installed']);
   assert.deepEqual(workflow.jobs.installed.needs, ['build', 'validate']);
   assert.equal(workflow.jobs.installed.permissions.contents, 'read');
   assert.equal(workflow.jobs.installed.strategy.matrix.include.length, 6);

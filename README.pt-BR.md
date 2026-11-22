@@ -62,8 +62,11 @@ e o [guia de compilação local do Flatpak](flatpak/README.md).
 
 Abra sua instância no navegador do celular e use **Adicionar à tela inicial /
 Instalar**, quando disponível. O PWA tem interface adaptada ao toque e uma fila
-de mensagens de saída para períodos sem conexão. Esta versão não inclui um
-aplicativo nativo nas lojas do iOS ou Android.
+de mensagens de saída para períodos sem conexão. A
+[prévia nativa Android em Rust](docs/systems/mobile-native.md) gera o
+`Veyvox-<version>-android.apk`, disponível no artefato `android-apk` após uma
+execução bem-sucedida da CI. Ela ainda não transmite áudio ou vídeo.
+Veja também a [interface web responsiva](docs/systems/mobile-ui.md).
 
 ## Instalação
 
