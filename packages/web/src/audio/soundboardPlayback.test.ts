@@ -8,9 +8,10 @@ import { receiveSoundboardPlay, stopSoundboardPlayback, updateSoundboardVolume }
 const audio = vi.hoisted(() => ({
   source: { start: vi.fn(), stop: vi.fn(), connect: vi.fn(), disconnect: vi.fn(), buffer: null, onended: null },
   gain: { gain: { value: 0 }, connect: vi.fn(), disconnect: vi.fn() },
-  decode: vi.fn(), resume: vi.fn(),
+  decode: vi.fn(), resume: vi.fn(), acquire: vi.fn(() => vi.fn()),
 }));
 vi.mock('./AudioManager', () => ({ AudioManager: { getInstance: () => ({
+  acquirePlayback: audio.acquire,
   resumeContext: audio.resume,
   ensureContext: () => ({ decodeAudioData: audio.decode, createBufferSource: () => audio.source, createGain: () => audio.gain }),
   getMasterOutput: () => 'master-bus',
@@ -48,12 +49,17 @@ describe('voice-scoped soundboard playback', () => {
   });
   it('cannot start a pending decode after Stop, a channel switch or deafen', async () => {
     let finish!: (value: { duration: number }) => void;
+    const release = vi.fn();
+    audio.acquire.mockReturnValueOnce(release);
     audio.decode.mockImplementationOnce(() => new Promise(resolve => { finish = resolve; }));
     const play = receiveSoundboardPlay('voice', 'space', sound);
     await vi.waitFor(() => expect(audio.decode).toHaveBeenCalledOnce());
+    expect(release).not.toHaveBeenCalled();
     stopSoundboardPlayback(); useVoiceStore.setState({ currentVoiceChannelId: 'other' });
+    expect(release).toHaveBeenCalledOnce();
     finish({ duration: 1 }); await play;
     expect(audio.source.start).not.toHaveBeenCalled();
+    expect(release).toHaveBeenCalledOnce();
   });
   it('rejects filenames outside the canonical asset form', async () => {
     await receiveSoundboardPlay('voice', 'space', { ...sound, filename: '../../private' });

@@ -12,7 +12,7 @@
  * If anyone re-introduces the avatar-only mobile grid, this test fails.
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import type { DmChannel } from '@veyvox/shared';
 import { MemoryRouter } from 'react-router-dom';
 
@@ -115,6 +115,7 @@ beforeEach(() => {
     permissionMutedUserIds: new Set(),
     speakingParticipantIds: new Set(),
     focusedParticipantId: null,
+    hideNonVideoParticipants: false,
     activeDmCall: null,
     participantMutes: new Map(),
     streamMutes: new Map(),
@@ -142,6 +143,18 @@ function renderScreen() {
 }
 
 describe('MobileVoiceFullScreen', () => {
+  it('filters tiles from the header without changing the connected count', () => {
+    useVoiceStore.setState({ participants: [makeParticipant({}), makeParticipant({
+      identity: '2:bob', userId: '2', username: 'bob', isCameraOn: true,
+    })] });
+    renderScreen();
+    expect(screen.getByText('alice')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /hide participants without video/i }));
+    expect(screen.queryByText('alice')).not.toBeInTheDocument();
+    expect(screen.getByText('bob')).toBeInTheDocument();
+    expect(screen.getByText(/2 connected/i)).toBeInTheDocument();
+  });
+
   it('renders the VoiceGrid waiting state when no participants', () => {
     const { container } = renderScreen();
     // No <video> until participants exist.

@@ -8,7 +8,7 @@ import { junoGame } from './junoTestFixtures';
 import { JunoSounds as JunoMemorySound } from './JunoSounds';
 import { HttpError } from '../../api/client';
 import { JUNO_SOUNDS } from './junoSoundCues';
-const audio = vi.hoisted(() => ({ loadSound: vi.fn(), resumeContext: vi.fn(), createBufferSource: vi.fn(), createGain: vi.fn(), ensureContext: vi.fn(), getMasterOutput: vi.fn() }));
+const audio = vi.hoisted(() => ({ acquirePlayback: vi.fn(() => vi.fn()), loadSound: vi.fn(), resumeContext: vi.fn(), createBufferSource: vi.fn(), createGain: vi.fn(), ensureContext: vi.fn(), getMasterOutput: vi.fn() }));
 vi.mock('../../audio/AudioManager', () => ({ AudioManager: { getInstance: () => audio } }));
 const getTable = vi.hoisted(() => vi.fn());
 vi.mock('../../api/client', async original => ({ ...await original<typeof import('../../api/client')>(), api: { juno: { get: getTable } } }));
@@ -36,11 +36,13 @@ beforeEach(() => {
 
 describe('Juno neon session playback', () => {
   it('plays only one supplied pizza cue and cancels it on deafen without replay on reopening', async () => {
+    const release = vi.fn(); audio.acquirePlayback.mockReturnValueOnce(release);
     const view = render(<JunoMemorySound target={target} connected />);
     await act(async () => cue('pizza', 45_000, 'pizza'));
     expect(audio.loadSound).toHaveBeenCalledExactlyOnceWith('juno_pizza');
     await act(async () => cue('pizza', 45_000, 'pizza')); expect(node.start).toHaveBeenCalledOnce();
     act(() => useVoiceStore.setState({ isDeafened: true })); expect(node.stop).toHaveBeenCalledOnce();
+    expect(release).toHaveBeenCalledOnce();
     view.unmount(); render(<JunoMemorySound target={target} connected />);
     expect(audio.loadSound).toHaveBeenCalledOnce();
   });

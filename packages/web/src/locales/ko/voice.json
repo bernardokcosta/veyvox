@@ -298,6 +298,8 @@
     "notificationBody": "{{name}}님이 전화 중입니다"
   },
   "grid": {
+    "noVideoParticipants": "표시할 카메라 영상이나 공유 화면이 없습니다.",
+    "showAllParticipants": "모든 참가자 표시",
     "waitingForOthers": "다른 사람 대기 중…",
     "returnToGridHint": "클릭하여 격자 보기로 돌아가기",
     "backToGrid": "격자 보기로 돌아가기",
@@ -467,6 +469,8 @@
   },
   "channelDuration": "채널 활성 {{duration}}",
   "controls": {
+    "hideNonVideo": "영상이 없는 참가자 숨기기",
+    "showNonVideo": "영상이 없는 참가자 표시",
     "spaceMutedSelfMuted": "스페이스에서 음소거됨 (셀프 음소거)",
     "unmuteShortcut": "음소거 해제 (M)",
     "muteShortcut": "음소거 (M)",

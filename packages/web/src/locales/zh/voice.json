@@ -298,6 +298,8 @@
     "notificationBody": "{{name}} 正在呼叫您"
   },
   "grid": {
+    "noVideoParticipants": "没有可显示的摄像头画面或屏幕共享。",
+    "showAllParticipants": "显示所有参与者",
     "waitingForOthers": "正在等待其他人加入…",
     "returnToGridHint": "点击返回网格视图",
     "backToGrid": "返回网格视图",
@@ -467,6 +469,8 @@
   },
   "channelDuration": "频道已持续通话 {{duration}}",
   "controls": {
+    "hideNonVideo": "隐藏未开启视频的参与者",
+    "showNonVideo": "显示未开启视频的参与者",
     "spaceMutedSelfMuted": "空间静音（自身已静音）",
     "unmuteShortcut": "取消静音 (M)",
     "muteShortcut": "静音 (M)",

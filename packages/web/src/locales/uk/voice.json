@@ -307,6 +307,8 @@
     "notificationBody": "{{name}} телефонує вам"
   },
   "grid": {
+    "noVideoParticipants": "Немає камер або демонстрацій екрана для показу.",
+    "showAllParticipants": "Показати всіх учасників",
     "waitingForOthers": "Очікування інших…",
     "returnToGridHint": "Натисніть, щоб повернутися до сітки",
     "backToGrid": "Назад до сітки",
@@ -476,6 +478,8 @@
   },
   "channelDuration": "Канал активний {{duration}}",
   "controls": {
+    "hideNonVideo": "Приховати учасників без відео",
+    "showNonVideo": "Показати учасників без відео",
     "spaceMutedSelfMuted": "Заглушено в просторі (самозаглушення)",
     "unmuteShortcut": "Увімкнути мікрофон (M)",
     "muteShortcut": "Заглушити (M)",

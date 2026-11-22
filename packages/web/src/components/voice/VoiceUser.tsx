@@ -15,9 +15,10 @@ import { BotBadge } from '../ui/BotBadge';
 interface VoiceUserProps {
   tile: UserTile;
   large?: boolean;
+  fullscreenChrome?: string;
 }
 
-export function VoiceUser({ tile, large }: VoiceUserProps) {
+export function VoiceUser({ tile, large, fullscreenChrome }: VoiceUserProps) {
   const { t } = useTranslation(['voice', 'common']);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -147,11 +148,11 @@ export function VoiceUser({ tile, large }: VoiceUserProps) {
   return (
     <div
       data-context-menu
-      className={`relative bg-surface-base rounded-xl overflow-hidden flex items-center justify-center group transition-all duration-200 ${
-        isSpeaking
+      className={`relative overflow-hidden flex items-center justify-center group h-full w-full ${
+        fullscreenChrome ? 'bg-black' : `bg-surface-base rounded-xl transition-all duration-200 ${isSpeaking
           ? 'ring-[3px] ring-status-online shadow-[0_0_12px_rgba(134,239,172,0.25)]'
-          : 'ring-1 ring-white/[0.06] hover:ring-white/10'
-      } h-full w-full`}
+          : 'ring-1 ring-white/[0.06] hover:ring-white/10'}`
+      }`}
       onContextMenu={handleContextMenu}
     >
       {hasVideo ? (
@@ -168,7 +169,7 @@ export function VoiceUser({ tile, large }: VoiceUserProps) {
           className={`w-full h-full ${large ? 'object-contain bg-black' : 'object-cover'}`}
         />
       ) : (
-        <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-surface-channel">
+        <div className={`w-full h-full flex flex-col items-center justify-center gap-3 ${fullscreenChrome ? 'bg-black' : 'bg-surface-channel'}`}>
           <div className="relative flex">
             <ProfileAvatar
               src={avatar}
@@ -184,7 +185,7 @@ export function VoiceUser({ tile, large }: VoiceUserProps) {
         </div>
       )}
 
-      <div className="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
+      <div className={`absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-black/70 via-black/30 to-transparent ${fullscreenChrome ? `pointer-events-none transition-opacity ${fullscreenChrome}` : ''}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5 min-w-0">
             <span

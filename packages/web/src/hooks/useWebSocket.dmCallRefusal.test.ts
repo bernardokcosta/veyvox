@@ -5,6 +5,7 @@ import { installSocketHarness, TestWebSocket } from '../test/socketHarness';
 import { junoUser } from '../components/games/junoTestFixtures';
 
 // jsdom has no AudioWorkletNode; the handler's imports reach the voice stack.
+const releaseInputStream = vi.hoisted(() => vi.fn());
 vi.mock('../audio/AudioManager', () => ({
   AudioManager: {
     getInstance: vi.fn().mockReturnValue({
@@ -14,6 +15,8 @@ vi.mock('../audio/AudioManager', () => ({
       clearInputDenial: vi.fn(),
       resumeContext: vi.fn(() => Promise.resolve()),
       setInputDevice: vi.fn(() => Promise.resolve(null)),
+      releaseInputStream,
+      hasVoiceSession: () => false,
     }),
   },
 }));
@@ -24,7 +27,7 @@ const { useSpaceStore } = await import('../stores/spaceStore');
 const { useUIStore } = await import('../stores/uiStore');
 const { useVoiceStore } = await import('../stores/voiceStore');
 const { useAuthStore } = await import('../stores/authStore');
-const { startDmCall } = await import('../utils/voiceActions');
+const { cancelOutgoingDmCall, startDmCall } = await import('../utils/voiceActions');
 const { initI18n } = await import('../i18n');
 const i18n = (await import('../i18n')).default;
 
@@ -57,6 +60,7 @@ function homeSocket(): TestWebSocket {
 }
 
 beforeEach(async () => {
+  releaseInputStream.mockClear();
   await initI18n();
   installSocketHarness(); useAuthStore.setState({ token: 'native-token', user: junoUser('me') });
   vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -72,6 +76,7 @@ beforeEach(async () => {
     activeDmCall: null,
     currentVoiceChannelId: null,
     isLiveKitConnected: false,
+    voiceConnectionStatus: 'disconnected',
     voiceUsers: new Map(),
     disconnectFn: null,
     connectFn: null,
@@ -88,12 +93,14 @@ describe('a refused dm_call_start', () => {
     const ws = homeSocket(); startDmCall(GROUP);
     ws.deliver({ type: 'error', message: 'Too many requests', code: 'rate_limited', retryAfter: 1 });
     expect(useVoiceStore.getState().outgoingCall).toEqual(outgoing(GROUP));
+    expect(releaseInputStream).not.toHaveBeenCalled();
   });
 
   it('still clears a rate-limited call start correlated to that DM', () => {
     const ws = homeSocket(); startDmCall(GROUP);
     ws.deliver({ type: 'error', message: 'Too many requests', code: 'rate_limited', retryAfter: 1, dmChannelId: GROUP });
     expect(useVoiceStore.getState().outgoingCall).toBeNull();
+    expect(releaseInputStream).toHaveBeenCalledOnce();
   });
   it('clears the calling state and says why', () => {
     const ws = homeSocket();
@@ -129,6 +136,35 @@ describe('a refused dm_call_start', () => {
 });
 
 describe('the end of a DM call', () => {
+  it.each(['dm_call_rejected', 'dm_call_ended'] as const)('releases a pre-armed outgoing mic on %s without an active room', type => {
+    const ws = homeSocket();
+    expect(startDmCall(GROUP)).toBe(true);
+    ws.deliver({ type, dmChannelId: GROUP });
+    expect(useVoiceStore.getState().outgoingCall).toBeNull();
+    expect(releaseInputStream).toHaveBeenCalledOnce();
+  });
+
+  it('releases pre-arm when a ready snapshot no longer lists the outgoing call', () => {
+    const ws = homeSocket();
+    expect(startDmCall(GROUP)).toBe(true);
+    ws.deliver({
+      type: 'ready', user: junoUser('me'), spaces: [], folders: [], dmChannels: [dm(GROUP)],
+      unreadCounts: {}, voiceStates: {}, userActivities: {}, readStates: [], activeCalls: [],
+    });
+    expect(useVoiceStore.getState().outgoingCall).toBeNull();
+    expect(releaseInputStream).toHaveBeenCalledOnce();
+  });
+
+  it('ignores an old DM call end after cancellation and a new outgoing call', () => {
+    const ws = homeSocket();
+    expect(startDmCall(GROUP)).toBe(true);
+    expect(cancelOutgoingDmCall(GROUP)).toBe(true);
+    expect(startDmCall(OTHER)).toBe(true);
+    ws.deliver({ type: 'dm_call_ended', dmChannelId: GROUP });
+    expect(useVoiceStore.getState().outgoingCall).toEqual(outgoing(OTHER));
+    expect(releaseInputStream).toHaveBeenCalledOnce();
+  });
+
   it('tears down the call the client is in', () => {
     const ws = homeSocket();
     const disconnectFn = vi.fn().mockResolvedValue(undefined);
@@ -191,6 +227,7 @@ describe('an accept in a DM call', () => {
     expect(useVoiceStore.getState().outgoingCall).toBeNull();
     expect(useVoiceStore.getState().activeDmCall).toEqual(active(GROUP));
     expect(connectFn).toHaveBeenCalledWith(GROUP, true);
+    expect(releaseInputStream).not.toHaveBeenCalled();
   });
 
   it('leaves alone a member calling a different DM', () => {

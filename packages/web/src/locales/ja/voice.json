@@ -298,6 +298,8 @@
     "notificationBody": "{{name}} が発信中"
   },
   "grid": {
+    "noVideoParticipants": "表示できるカメラ映像や画面共有はありません。",
+    "showAllParticipants": "すべての参加者を表示",
     "waitingForOthers": "他者待ち…",
     "returnToGridHint": "クリックでグリッド表示に戻る",
     "backToGrid": "グリッド表示に戻る",
@@ -467,6 +469,8 @@
   },
   "channelDuration": "チャンネル稼働 {{duration}}",
   "controls": {
+    "hideNonVideo": "映像のない参加者を非表示",
+    "showNonVideo": "映像のない参加者を表示",
     "spaceMutedSelfMuted": "スペースでミュート (セルフミュート)",
     "unmuteShortcut": "ミュート解除 (M)",
     "muteShortcut": "ミュート (M)",

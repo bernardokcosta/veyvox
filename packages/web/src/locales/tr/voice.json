@@ -301,6 +301,8 @@
     "notificationBody": "{{name}} seni arıyor"
   },
   "grid": {
+    "noVideoParticipants": "Gösterilecek kamera veya ekran paylaşımı yok.",
+    "showAllParticipants": "Tüm katılımcıları göster",
     "waitingForOthers": "Diğerlerinin katılması bekleniyor...",
     "returnToGridHint": "Izgara görünümüne dönmek için tıkla",
     "backToGrid": "Izgara görünümüne dön",
@@ -470,6 +472,8 @@
   },
   "channelDuration": "Kanal {{duration}} süredir etkin",
   "controls": {
+    "hideNonVideo": "Videosu olmayan katılımcıları gizle",
+    "showNonVideo": "Videosu olmayan katılımcıları göster",
     "spaceMutedSelfMuted": "Alan sessiz (kendin sessize aldın)",
     "unmuteShortcut": "Sesi aç (M)",
     "muteShortcut": "Sessize al (M)",

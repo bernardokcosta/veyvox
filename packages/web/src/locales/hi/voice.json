@@ -301,6 +301,8 @@
     "notificationBody": "{{name}} आपको कॉल कर रहा"
   },
   "grid": {
+    "noVideoParticipants": "दिखाने के लिए कोई कैमरा या शेयर की गई स्क्रीन नहीं है।",
+    "showAllParticipants": "सभी प्रतिभागियों को दिखाएँ",
     "waitingForOthers": "दूसरों की प्रतीक्षा…",
     "returnToGridHint": "ग्रिड दृश्य पर लौटने हेतु क्लिक करें",
     "backToGrid": "ग्रिड दृश्य पर वापस",
@@ -470,6 +472,8 @@
   },
   "channelDuration": "चैनल {{duration}} से सक्रिय",
   "controls": {
+    "hideNonVideo": "बिना वीडियो वाले प्रतिभागियों को छिपाएँ",
+    "showNonVideo": "बिना वीडियो वाले प्रतिभागियों को दिखाएँ",
     "spaceMutedSelfMuted": "स्पेस में म्यूट (स्व-म्यूट)",
     "unmuteShortcut": "अनम्यूट करें (M)",
     "muteShortcut": "म्यूट करें (M)",

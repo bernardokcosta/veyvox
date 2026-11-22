@@ -12,12 +12,14 @@ let generation = 0;
 let source: AudioBufferSourceNode | null = null;
 let gain: GainNode | null = null;
 let pending: AbortController | null = null;
+let releasePlayback: (() => void) | null = null;
 export function stopSoundboardPlayback(): void {
   generation++;
   pending?.abort(); pending = null;
   try { source?.stop(); } catch { /* It may already have ended. */ }
   source?.disconnect(); gain?.disconnect();
   source = null; gain = null;
+  releasePlayback?.(); releasePlayback = null;
 }
 
 function canListen(channelId: string, spaceId: string): boolean {
@@ -35,8 +37,10 @@ export async function receiveSoundboardPlay(channelId: string, spaceId: string, 
   const revision = useAuthStore.getState().sessionRevision;
   const current = () => run === generation && revision === useAuthStore.getState().sessionRevision;
   const controller = new AbortController(); pending = controller;
+  let started = false;
   try {
     const manager = AudioManager.getInstance();
+    releasePlayback = manager.acquirePlayback();
     await manager.resumeContext();
     if (!current()) return;
     const response = await fetch(`/api/uploads/${sound.filename}`, { signal: controller.signal });
@@ -62,10 +66,16 @@ export async function receiveSoundboardPlay(channelId: string, spaceId: string, 
     source.connect(gain); gain.connect(manager.getMasterOutput());
     source.onended = () => { if (run === generation) stopSoundboardPlayback(); };
     source.start();
+    started = true;
   } catch {
     if (!current() || controller.signal.aborted) return;
     useUIStore.getState().addToast(i18n.t('voice:soundboard.playFailed'), 'warning');
-  } finally { if (run === generation) pending = null; }
+  } finally {
+    if (run === generation) {
+      pending = null;
+      if (!started) stopSoundboardPlayback();
+    }
+  }
 }
 
 export function updateSoundboardVolume(): void {

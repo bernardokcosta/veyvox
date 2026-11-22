@@ -21,6 +21,8 @@ describe('teardownDmCall', () => {
       incomingCall: null,
       outgoingCall: null,
       disconnectFn: null,
+      voiceConnectionStatus: 'disconnected',
+      isLiveKitConnected: false,
     });
   });
 
@@ -36,7 +38,7 @@ describe('teardownDmCall', () => {
       disconnectFn,
     });
 
-    teardownDmCall();
+    teardownDmCall('dm-1');
 
     expect(disconnectFn).not.toHaveBeenCalled();
     // The space voice intent is preserved.
@@ -51,27 +53,28 @@ describe('teardownDmCall', () => {
       disconnectFn,
     });
 
-    teardownDmCall();
+    teardownDmCall('dm-1');
 
     expect(disconnectFn).toHaveBeenCalledTimes(1);
     // DM call state is cleared.
     expect(useVoiceStore.getState().activeDmCall).toBeNull();
   });
 
-  it('clears residual incoming and outgoing call state regardless', () => {
+  it('clears only the matching ring, preserving a newer unrelated call and the space room', () => {
     const disconnectFn = vi.fn().mockResolvedValue(undefined);
     useVoiceStore.setState({
       currentVoiceChannelId: 'space-voice-1',
       incomingCall: { dmChannelId: 'dm-2', callerId: 'u9', callerName: 'Nine' },
       outgoingCall: { dmChannelId: 'dm-3', withCamera: false },
+      voiceConnectionStatus: 'connecting',
       disconnectFn,
     });
 
-    teardownDmCall();
+    teardownDmCall('dm-2');
 
     const s = useVoiceStore.getState();
     expect(s.incomingCall).toBeNull();
-    expect(s.outgoingCall).toBeNull();
+    expect(s.outgoingCall?.dmChannelId).toBe('dm-3');
     expect(disconnectFn).not.toHaveBeenCalled();
   });
 });

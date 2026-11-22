@@ -72,29 +72,34 @@ export function useAudioTrackPlayer(
     }
 
     // --- Web Audio pipeline for actual output ---
-    const ctx = AudioManager.getInstance().ensureContext();
-
-    const stream = new MediaStream([track]);
-    const source = ctx.createMediaStreamSource(stream);
-    const gain = ctx.createGain();
-
-    // Start gain at 0 to prevent pop, then ramp to target
-    gain.gain.setValueAtTime(0, ctx.currentTime);
-    const targetGain = mutedRef.current ? 0 : volumeRef.current;
-    gain.gain.setTargetAtTime(targetGain, ctx.currentTime, 0.015);
-
-    source.connect(gain);
-    gain.connect(AudioManager.getInstance().getMasterOutput());
-
-    sourceRef.current = source;
-    gainRef.current = gain;
-
-    return () => {
-      source.disconnect();
-      gain.disconnect();
+    const manager = AudioManager.getInstance();
+    const release = manager.acquireAudioSession();
+    const cleanup = () => {
+      sourceRef.current?.disconnect();
+      gainRef.current?.disconnect();
       sourceRef.current = null;
       gainRef.current = null;
+      release();
     };
+    try {
+      const ctx = manager.ensureContext();
+      const source = ctx.createMediaStreamSource(new MediaStream([track]));
+      sourceRef.current = source;
+      const gain = ctx.createGain();
+      gainRef.current = gain;
+
+      // Start gain at 0 to prevent pop, then ramp to target
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      const targetGain = mutedRef.current ? 0 : volumeRef.current;
+      gain.gain.setTargetAtTime(targetGain, ctx.currentTime, 0.015);
+      source.connect(gain);
+      gain.connect(manager.getMasterOutput());
+      void manager.resumeContext();
+      return cleanup;
+    } catch (error) {
+      cleanup();
+      throw error;
+    }
   }, [track]);
 
   // Effect 2: Update gain when volume or muted changes (no graph rebuild)

@@ -273,8 +273,7 @@ export async function turnCameraOnInDmCall(roomKey: string): Promise<void> {
  */
 export function cancelOutgoingDmCall(dmChannelId: string): boolean {
   const voice = useVoiceStore.getState();
-  if (voice.outgoingCall?.dmChannelId !== dmChannelId) return false;
-  voice.setOutgoingCall(null);
+  if (voice.outgoingCall?.dmChannelId !== dmChannelId || !voice.abandonOutgoingCall(voice.outgoingCall)) return false;
   sendDmCallEnd({ dmChannelId });
   return true;
 }

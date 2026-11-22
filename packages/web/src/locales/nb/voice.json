@@ -301,6 +301,8 @@
     "notificationBody": "{{name}} ringer deg"
   },
   "grid": {
+    "noVideoParticipants": "Ingen kameraer eller delte skjermer å vise.",
+    "showAllParticipants": "Vis alle deltakere",
     "waitingForOthers": "Venter på andre…",
     "returnToGridHint": "Klikk for å gå tilbake til rutenettvisning",
     "backToGrid": "Tilbake til rutenettvisning",
@@ -470,6 +472,8 @@
   },
   "channelDuration": "Kanal aktiv i {{duration}}",
   "controls": {
+    "hideNonVideo": "Skjul deltakere uten video",
+    "showNonVideo": "Vis deltakere uten video",
     "spaceMutedSelfMuted": "Dempet i rommet (selvdempet)",
     "unmuteShortcut": "Slutt å dempe (M)",
     "muteShortcut": "Demp (M)",

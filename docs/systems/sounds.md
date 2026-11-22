@@ -40,6 +40,12 @@ User-uploaded space clips are separate from system cues: see
 [soundboard.md](soundboard.md). They share AudioManager's output bus/device and
 limiter, but have an independent panel volume and voice-scoped lifecycle.
 
+System cues (including ringing loops and output test tones), Juno effects and
+music hold the audio context during startup and playback. Playback owners
+release on end, cancellation or failure; the 1.5-second idle suspend does not
+cut off a playing source. An unrelated gesture only retries a resume if audio
+is already requested.
+
 | File | Event | Audience | Trigger |
 |---|---|---|---|
 | `mute.ogg` | "I am now muted" (any cause) | self | `effectiveMuted` flips true while LK-connected. Effective = self toggle ∪ space-mute ∪ permission-mute. Suppressed when the deafen state also flipped this tick (see Mute/deafen cue selection). |

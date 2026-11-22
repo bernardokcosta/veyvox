@@ -1,5 +1,9 @@
 # Localization
 
+The desktop and mobile video-only grid share `voice:controls.hideNonVideo` /
+`showNonVideo` and the `voice:grid.noVideoParticipants` / `showAllParticipants`
+empty-state strings across all 25 catalogs.
+
 Screen-share controls use `voice:streamSettings.codecOption.auto` and
 `codecOption.recommended` (placeholder `{{codec}}`) in all 25 catalogs.
 Recommended codec copy is distinct from the negotiated live codec in the

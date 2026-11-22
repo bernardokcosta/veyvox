@@ -111,6 +111,9 @@ Room changes, disconnect, logout and deafen stop/abort playback. The panel has
 an independent local volume and a local Stop; these do not affect other listeners.
 Network/decode failures show a localized warning. Playback is best-effort, not
 sample-synchronized: each listener starts once their download/decode completes.
+Shared clips and private upload previews hold the audio context during startup
+and playback, releasing it on completion, replacement, stop or failure. A stale
+decode or resume cannot restart a canceled clip or release a newer one's hold.
 
 ## UI and shortcuts
 

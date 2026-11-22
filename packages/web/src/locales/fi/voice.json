@@ -301,6 +301,8 @@
     "notificationBody": "{{name}} soittaa sinulle"
   },
   "grid": {
+    "noVideoParticipants": "Ei kameroita tai jaettuja näyttöjä näytettäväksi.",
+    "showAllParticipants": "Näytä kaikki osallistujat",
     "waitingForOthers": "Odotetaan muita…",
     "returnToGridHint": "Palaa ruudukkonäkymään napsauttamalla",
     "backToGrid": "Takaisin ruudukkonäkymään",
@@ -470,6 +472,8 @@
   },
   "channelDuration": "Kanava aktiivinen {{duration}}",
   "controls": {
+    "hideNonVideo": "Piilota osallistujat, joilla ei ole videota",
+    "showNonVideo": "Näytä osallistujat, joilla ei ole videota",
     "spaceMutedSelfMuted": "Mykistetty tilassa (itsemyksitetty)",
     "unmuteShortcut": "Poista mykistys (M)",
     "muteShortcut": "Mykistä (M)",
