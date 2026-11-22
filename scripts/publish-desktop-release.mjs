@@ -39,15 +39,30 @@ export async function prepareDesktopRelease(options, api) {
   return created.id;
 }
 
+async function androidAsset(directory, version) {
+  if (!directory) throw new Error('The verified Android APK directory is required');
+  const name = `Veyvox-${version}-android.apk`;
+  const filename = path.join(directory, name);
+  const [info, sidecar] = await Promise.all([fs.lstat(filename), fs.lstat(`${filename}.sha256`)]);
+  if (!info.isFile() || !info.size || !sidecar.isFile() || sidecar.size > 256) throw new Error('Invalid Android APK or digest sidecar');
+  const checksum = createHash('sha256');
+  for await (const bytes of createReadStream(filename)) checksum.update(bytes);
+  const sha256 = checksum.digest('hex');
+  if (await fs.readFile(`${filename}.sha256`, 'utf8') !== `${sha256}  ${name}\n`) throw new Error('Android APK digest sidecar does not match the downloaded file');
+  return { name, size: info.size, sha256 };
+}
+
 export async function publishDesktopRelease(options, api) {
   identity(options);
   if (!Number.isSafeInteger(options.releaseId) || options.releaseId <= 0) throw new Error('An explicit bootstrap release id is required');
-  const inventory = await validateDesktopRelease(options.directory, options.tag.slice(1));
+  const version = options.tag.slice(1);
+  const inventory = await validateDesktopRelease(options.directory, version);
   if (!isDeepStrictEqual(inventory, options.inventory)) throw new Error('Local release inventory mismatch');
+  const apk = await androidAsset(options.androidDirectory, version);
   const release = await releaseState(options, api);
   if (release?.id !== options.releaseId) throw new Error('Bootstrap release id does not match the unique tag release');
   await validateIdentity(options, await api.getRelease(options.repository, options.releaseId));
-  const expected = new Map(inventory.assets.map((asset) => [asset.name, asset]));
+  const expected = new Map([...inventory.assets, apk].map((asset) => [asset.name, asset]));
   const remote = new Map();
   async function verify(asset) {
     const local = expected.get(asset.name);
@@ -58,12 +73,13 @@ export async function publishDesktopRelease(options, api) {
   }
   // Verify every pre-existing asset before any upload. Never delete or replace.
   for (const asset of await api.listAssets(options.repository, options.releaseId)) await verify(asset);
-  for (const asset of inventory.assets) {
+  for (const asset of expected.values()) {
     if (remote.has(asset.name)) continue;
     const current = await api.getRelease(options.repository, options.releaseId);
     await validateIdentity(options, current);
     if (!current.draft) throw new Error('Public release is incomplete; refusing to modify public assets');
-    const uploaded = await api.uploadAsset(options.repository, options.releaseId, asset, path.join(options.directory, asset.name));
+    const directory = asset.name === apk.name ? options.androidDirectory : options.directory;
+    const uploaded = await api.uploadAsset(options.repository, options.releaseId, asset, path.join(directory, asset.name));
     await verify(uploaded);
   }
   // Re-list the exact id, recheck bytes and identity before making it public.
@@ -149,7 +165,7 @@ export function createGitHubReleaseApi({ token, fetch: transport = globalThis.fe
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
   const { values } = parseArgs({ options: {
     repository: { type: 'string' }, tag: { type: 'string' }, commit: { type: 'string' }, notes: { type: 'string' },
-    directory: { type: 'string' }, inventory: { type: 'string' }, 'release-id': { type: 'string' },
+    directory: { type: 'string' }, inventory: { type: 'string' }, 'release-id': { type: 'string' }, 'android-directory': { type: 'string' },
     prepare: { type: 'boolean', default: false }, publish: { type: 'boolean', default: false }, 'output-id': { type: 'string' },
   }, strict: true, allowPositionals: false });
   const options = { repository: values.repository, tag: values.tag, commit: values.commit, notesPath: values.notes };
@@ -161,9 +177,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.ar
     await fs.writeFile(values['output-id'], JSON.stringify({ releaseId }) + '\n', { flag: 'wx' });
     console.log(`Selected release id ${releaseId}`);
   } else {
-    if (!/^\d+$/.test(values['release-id'] ?? '') || !values.inventory || !values.directory) throw new Error('Explicit --release-id, --inventory and --directory are required');
+    if (!/^\d+$/.test(values['release-id'] ?? '') || !values.inventory || !values.directory || !values['android-directory']) throw new Error('Explicit --release-id, --inventory, --directory and --android-directory are required');
     const result = await publishDesktopRelease({ ...options, releaseId: Number(values['release-id']), directory: values.directory,
-      inventory: JSON.parse(await fs.readFile(values.inventory, 'utf8')), publish: values.publish }, api);
+      inventory: JSON.parse(await fs.readFile(values.inventory, 'utf8')), androidDirectory: values['android-directory'], publish: values.publish }, api);
     console.log(JSON.stringify(result));
   }
 }

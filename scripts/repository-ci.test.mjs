@@ -33,7 +33,7 @@ test('all tooling suites feed the required gate', () => {
   const gate = ci.jobs['build-and-test-required'];
   assert.equal(gate.name, 'Build & test');
   assert.equal(gate.if, 'always()');
-  assert.deepEqual(gate.needs, ['build-and-test', 'build-image', 'lint', 'native-sdr']);
+  assert.deepEqual(gate.needs, ['build-and-test', 'build-image', 'lint', 'native-sdr', 'mobile-android']);
   for (const job of gate.needs) {
     assert.ok(gate.steps[0].run.includes(`if [ "\${{ needs.${job}.result }}" != "success" ]; then`));
   }
@@ -65,6 +65,37 @@ test('native validation keeps callers without duplicate push runs', () => {
   }
   const validation = native.jobs['workflow-validation'].steps.map(step => step.run ?? '').join('\n');
   assert.match(validation, /"\$RUNNER_TEMP\/actionlint" -oneline\s*$/);
+});
+
+test('android APK has one reusable builder feeding CI and releases', () => {
+  const mobile = workflow('mobile-android');
+  assert.deepEqual(Object.keys(mobile.on).sort(), ['workflow_call', 'workflow_dispatch']);
+  assert.equal(workflow('ci').jobs['mobile-android'].uses, './.github/workflows/mobile-android.yml');
+  const release = workflow('release').jobs['mobile-apk'];
+  assert.equal(release.uses, './.github/workflows/mobile-android.yml');
+  assert.equal(release.if, "github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')");
+  const steps = mobile.jobs['build-apk'].steps.map((step) => step.run ?? step.uses ?? '').join('\n');
+  for (const command of ['packages/mobile/scripts/check.mjs', 'cargo install cargo-apk', 'node scripts/build-android.mjs']) {
+    assert.ok(steps.includes(command), command);
+  }
+  const upload = mobile.jobs['build-apk'].steps.find((step) => step.with?.name === 'android-apk');
+  assert.ok(upload, 'mobile workflow must upload the android-apk artifact');
+  assert.ok(upload.with.path.includes('packages/mobile/dist/Veyvox-*-android.apk'));
+  assert.ok(upload.with.path.includes('packages/mobile/dist/Veyvox-*-android.apk.sha256'));
+  assert.match(steps, /ANDROID_NDK_ROOT/);
+  assert.match(steps, /ANDROID_SDK_ROOT/);
+  assert.match(steps, /build-tools\/34\.0\.0/);
+  const smoke = mobile.jobs['emulator-smoke'].steps.map((step) => [step.run, step.with?.script, step.uses].filter(Boolean).join('\n')).join('\n');
+  for (const command of ['android-emulator-runner', 'adb install', 'monkey -p io.github.bernardokcosta.veyvox', 'pidof io.github.bernardokcosta.veyvox']) {
+    assert.ok(smoke.includes(command), command);
+  }
+  // One shell invocation: per-line state would not survive separate shells.
+  const scriptStep = mobile.jobs['emulator-smoke'].steps.find((step) => step.with?.script);
+  assert.ok(scriptStep, 'emulator smoke runs a script');
+  assert.doesNotMatch(scriptStep.with.script, /\n/);
+  assert.match(scriptStep.with.script, /^set -eu;/);
+  assert.doesNotMatch(scriptStep.with.script, /\bpipefail\b/);
+  assert.match(smoke, /sha256sum --check/);
 });
 
 test('PR scanners preserve enforcing contexts without path omissions', () => {

@@ -1,5 +1,10 @@
 # Mobile & Responsive UI System
 
+> This file specifies the **responsive web shell** (`MobileShell`). The
+> Android-only native Rust preview inspired by it is specified
+> separately in `docs/systems/mobile-native.md`; the APK is
+> `Veyvox-<version>-android.apk` and there is no iOS build.
+
 Source files:
 - `packages/web/src/components/layout/MobileShell.tsx` — Root mobile container: three tabs, screen stack, swipe gesture, browser history sync
 - `packages/web/src/components/layout/MobileScreenStack.tsx` — Push/pop animation state machine with CSS slide transitions

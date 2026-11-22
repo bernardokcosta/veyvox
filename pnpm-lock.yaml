@@ -109,6 +109,8 @@ importers:
         specifier: 7.2.5
         version: 7.2.5
 
+  packages/mobile: {}
+
   packages/server:
     dependencies:
       '@fastify/cors':

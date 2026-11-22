@@ -12,5 +12,7 @@ dist-electron
 .idea
 .vscode
 packages/desktop
+packages/mobile/target
+packages/mobile/dist
 npm
 livekit

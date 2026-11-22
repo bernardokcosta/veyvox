@@ -65,6 +65,28 @@ GitHub API/upload hosts and never forwarded to download CDN redirects. Unknown
 redirects fail. The old split v1.15.0 releases are preserved; their cause remains
 unconfirmed. Fork releases do not invoke upstream-only Flatpak metadata writes.
 
+### Android APK (native Rust client)
+
+Every tag also ships `Veyvox-<version>-android.apk`: one universal APK
+(Android-only; arm64 phones, 32-bit ARM, x86_64 for the CI emulator; no
+iOS build), built from `packages/mobile` (100% Rust `egui`, `cargo-apk`)
+by the reusable `.github/workflows/mobile-android.yml` workflow. PR
+builds sign with an ephemeral CI keystore (install-check only); tag
+builds require the dedicated release-keystore secrets and fail closed
+without them, so every published APK shares one certificate. The APK
+travels as the `android-apk` artifact — deliberately outside the
+`release-*` pattern so the desktop `validate` job keeps assembling
+exactly its 16-file inventory. The build verifies package id,
+versionName, SDK floor (28), INTERNET permission, launchable activity,
+one native lib per ABI and the signature (`aapt`/`apksigner`), and a
+second job checks the digest, installs the APK on an API-34 emulator,
+and opens it in the foreground. The sole publisher hashes the APK
+against its sidecar and uploads it to the same draft with the 16 desktop
+assets through the existing API client. Publication requires the
+complete remote inventory, including the exact APK bytes. Reruns reuse
+matching assets and never replace mismatched ones. See
+`docs/systems/mobile-native.md`.
+
 Anonymous installer/update access and OCI revision still need independent
 post-publication checks. Preserve a consistent
 SQLite backup/environment/image rollback record, and restart only Veyvox.

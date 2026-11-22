@@ -1,0 +1,13 @@
+{
+  "name": "@veyvox/mobile",
+  "version": "1.17.18",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "description": "Veyvox Android client preview — native Rust UI inspired by the web MobileShell",
+  "scripts": {
+    "build": "cargo build --release",
+    "build:apk": "node scripts/build-android.mjs",
+    "typecheck": "node scripts/check.mjs",
+    "test": "node --test \"test/*.test.mjs\""
+  }
+}
