@@ -13,7 +13,7 @@ export function DmCallStatus({ channelId }: { channelId: string }) {
   const users = useVoiceStore((s) => s.voiceUsers.get(channelId));
   const deadline = useVoiceStore((s) => s.dmWaitingUntil.get(channelId));
   const active = useVoiceStore((s) => s.activeDmCall?.dmChannelId === channelId);
-  const canJoin = useVoiceStore(canStartDmCall);
+  const canJoin = useVoiceStore((s) => canStartDmCall(s, channelId));
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     if (!deadline) return;

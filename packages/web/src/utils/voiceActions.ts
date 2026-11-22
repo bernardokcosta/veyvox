@@ -157,15 +157,16 @@ export async function handleScreenShareAction(): Promise<void> {
  * keys the ringing room by DM, so starting while any slot is taken would
  * open a second room.
  */
-export type DmCallSlots = Pick<ReturnType<typeof useVoiceStore.getState>, 'outgoingCall' | 'incomingCall' | 'activeDmCall'>;
+export type DmCallSlots = Pick<ReturnType<typeof useVoiceStore.getState>, 'outgoingCall' | 'incomingCall' | 'activeDmCall' | 'pendingDmCancels'>;
 
 /**
  * Whether a new DM call may be started. The one rule every call button reads,
- * so the desktop and mobile headers cannot drift. Usable directly as a store
- * selector: `useVoiceStore(canStartDmCall)`.
+ * so the desktop and mobile headers cannot drift. Also checks for a pending
+ * end of a previous call in that same DM.
  */
-export function canStartDmCall(state: DmCallSlots): boolean {
-  return state.outgoingCall === null && state.incomingCall === null && state.activeDmCall === null;
+export function canStartDmCall(state: DmCallSlots, dmChannelId: string | null | undefined): boolean {
+  return state.outgoingCall === null && state.incomingCall === null && state.activeDmCall === null
+    && (!dmChannelId || !state.pendingDmCancels.has(dmChannelId));
 }
 
 /** What a call button asks for besides the call itself. */
@@ -181,7 +182,7 @@ export interface DmCallOptions {
  */
 export function startDmCall(dmChannelId: string, options: DmCallOptions = {}): boolean {
   const voice = useVoiceStore.getState();
-  if (!canStartDmCall(voice)) return false;
+  if (!canStartDmCall(voice, dmChannelId)) return false;
   if (!wsSend({ type: 'dm_call_start', dmChannelId })) return false;
   preArmMicrophone();
   voice.setOutgoingCall({ dmChannelId, withCamera: options.withCamera === true });
@@ -225,7 +226,7 @@ function connectToDmCall(call: ActiveDmCall, withCamera: boolean): void {
  */
 export function joinDmCall(dmChannelId: string, options: DmCallOptions = {}): boolean {
   const voice = useVoiceStore.getState();
-  if (!canStartDmCall(voice)) return false;
+  if (!canStartDmCall(voice, dmChannelId)) return false;
   if (!wsSend({ type: 'dm_call_accept', dmChannelId })) return false;
   preArmMicrophone();
   const call: ActiveDmCall = { dmChannelId };
@@ -243,7 +244,7 @@ export function joinDmCall(dmChannelId: string, options: DmCallOptions = {}): bo
 export function acceptIncomingDmCall(): boolean {
   const voice = useVoiceStore.getState();
   const incoming = voice.incomingCall;
-  if (!incoming) return false;
+  if (!incoming || voice.pendingDmCancels.has(incoming.dmChannelId)) return false;
   if (!wsSend({ type: 'dm_call_accept', dmChannelId: incoming.dmChannelId })) return false;
   preArmMicrophone();
   const call: ActiveDmCall = { dmChannelId: incoming.dmChannelId };

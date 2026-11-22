@@ -27,7 +27,7 @@ export function MobileChatScreen({ params }: MobileChatScreenProps) {
   const outgoingCall = useVoiceStore((s) => s.outgoingCall);
   // The DM call's conversation as this client opens it (never the call's key).
   const { dmChannelId: dmCallChannel } = useActiveDmCall();
-  const canStartCall = useVoiceStore(canStartDmCall);
+  const canStartCall = useVoiceStore((s) => canStartDmCall(s, params?.channelId));
   const dmCallRunning = useVoiceStore((s) => !!params?.channelId && isDmCallRunning(s, params.channelId));
   const popMobileScreen = useUIStore((s) => s.popMobileScreen);
   const pushMobileScreen = useUIStore((s) => s.pushMobileScreen);

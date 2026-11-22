@@ -22,6 +22,7 @@ function declineRing(): void {
 export function IncomingCallModal() {
   const { t } = useTranslation(['voice', 'common']);
   const incomingCall = useVoiceStore((s) => s.incomingCall);
+  const acceptBlocked = useVoiceStore((s) => !!s.incomingCall && s.pendingDmCancels.has(s.incomingCall.dmChannelId));
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Auto-dismiss after 30 seconds
@@ -54,13 +55,6 @@ export function IncomingCallModal() {
 
   const callerAvatarId = incomingCall.callerId;
   const callerBaseName = callerMember ? userDisplayName(callerMember) : incomingCall.callerName;
-
-  // Accepting arms the microphone and connects inside this tap (iOS needs
-  // the gesture), and the call becomes active at once (`acceptIncomingDmCall`).
-  const handleAccept = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    acceptIncomingDmCall();
-  };
 
   const handleDecline = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -122,8 +116,9 @@ export function IncomingCallModal() {
 
             {/* Accept */}
             <button
-              onClick={handleAccept}
-              className="w-14 h-14 rounded-full bg-status-online/20 border border-status-online/30 backdrop-blur-sm flex items-center justify-center transition-all duration-200 hover:bg-status-online/35 animate-call-button-glow group"
+              onClick={acceptIncomingDmCall}
+              disabled={acceptBlocked}
+              className="w-14 h-14 rounded-full bg-status-online/20 border border-status-online/30 backdrop-blur-sm flex items-center justify-center transition-all duration-200 enabled:hover:bg-status-online/35 enabled:animate-call-button-glow disabled:opacity-50 group"
               title={t('common:actions.accept')}
             >
               <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" className="text-status-online group-hover:scale-110 transition-transform">

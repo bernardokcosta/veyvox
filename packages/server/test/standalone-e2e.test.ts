@@ -40,6 +40,23 @@ afterAll(async () => {
   if (directory) await rm(directory, { recursive: true, force: true });
 });
 describe('native REST + WebSocket integration', () => {
+  it('delivers the canceled ring’s terminal event before the next pong on the caller socket', async () => {
+    const caller = await register('native_cancel_caller'), callee = await register('native_cancel_callee');
+    await friend(caller, callee);
+    const pair = await json<{ id: string }>('POST', '/dm', caller.token, { userId: callee.id });
+    const a = await socketFor(caller), b = await socketFor(callee);
+    await a.waitForEvent('ready');
+    await b.waitForEvent('ready');
+    a.send({ type: 'dm_call_start', dmChannelId: pair.id });
+    expect(await b.waitForEvent('dm_call_incoming')).toMatchObject({ dmChannelId: pair.id });
+    a.send({ type: 'dm_call_end', dmChannelId: pair.id });
+    a.send({ type: 'ping' });
+    const pong = await a.waitForEvent('pong');
+    const ended = a.events.findIndex(event => event.type === 'dm_call_ended' && event.dmChannelId === pair.id);
+    expect(ended).toBeGreaterThanOrEqual(0);
+    expect(ended).toBeLessThan(a.events.indexOf(pong));
+  }, 30_000);
+
   it('preserves local account, private admission, social, DM history, reactions/read state, bot and call flows', async () => {
     const alice = await register('native_alice'), bob = await register('native_bob'), carol = await register('native_carol');
     const login = await json<{ user: { id: string }; token: string }>('POST', '/auth/login', undefined, { username: alice.username, password });

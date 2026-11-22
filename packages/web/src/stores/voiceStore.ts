@@ -109,6 +109,8 @@ export interface VoiceState {
    * snapshot; cleared by a null event or a room that is gone. Not persisted.
    */
   dmWaitingUntil: Map<string, number>;
+  /** Conversation IDs awaiting an ordered acknowledgment after a local DM end. */
+  pendingDmCancels: ReadonlySet<string>;
   focusedParticipantId: string | null;
   hideNonVideoParticipants: boolean;
   screenShareConfig: ScreenShareConfig;
@@ -306,6 +308,7 @@ export const useVoiceStore = create<VoiceState>()(
       cameraDeviceId: null,
       channelVoiceBitrateKbps: null,
       dmWaitingUntil: new Map(),
+      pendingDmCancels: new Set(),
       focusedParticipantId: null,
       hideNonVideoParticipants: false,
       screenShareConfig: { ...AUTO_SCREEN_SHARE_QUALITY, mode: 'gaming', shareAudio: !isElectron(), forceSdr: false },
@@ -723,6 +726,7 @@ export const useVoiceStore = create<VoiceState>()(
         connectionQualities: new Map(),
         focusedParticipantId: null,
         // Call state
+        pendingDmCancels: new Set(),
         incomingCall: null,
         outgoingCall: null,
         activeDmCall: null,
@@ -864,6 +868,7 @@ export const useVoiceStore = create<VoiceState>()(
         cameraDeviceId: null,
         channelVoiceBitrateKbps: null,
         dmWaitingUntil: new Map(),
+        pendingDmCancels: new Set(),
         focusedParticipantId: null,
         participantVolumes: new Map(),
         participantMutes: new Map(),

@@ -74,7 +74,7 @@ export function MainContent() {
   // The DM call's conversation as this client opens it (never the call's key).
   const { dmChannelId: dmCallChannel } = useActiveDmCall();
   const outgoingCall = useVoiceStore((s) => s.outgoingCall);
-  const canStartCall = useVoiceStore(canStartDmCall);
+  const canStartCall = useVoiceStore((s) => canStartDmCall(s, currentChannelId));
   const dmCallRunning = useVoiceStore((s) => !!currentChannelId && isDmCallRunning(s, currentChannelId));
   const dmChannels = useSpaceStore((s) => s.dmChannels);
   const openModal = useUIStore((s) => s.openModal);

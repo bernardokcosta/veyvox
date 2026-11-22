@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 
 vi.mock('../../hooks/useWebSocket', () => ({ wsSend: vi.fn(() => true) }));
 // jsdom has no AudioWorkletNode; the store's imports reach the voice stack.
@@ -32,6 +32,7 @@ beforeEach(async () => {
     incomingCall: RING,
     outgoingCall: null,
     activeDmCall: null,
+    pendingDmCancels: new Set(),
     connectFn: null,
   });
 });
@@ -58,6 +59,22 @@ describe('IncomingCallModal decline', () => {
 });
 
 describe('IncomingCallModal accept', () => {
+  it('disables only matching answers, then waits for a fresh click', () => {
+    const connectFn = vi.fn().mockResolvedValue(undefined);
+    useVoiceStore.setState({ connectFn, pendingDmCancels: new Set([RING.dmChannelId]) });
+    render(<IncomingCallModal />);
+    const button = screen.getByTitle(i18n.t('common:actions.accept'));
+    expect(button).toBeDisabled();
+    fireEvent.click(button);
+    expect(connectFn).not.toHaveBeenCalled();
+
+    act(() => useVoiceStore.setState({ pendingDmCancels: new Set(['dm-other']) }));
+    expect(button).toBeEnabled();
+    expect(connectFn).not.toHaveBeenCalled();
+    fireEvent.click(button);
+    expect(connectFn).toHaveBeenCalledExactlyOnceWith(RING.dmChannelId, true);
+  });
+
   it('joins the native DM ID and connects in the tap', () => {
     const connectFn = vi.fn().mockResolvedValue(undefined);
     useVoiceStore.setState({ connectFn });
